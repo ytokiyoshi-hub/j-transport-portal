@@ -1180,6 +1180,10 @@ const DriverFinancePage = ({ accent }) => {
 // ── 請求管理 ───────────────────────────────────────────────────────────────
 const InvoicePage = ({ accent }) => {
   const [filter, setFilter] = React.useState("すべて");
+  const [sel, setSel] = React.useState(null);
+  const [issuedSet, setIssuedSet] = React.useState(new Set());
+  const [remindedSet, setRemindedSet] = React.useState(new Set());
+
   const statuses = ["すべて","未請求","請求済","入金済","遅延"];
   const list = filter==="すべて"?invoices:invoices.filter(i=>i.status===filter);
   const summary = {
@@ -1188,62 +1192,170 @@ const InvoicePage = ({ accent }) => {
     遅延:   invoices.filter(i=>i.status==="遅延").reduce((s,i)=>s+i.amount,0),
     入金済: invoices.filter(i=>i.status==="入金済").reduce((s,i)=>s+i.amount,0),
   };
+
+  const buildLineItems = (inv) => {
+    const c = clients.find(c=>c.name===inv.client);
+    if (!c) return [];
+    if (c.billing.includes("固定")) {
+      const wdays = 22;
+      return [
+        { label:c.rates[0]?.label||"固定日額", qty:wdays, unit:"日", unitPrice:c.rates[0]?.sell||0, amount:c.rates[0]?.sell*wdays||0 },
+        ...(c.rates[1]?[{ label:c.rates[1].label, qty:Math.round(inv.amount*0.1/c.rates[1].sell)||1, unit:"個", unitPrice:c.rates[1].sell, amount:Math.round(inv.amount*0.1) }]:[]),
+      ];
+    }
+    const act = monthlyActuals.find(r=>r.name===inv.client);
+    if (!act) return c.rates.filter(r=>r.sell>0).map(r=>({ label:r.label, qty:"—", unit:"個", unitPrice:r.sell, amount:"—" }));
+    const totalRateSell = c.rates.filter(r=>r.sell>0).reduce((s,r)=>s+r.sell,0)||1;
+    return c.rates.filter(r=>r.sell>0).map(r=>{
+      const share = r.sell/totalRateSell;
+      const est = Math.round(act.sell*share);
+      const qty = r.sell>0?Math.round(est/r.sell):0;
+      return { label:r.label, qty, unit:"個", unitPrice:r.sell, amount:est };
+    });
+  };
+
   return (
     <div>
-      <div style={{ fontSize:20, fontWeight:700, marginBottom:20 }}>請求管理</div>
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12, marginBottom:20 }}>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
+        <div style={{ fontSize:20, fontWeight:700 }}>請求管理</div>
+        <button style={{ padding:"7px 16px", background:accent, color:"#fff", border:"none", borderRadius:6, fontSize:13, fontWeight:600, cursor:"pointer" }}>+ 請求書を一括作成</button>
+      </div>
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12, marginBottom:16 }}>
         {[
-          { l:"未請求（発行前）",  v:fmt(summary.未請求), c:"#64748b" },
-          { l:"請求済（入金待ち）",v:fmt(summary.請求済), c:accent },
-          { l:"入金遅延",          v:fmt(summary.遅延),   c:"#dc2626" },
-          { l:"入金済（今月）",    v:fmt(summary.入金済), c:"#16a34a" },
-        ].map(({ l,v,c })=>(
+          { l:"未請求（発行前）",  v:fmt(summary.未請求), n:invoices.filter(i=>i.status==="未請求").length, c:"#64748b" },
+          { l:"請求済（入金待ち）",v:fmt(summary.請求済), n:invoices.filter(i=>i.status==="請求済").length, c:accent },
+          { l:"入金遅延",          v:fmt(summary.遅延),   n:invoices.filter(i=>i.status==="遅延").length,   c:"#dc2626" },
+          { l:"入金済（今月）",    v:fmt(summary.入金済), n:invoices.filter(i=>i.status==="入金済").length,  c:"#16a34a" },
+        ].map(({ l,v,n,c })=>(
           <Card key={l} style={{ padding:"16px 20px" }}>
             <div style={{ fontSize:11, color:"#9ca3af", marginBottom:6 }}>{l}</div>
             <div style={{ fontSize:20, fontWeight:700, color:c }}>{v}</div>
+            <div style={{ fontSize:11, color:"#9ca3af", marginTop:4 }}>{n}件</div>
           </Card>
         ))}
       </div>
-      <div style={{ display:"flex", justifyContent:"space-between", marginBottom:16 }}>
-        <div style={{ display:"flex", gap:6 }}>
-          {statuses.map(s=>(
-            <button key={s} onClick={()=>setFilter(s)} style={{ padding:"5px 14px", borderRadius:4, border:`1.5px solid ${filter===s?accent:"#e5e7eb"}`, background:filter===s?accent:"#fff", color:filter===s?"#fff":"#374151", fontSize:13, fontWeight:filter===s?600:400 }}>{s}</button>
-          ))}
-        </div>
-        <button style={{ padding:"7px 16px", background:accent, color:"#fff", border:"none", borderRadius:6, fontSize:13, fontWeight:600 }}>+ 請求書を一括作成</button>
+      <div style={{ display:"flex", gap:6, marginBottom:14 }}>
+        {statuses.map(s=>(
+          <button key={s} onClick={()=>setFilter(s)} style={{ padding:"5px 14px", borderRadius:4, border:`1.5px solid ${filter===s?accent:"#e5e7eb"}`, background:filter===s?accent:"#fff", color:filter===s?"#fff":"#374151", fontSize:13, fontWeight:filter===s?600:400, cursor:"pointer" }}>{s}</button>
+        ))}
       </div>
-      <Card>
-        <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
-          <thead>
-            <tr style={{ background:"#f9fafb", borderBottom:"1px solid #e5e7eb" }}>
-              {["請求番号","荷主","対象月","請求金額","状態","支払期限","操作"].map(h=>(
-                <th key={h} style={{ padding:"9px 16px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:12 }}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {list.map((inv,i)=>(
-              <tr key={i} style={{ borderBottom:"1px solid #f1f3f5" }}
-                onMouseEnter={e=>e.currentTarget.style.background="#f9fafb"}
-                onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
-                <td style={{ padding:"12px 16px", fontWeight:600, color:accent, fontSize:12 }}>{inv.id}</td>
-                <td style={{ padding:"12px 16px", fontWeight:500 }}>{inv.client}</td>
-                <td style={{ padding:"12px 16px", color:"#6b7280" }}>{inv.period}</td>
-                <td style={{ padding:"12px 16px", fontWeight:700 }}>{fmt(inv.amount)}</td>
-                <td style={{ padding:"12px 16px" }}><StatusBadge label={inv.status}/></td>
-                <td style={{ padding:"12px 16px", color: inv.status==="遅延"?"#dc2626":"#374151", fontWeight: inv.status==="遅延"?600:400 }}>{inv.due}</td>
-                <td style={{ padding:"12px 16px" }}>
-                  <div style={{ display:"flex", gap:6 }}>
-                    {inv.status==="未請求" && <button style={{ padding:"4px 10px", border:`1px solid ${accent}`, borderRadius:4, background:accent, color:"#fff", fontSize:11, fontWeight:600 }}>請求書発行</button>}
-                    {inv.status==="遅延"   && <button style={{ padding:"4px 10px", border:"1px solid #dc2626", borderRadius:4, background:"#fff", color:"#dc2626", fontSize:11, fontWeight:600 }}>督促</button>}
-                    <button style={{ padding:"4px 10px", border:"1px solid #e5e7eb", borderRadius:4, background:"#fff", color:"#6b7280", fontSize:11 }}>詳細</button>
-                  </div>
-                </td>
+
+      <div style={{ display:"grid", gridTemplateColumns:sel?"1fr 340px":"1fr", gap:16, alignItems:"start" }}>
+        <Card>
+          <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
+            <thead>
+              <tr style={{ background:"#f9fafb", borderBottom:"1px solid #e5e7eb" }}>
+                {["請求番号","荷主","対象月","請求金額","状態","支払期限","操作"].map(h=>(
+                  <th key={h} style={{ padding:"9px 16px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:12, whiteSpace:"nowrap" }}>{h}</th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </Card>
+            </thead>
+            <tbody>
+              {list.map((inv,i)=>(
+                <tr key={i} onClick={()=>setSel(sel?.id===inv.id?null:inv)}
+                  style={{ borderBottom:"1px solid #f1f3f5", cursor:"pointer", background:sel?.id===inv.id?"#f0f9ff":"transparent", transition:"background .1s" }}
+                  onMouseEnter={e=>{ if(sel?.id!==inv.id) e.currentTarget.style.background="#f9fafb"; }}
+                  onMouseLeave={e=>{ if(sel?.id!==inv.id) e.currentTarget.style.background="transparent"; }}>
+                  <td style={{ padding:"12px 16px", fontWeight:600, color:accent, fontSize:12 }}>{inv.id}</td>
+                  <td style={{ padding:"12px 16px", fontWeight:500 }}>{inv.client}</td>
+                  <td style={{ padding:"12px 16px", color:"#6b7280" }}>{inv.period}</td>
+                  <td style={{ padding:"12px 16px", fontWeight:700 }}>{fmt(inv.amount)}</td>
+                  <td style={{ padding:"12px 16px" }}>
+                    <StatusBadge label={issuedSet.has(inv.id)?"請求済":inv.status}/>
+                  </td>
+                  <td style={{ padding:"12px 16px", color:inv.status==="遅延"?"#dc2626":"#374151", fontWeight:inv.status==="遅延"?600:400 }}>{inv.due}</td>
+                  <td style={{ padding:"12px 16px" }}>
+                    <div style={{ display:"flex", gap:6 }} onClick={e=>e.stopPropagation()}>
+                      {inv.status==="未請求" && !issuedSet.has(inv.id) && (
+                        <button onClick={()=>setIssuedSet(s=>new Set([...s,inv.id]))}
+                          style={{ padding:"4px 10px", border:`1px solid ${accent}`, borderRadius:4, background:accent, color:"#fff", fontSize:11, fontWeight:600, cursor:"pointer" }}>発行</button>
+                      )}
+                      {issuedSet.has(inv.id) && <span style={{ fontSize:11, color:"#16a34a", fontWeight:600 }}>発行済</span>}
+                      {inv.status==="遅延" && !remindedSet.has(inv.id) && (
+                        <button onClick={()=>setRemindedSet(s=>new Set([...s,inv.id]))}
+                          style={{ padding:"4px 10px", border:"1px solid #dc2626", borderRadius:4, background:"#fff", color:"#dc2626", fontSize:11, fontWeight:600, cursor:"pointer" }}>督促</button>
+                      )}
+                      {remindedSet.has(inv.id) && <span style={{ fontSize:11, color:"#dc2626", fontWeight:600 }}>督促送信済</span>}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Card>
+
+        {sel && (
+          <Card style={{ padding:20 }}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:16 }}>
+              <div>
+                <div style={{ fontSize:11, color:"#9ca3af", marginBottom:3 }}>{sel.id}</div>
+                <div style={{ fontSize:16, fontWeight:700 }}>{sel.client}</div>
+                <div style={{ fontSize:12, color:"#6b7280", marginTop:2 }}>{sel.period} 分</div>
+              </div>
+              <button onClick={()=>setSel(null)} style={{ background:"none", border:"none", fontSize:18, color:"#9ca3af", cursor:"pointer", lineHeight:1 }}>×</button>
+            </div>
+
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8, marginBottom:16 }}>
+              {[
+                { l:"請求金額", v:fmt(sel.amount), c:accent },
+                { l:"状態", v:<StatusBadge label={issuedSet.has(sel.id)?"請求済":sel.status}/>, c:null },
+                { l:"支払期限", v:sel.due, c:sel.status==="遅延"?"#dc2626":"#374151" },
+                { l:"発行日", v:sel.issued||"—", c:"#374151" },
+              ].map(({ l,v,c })=>(
+                <div key={l} style={{ background:"#f8fafc", borderRadius:6, padding:"10px 12px" }}>
+                  <div style={{ fontSize:11, color:"#9ca3af", marginBottom:4 }}>{l}</div>
+                  <div style={{ fontSize:13, fontWeight:600, color:c||"#111827" }}>{v}</div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ fontSize:12, fontWeight:700, color:"#9ca3af", marginBottom:10 }}>請求明細（概算）</div>
+            <table style={{ width:"100%", borderCollapse:"collapse", fontSize:12, marginBottom:14 }}>
+              <thead>
+                <tr style={{ background:"#f9fafb" }}>
+                  {["区分","数量","単価","小計"].map(h=>(
+                    <th key={h} style={{ padding:"6px 10px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:11, borderBottom:"1px solid #e5e7eb" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {buildLineItems(sel).map((item,ii)=>(
+                  <tr key={ii} style={{ borderBottom:"1px solid #f8f9fa" }}>
+                    <td style={{ padding:"7px 10px", fontWeight:500 }}>{item.label}</td>
+                    <td style={{ padding:"7px 10px", color:"#6b7280" }}>{typeof item.qty==="number"?item.qty.toLocaleString():item.qty}{item.unit}</td>
+                    <td style={{ padding:"7px 10px", color:"#6b7280" }}>{item.unitPrice>0?fmt(item.unitPrice):"—"}</td>
+                    <td style={{ padding:"7px 10px", fontWeight:600 }}>{typeof item.amount==="number"?fmt(item.amount):"—"}</td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot>
+                <tr style={{ borderTop:"2px solid #e5e7eb", background:"#f9fafb" }}>
+                  <td colSpan={3} style={{ padding:"8px 10px", fontWeight:700 }}>合計</td>
+                  <td style={{ padding:"8px 10px", fontWeight:700, color:accent }}>{fmt(sel.amount)}</td>
+                </tr>
+              </tfoot>
+            </table>
+
+            <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+              {sel.status==="未請求" && !issuedSet.has(sel.id) && (
+                <button onClick={()=>setIssuedSet(s=>new Set([...s,sel.id]))}
+                  style={{ padding:"10px", background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:600, fontSize:13, cursor:"pointer" }}>
+                  請求書を発行する
+                </button>
+              )}
+              {sel.status==="遅延" && !remindedSet.has(sel.id) && (
+                <button onClick={()=>setRemindedSet(s=>new Set([...s,sel.id]))}
+                  style={{ padding:"10px", background:"#fee2e2", color:"#dc2626", border:"1.5px solid #dc2626", borderRadius:6, fontWeight:600, fontSize:13, cursor:"pointer" }}>
+                  督促メールを送付
+                </button>
+              )}
+              <button style={{ padding:"10px", background:"#fff", color:"#374151", border:"1.5px solid #e5e7eb", borderRadius:6, fontWeight:600, fontSize:13, cursor:"pointer" }}>
+                PDFで印刷
+              </button>
+            </div>
+          </Card>
+        )}
+      </div>
     </div>
   );
 };
