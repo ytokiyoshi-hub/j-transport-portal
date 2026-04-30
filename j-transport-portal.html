@@ -1064,6 +1064,7 @@ const RateMasterPage = ({ accent, setPage }) => {
 // ── ドライバー別収支 ───────────────────────────────────────────────────────
 const DriverFinancePage = ({ accent }) => {
   const [sel, setSel] = React.useState(null);
+  const [slipDriver, setSlipDriver] = React.useState(null);
 
   // ドライバー別に荷主から収支計算
   const driverSummary = drivers.map(d => {
@@ -1167,12 +1168,91 @@ const DriverFinancePage = ({ accent }) => {
             </div>
 
             <div style={{ marginTop:14, display:"flex", gap:8 }}>
-              <button style={{ flex:1, padding:"9px", background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:600, fontSize:13 }}>支払明細を発行</button>
-              <button style={{ flex:1, padding:"9px", border:"1px solid #e5e7eb", background:"#fff", color:"#374151", borderRadius:6, fontSize:13 }}>CSV出力</button>
+              <button onClick={()=>setSlipDriver(sel)}
+                style={{ flex:1, padding:"9px", background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:600, fontSize:13, cursor:"pointer" }}>支払明細を発行</button>
+              <button onClick={()=>{
+                  const csv = ["荷主,売上按分,支払按分,粗利", ...sel.breakdown.map(b=>`${b.client},${b.sell},${b.pay},${b.profit}`)].join("\n");
+                  const a = document.createElement("a"); a.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv); a.download = `${sel.name}_2025-04.csv`; a.click();
+                }}
+                style={{ flex:1, padding:"9px", border:"1px solid #e5e7eb", background:"#fff", color:"#374151", borderRadius:6, fontSize:13, cursor:"pointer" }}>CSV出力</button>
             </div>
           </Card>
         )}
       </div>
+
+      {/* 支払明細モーダル */}
+      {slipDriver && (
+        <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,.45)", zIndex:9999, display:"flex", alignItems:"center", justifyContent:"center" }}
+          onClick={()=>setSlipDriver(null)}>
+          <div style={{ background:"#fff", borderRadius:10, width:520, maxHeight:"80vh", overflowY:"auto", padding:36 }} onClick={e=>e.stopPropagation()}>
+            {/* 会社ロゴエリア */}
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:28, borderBottom:"2px solid #111827", paddingBottom:16 }}>
+              <div>
+                <div style={{ fontWeight:800, fontSize:18, color:"#111827" }}>J transport</div>
+                <div style={{ fontSize:11, color:"#6b7280", marginTop:2 }}>〒XXX-XXXX 東京都○○区○○</div>
+              </div>
+              <div style={{ textAlign:"right" }}>
+                <div style={{ fontSize:20, fontWeight:700, color:"#111827" }}>支払明細書</div>
+                <div style={{ fontSize:12, color:"#6b7280", marginTop:2 }}>2025年4月分</div>
+              </div>
+            </div>
+
+            {/* 宛名 */}
+            <div style={{ marginBottom:24 }}>
+              <div style={{ fontSize:16, fontWeight:700, borderBottom:"1px solid #e5e7eb", paddingBottom:8, display:"flex", alignItems:"center", gap:10 }}>
+                <Avatar name={slipDriver.name} size={32} bg={slipDriver.type==="自社"?"#dbeafe":"#ede9fe"} color={slipDriver.type==="自社"?"#1e40af":"#5b21b6"}/>
+                <span>{slipDriver.name} 様</span>
+                <StatusBadge label={slipDriver.type}/>
+              </div>
+            </div>
+
+            {/* 明細テーブル */}
+            <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13, marginBottom:20 }}>
+              <thead>
+                <tr style={{ background:"#f9fafb" }}>
+                  {["業務内容（荷主）","売上按分","支払金額","粗利貢献"].map(h=>(
+                    <th key={h} style={{ padding:"8px 12px", textAlign:"left", borderBottom:"1px solid #e5e7eb", fontWeight:600, fontSize:12, color:"#374151" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {slipDriver.breakdown.map((b,i)=>(
+                  <tr key={i} style={{ borderBottom:"1px solid #f1f3f5" }}>
+                    <td style={{ padding:"10px 12px", fontWeight:500 }}>{b.client}</td>
+                    <td style={{ padding:"10px 12px", color:"#6b7280" }}>{fmt(b.sell)}</td>
+                    <td style={{ padding:"10px 12px", fontWeight:700, color:accent }}>{fmt(b.pay)}</td>
+                    <td style={{ padding:"10px 12px", color:"#16a34a" }}>{fmt(b.profit)}</td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot>
+                <tr style={{ background:"#f9fafb", borderTop:"2px solid #e5e7eb" }}>
+                  <td style={{ padding:"12px", fontWeight:700 }}>合計</td>
+                  <td style={{ padding:"12px", color:"#6b7280", fontWeight:600 }}>{fmt(slipDriver.totalSell)}</td>
+                  <td style={{ padding:"12px", fontWeight:800, color:accent, fontSize:16 }}>{fmt(slipDriver.totalPay)}</td>
+                  <td style={{ padding:"12px", fontWeight:700, color:"#16a34a" }}>{fmt(slipDriver.totalProfit)}</td>
+                </tr>
+              </tfoot>
+            </table>
+
+            {/* 支払情報 */}
+            <div style={{ background:"#f0f9ff", border:`1px solid ${accent}30`, borderRadius:8, padding:"14px 16px", marginBottom:20 }}>
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                <span style={{ fontSize:13, fontWeight:600 }}>お支払金額</span>
+                <span style={{ fontSize:24, fontWeight:800, color:accent }}>{fmt(slipDriver.totalPay)}</span>
+              </div>
+              <div style={{ fontSize:12, color:"#6b7280", marginTop:6 }}>支払日：2025年5月15日（木）/ 銀行振込</div>
+            </div>
+
+            <div style={{ display:"flex", gap:10 }}>
+              <button onClick={()=>setSlipDriver(null)}
+                style={{ flex:1, padding:"11px", background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:600, fontSize:13, cursor:"pointer" }}>印刷 / PDF保存</button>
+              <button onClick={()=>setSlipDriver(null)}
+                style={{ flex:1, padding:"11px", border:"1.5px solid #e5e7eb", background:"#fff", color:"#374151", borderRadius:6, fontSize:13, cursor:"pointer" }}>閉じる</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -1714,7 +1794,17 @@ const DailyInputPage = ({ accent }) => {
             }
           </button>
 
-          <button style={{ width:"100%", padding:"10px", border:"1.5px solid #e5e7eb", background:"#fff", color:"#374151", borderRadius:8, fontWeight:600, fontSize:13 }}>
+          <button onClick={()=>{
+              const header = ["日付","荷主","ドライバー",...selClient.rates.map(r=>r.label),"売上","支払","粗利"];
+              const rows = assignedDrivers.map(d=>{
+                const rowSell = selClient.rates.reduce((s,r)=>s+(Number(entries[d.id]?.[r.label])||0)*r.sell,0);
+                const rowPay  = selClient.rates.reduce((s,r)=>s+(Number(entries[d.id]?.[r.label])||0)*r.pay,0);
+                return [date, selClient.name, d.name, ...selClient.rates.map(r=>entries[d.id]?.[r.label]||0), rowSell, rowPay, rowSell-rowPay];
+              });
+              const csv = [header,...rows].map(r=>r.join(",")).join("\n");
+              const a = document.createElement("a"); a.href = "data:text/csv;charset=utf-8,﻿"+encodeURIComponent(csv); a.download = `実績_${selClient.name}_${date}.csv`; a.click();
+            }}
+            style={{ width:"100%", padding:"10px", border:"1.5px solid #e5e7eb", background:"#fff", color:"#374151", borderRadius:8, fontWeight:600, fontSize:13, cursor:"pointer" }}>
             CSVエクスポート
           </button>
 
