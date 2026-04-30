@@ -697,13 +697,20 @@ const invoices = [
 ];
 
 const announces = [
-  { id:1, title:"【重要】ASKUL 5月度単価改定（配完+5円→160円）",              date:"04/29", cat:"重要", unread:true },
-  { id:2, title:"4月度請求書 発行期限は5月2日（金）です",                       date:"04/28", cat:"請求", unread:true },
-  { id:3, title:"GW期間中の配送体制について（5/3〜5/6）",                        date:"04/26", cat:"運行", unread:true },
-  { id:4, title:"タイヤ配送 3月分入金が遅延しています",                          date:"04/25", cat:"重要", unread:true },
-  { id:5, title:"ドライバー支払日：4月25日（金）確認依頼",                       date:"04/22", cat:"支払", unread:false },
-  { id:6, title:"軽貨物運送 適正取引ガイドライン改訂（令和6年度版）",            date:"04/15", cat:"規程", unread:false },
-  { id:7, name:"新規協力会社ドライバー募集（神奈川・埼玉エリア）",               date:"04/10", cat:"人事", unread:false },
+  { id:1, title:"【重要】ASKUL 5月度単価改定（配完+5円→160円）", date:"04/29", cat:"重要", unread:true,
+    body:"ASKULロジスティクスより通知がありました。2025年5月度より配完単価が現行150円から160円へ改定されます。\n\n【変更内容】\n・配完単価：¥155 → ¥160（+¥5）\n・持戻・再配単価：変更なし\n・適用開始：2025年5月1日（木）配送分より\n\n単価マスタの更新を5月1日までに完了させてください。ご不明点は管理部（内線102）まで。" },
+  { id:2, title:"4月度請求書 発行期限は5月2日（金）です", date:"04/28", cat:"請求", unread:true,
+    body:"4月度分の請求書発行期限が迫っています。\n\n【発行対象荷主（翌月末締め）】\nBloomee、サーガ、ファミリーマート、日本トムソン、旭食品、タイヤ配送\n\n【発行期限】2025年5月2日（金）17:00まで\n\n「請求管理」ページから対象荷主を選択し「請求書発行」ボタンで発行できます。発行後は請求先へのメール送付もお忘れなく。" },
+  { id:3, title:"GW期間中の配送体制について（5/3〜5/6）", date:"04/26", cat:"運行", unread:true,
+    body:"ゴールデンウィーク期間中の配送体制をお知らせします。\n\n【休配日】2025年5月3日（土）〜5月6日（火）\n【通常運行再開】2025年5月7日（水）\n\n各荷主への事前連絡は完了済みです。ただしファミリーマートは5/3〜5/5の夜間便のみ継続運行となります（担当：吉田ドライバー）。\n\n緊急連絡先：運行管理（内線301）" },
+  { id:4, title:"タイヤ配送 3月分入金が遅延しています", date:"04/25", cat:"重要", unread:true,
+    body:"タイヤ配送3月分の請求（INV-2503-05、¥398,500）について、支払期限2025年4月30日を過ぎても入金が確認できていません。\n\n【対応状況】\n・4/22 第1回督促メール送付済み\n・4/25 電話確認→「5月初旬に対応予定」との回答あり\n\n引き続き管理部で対応中です。5月7日までに入金がない場合は契約内容に基づく遅延損害金の請求を検討します。" },
+  { id:5, title:"ドライバー支払日：4月25日（金）確認依頼", date:"04/22", cat:"支払", unread:false,
+    body:"4月度ドライバー支払を4月25日（金）に実施します。\n\n各ドライバーの支払金額は「ドライバー別収支」ページで確認できます。振込前に以下をご確認ください。\n\n【確認事項】\n1. 支払按分金額に誤りがないか\n2. 協力会社ドライバーの請求書受領済みか\n3. 銀行口座情報に変更がないか\n\nご不明点は管理部（内線102）まで連絡ください。" },
+  { id:6, title:"軽貨物運送 適正取引ガイドライン改訂（令和6年度版）", date:"04/15", cat:"規程", unread:false,
+    body:"国土交通省より「軽貨物運送における適正取引ガイドライン（令和6年度改訂版）」が公表されました。\n\n【主な改訂ポイント】\n・委託単価の書面明示が義務化（2024年11月施行済み）\n・燃料費サーチャージの取扱い明確化\n・業務委託契約の更新手続き簡素化\n\n「業務マニュアル」→「法令・契約」カテゴリに改訂版チェックリストを掲載しました。全ドライバーとの契約書を今年度中に確認してください。" },
+  { id:7, title:"新規協力会社ドライバー募集（神奈川・埼玉エリア）", date:"04/10", cat:"人事", unread:false,
+    body:"業務拡大に伴い、協力会社ドライバーを募集します。\n\n【募集エリア】神奈川県北部・埼玉県南部\n【対象荷主】サーガ、カウネット・NBC\n【条件】軽貨物運送業届出済み、普通自動車免許（AT可）\n\n心当たりの方は運行管理（内線301）までご連絡ください。紹介料として謝礼をお支払いします。\n\n採用が決定した場合、単価マスタへの登録は管理部が行います。" },
 ];
 
 // ── Shared UI ──────────────────────────────────────────────────────────────
@@ -1791,33 +1798,95 @@ const Dashboard = ({ accent, setPage }) => {
 const AnnouncePage = ({ accent }) => {
   const [filter, setFilter] = React.useState("すべて");
   const [readIds, setReadIds] = React.useState(announces.filter(a=>!a.unread).map(a=>a.id));
+  const [openId, setOpenId] = React.useState(null);
+  const [showForm, setShowForm] = React.useState(false);
+  const [newPost, setNewPost] = React.useState({ title:"", cat:"運行", body:"" });
+  const [extraPosts, setExtraPosts] = React.useState([]);
   const cats = ["すべて","重要","請求","運行","支払","人事","規程"];
-  const list = filter==="すべて"?announces:announces.filter(a=>a.cat===filter);
+  const allAnnounces = [...announces, ...extraPosts];
+  const list = filter==="すべて" ? allAnnounces : allAnnounces.filter(a=>a.cat===filter);
+  const unreadCount = allAnnounces.filter(a=>!readIds.includes(a.id)).length;
+
+  const toggleOpen = (id) => {
+    setOpenId(openId===id ? null : id);
+    setReadIds(p => p.includes(id) ? p : [...p, id]);
+  };
+
+  const submitPost = () => {
+    if (!newPost.title.trim()) return;
+    const now = new Date();
+    const mm = String(now.getMonth()+1).padStart(2,"0");
+    const dd = String(now.getDate()).padStart(2,"0");
+    setExtraPosts(p=>[{ id: Date.now(), title:newPost.title, cat:newPost.cat, body:newPost.body, date:`${mm}/${dd}`, unread:false }, ...p]);
+    setNewPost({ title:"", cat:"運行", body:"" });
+    setShowForm(false);
+  };
+
   return (
     <div>
-      <div style={{ fontSize:20, fontWeight:700, marginBottom:20 }}>お知らせ</div>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
+        <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+          <div style={{ fontSize:20, fontWeight:700 }}>お知らせ</div>
+          {unreadCount>0 && <span style={{ background:"#dc2626", color:"#fff", borderRadius:99, fontSize:11, padding:"2px 8px", fontWeight:700 }}>未読 {unreadCount}</span>}
+        </div>
+        <button onClick={()=>setShowForm(!showForm)}
+          style={{ padding:"7px 16px", background:showForm?"#f3f4f6":accent, color:showForm?"#374151":"#fff", border:"none", borderRadius:6, fontSize:13, fontWeight:600, display:"flex", alignItems:"center", gap:6 }}>
+          <Ic name="plus" size={13} color={showForm?"#374151":"#fff"}/>{showForm?"キャンセル":"新規投稿"}
+        </button>
+      </div>
+
+      {showForm && (
+        <Card style={{ padding:20, marginBottom:20, border:`1.5px solid ${accent}30` }}>
+          <div style={{ fontSize:13, fontWeight:700, marginBottom:14 }}>新規お知らせ投稿</div>
+          <div style={{ display:"grid", gridTemplateColumns:"1fr auto", gap:12, marginBottom:12 }}>
+            <input value={newPost.title} onChange={e=>setNewPost(p=>({...p,title:e.target.value}))} placeholder="タイトル"
+              style={{ padding:"8px 12px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
+            <select value={newPost.cat} onChange={e=>setNewPost(p=>({...p,cat:e.target.value}))}
+              style={{ padding:"8px 12px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none", background:"#fff" }}>
+              {["重要","請求","運行","支払","人事","規程"].map(c=><option key={c}>{c}</option>)}
+            </select>
+          </div>
+          <textarea value={newPost.body} onChange={e=>setNewPost(p=>({...p,body:e.target.value}))} placeholder="本文（任意）"
+            style={{ width:"100%", padding:"8px 12px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, fontFamily:"inherit", resize:"vertical", minHeight:80, outline:"none", marginBottom:12 }}/>
+          <button onClick={submitPost}
+            style={{ padding:"8px 20px", background:accent, color:"#fff", border:"none", borderRadius:6, fontSize:13, fontWeight:600 }}>投稿する</button>
+        </Card>
+      )}
+
       <div style={{ display:"flex", gap:6, marginBottom:18 }}>
         {cats.map(c=>(
-          <button key={c} onClick={()=>setFilter(c)} style={{ padding:"5px 14px", borderRadius:4, border:`1.5px solid ${filter===c?accent:"#e5e7eb"}`, background:filter===c?accent:"#fff", color:filter===c?"#fff":"#374151", fontSize:13, fontWeight:filter===c?600:400 }}>{c}</button>
+          <button key={c} onClick={()=>setFilter(c)}
+            style={{ padding:"5px 14px", borderRadius:4, border:`1.5px solid ${filter===c?accent:"#e5e7eb"}`, background:filter===c?accent:"#fff", color:filter===c?"#fff":"#374151", fontSize:13, fontWeight:filter===c?600:400 }}>{c}</button>
         ))}
       </div>
+
       <Card>
         {list.map((a,i)=>{
-          const isRead=readIds.includes(a.id);
+          const isRead = readIds.includes(a.id);
+          const isOpen = openId === a.id;
           return (
-            <div key={a.id} onClick={()=>setReadIds(p=>[...p,a.id])}
-              style={{ display:"flex", gap:14, padding:"16px 20px", borderBottom:i<list.length-1?"1px solid #f1f3f5":"none", cursor:"pointer", borderLeft:isRead?"3px solid transparent":`3px solid ${accent}` }}
-              onMouseEnter={e=>e.currentTarget.style.background="#f9fafb"}
-              onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
-              <div style={{ flex:1 }}>
-                <div style={{ display:"flex", gap:8, marginBottom:5 }}>
-                  <StatusBadge label={a.cat}/>
-                  {!isRead && <span style={{ fontSize:11, background:accent, color:"#fff", padding:"1px 7px", borderRadius:3, fontWeight:600 }}>未読</span>}
+            <div key={a.id} style={{ borderBottom:i<list.length-1?"1px solid #f1f3f5":"none" }}>
+              <div onClick={()=>toggleOpen(a.id)}
+                style={{ display:"flex", gap:14, padding:"16px 20px", cursor:"pointer", borderLeft:isRead?"3px solid transparent":`3px solid ${accent}`, background:isOpen?accent+"07":"transparent", transition:"background .1s" }}
+                onMouseEnter={e=>{ if(!isOpen) e.currentTarget.style.background="#f9fafb"; }}
+                onMouseLeave={e=>{ if(!isOpen) e.currentTarget.style.background="transparent"; }}>
+                <div style={{ flex:1 }}>
+                  <div style={{ display:"flex", gap:8, marginBottom:5, alignItems:"center" }}>
+                    <StatusBadge label={a.cat}/>
+                    {!isRead && <span style={{ fontSize:11, background:accent, color:"#fff", padding:"1px 7px", borderRadius:3, fontWeight:600 }}>未読</span>}
+                  </div>
+                  <div style={{ fontSize:14, fontWeight:isRead?500:700, color:isRead?"#374151":"#111827" }}>{a.title}</div>
+                  <div style={{ fontSize:11.5, color:"#9ca3af", marginTop:4 }}>{a.date}</div>
                 </div>
-                <div style={{ fontSize:14, fontWeight:isRead?400:600, color:isRead?"#6b7280":"#111827" }}>{a.title}</div>
-                <div style={{ fontSize:11.5, color:"#9ca3af", marginTop:4 }}>{a.date}</div>
+                <div style={{ transform:isOpen?"rotate(90deg)":"none", transition:"transform .2s", alignSelf:"center" }}>
+                  <Ic name="chevronR" size={14} color="#d1d5db"/>
+                </div>
               </div>
-              <Ic name="chevronR" size={14} color="#d1d5db"/>
+              {isOpen && a.body && (
+                <div style={{ padding:"12px 20px 20px 23px", background:"#fafbfc", borderTop:"1px solid #f1f3f5" }}>
+                  <div style={{ fontSize:13.5, color:"#374151", lineHeight:1.9, whiteSpace:"pre-wrap" }}>{a.body}</div>
+                </div>
+              )}
             </div>
           );
         })}
@@ -1965,35 +2034,198 @@ const DriversPage = ({ accent, setPage }) => {
   );
 };
 
-const SafetyPage = ({ accent }) => (
-  <div>
-    <div style={{ fontSize:20, fontWeight:700, marginBottom:20 }}>安全管理</div>
-    <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:14, marginBottom:20 }}>
-      {[["連続無事故日数","45日","今年度目標: 365日",accent],["アルコール検査","100%","本日 全員実施済","#16a34a"],["今月ヒヤリハット","1件","前月比 −1件","#d97706"]].map(([l,v,sub,c])=>(
-        <Card key={l} style={{ padding:"20px 24px" }}>
-          <div style={{ fontSize:28, fontWeight:700, color:c }}>{v}</div>
-          <div style={{ fontSize:13, fontWeight:600, marginTop:4 }}>{l}</div>
-          <div style={{ fontSize:11, color:"#9ca3af", marginTop:2 }}>{sub}</div>
+const SafetyPage = ({ accent }) => {
+  const [showIncidentForm, setShowIncidentForm] = React.useState(false);
+  const [incident, setIncident] = React.useState({ date:"2025-04-30", driver:"", type:"ヒヤリハット", detail:"", location:"" });
+  const [incidents, setIncidents] = React.useState([
+    { id:1, date:"2025-04-18", driver:"田中 一郎", type:"ヒヤリハット", detail:"交差点で急ブレーキ。前方車両の急停車に気づくのが遅れた。", location:"東京都北区 赤羽交差点付近", resolved:true },
+    { id:2, date:"2025-03-27", driver:"渡辺 六郎", type:"軽微な接触", detail:"バック時に駐車場のポールに軽く接触。車両損傷なし。", location:"川崎市 駐車場", resolved:true },
+    { id:3, date:"2025-03-10", driver:"佐藤 次郎", type:"ヒヤリハット", detail:"雨天時にスリップしそうになった。速度を落とし回避。", location:"横浜市 国道1号", resolved:true },
+  ]);
+  const [submittedIncident, setSubmittedIncident] = React.useState(false);
+
+  const educationData = [
+    { name:"田中 一郎",  done:5, total:6 },
+    { name:"佐藤 次郎",  done:6, total:6 },
+    { name:"鈴木 三郎",  done:4, total:6 },
+    { name:"高橋 四郎",  done:6, total:6 },
+    { name:"伊藤 五郎",  done:5, total:6 },
+    { name:"渡辺 六郎",  done:3, total:6 },
+    { name:"中村 七郎",  done:6, total:6 },
+    { name:"小林 八郎",  done:4, total:6 },
+    { name:"加藤 九郎",  done:5, total:6 },
+    { name:"吉田 十郎",  done:6, total:6 },
+  ];
+
+  const alcoholHistory = [
+    { date:"04/30（水）", results:"10/10名 異常なし" },
+    { date:"04/29（火）", results:"9/9名 異常なし（田中ドライバー休日）" },
+    { date:"04/28（月）", results:"10/10名 異常なし" },
+    { date:"04/25（金）", results:"10/10名 異常なし" },
+    { date:"04/24（木）", results:"10/10名 異常なし" },
+  ];
+
+  const submitIncident = () => {
+    if (!incident.driver || !incident.detail) return;
+    setIncidents(p=>[{ id:Date.now(), ...incident, resolved:false }, ...p]);
+    setSubmittedIncident(true);
+    setTimeout(()=>{ setSubmittedIncident(false); setShowIncidentForm(false); setIncident({ date:"2025-04-30", driver:"", type:"ヒヤリハット", detail:"", location:"" }); }, 2000);
+  };
+
+  return (
+    <div>
+      <div style={{ fontSize:20, fontWeight:700, marginBottom:20 }}>安全管理</div>
+
+      {/* KPIカード */}
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14, marginBottom:20 }}>
+        {[
+          { l:"連続無事故日数", v:"45日", sub:"今年度目標: 365日", c:accent, bar:45/365 },
+          { l:"アルコール検査",  v:"100%", sub:"本日 全員実施済",   c:"#16a34a", bar:1 },
+          { l:"今月ヒヤリハット",v:`${incidents.filter(i=>i.date.startsWith("2025-04")).length}件`, sub:"前月比 −1件", c:"#d97706", bar:null },
+          { l:"安全教育 修了率", v:`${Math.round(educationData.reduce((s,d)=>s+d.done,0)/educationData.reduce((s,d)=>s+d.total,0)*100)}%`, sub:`${educationData.filter(d=>d.done===d.total).length}/${educationData.length}名 完了`, c:"#7c3aed", bar:educationData.reduce((s,d)=>s+d.done,0)/educationData.reduce((s,d)=>s+d.total,0) },
+        ].map(({ l,v,sub,c,bar })=>(
+          <Card key={l} style={{ padding:"18px 20px" }}>
+            <div style={{ fontSize:26, fontWeight:700, color:c }}>{v}</div>
+            <div style={{ fontSize:12, fontWeight:600, marginTop:4 }}>{l}</div>
+            <div style={{ fontSize:11, color:"#9ca3af", marginTop:2 }}>{sub}</div>
+            {bar!==null && <div style={{ height:3, background:"#f1f3f5", borderRadius:2, marginTop:10 }}>
+              <div style={{ width:`${Math.min(bar*100,100)}%`, height:"100%", background:c, borderRadius:2 }}/>
+            </div>}
+          </Card>
+        ))}
+      </div>
+
+      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16, marginBottom:16 }}>
+        {/* ヒヤリハット記録 */}
+        <Card>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"14px 20px", borderBottom:"1px solid #f1f3f5" }}>
+            <span style={{ fontWeight:700, fontSize:14 }}>インシデント記録</span>
+            <button onClick={()=>setShowIncidentForm(!showIncidentForm)}
+              style={{ padding:"5px 12px", background:showIncidentForm?"#f3f4f6":accent, color:showIncidentForm?"#374151":"#fff", border:"none", borderRadius:5, fontSize:12, fontWeight:600 }}>
+              {showIncidentForm?"閉じる":"+ 報告する"}
+            </button>
+          </div>
+
+          {showIncidentForm && (
+            <div style={{ padding:"16px 20px", borderBottom:"1px solid #f1f3f5", background:"#fafbfc" }}>
+              {submittedIncident ? (
+                <div style={{ textAlign:"center", padding:"10px 0", color:"#16a34a", fontWeight:700 }}>
+                  <Ic name="check" size={16} color="#16a34a" strokeWidth={2.5}/> 報告を受け付けました
+                </div>
+              ) : (
+                <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+                  <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
+                    <div>
+                      <label style={{ fontSize:11, color:"#9ca3af", display:"block", marginBottom:3 }}>日付</label>
+                      <input type="date" value={incident.date} onChange={e=>setIncident(p=>({...p,date:e.target.value}))}
+                        style={{ width:"100%", padding:"6px 8px", border:"1.5px solid #e5e7eb", borderRadius:5, fontSize:12, fontFamily:"inherit", outline:"none" }}/>
+                    </div>
+                    <div>
+                      <label style={{ fontSize:11, color:"#9ca3af", display:"block", marginBottom:3 }}>種別</label>
+                      <select value={incident.type} onChange={e=>setIncident(p=>({...p,type:e.target.value}))}
+                        style={{ width:"100%", padding:"6px 8px", border:"1.5px solid #e5e7eb", borderRadius:5, fontSize:12, fontFamily:"inherit", outline:"none", background:"#fff" }}>
+                        {["ヒヤリハット","軽微な接触","物損事故","人身事故"].map(t=><option key={t}>{t}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label style={{ fontSize:11, color:"#9ca3af", display:"block", marginBottom:3 }}>ドライバー</label>
+                    <select value={incident.driver} onChange={e=>setIncident(p=>({...p,driver:e.target.value}))}
+                      style={{ width:"100%", padding:"6px 8px", border:"1.5px solid #e5e7eb", borderRadius:5, fontSize:12, fontFamily:"inherit", outline:"none", background:"#fff" }}>
+                      <option value="">選択してください</option>
+                      {drivers.map(d=><option key={d.id}>{d.name}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label style={{ fontSize:11, color:"#9ca3af", display:"block", marginBottom:3 }}>発生場所</label>
+                    <input value={incident.location} onChange={e=>setIncident(p=>({...p,location:e.target.value}))} placeholder="例：東京都板橋区 交差点付近"
+                      style={{ width:"100%", padding:"6px 8px", border:"1.5px solid #e5e7eb", borderRadius:5, fontSize:12, fontFamily:"inherit", outline:"none" }}/>
+                  </div>
+                  <div>
+                    <label style={{ fontSize:11, color:"#9ca3af", display:"block", marginBottom:3 }}>詳細</label>
+                    <textarea value={incident.detail} onChange={e=>setIncident(p=>({...p,detail:e.target.value}))} placeholder="状況・原因・対処を記入"
+                      style={{ width:"100%", padding:"6px 8px", border:"1.5px solid #e5e7eb", borderRadius:5, fontSize:12, fontFamily:"inherit", resize:"vertical", minHeight:60, outline:"none" }}/>
+                  </div>
+                  <button onClick={submitIncident}
+                    style={{ padding:"8px", background:accent, color:"#fff", border:"none", borderRadius:5, fontSize:13, fontWeight:600 }}>報告する</button>
+                </div>
+              )}
+            </div>
+          )}
+
+          <div style={{ padding:"0 0 4px" }}>
+            {incidents.map((inc,i)=>(
+              <div key={inc.id} style={{ padding:"12px 20px", borderBottom:"1px solid #f8f9fa" }}>
+                <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
+                  <div style={{ display:"flex", gap:6, alignItems:"center" }}>
+                    <span style={{ fontSize:11, padding:"1px 7px", borderRadius:3, fontWeight:600,
+                      background:inc.type==="ヒヤリハット"?"#fffbeb":inc.type==="軽微な接触"?"#fef3c7":"#fef2f2",
+                      color:inc.type==="ヒヤリハット"?"#d97706":inc.type==="軽微な接触"?"#92400e":"#dc2626" }}>{inc.type}</span>
+                    <span style={{ fontSize:12, fontWeight:600 }}>{inc.driver}</span>
+                  </div>
+                  <span style={{ fontSize:11, color:"#9ca3af" }}>{inc.date}</span>
+                </div>
+                <div style={{ fontSize:12, color:"#6b7280", lineHeight:1.6 }}>{inc.detail}</div>
+                {inc.location && <div style={{ fontSize:11, color:"#9ca3af", marginTop:2 }}>📍 {inc.location}</div>}
+              </div>
+            ))}
+          </div>
         </Card>
-      ))}
-    </div>
-    <Card style={{ padding:20 }}>
-      <div style={{ fontSize:14, fontWeight:700, marginBottom:16 }}>法令遵守チェック</div>
-      {[["軽貨物運送業 届出",true,"2026-09-30"],["ドライバー健康診断",true,"2026-10-31"],["フリーランス保護新法 対応",false,"2025-05-31"],["アルコール検査記録保存",true,"随時"]].map(([n,ok,dl],i)=>(
-        <div key={i} style={{ display:"flex", gap:10, alignItems:"center", marginBottom:14 }}>
-          <div style={{ width:20, height:20, borderRadius:"50%", background:ok?"#dcfce7":"#fee2e2", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-            <Ic name={ok?"check":"alert"} size={11} color={ok?"#16a34a":"#dc2626"} strokeWidth={2.5}/>
-          </div>
-          <div style={{ flex:1 }}>
-            <div style={{ fontSize:13, fontWeight:500 }}>{n}</div>
-            <div style={{ fontSize:11, color:"#9ca3af" }}>期限: {dl}</div>
-          </div>
-          {!ok && <span style={{ fontSize:11, background:"#fef2f2", color:"#dc2626", padding:"2px 7px", borderRadius:3, fontWeight:600 }}>要対応</span>}
+
+        {/* 右: 安全教育・アルコール */}
+        <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
+          {/* 安全教育進捗 */}
+          <Card style={{ padding:20 }}>
+            <div style={{ fontWeight:700, fontSize:14, marginBottom:14 }}>安全教育 受講進捗（今年度）</div>
+            <div style={{ fontSize:11, color:"#9ca3af", marginBottom:12 }}>全6科目 / 対象: 全ドライバー</div>
+            {educationData.map((d,i)=>(
+              <div key={i} style={{ marginBottom:10 }}>
+                <div style={{ display:"flex", justifyContent:"space-between", fontSize:12.5, marginBottom:4 }}>
+                  <span style={{ fontWeight:500 }}>{d.name}</span>
+                  <span style={{ fontWeight:700, color:d.done===d.total?"#16a34a":accent }}>{d.done}/{d.total}</span>
+                </div>
+                <div style={{ height:5, background:"#f1f3f5", borderRadius:3 }}>
+                  <div style={{ width:`${d.done/d.total*100}%`, height:"100%", background:d.done===d.total?"#16a34a":accent, borderRadius:3, transition:"width .3s" }}/>
+                </div>
+              </div>
+            ))}
+          </Card>
+
+          {/* アルコール検査履歴 */}
+          <Card style={{ padding:20 }}>
+            <div style={{ fontWeight:700, fontSize:14, marginBottom:14 }}>アルコール検査 記録</div>
+            {alcoholHistory.map((h,i)=>(
+              <div key={i} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", fontSize:13, padding:"8px 0", borderBottom:"1px solid #f8f9fa" }}>
+                <span style={{ color:"#6b7280", fontSize:12 }}>{h.date}</span>
+                <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+                  <div style={{ width:7, height:7, borderRadius:"50%", background:"#16a34a" }}/>
+                  <span style={{ fontSize:12.5 }}>{h.results}</span>
+                </div>
+              </div>
+            ))}
+          </Card>
+
+          {/* 法令遵守 */}
+          <Card style={{ padding:20 }}>
+            <div style={{ fontWeight:700, fontSize:14, marginBottom:14 }}>法令遵守チェック</div>
+            {[["軽貨物運送業 届出",true,"2026-09-30"],["ドライバー健康診断",true,"2026-10-31"],["フリーランス保護新法 対応",false,"2025-05-31"],["アルコール検査記録保存",true,"随時"]].map(([n,ok,dl],i)=>(
+              <div key={i} style={{ display:"flex", gap:10, alignItems:"center", marginBottom:i<3?12:0 }}>
+                <div style={{ width:20, height:20, borderRadius:"50%", background:ok?"#dcfce7":"#fee2e2", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                  <Ic name={ok?"check":"alert"} size={11} color={ok?"#16a34a":"#dc2626"} strokeWidth={2.5}/>
+                </div>
+                <div style={{ flex:1 }}>
+                  <div style={{ fontSize:13, fontWeight:500 }}>{n}</div>
+                  <div style={{ fontSize:11, color:"#9ca3af" }}>期限: {dl}</div>
+                </div>
+                {!ok && <span style={{ fontSize:11, background:"#fef2f2", color:"#dc2626", padding:"2px 7px", borderRadius:3, fontWeight:600 }}>要対応</span>}
+              </div>
+            ))}
+          </Card>
         </div>
-      ))}
-    </Card>
-  </div>
-);
+      </div>
+    </div>
+  );
+};
 
 const FAQPage = ({ accent }) => {
   const [open, setOpen] = React.useState(null);
@@ -2334,9 +2566,55 @@ const VehiclesPage = ({ accent }) => {
 
 const AttendancePage = ({ accent }) => {
   const [ci, setCi] = React.useState(true);
+  const [view, setView] = React.useState("calendar"); // "calendar" | "list"
+
+  const monthRecords = [
+    { d:1,  day:"火", in:"08:00", out:"19:30", work:"10:30", ot:"1:30",  st:"出勤" },
+    { d:2,  day:"水", in:"08:05", out:"20:00", work:"10:55", ot:"1:55",  st:"出勤" },
+    { d:3,  day:"木", in:"07:55", out:"19:45", work:"10:50", ot:"1:50",  st:"出勤" },
+    { d:4,  day:"金", in:"08:10", out:"19:00", work:"9:50",  ot:"0:50",  st:"出勤" },
+    { d:5,  day:"土", in:"—",     out:"—",     work:"—",     ot:"—",     st:"休日" },
+    { d:6,  day:"日", in:"—",     out:"—",     work:"—",     ot:"—",     st:"休日" },
+    { d:7,  day:"月", in:"08:00", out:"20:30", work:"11:30", ot:"2:30",  st:"出勤" },
+    { d:8,  day:"火", in:"08:10", out:"19:15", work:"10:05", ot:"1:05",  st:"出勤" },
+    { d:9,  day:"水", in:"07:50", out:"20:00", work:"11:10", ot:"2:10",  st:"出勤" },
+    { d:10, day:"木", in:"08:05", out:"19:45", work:"10:40", ot:"1:40",  st:"出勤" },
+    { d:11, day:"金", in:"—",     out:"—",     work:"—",     ot:"—",     st:"有給" },
+    { d:12, day:"土", in:"—",     out:"—",     work:"—",     ot:"—",     st:"休日" },
+    { d:13, day:"日", in:"—",     out:"—",     work:"—",     ot:"—",     st:"休日" },
+    { d:14, day:"月", in:"08:00", out:"20:00", work:"11:00", ot:"2:00",  st:"出勤" },
+    { d:15, day:"火", in:"08:10", out:"19:30", work:"10:20", ot:"1:20",  st:"出勤" },
+    { d:16, day:"水", in:"08:05", out:"20:15", work:"11:10", ot:"2:10",  st:"出勤" },
+    { d:17, day:"木", in:"07:55", out:"19:00", work:"10:05", ot:"1:05",  st:"出勤" },
+    { d:18, day:"金", in:"08:00", out:"19:45", work:"10:45", ot:"1:45",  st:"出勤" },
+    { d:19, day:"土", in:"—",     out:"—",     work:"—",     ot:"—",     st:"休日" },
+    { d:20, day:"日", in:"—",     out:"—",     work:"—",     ot:"—",     st:"休日" },
+    { d:21, day:"月", in:"08:00", out:"20:30", work:"11:30", ot:"2:30",  st:"出勤" },
+    { d:22, day:"火", in:"08:10", out:"19:15", work:"10:05", ot:"1:05",  st:"出勤" },
+    { d:23, day:"水", in:"07:55", out:"20:00", work:"11:05", ot:"2:05",  st:"出勤" },
+    { d:24, day:"木", in:"08:05", out:"19:45", work:"10:40", ot:"1:40",  st:"出勤" },
+    { d:25, day:"金", in:"08:10", out:"19:00", work:"9:50",  ot:"0:50",  st:"出勤" },
+    { d:26, day:"土", in:"—",     out:"—",     work:"—",     ot:"—",     st:"休日" },
+    { d:27, day:"日", in:"—",     out:"—",     work:"—",     ot:"—",     st:"休日" },
+    { d:28, day:"月", in:"07:55", out:"19:45", work:"10:50", ot:"1:50",  st:"出勤" },
+    { d:29, day:"火", in:"—",     out:"—",     work:"—",     ot:"—",     st:"休日" },
+    { d:30, day:"水", in:"08:00", out:"—",     work:"—",     ot:"—",     st:"出勤中" },
+  ];
+
+  const overtimeMin = monthRecords.filter(r=>r.ot!=="—").reduce((s,r)=>{
+    const [h,m]=r.ot.split(":").map(Number); return s+h*60+m;
+  },0);
+  const otH = Math.floor(overtimeMin/60), otM = overtimeMin%60;
+  const otLimit = 45*60;
+
+  const stColor = { "出勤":"#16a34a","出勤中":"#2563eb","有給":"#7c3aed","休日":"#d1d5db","—":"#f3f4f6" };
+  const stBg    = { "出勤":"#f0fdf4","出勤中":"#eff6ff","有給":"#f5f3ff","休日":"#f8fafc","—":"#fff" };
+
   return (
     <div>
       <div style={{ fontSize:20, fontWeight:700, marginBottom:20 }}>勤怠管理</div>
+
+      {/* 打刻 */}
       <Card style={{ padding:24, marginBottom:16 }}>
         <div style={{ display:"flex", alignItems:"center", gap:40, flexWrap:"wrap" }}>
           <div>
@@ -2344,42 +2622,108 @@ const AttendancePage = ({ accent }) => {
             <div style={{ fontSize:40, fontWeight:300, letterSpacing:3 }}>{new Date().toTimeString().slice(0,5)}</div>
           </div>
           <div style={{ display:"flex", gap:10 }}>
-            <button onClick={()=>setCi(true)} style={{ padding:"12px 24px", borderRadius:6, border:"none", background:ci?"#dbeafe":accent, color:ci?"#2563eb":"#fff", fontWeight:700, fontSize:14 }}>{ci?"出勤済　08:00":"出勤打刻"}</button>
-            <button onClick={()=>setCi(false)} style={{ padding:"12px 24px", borderRadius:6, border:"1.5px solid #e5e7eb", background:"#fff", color:"#374151", fontWeight:600, fontSize:14 }}>退勤打刻</button>
+            <button onClick={()=>setCi(true)}
+              style={{ padding:"12px 24px", borderRadius:6, border:"none", background:ci?"#dbeafe":accent, color:ci?"#2563eb":"#fff", fontWeight:700, fontSize:14 }}>
+              {ci ? "出勤済　08:00" : "出勤打刻"}
+            </button>
+            <button onClick={()=>setCi(false)}
+              style={{ padding:"12px 24px", borderRadius:6, border:"1.5px solid #e5e7eb", background:"#fff", color:"#374151", fontWeight:600, fontSize:14 }}>退勤打刻</button>
           </div>
           <div style={{ marginLeft:"auto", display:"flex", gap:32 }}>
-            {[["今月残業","28h 15m","#d97706"],["有給残日数","8日","#2563eb"]].map(([l,v,c])=>(
-              <div key={l} style={{ textAlign:"center" }}>
-                <div style={{ fontSize:24, fontWeight:700, color:c }}>{v}</div>
-                <div style={{ fontSize:11, color:"#9ca3af", marginTop:2 }}>{l}</div>
+            <div style={{ textAlign:"center" }}>
+              <div style={{ fontSize:22, fontWeight:700, color:"#d97706" }}>{otH}h {otM}m</div>
+              <div style={{ fontSize:11, color:"#9ca3af", marginTop:2 }}>今月残業</div>
+              <div style={{ width:80, height:4, background:"#f1f3f5", borderRadius:2, margin:"6px auto 0" }}>
+                <div style={{ width:`${Math.min(overtimeMin/otLimit*100,100)}%`, height:"100%", background:overtimeMin>otLimit*0.8?"#dc2626":"#d97706", borderRadius:2 }}/>
               </div>
-            ))}
+              <div style={{ fontSize:10, color:"#9ca3af", marginTop:2 }}>上限45h</div>
+            </div>
+            <div style={{ textAlign:"center" }}>
+              <div style={{ fontSize:22, fontWeight:700, color:"#2563eb" }}>8日</div>
+              <div style={{ fontSize:11, color:"#9ca3af", marginTop:2 }}>有給残日数</div>
+              <div style={{ display:"flex", gap:2, justifyContent:"center", marginTop:6 }}>
+                {Array.from({length:20}).map((_,i)=>(
+                  <div key={i} style={{ width:6, height:6, borderRadius:1, background:i<8?accent:"#e5e7eb" }}/>
+                ))}
+              </div>
+              <div style={{ fontSize:10, color:"#9ca3af", marginTop:2 }}>残8/付与20日</div>
+            </div>
+            <div style={{ textAlign:"center" }}>
+              <div style={{ fontSize:22, fontWeight:700, color:"#16a34a" }}>20日</div>
+              <div style={{ fontSize:11, color:"#9ca3af", marginTop:2 }}>今月出勤日数</div>
+              <div style={{ fontSize:10, color:"#9ca3af", marginTop:8 }}>有給1日 / 休日9日</div>
+            </div>
           </div>
         </div>
       </Card>
-      <Card>
-        <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
-          <thead><tr style={{ background:"#f9fafb", borderBottom:"1px solid #e5e7eb" }}>{["日付","出勤","退勤","実労働","状態"].map(h=><th key={h} style={{ padding:"10px 16px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:12 }}>{h}</th>)}</tr></thead>
-          <tbody>
-            {[
-              ["04/30（水）","08:00","—","—","出勤中"],
-              ["04/29（火）","08:05","20:30","11:25","出勤"],
-              ["04/28（月）","07:55","19:45","10:50","出勤"],
-              ["04/27（日）","—","—","—","休日"],
-              ["04/25（金）","08:10","19:00","9:50","出勤"],
-            ].map(([d,i,o,t,s],idx)=>{
-              const c={"出勤中":["#eff6ff","#2563eb"],"休日":["#f8fafc","#9ca3af"],"出勤":["#f0fdf4","#16a34a"]}[s]||["#f1f5f9","#475569"];
-              return <tr key={idx} style={{ borderBottom:"1px solid #f1f3f5", background:idx===0?"#fafbff":"transparent" }}>
-                <td style={{ padding:"12px 16px", fontWeight:500 }}>{d}</td>
-                <td style={{ padding:"12px 16px" }}>{i}</td>
-                <td style={{ padding:"12px 16px" }}>{o}</td>
-                <td style={{ padding:"12px 16px", fontWeight:600 }}>{t}</td>
-                <td style={{ padding:"12px 16px" }}><span style={{ padding:"2px 9px", borderRadius:4, fontSize:11.5, fontWeight:600, background:c[0], color:c[1] }}>{s}</span></td>
-              </tr>;
-            })}
-          </tbody>
-        </table>
-      </Card>
+
+      {/* カレンダー / リスト 切替 */}
+      <div style={{ display:"flex", justifyContent:"flex-end", gap:6, marginBottom:14 }}>
+        {["calendar","list"].map(v=>(
+          <button key={v} onClick={()=>setView(v)}
+            style={{ padding:"5px 14px", borderRadius:4, border:`1.5px solid ${view===v?accent:"#e5e7eb"}`, background:view===v?accent:"#fff", color:view===v?"#fff":"#374151", fontSize:13, fontWeight:view===v?600:400 }}>
+            {v==="calendar"?"カレンダー":"一覧"}
+          </button>
+        ))}
+      </div>
+
+      {view==="calendar" ? (
+        <Card style={{ padding:20 }}>
+          <div style={{ fontSize:13, fontWeight:700, marginBottom:16, color:"#374151" }}>2025年4月</div>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(7,1fr)", gap:4, marginBottom:8 }}>
+            {["月","火","水","木","金","土","日"].map(d=>(
+              <div key={d} style={{ textAlign:"center", fontSize:11, color: d==="土"?"#2563eb":d==="日"?"#dc2626":"#9ca3af", fontWeight:600, padding:"4px 0" }}>{d}</div>
+            ))}
+          </div>
+          {/* 4月1日は火曜（インデックス1）なのでMon=0からshift=1 */}
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(7,1fr)", gap:4 }}>
+            <div/>
+            {monthRecords.map(r=>(
+              <div key={r.d} style={{ aspectRatio:"1", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", borderRadius:6, background:stBg[r.st], border:`1px solid ${r.st==="出勤中"?accent+"60":"#e8eaed"}`, position:"relative" }}>
+                <div style={{ fontSize:12, fontWeight:r.d===30?800:500, color: r.day==="土"?"#2563eb":r.day==="日"?"#dc2626":"#374151" }}>{r.d}</div>
+                {r.st!=="休日" && r.st!=="—" && (
+                  <div style={{ width:8, height:8, borderRadius:"50%", background:stColor[r.st], marginTop:2 }}/>
+                )}
+                {r.st==="出勤中" && <div style={{ position:"absolute", top:2, right:2, width:5, height:5, borderRadius:"50%", background:accent, animation:"pulse 1.5s infinite" }}/>}
+              </div>
+            ))}
+          </div>
+          <div style={{ display:"flex", gap:16, marginTop:14, fontSize:11, color:"#6b7280" }}>
+            {[["出勤","#16a34a"],["出勤中","#2563eb"],["有給","#7c3aed"],["休日","#d1d5db"]].map(([l,c])=>(
+              <span key={l} style={{ display:"flex", alignItems:"center", gap:4 }}>
+                <span style={{ width:8, height:8, borderRadius:"50%", background:c, display:"inline-block" }}/>
+                {l}
+              </span>
+            ))}
+          </div>
+        </Card>
+      ) : (
+        <Card>
+          <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
+            <thead>
+              <tr style={{ background:"#f9fafb", borderBottom:"1px solid #e5e7eb" }}>
+                {["日付","出勤","退勤","実労働","残業","状態"].map(h=>(
+                  <th key={h} style={{ padding:"10px 16px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:12 }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {[...monthRecords].reverse().map((r,idx)=>(
+                <tr key={r.d} style={{ borderBottom:"1px solid #f1f3f5", background:r.d===30?accent+"08":"transparent" }}>
+                  <td style={{ padding:"10px 16px", fontWeight:500 }}>04/{String(r.d).padStart(2,"0")}（{r.day}）</td>
+                  <td style={{ padding:"10px 16px" }}>{r.in}</td>
+                  <td style={{ padding:"10px 16px" }}>{r.out}</td>
+                  <td style={{ padding:"10px 16px", fontWeight:500 }}>{r.work}</td>
+                  <td style={{ padding:"10px 16px", color:r.ot!=="—"&&r.ot>"2:00"?"#d97706":"#374151", fontWeight:r.ot!=="—"&&r.ot>"2:00"?600:400 }}>{r.ot!=="—"?r.ot:"—"}</td>
+                  <td style={{ padding:"10px 16px" }}>
+                    <span style={{ padding:"2px 9px", borderRadius:4, fontSize:11.5, fontWeight:600, background:stBg[r.st]||"#f1f5f9", color:stColor[r.st]||"#475569" }}>{r.st}</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Card>
+      )}
     </div>
   );
 };
