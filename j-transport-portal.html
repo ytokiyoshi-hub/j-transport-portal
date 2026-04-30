@@ -746,24 +746,30 @@ const SH = ({ title, action, onAction }) => (
 
 // ── 収支管理 ───────────────────────────────────────────────────────────────
 const PLPage = ({ accent }) => {
-  const [month, setMonth] = React.useState("2025-04");
+  const [period, setPeriod] = React.useState("year"); // "year" | "half"
   const margin = totalSell > 0 ? (totalProfit/totalSell*100).toFixed(1) : 0;
   const prevSell = 2780000, prevProfit = 768000;
 
-  const months = [
-    {v:"2025-04", l:"2025年4月"},
-    {v:"2025-03", l:"2025年3月"},
-    {v:"2025-02", l:"2025年2月"},
-    {v:"2025-01", l:"2025年1月"},
+  const allMonths = [
+    {m:"24/5",  sell:2180000, pay:1560000},
+    {m:"24/6",  sell:2240000, pay:1610000},
+    {m:"24/7",  sell:2390000, pay:1700000},
+    {m:"24/8",  sell:2310000, pay:1660000},
+    {m:"24/9",  sell:2280000, pay:1630000},
+    {m:"24/10", sell:2450000, pay:1750000},
+    {m:"24/11", sell:2520000, pay:1800000},
+    {m:"24/12", sell:2610000, pay:1870000},
+    {m:"25/1",  sell:2510000, pay:1780000},
+    {m:"25/2",  sell:2680000, pay:1890000},
+    {m:"25/3",  sell:2780000, pay:2012000},
+    {m:"25/4",  sell:totalSell, pay:totalPay, current:true},
   ];
-
-  const barData = [
-    {m:"1月", sell:2510000, pay:1780000},
-    {m:"2月", sell:2680000, pay:1890000},
-    {m:"3月", sell:2780000, pay:2012000},
-    {m:"4月", sell:totalSell, pay:totalPay},
-  ];
+  const barData = period==="half" ? allMonths.slice(6) : allMonths;
   const maxBar = Math.max(...barData.map(d=>d.sell));
+
+  const ytdSell   = allMonths.filter(d=>d.m.startsWith("25")).reduce((s,d)=>s+d.sell,0);
+  const ytdPay    = allMonths.filter(d=>d.m.startsWith("25")).reduce((s,d)=>s+d.pay,0);
+  const ytdProfit = ytdSell - ytdPay;
 
   return (
     <div>
@@ -772,19 +778,24 @@ const PLPage = ({ accent }) => {
           <div style={{ fontSize:20, fontWeight:700 }}>収支管理</div>
           <div style={{ fontSize:12, color:"#9ca3af", marginTop:2 }}>全荷主合算・速報値</div>
         </div>
-        <select value={month} onChange={e=>setMonth(e.target.value)}
-          style={{ padding:"7px 12px", borderRadius:6, border:"1.5px solid #e5e7eb", fontSize:13, fontFamily:"inherit", outline:"none", background:"#fff" }}>
-          {months.map(m=><option key={m.v} value={m.v}>{m.l}</option>)}
-        </select>
+        <div style={{ display:"flex", gap:8, alignItems:"center" }}>
+          <div style={{ fontSize:12, color:"#9ca3af" }}>グラフ表示：</div>
+          {[{v:"half",l:"直近6ヶ月"},{v:"year",l:"12ヶ月"}].map(opt=>(
+            <button key={opt.v} onClick={()=>setPeriod(opt.v)}
+              style={{ padding:"5px 12px", borderRadius:4, border:`1.5px solid ${period===opt.v?accent:"#e5e7eb"}`, background:period===opt.v?accent:"#fff", color:period===opt.v?"#fff":"#374151", fontSize:12, fontWeight:period===opt.v?600:400, cursor:"pointer" }}>
+              {opt.l}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* KPI */}
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12, marginBottom:20 }}>
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12, marginBottom:14 }}>
         {[
-          { l:"売上合計",   v:fmt(totalSell),   sub:`前月比 +${((totalSell/prevSell-1)*100).toFixed(1)}%`, c:accent, up:true },
-          { l:"支払合計",   v:fmt(totalPay),    sub:`原価率 ${(totalPay/totalSell*100).toFixed(1)}%`,       c:"#d97706", up:null },
-          { l:"粗利",       v:fmt(totalProfit), sub:`前月比 +${((totalProfit/prevProfit-1)*100).toFixed(1)}%`, c:"#16a34a", up:true },
-          { l:"粗利率",     v:margin+"%",       sub:`前月 ${(prevProfit/prevSell*100).toFixed(1)}%`,        c:"#374151", up:null },
+          { l:"今月売上",   v:fmt(totalSell),   sub:`前月比 +${((totalSell/prevSell-1)*100).toFixed(1)}%`, c:accent, up:true },
+          { l:"今月支払",   v:fmt(totalPay),    sub:`原価率 ${(totalPay/totalSell*100).toFixed(1)}%`,       c:"#d97706", up:null },
+          { l:"今月粗利",   v:fmt(totalProfit), sub:`前月比 +${((totalProfit/prevProfit-1)*100).toFixed(1)}%`, c:"#16a34a", up:true },
+          { l:"今月粗利率", v:margin+"%",       sub:`前月 ${(prevProfit/prevSell*100).toFixed(1)}%`,        c:"#374151", up:null },
         ].map(({ l,v,sub,c,up })=>(
           <Card key={l} style={{ padding:"16px 20px" }}>
             <div style={{ fontSize:11, color:"#9ca3af", marginBottom:6 }}>{l}</div>
@@ -797,28 +808,46 @@ const PLPage = ({ accent }) => {
         ))}
       </div>
 
+      {/* YTD サマリー */}
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:10, marginBottom:14 }}>
+        {[
+          { l:"2025年度 累計売上", v:fmt(ytdSell),   sub:"1月〜4月（4ヶ月）", c:accent },
+          { l:"2025年度 累計支払", v:fmt(ytdPay),    sub:`原価率 ${(ytdPay/ytdSell*100).toFixed(1)}%`, c:"#d97706" },
+          { l:"2025年度 累計粗利", v:fmt(ytdProfit), sub:`粗利率 ${(ytdProfit/ytdSell*100).toFixed(1)}%`, c:"#16a34a" },
+        ].map(({ l,v,sub,c })=>(
+          <Card key={l} style={{ padding:"14px 18px", borderLeft:`3px solid ${c}` }}>
+            <div style={{ fontSize:11, color:"#9ca3af", marginBottom:4 }}>{l}</div>
+            <div style={{ fontSize:18, fontWeight:700, color:c }}>{v}</div>
+            <div style={{ fontSize:11, color:"#9ca3af", marginTop:3 }}>{sub}</div>
+          </Card>
+        ))}
+      </div>
+
       <div style={{ display:"grid", gridTemplateColumns:"1fr 320px", gap:16, marginBottom:16 }}>
         {/* 月次推移グラフ */}
         <Card>
-          <SH title="月次収支推移"/>
+          <SH title={`月次収支推移（${period==="half"?"直近6ヶ月":"12ヶ月"}）`}/>
           <div style={{ padding:"20px 24px 16px" }}>
-            <div style={{ display:"flex", alignItems:"flex-end", gap:16, height:140, marginBottom:10 }}>
+            <div style={{ display:"flex", alignItems:"flex-end", gap:period==="year"?5:12, height:160, marginBottom:10 }}>
               {barData.map((d,i)=>(
-                <div key={i} style={{ flex:1, display:"flex", flexDirection:"column", height:"100%", justifyContent:"flex-end", gap:1, alignItems:"center" }}>
-                  <div style={{ fontSize:11, color:i===3?accent:"#9ca3af", fontWeight:i===3?700:400, marginBottom:3 }}>
-                    {i===3?fmt(d.sell/10000)+"万":""}
+                <div key={i} style={{ flex:1, display:"flex", flexDirection:"column", height:"100%", justifyContent:"flex-end", alignItems:"center" }}>
+                  {d.current && (
+                    <div style={{ fontSize:10, color:accent, fontWeight:700, marginBottom:2, whiteSpace:"nowrap" }}>
+                      {fmt(d.sell/10000)}万
+                    </div>
+                  )}
+                  <div style={{ width:"100%", position:"relative", height:`${(d.sell/maxBar)*100}%`, minHeight:4 }}>
+                    <div style={{ position:"absolute", bottom:0, width:"100%", height:`${(d.sell-d.pay)/d.sell*100}%`, background:d.current?"#dcfce7":"#e8f5e9", borderRadius:"3px 3px 0 0" }}/>
+                    <div style={{ position:"absolute", bottom:`${(d.sell-d.pay)/d.sell*100}%`, width:"100%", height:`${d.pay/d.sell*100}%`, background:d.current?accent+"60":"#e5e7eb" }}/>
                   </div>
-                  <div style={{ width:"100%", position:"relative", height:`${(d.sell/maxBar)*100}%` }}>
-                    <div style={{ position:"absolute", bottom:0, width:"100%", height:`${(d.sell-d.pay)/d.sell*100}%`, background:"#dcfce7", borderRadius:"3px 3px 0 0" }}/>
-                    <div style={{ position:"absolute", bottom:`${(d.sell-d.pay)/d.sell*100}%`, width:"100%", height:`${d.pay/d.sell*100}%`, background:i===3?accent+"50":"#e5e7eb" }}/>
-                  </div>
-                  <div style={{ fontSize:11, color:"#9ca3af", marginTop:6 }}>{d.m}</div>
+                  <div style={{ fontSize:9.5, color:d.current?accent:"#9ca3af", marginTop:5, fontWeight:d.current?700:400 }}>{d.m}</div>
                 </div>
               ))}
             </div>
             <div style={{ display:"flex", gap:16, fontSize:11, color:"#6b7280", borderTop:"1px solid #f1f3f5", paddingTop:12 }}>
               <span style={{ display:"flex", gap:4, alignItems:"center" }}><span style={{ width:10, height:10, background:"#dcfce7", border:"1px solid #16a34a", borderRadius:2, display:"inline-block" }}/> 粗利</span>
               <span style={{ display:"flex", gap:4, alignItems:"center" }}><span style={{ width:10, height:10, background:"#e5e7eb", borderRadius:2, display:"inline-block" }}/> 支払</span>
+              <span style={{ display:"flex", gap:4, alignItems:"center" }}><span style={{ width:10, height:10, background:accent+"60", borderRadius:2, display:"inline-block" }}/> 当月</span>
             </div>
           </div>
         </Card>
