@@ -1826,38 +1826,141 @@ const AnnouncePage = ({ accent }) => {
   );
 };
 
-const DriversPage = ({ accent }) => {
-  const ac=["#dbeafe","#dcfce7","#fef3c7","#ede9fe","#fce7f3","#e0f2fe"];
-  const fg=["#1e40af","#166534","#92400e","#5b21b6","#9d174d","#0369a1"];
+const DriversPage = ({ accent, setPage }) => {
+  const [sel, setSel] = React.useState(null);
+  const [search, setSearch] = React.useState("");
+  const [typeFilter, setTypeFilter] = React.useState("すべて");
+
+  // ドライバー別の今月財務サマリーを計算
+  const driverSummary = drivers.map(d => {
+    let totalSellD = 0, totalPayD = 0;
+    const breakdown = [];
+    clients.forEach(c => {
+      if (!c.drivers.includes(d.id)) return;
+      const act = monthlyActuals.find(r => r.name === c.name);
+      if (!act) return;
+      const share = 1 / c.drivers.length;
+      const s = Math.round(act.sell * share);
+      const p = Math.round(act.pay  * share);
+      totalSellD += s;
+      totalPayD  += p;
+      breakdown.push({ client: c.name, sell: s, pay: p });
+    });
+    return { ...d, totalSell: totalSellD, totalPay: totalPayD, totalProfit: totalSellD - totalPayD, breakdown };
+  });
+
+  const list = driverSummary.filter(d => {
+    const matchSearch = d.name.includes(search) || d.area.includes(search);
+    const matchType = typeFilter === "すべて" || d.type === typeFilter;
+    return matchSearch && matchType;
+  });
+
+  const selSummary = sel ? driverSummary.find(d => d.id === sel.id) : null;
+
   return (
     <div>
-      <div style={{ fontSize:20, fontWeight:700, marginBottom:20 }}>ドライバー管理</div>
-      <Card>
-        <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
-          <thead>
-            <tr style={{ background:"#f9fafb", borderBottom:"1px solid #e5e7eb" }}>
-              {["氏名","雇用形態","担当エリア","担当荷主"].map(h=>(
-                <th key={h} style={{ padding:"10px 20px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:12 }}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {drivers.map((d,i)=>(
-              <tr key={d.id} style={{ borderBottom:"1px solid #f1f3f5" }}>
-                <td style={{ padding:"12px 20px" }}>
-                  <div style={{ display:"flex", gap:10, alignItems:"center" }}>
-                    <div style={{ width:32, height:32, borderRadius:"50%", background:ac[i%6], color:fg[i%6], display:"flex", alignItems:"center", justifyContent:"center", fontWeight:700, fontSize:13, flexShrink:0 }}>{d.name[0]}</div>
-                    <span style={{ fontWeight:600 }}>{d.name}</span>
-                  </div>
-                </td>
-                <td style={{ padding:"12px 20px" }}><StatusBadge label={d.type}/></td>
-                <td style={{ padding:"12px 20px", color:"#374151" }}>{d.area}</td>
-                <td style={{ padding:"12px 20px", fontSize:12, color:"#6b7280" }}>{d.clients.join("、")}</td>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
+        <div style={{ fontSize:20, fontWeight:700 }}>ドライバー管理</div>
+        <div style={{ display:"flex", gap:8, alignItems:"center" }}>
+          <div style={{ position:"relative", display:"flex", alignItems:"center" }}>
+            <div style={{ position:"absolute", left:10, pointerEvents:"none" }}><Ic name="search" size={13} color="#9ca3af"/></div>
+            <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="名前・エリア検索"
+              style={{ paddingLeft:32, paddingRight:12, height:34, borderRadius:6, border:"1.5px solid #e5e7eb", fontSize:13, fontFamily:"inherit", outline:"none", width:180 }}/>
+          </div>
+          {["すべて","自社","協力会社"].map(t=>(
+            <button key={t} onClick={()=>setTypeFilter(t)}
+              style={{ padding:"5px 14px", borderRadius:4, border:`1.5px solid ${typeFilter===t?accent:"#e5e7eb"}`, background:typeFilter===t?accent:"#fff", color:typeFilter===t?"#fff":"#374151", fontSize:13, fontWeight:typeFilter===t?600:400 }}>{t}</button>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ display:"grid", gridTemplateColumns: sel?"1fr 320px":"1fr", gap:16 }}>
+        <Card>
+          <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
+            <thead>
+              <tr style={{ background:"#f9fafb", borderBottom:"1px solid #e5e7eb" }}>
+                {["氏名","雇用形態","担当エリア","担当荷主数","今月売上按分","今月支払按分","粗利貢献"].map(h=>(
+                  <th key={h} style={{ padding:"10px 16px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:12, whiteSpace:"nowrap" }}>{h}</th>
+                ))}
               </tr>
+            </thead>
+            <tbody>
+              {list.map((d,i)=>(
+                <tr key={d.id} onClick={()=>setSel(sel?.id===d.id?null:d)}
+                  style={{ borderBottom:"1px solid #f1f3f5", cursor:"pointer", background:sel?.id===d.id?accent+"0d":"transparent", transition:"background .1s" }}>
+                  <td style={{ padding:"12px 16px", borderLeft:sel?.id===d.id?`3px solid ${accent}`:"3px solid transparent", transition:"border-color .1s" }}>
+                    <div style={{ display:"flex", gap:10, alignItems:"center" }}>
+                      <Avatar name={d.name} size={32} bg={d.type==="自社"?"#dbeafe":"#ede9fe"} color={d.type==="自社"?"#1e40af":"#5b21b6"}/>
+                      <span style={{ fontWeight:600 }}>{d.name}</span>
+                    </div>
+                  </td>
+                  <td style={{ padding:"12px 16px" }}><StatusBadge label={d.type}/></td>
+                  <td style={{ padding:"12px 16px", color:"#374151", fontSize:12 }}>{d.area}</td>
+                  <td style={{ padding:"12px 16px", textAlign:"center" }}>{d.clients.length}社</td>
+                  <td style={{ padding:"12px 16px", fontWeight:700, color:accent }}>{d.totalSell>0?fmt(d.totalSell):"—"}</td>
+                  <td style={{ padding:"12px 16px", fontWeight:600 }}>{d.totalPay>0?fmt(d.totalPay):"—"}</td>
+                  <td style={{ padding:"12px 16px", fontWeight:600, color:"#16a34a" }}>{d.totalProfit>0?fmt(d.totalProfit):"—"}</td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr style={{ background:"#f9fafb", borderTop:"2px solid #e5e7eb" }}>
+                <td colSpan={4} style={{ padding:"10px 16px", fontWeight:700 }}>合計（{list.length}名）</td>
+                <td style={{ padding:"10px 16px", fontWeight:700, color:accent }}>{fmt(list.reduce((s,d)=>s+d.totalSell,0))}</td>
+                <td style={{ padding:"10px 16px", fontWeight:700 }}>{fmt(list.reduce((s,d)=>s+d.totalPay,0))}</td>
+                <td style={{ padding:"10px 16px", fontWeight:700, color:"#16a34a" }}>{fmt(list.reduce((s,d)=>s+d.totalProfit,0))}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </Card>
+
+        {sel && selSummary && (
+          <Card style={{ padding:20, alignSelf:"start" }}>
+            <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:20 }}>
+              <Avatar name={sel.name} size={44} bg={sel.type==="自社"?"#dbeafe":"#ede9fe"} color={sel.type==="自社"?"#1e40af":"#5b21b6"}/>
+              <div>
+                <div style={{ fontWeight:700, fontSize:16 }}>{sel.name}</div>
+                <div style={{ marginTop:4 }}><StatusBadge label={sel.type}/></div>
+              </div>
+            </div>
+
+            <div style={{ fontSize:12, color:"#9ca3af", marginBottom:6 }}>担当エリア</div>
+            <div style={{ fontSize:13, fontWeight:500, marginBottom:16 }}>{sel.area}</div>
+
+            <div style={{ fontSize:12, color:"#9ca3af", marginBottom:8 }}>担当荷主</div>
+            <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:20 }}>
+              {sel.clients.map(name=>(
+                <span key={name} style={{ padding:"3px 10px", background:accent+"12", color:accent, borderRadius:99, fontSize:12, fontWeight:600 }}>{name}</span>
+              ))}
+            </div>
+
+            <div style={{ fontSize:12, color:"#9ca3af", marginBottom:10 }}>今月財務サマリー（按分）</div>
+            <div style={{ background:"#f8fafc", borderRadius:8, padding:14, marginBottom:16 }}>
+              {[["売上按分",fmt(selSummary.totalSell),accent],["支払按分",fmt(selSummary.totalPay),"#d97706"],["粗利貢献",fmt(selSummary.totalProfit),"#16a34a"]].map(([l,v,c])=>(
+                <div key={l} style={{ display:"flex", justifyContent:"space-between", fontSize:13, padding:"6px 0", borderBottom:"1px solid #f1f3f5" }}>
+                  <span style={{ color:"#6b7280" }}>{l}</span>
+                  <span style={{ fontWeight:700, color:c }}>{v}</span>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ fontSize:12, color:"#9ca3af", marginBottom:8 }}>荷主別 支払内訳</div>
+            {selSummary.breakdown.map((b,i)=>(
+              <div key={i} style={{ display:"flex", justifyContent:"space-between", fontSize:12.5, padding:"6px 0", borderBottom:"1px solid #f8f9fa" }}>
+                <span style={{ color:"#374151" }}>{b.client}</span>
+                <span style={{ fontWeight:600 }}>{fmt(b.pay)}</span>
+              </div>
             ))}
-          </tbody>
-        </table>
-      </Card>
+
+            <div style={{ display:"flex", gap:8, marginTop:20 }}>
+              <button onClick={()=>setPage("driverfinance")}
+                style={{ flex:1, padding:"9px", background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:600, fontSize:13 }}>支払明細を発行</button>
+              <button onClick={()=>setSel(null)}
+                style={{ padding:"9px 14px", border:"1px solid #e5e7eb", background:"#fff", color:"#374151", borderRadius:6, fontSize:13 }}>閉じる</button>
+            </div>
+          </Card>
+        )}
+      </div>
     </div>
   );
 };
@@ -2080,38 +2183,154 @@ const navGroups = [
 const navItems = navGroups.flatMap(g=>g.items);
 
 // 簡易車両管理・勤怠管理・申請ページ（省略版）
-const VehiclesPage = ({ accent }) => (
-  <div>
-    <div style={{ fontSize:20, fontWeight:700, marginBottom:20 }}>車両管理</div>
-    <Card>
-      <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
-        <thead>
-          <tr style={{ background:"#f9fafb", borderBottom:"1px solid #e5e7eb" }}>
-            {["ナンバー","担当","エリア","状態","車検期限"].map(h=><th key={h} style={{ padding:"10px 20px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:12 }}>{h}</th>)}
-          </tr>
-        </thead>
-        <tbody>
-          {drivers.map((d,i)=>{
-            const plates=["東京 な "+String(1000+i*111),"東京 に "+String(2000+i*111)];
-            const plate=plates[0];
-            const soon = i===2;
-            return (
-              <tr key={i} style={{ borderBottom:"1px solid #f1f3f5" }}>
-                <td style={{ padding:"12px 20px", fontWeight:700 }}>{plate.replace("東京 な ","東京 な ").replace("東京 に ","東京 に ").replace("東京 な "+String(1000+0*111),"東京 な 1000").replace("東京 な "+String(1000+i*111),"東京 "+["な","に","ぬ","ね","の","は","ひ","ふ","へ","ほ"][i]+" "+String(1000+i*234))}</td>
-                <td style={{ padding:"12px 20px", fontWeight:500 }}>{d.name}</td>
-                <td style={{ padding:"12px 20px", color:"#6b7280" }}>{d.area}</td>
-                <td style={{ padding:"12px 20px" }}><StatusBadge label={i===7?"整備中":"稼働中"}/></td>
-                <td style={{ padding:"12px 20px", color:soon?"#dc2626":"#374151", fontWeight:soon?600:400 }}>
-                  2025-{String(i+5).padStart(2,"0")}-15{soon?" ⚠":""}
-                </td>
+const vehicleMaster = [
+  { id:"V-01", plate:"品川 580 あ 1234", driverId:"DR-01", type:"軽バン",     status:"稼働中",  inspection:"2025-08-15", mileage:87400,
+    maintenance:[{date:"2025-03-10",item:"オイル交換・フィルター"},{date:"2024-11-20",item:"タイヤ交換（4本）"},{date:"2024-08-05",item:"12ヶ月点検"}] },
+  { id:"V-02", plate:"練馬 580 い 5678", driverId:"DR-02", type:"軽バン",     status:"稼働中",  inspection:"2025-10-20", mileage:63200,
+    maintenance:[{date:"2025-02-15",item:"オイル交換"},{date:"2024-09-12",item:"ブレーキパッド交換"}] },
+  { id:"V-03", plate:"足立 480 う 2345", driverId:"DR-03", type:"軽トラック", status:"稼働中",  inspection:"2025-05-10", mileage:112300,
+    maintenance:[{date:"2025-04-01",item:"オイル交換・エアフィルター"},{date:"2025-01-08",item:"バッテリー交換"},{date:"2024-07-20",item:"12ヶ月点検"}] },
+  { id:"V-04", plate:"江東 580 え 9012", driverId:"DR-04", type:"軽バン",     status:"稼働中",  inspection:"2025-12-01", mileage:45800,
+    maintenance:[{date:"2025-03-25",item:"オイル交換"}] },
+  { id:"V-05", plate:"横浜 580 お 3456", driverId:"DR-05", type:"軽バン",     status:"稼働中",  inspection:"2025-09-30", mileage:72100,
+    maintenance:[{date:"2025-01-20",item:"オイル交換・タイヤローテーション"},{date:"2024-10-05",item:"12ヶ月点検"}] },
+  { id:"V-06", plate:"川崎 480 か 7890", driverId:"DR-06", type:"軽トラック", status:"稼働中",  inspection:"2025-11-15", mileage:98600,
+    maintenance:[{date:"2025-04-10",item:"オイル交換"},{date:"2024-12-18",item:"ウォーターポンプ交換"}] },
+  { id:"V-07", plate:"品川 580 き 1122", driverId:"DR-07", type:"軽バン",     status:"稼働中",  inspection:"2026-01-20", mileage:38900,
+    maintenance:[{date:"2025-02-28",item:"オイル交換"}] },
+  { id:"V-08", plate:"大宮 580 く 3344", driverId:"DR-08", type:"軽バン",     status:"整備中",  inspection:"2025-07-08", mileage:125700,
+    maintenance:[{date:"2025-04-25",item:"エンジン点検（入庫中）"},{date:"2025-01-15",item:"オイル交換"},{date:"2024-06-10",item:"24ヶ月点検"}] },
+  { id:"V-09", plate:"神戸 580 け 5566", driverId:"DR-09", type:"軽バン",     status:"稼働中",  inspection:"2025-06-25", mileage:91200,
+    maintenance:[{date:"2025-03-30",item:"オイル交換・フィルター"},{date:"2024-11-10",item:"タイヤ交換（2本）"}] },
+  { id:"V-10", plate:"江東 580 こ 7788", driverId:"DR-10", type:"軽バン",     status:"稼働中",  inspection:"2026-02-28", mileage:29300,
+    maintenance:[{date:"2025-04-05",item:"オイル交換"}] },
+];
+
+const VehiclesPage = ({ accent }) => {
+  const [sel, setSel] = React.useState(null);
+  const [statusFilter, setStatusFilter] = React.useState("すべて");
+  const today = new Date("2025-04-30");
+  const daysUntil = (dateStr) => Math.ceil((new Date(dateStr) - today) / 86400000);
+
+  const list = vehicleMaster.filter(v => statusFilter==="すべて" || v.status===statusFilter);
+
+  return (
+    <div>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
+        <div>
+          <div style={{ fontSize:20, fontWeight:700 }}>車両管理</div>
+          <div style={{ fontSize:12, color:"#9ca3af", marginTop:2 }}>全{vehicleMaster.length}台 ／ 車検期限30日以内: {vehicleMaster.filter(v=>daysUntil(v.inspection)<=30).length}台</div>
+        </div>
+        <div style={{ display:"flex", gap:8 }}>
+          {["すべて","稼働中","整備中"].map(s=>(
+            <button key={s} onClick={()=>setStatusFilter(s)}
+              style={{ padding:"5px 14px", borderRadius:4, border:`1.5px solid ${statusFilter===s?accent:"#e5e7eb"}`, background:statusFilter===s?accent:"#fff", color:statusFilter===s?"#fff":"#374151", fontSize:13, fontWeight:statusFilter===s?600:400 }}>{s}</button>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ display:"grid", gridTemplateColumns: sel?"1fr 300px":"1fr", gap:16 }}>
+        <Card>
+          <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
+            <thead>
+              <tr style={{ background:"#f9fafb", borderBottom:"1px solid #e5e7eb" }}>
+                {["ナンバー","車種","担当ドライバー","状態","走行距離","車検期限"].map(h=>(
+                  <th key={h} style={{ padding:"10px 16px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:12, whiteSpace:"nowrap" }}>{h}</th>
+                ))}
               </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </Card>
-  </div>
-);
+            </thead>
+            <tbody>
+              {list.map(v=>{
+                const d = drivers.find(dr=>dr.id===v.driverId);
+                const days = daysUntil(v.inspection);
+                const urgent = days <= 30;
+                const warn   = days <= 60 && days > 30;
+                return (
+                  <tr key={v.id} onClick={()=>setSel(sel?.id===v.id?null:v)}
+                    style={{ borderBottom:"1px solid #f1f3f5", cursor:"pointer", background: sel?.id===v.id?accent+"0d": urgent?"#fff5f5":"transparent", transition:"background .1s" }}>
+                    <td style={{ padding:"12px 16px", fontWeight:700, borderLeft:sel?.id===v.id?`3px solid ${accent}`:"3px solid transparent", transition:"border-color .1s" }}>{v.plate}</td>
+                    <td style={{ padding:"12px 16px", color:"#374151" }}>{v.type}</td>
+                    <td style={{ padding:"12px 16px" }}>
+                      {d && <div style={{ display:"flex", alignItems:"center", gap:7 }}>
+                        <Avatar name={d.name} size={24} bg={d.type==="自社"?"#dbeafe":"#ede9fe"} color={d.type==="自社"?"#1e40af":"#5b21b6"}/>
+                        <span style={{ fontWeight:500 }}>{d.name}</span>
+                      </div>}
+                    </td>
+                    <td style={{ padding:"12px 16px" }}>
+                      <span style={{ padding:"2px 9px", borderRadius:4, fontSize:11.5, fontWeight:600, background:v.status==="稼働中"?"#f0fdf4":"#fef2f2", color:v.status==="稼働中"?"#16a34a":"#dc2626" }}>{v.status}</span>
+                    </td>
+                    <td style={{ padding:"12px 16px", color:"#374151" }}>{v.mileage.toLocaleString()} km</td>
+                    <td style={{ padding:"12px 16px" }}>
+                      <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                        <span style={{ fontWeight: urgent||warn?700:400, color: urgent?"#dc2626":warn?"#d97706":"#374151" }}>{v.inspection}</span>
+                        {urgent && <span style={{ fontSize:11, background:"#fef2f2", color:"#dc2626", padding:"1px 7px", borderRadius:3, fontWeight:700 }}>あと{days}日</span>}
+                        {warn   && <span style={{ fontSize:11, background:"#fffbeb", color:"#d97706", padding:"1px 7px", borderRadius:3, fontWeight:700 }}>あと{days}日</span>}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </Card>
+
+        {sel && (() => {
+          const d = drivers.find(dr=>dr.id===sel.driverId);
+          const days = daysUntil(sel.inspection);
+          const urgent = days <= 30;
+          return (
+            <Card style={{ padding:20, alignSelf:"start" }}>
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:16 }}>
+                <div>
+                  <div style={{ fontWeight:700, fontSize:16 }}>{sel.plate}</div>
+                  <div style={{ fontSize:12, color:"#9ca3af", marginTop:2 }}>{sel.type} ／ {sel.id}</div>
+                </div>
+                <span style={{ padding:"2px 9px", borderRadius:4, fontSize:11.5, fontWeight:600, background:sel.status==="稼働中"?"#f0fdf4":"#fef2f2", color:sel.status==="稼働中"?"#16a34a":"#dc2626" }}>{sel.status}</span>
+              </div>
+
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:16 }}>
+                {[["走行距離",sel.mileage.toLocaleString()+" km"],["車検期限",sel.inspection]].map(([l,v])=>(
+                  <div key={l} style={{ background:"#f8fafc", borderRadius:6, padding:"10px 12px" }}>
+                    <div style={{ fontSize:11, color:"#9ca3af" }}>{l}</div>
+                    <div style={{ fontSize:13, fontWeight:700, marginTop:3, color: l==="車検期限"&&urgent?"#dc2626":"#111827" }}>{v}</div>
+                  </div>
+                ))}
+              </div>
+
+              {urgent && (
+                <div style={{ background:"#fef2f2", border:"1px solid #fecaca", borderRadius:6, padding:"10px 14px", marginBottom:16, fontSize:12.5, color:"#dc2626", fontWeight:600 }}>
+                  ⚠ 車検期限まであと{days}日です。早めに予約してください。
+                </div>
+              )}
+
+              <div style={{ fontSize:12, color:"#9ca3af", marginBottom:8 }}>担当ドライバー</div>
+              {d && <div style={{ display:"flex", alignItems:"center", gap:10, padding:"10px 12px", background:"#f8fafc", borderRadius:6, marginBottom:16 }}>
+                <Avatar name={d.name} size={32} bg={d.type==="自社"?"#dbeafe":"#ede9fe"} color={d.type==="自社"?"#1e40af":"#5b21b6"}/>
+                <div>
+                  <div style={{ fontWeight:600, fontSize:13 }}>{d.name}</div>
+                  <div style={{ fontSize:11, color:"#9ca3af" }}>{d.area}</div>
+                </div>
+              </div>}
+
+              <div style={{ fontSize:12, color:"#9ca3af", marginBottom:8 }}>整備・点検履歴</div>
+              {sel.maintenance.map((m,i)=>(
+                <div key={i} style={{ display:"flex", gap:10, padding:"8px 0", borderBottom:"1px solid #f8f9fa", fontSize:13 }}>
+                  <span style={{ color:"#9ca3af", fontSize:12, width:80, flexShrink:0 }}>{m.date}</span>
+                  <span style={{ color:"#374151" }}>{m.item}</span>
+                </div>
+              ))}
+
+              <div style={{ display:"flex", gap:8, marginTop:16 }}>
+                <button style={{ flex:1, padding:"9px", background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:600, fontSize:13 }}>車検予約</button>
+                <button style={{ flex:1, padding:"9px", border:"1px solid #e5e7eb", background:"#fff", color:"#374151", borderRadius:6, fontSize:13 }}>整備記録を追加</button>
+              </div>
+            </Card>
+          );
+        })()}
+      </div>
+    </div>
+  );
+};
 
 const AttendancePage = ({ accent }) => {
   const [ci, setCi] = React.useState(true);
