@@ -1569,288 +1569,344 @@ const ClientPage = ({ accent, setPage }) => {
 
 // ── 日次実績入力 ───────────────────────────────────────────────────────────
 const DailyInputPage = ({ accent }) => {
-  const [date, setDate] = React.useState("2025-04-30");
   const [selClient, setSelClient] = React.useState(clients[0]);
+  const [monthYear, setMonthYear] = React.useState("2025-04");
+  const [entries, setEntries] = React.useState({});
   const [saved, setSaved] = React.useState(false);
   const [focusedCell, setFocusedCell] = React.useState(null);
-  const [entries, setEntries] = React.useState(() => {
-    const init = {};
-    drivers.forEach(d => { init[d.id] = {}; selClient.rates.forEach(r => { init[d.id][r.label] = ""; }); });
-    return init;
-  });
+  const [confirmClear, setConfirmClear] = React.useState(false);
   const inputRefs = React.useRef({});
   const clientList = clients.filter(c => c.billing !== "スポット");
 
-  const switchClient = (c) => {
-    setSelClient(c);
-    const init = {};
-    drivers.forEach(d => { init[d.id] = {}; c.rates.forEach(r => { init[d.id][r.label] = ""; }); });
-    setEntries(init);
-    setSaved(false);
-    setFocusedCell(null);
-    setTimeout(() => { inputRefs.current["0-0"]?.focus(); }, 30);
-  };
-
   const assignedDrivers = drivers.filter(d => selClient.drivers.includes(d.id));
+  const rates = selClient.rates.filter(r => r.sell > 0 || r.pay > 0);
+  const nD = assignedDrivers.length;
+  const nR = rates.length;
+  const nCols = nD * nR; // total input columns per row
 
-  const totals = selClient.rates.map(r => {
-    const vol = assignedDrivers.reduce((s,d) => s + (Number(entries[d.id]?.[r.label]) || 0), 0);
-    return { label: r.label, vol, sell: vol * r.sell, pay: vol * r.pay };
+  // days in month
+  const [yr, mo] = monthYear.split("-").map(Number);
+  const daysInMonth = new Date(yr, mo, 0).getDate();
+  const dayRows = Array.from({length: daysInMonth}, (_, i) => {
+    const date = new Date(yr, mo-1, i+1);
+    const dow = date.getDay();
+    return {
+      d: i+1,
+      dateStr: `${monthYear}-${String(i+1).padStart(2,"0")}`,
+      dayName: ["日","月","火","水","木","金","土"][dow],
+      dow,
+      isWeekend: dow===0 || dow===6,
+      isSun: dow===0,
+    };
   });
-  const totalSellD = totals.reduce((s,t)=>s+t.sell,0);
-  const totalPayD  = totals.reduce((s,t)=>s+t.pay,0);
 
-  const totalRates = selClient.rates.length;
-  const totalDrivers = assignedDrivers.length;
-
-  const focusCell = (di, ri) => { inputRefs.current[`${di}-${ri}`]?.focus(); };
-
-  const handleKeyDown = (e, di, ri) => {
-    switch(e.key) {
-      case 'Enter':
-        e.preventDefault();
-        if (di + 1 < totalDrivers) focusCell(di + 1, ri);
-        else if (ri + 1 < totalRates) focusCell(0, ri + 1);
-        else setSaved(true);
-        break;
-      case 'ArrowDown':
-        e.preventDefault();
-        if (di + 1 < totalDrivers) focusCell(di + 1, ri);
-        break;
-      case 'ArrowUp':
-        e.preventDefault();
-        if (di - 1 >= 0) focusCell(di - 1, ri);
-        break;
-      case 'ArrowRight':
-        if (e.target.selectionStart === e.target.value.length) {
-          e.preventDefault();
-          if (ri + 1 < totalRates) focusCell(di, ri + 1);
-          else if (di + 1 < totalDrivers) focusCell(di + 1, 0);
-        }
-        break;
-      case 'ArrowLeft':
-        if (e.target.selectionStart === 0) {
-          e.preventDefault();
-          if (ri - 1 >= 0) focusCell(di, ri - 1);
-          else if (di - 1 >= 0) focusCell(di - 1, totalRates - 1);
-        }
-        break;
-      case 'Tab':
-        e.preventDefault();
-        if (e.shiftKey) {
-          if (ri - 1 >= 0) focusCell(di, ri - 1);
-          else if (di - 1 >= 0) focusCell(di - 1, totalRates - 1);
-        } else {
-          if (ri + 1 < totalRates) focusCell(di, ri + 1);
-          else if (di + 1 < totalDrivers) focusCell(di + 1, 0);
-        }
-        break;
-    }
+  const getVal = (dateStr, dId, rLabel) => entries[dateStr]?.[dId]?.[rLabel] ?? "";
+  const setVal = (dateStr, dId, rLabel, v) => {
+    setEntries(p => ({
+      ...p,
+      [dateStr]: { ...(p[dateStr]||{}), [dId]: { ...((p[dateStr]||{})[dId]||{}), [rLabel]: v } }
+    }));
+    setSaved(false);
   };
 
-  // ⌘S / Ctrl+S で保存、Alt+1〜9 で荷主切替
+  // day-level totals
+  const dayTotals = dayRows.map(day => {
+    let sell=0, pay=0;
+    assignedDrivers.forEach(d => rates.forEach(r => {
+      const v = Number(getVal(day.dateStr, d.id, r.label))||0;
+      sell += v * r.sell; pay += v * r.pay;
+    }));
+    return { sell, pay, profit: sell-pay };
+  });
+
+  // month totals
+  const monthTotals = dayTotals.reduce((a,t)=>({sell:a.sell+t.sell,pay:a.pay+t.pay,profit:a.profit+t.profit}),{sell:0,pay:0,profit:0});
+
+  // column totals (vol per driver×rate)
+  const colTotals = assignedDrivers.flatMap((d,dri) =>
+    rates.map((r,ri) => ({
+      vol:  dayRows.reduce((s,day) => s+(Number(getVal(day.dateStr,d.id,r.label))||0),0),
+      sell: dayRows.reduce((s,day) => s+(Number(getVal(day.dateStr,d.id,r.label))||0)*r.sell,0),
+    }))
+  );
+
+  const inputDays = dayRows.filter((_,i) => dayTotals[i].sell > 0).length;
+  const workdays  = dayRows.filter(d => !d.isWeekend).length;
+
+  // keyboard nav: Enter/↓ = next day, ↑ = prev day, Tab = next col, Shift+Tab = prev col
+  const focusCell = (di, ci) => {
+    let d=di, c=ci;
+    if (c < 0) { c=nCols-1; d--; }
+    if (c >= nCols) { c=0; d++; }
+    if (d < 0 || d >= daysInMonth) return;
+    inputRefs.current[`${d}-${c}`]?.focus();
+  };
+  const handleKeyDown = (e, di, ci) => {
+    if (e.key==='Enter'||e.key==='ArrowDown') { e.preventDefault(); focusCell(di+1, ci); }
+    else if (e.key==='ArrowUp') { e.preventDefault(); focusCell(di-1, ci); }
+    else if (e.key==='Tab') { e.preventDefault(); focusCell(di, ci+(e.shiftKey?-1:1)); }
+  };
+
   React.useEffect(() => {
-    const handler = (e) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 's') {
-        e.preventDefault();
-        setSaved(true);
-      }
-      if (e.altKey && e.key >= '1' && e.key <= '9') {
-        const idx = Number(e.key) - 1;
-        if (idx < clientList.length) switchClient(clientList[idx]);
+    const h = e => {
+      if ((e.metaKey||e.ctrlKey) && e.key==='s') { e.preventDefault(); setSaved(true); }
+      if (e.altKey && e.key>='1' && e.key<='9') {
+        const idx=Number(e.key)-1;
+        if (idx<clientList.length) { setSelClient(clientList[idx]); setEntries({}); setSaved(false); }
       }
     };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
+    window.addEventListener('keydown', h);
+    return () => window.removeEventListener('keydown', h);
   }, [clientList]);
 
-  // ページ表示時に最初のセルへ自動フォーカス
   React.useEffect(() => {
-    setTimeout(() => { inputRefs.current["0-0"]?.focus(); }, 80);
-  }, []);
+    setTimeout(() => inputRefs.current["0-0"]?.focus(), 80);
+  }, [selClient, monthYear]);
+
+  const handleCSV = () => {
+    const rHeaders = assignedDrivers.flatMap(d => rates.map(r => `${d.name}:${r.label}`));
+    const header = ["日付","曜日",...rHeaders,"売上合計","支払合計","粗利"];
+    const rows = dayRows.map((day,i) => {
+      const vals = assignedDrivers.flatMap(d => rates.map(r => getVal(day.dateStr,d.id,r.label)||0));
+      const {sell,pay,profit} = dayTotals[i];
+      return [day.dateStr, day.dayName, ...vals, sell, pay, profit];
+    });
+    const footRow = ["月次合計","",...colTotals.map(c=>c.vol), monthTotals.sell, monthTotals.pay, monthTotals.profit];
+    const csv = [header,...rows,footRow].map(r=>r.join(",")).join("\n");
+    const a=document.createElement("a");
+    a.href="data:text/csv;charset=utf-8,﻿"+encodeURIComponent(csv);
+    a.download=`実績_${selClient.name}_${monthYear}.csv`;
+    a.click();
+  };
 
   return (
     <div>
-      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:4 }}>
-        <div style={{ fontSize:20, fontWeight:700 }}>日次実績入力</div>
-        <div style={{ fontSize:11, color:"#6b7280", background:"#f8fafc", border:"1px solid #e5e7eb", borderRadius:6, padding:"6px 14px", lineHeight:2 }}>
-          <span style={{ fontWeight:700, color:"#374151" }}>キーボード操作</span>
-          <span style={{ color:"#9ca3af" }}>Enter / ↓</span> 下へ
-          <span style={{ color:"#9ca3af" }}>↑</span> 上へ
-          <span style={{ color:"#9ca3af" }}>Tab</span> 右へ
-          <span style={{ color:"#9ca3af" }}>Shift+Tab</span> 左へ
-          <span style={{ color:"#9ca3af" }}>⌘S</span> 保存
-          <span style={{ color:"#9ca3af" }}>Alt+数字</span> 荷主切替
+      {/* ヘッダー */}
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:12 }}>
+        <div>
+          <div style={{ fontSize:20, fontWeight:700 }}>日次実績入力</div>
+          <div style={{ fontSize:12, color:"#9ca3af", marginTop:2 }}>月次一覧・スプレッドシート形式</div>
+        </div>
+        <div style={{ fontSize:11, color:"#6b7280", background:"#f8fafc", border:"1px solid #e5e7eb", borderRadius:6, padding:"5px 12px", lineHeight:2.2 }}>
+          <span style={{ fontWeight:700, color:"#374151" }}>キーボード</span>
+          {[["Enter/↓","翌日"],["↑","前日"],["Tab","右列"],["Shift+Tab","左列"],["⌘S","保存"],["Alt+数字","荷主"]].map(([k,v])=>(
+            <span key={k} style={{ marginLeft:8 }}><span style={{ color:"#9ca3af" }}>{k}</span> {v}</span>
+          ))}
         </div>
       </div>
-      <div style={{ fontSize:12, color:"#9ca3af", marginBottom:20 }}>Excelに代わる日次の配送実績・売上・支払の記録</div>
 
-      {/* ヘッダー操作 */}
-      <div style={{ display:"flex", gap:12, alignItems:"center", marginBottom:20 }}>
+      {/* 操作バー */}
+      <div style={{ display:"flex", gap:12, alignItems:"flex-end", marginBottom:12, flexWrap:"wrap" }}>
         <div>
-          <label style={{ fontSize:12, color:"#9ca3af", display:"block", marginBottom:4 }}>日付</label>
-          <input type="date" value={date} onChange={e=>setDate(e.target.value)}
-            style={{ padding:"7px 12px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
+          <label style={{ fontSize:11, color:"#9ca3af", display:"block", marginBottom:3 }}>対象月</label>
+          <div style={{ display:"flex", gap:4, alignItems:"center" }}>
+            <button onClick={()=>{ const d=new Date(yr,mo-2,1); setMonthYear(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`); }}
+              style={{ padding:"7px 10px", border:"1.5px solid #e5e7eb", borderRadius:6, background:"#fff", cursor:"pointer", fontSize:13 }}>‹</button>
+            <input type="month" value={monthYear} onChange={e=>setMonthYear(e.target.value)}
+              style={{ padding:"7px 12px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}
+              onFocus={e=>e.target.style.borderColor=accent} onBlur={e=>e.target.style.borderColor="#e5e7eb"}/>
+            <button onClick={()=>{ const d=new Date(yr,mo,1); setMonthYear(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`); }}
+              style={{ padding:"7px 10px", border:"1.5px solid #e5e7eb", borderRadius:6, background:"#fff", cursor:"pointer", fontSize:13 }}>›</button>
+          </div>
         </div>
         <div style={{ flex:1 }}>
-          <label style={{ fontSize:12, color:"#9ca3af", display:"block", marginBottom:4 }}>荷主</label>
+          <label style={{ fontSize:11, color:"#9ca3af", display:"block", marginBottom:3 }}>荷主</label>
           <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
             {clientList.map((c,i)=>(
-              <button key={i} onClick={()=>switchClient(c)}
-                style={{ padding:"6px 12px", borderRadius:4, border:`1.5px solid ${selClient.id===c.id?accent:"#e5e7eb"}`, background:selClient.id===c.id?accent:"#fff", color:selClient.id===c.id?"#fff":"#374151", fontSize:12.5, fontWeight:selClient.id===c.id?600:400 }}>
-                <span style={{ fontSize:10, opacity:0.6, marginRight:3 }}>{i+1}</span>{c.name}
+              <button key={i} onClick={()=>{ setSelClient(c); setEntries({}); setSaved(false); }}
+                style={{ padding:"6px 12px", borderRadius:4, border:`1.5px solid ${selClient.id===c.id?accent:"#e5e7eb"}`, background:selClient.id===c.id?accent:"#fff", color:selClient.id===c.id?"#fff":"#374151", fontSize:12, fontWeight:selClient.id===c.id?600:400, cursor:"pointer" }}>
+                <span style={{ fontSize:9, opacity:0.6, marginRight:2 }}>{i+1}</span>{c.name}
               </button>
             ))}
           </div>
         </div>
       </div>
 
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 280px", gap:16, alignItems:"start" }}>
-        {/* 入力テーブル */}
-        <Card>
-          <div style={{ padding:"14px 20px", borderBottom:"1px solid #f1f3f5", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-            <div>
-              <span style={{ fontWeight:700, fontSize:14 }}>{selClient.name}</span>
-              <span style={{ marginLeft:10 }}><StatusBadge label={selClient.billing.replace("（2区分）","").replace("（3区分）","")}/></span>
-            </div>
-            <div style={{ fontSize:12, color:"#9ca3af" }}>{date} の実績</div>
-          </div>
-          <div style={{ overflowX:"auto" }}>
-            <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
-              <thead>
-                <tr style={{ background:"#f9fafb", borderBottom:"1px solid #e5e7eb" }}>
-                  <th style={{ padding:"9px 16px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:12, whiteSpace:"nowrap" }}>ドライバー</th>
-                  {selClient.rates.map((r,ri)=>(
-                    <th key={r.label} style={{ padding:"9px 16px", textAlign:"center", fontSize:12, whiteSpace:"nowrap", color: focusedCell?.ri===ri?accent:"#6b7280", fontWeight: focusedCell?.ri===ri?700:500, background: focusedCell?.ri===ri?accent+"0d":"transparent", transition:"all .1s" }}>
-                      {r.label}
-                      <div style={{ fontSize:10, color:accent, fontWeight:600 }}>売{fmt(r.sell)} / 支{fmt(r.pay)}</div>
-                    </th>
-                  ))}
-                  <th style={{ padding:"9px 16px", textAlign:"right", color:"#6b7280", fontWeight:500, fontSize:12 }}>小計（売上）</th>
-                  <th style={{ padding:"9px 16px", textAlign:"right", color:"#6b7280", fontWeight:500, fontSize:12 }}>小計（支払）</th>
-                </tr>
-              </thead>
-              <tbody>
-                {assignedDrivers.map((d,di)=>{
-                  const rowSell = selClient.rates.reduce((s,r)=>s+(Number(entries[d.id]?.[r.label])||0)*r.sell,0);
-                  const rowPay  = selClient.rates.reduce((s,r)=>s+(Number(entries[d.id]?.[r.label])||0)*r.pay,0);
-                  const isActiveRow = focusedCell?.di === di;
-                  return (
-                    <tr key={di} style={{ borderBottom:"1px solid #f1f3f5", background: isActiveRow?accent+"08":"transparent", transition:"background .1s" }}>
-                      <td style={{ padding:"10px 16px", borderLeft: isActiveRow?`3px solid ${accent}`:"3px solid transparent", transition:"border-color .1s" }}>
-                        <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                          <Avatar name={d.name} size={24} bg={d.type==="自社"?"#dbeafe":"#ede9fe"} color={d.type==="自社"?"#1e40af":"#5b21b6"}/>
-                          <div>
-                            <div style={{ fontWeight:600, fontSize:13 }}>{d.name}</div>
-                            <div style={{ fontSize:10 }}><StatusBadge label={d.type}/></div>
-                          </div>
-                        </div>
-                      </td>
-                      {selClient.rates.map((r,ri)=>{
-                        const isActive = focusedCell?.di===di && focusedCell?.ri===ri;
+      {/* 月次KPI */}
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:10, marginBottom:12 }}>
+        {[
+          { l:"月次売上（速報）", v:monthTotals.sell>0?fmt(monthTotals.sell):"—", c:accent },
+          { l:"月次支払",         v:monthTotals.pay>0?fmt(monthTotals.pay):"—",   c:"#d97706" },
+          { l:"月次粗利",         v:monthTotals.profit>0?fmt(monthTotals.profit):"—", c:"#16a34a" },
+          { l:"入力進捗",         v:`${inputDays} / ${workdays}日`, c:"#374151",
+            sub: inputDays===workdays&&workdays>0 ? "✓ 入力完了" : `残 ${workdays-inputDays}日` },
+        ].map(({l,v,c,sub})=>(
+          <Card key={l} style={{ padding:"12px 16px" }}>
+            <div style={{ fontSize:11, color:"#9ca3af", marginBottom:4 }}>{l}</div>
+            <div style={{ fontSize:18, fontWeight:700, color:c }}>{v}</div>
+            {sub && <div style={{ fontSize:10, color:inputDays===workdays&&workdays>0?"#16a34a":"#9ca3af", marginTop:2 }}>{sub}</div>}
+          </Card>
+        ))}
+      </div>
+
+      {/* 月次テーブル */}
+      <Card>
+        <div style={{ overflowX:"auto" }}>
+          <table style={{ borderCollapse:"collapse", fontSize:12, whiteSpace:"nowrap" }}>
+            <thead>
+              {/* ドライバーグループヘッダー */}
+              <tr style={{ background:"#f9fafb" }}>
+                <th style={{ padding:"8px 12px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:11, borderRight:"1px solid #e5e7eb", borderBottom:"1px solid #e5e7eb", minWidth:72, position:"sticky", left:0, background:"#f9fafb", zIndex:2 }}>日付</th>
+                {assignedDrivers.map((d, dri) => (
+                  <th key={d.id} colSpan={nR}
+                    style={{ padding:"7px 12px", textAlign:"center", borderRight:"1px solid #e5e7eb", borderBottom:"1px solid #e5e7eb", background: focusedCell?.dri===dri?accent+"0e":"#f9fafb" }}>
+                    <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:5 }}>
+                      <Avatar name={d.name} size={18} bg={d.type==="自社"?"#dbeafe":"#ede9fe"} color={d.type==="自社"?"#1e40af":"#5b21b6"}/>
+                      <span style={{ fontWeight:700, fontSize:12 }}>{d.name}</span>
+                      <StatusBadge label={d.type}/>
+                    </div>
+                  </th>
+                ))}
+                <th colSpan={3} style={{ padding:"7px 12px", textAlign:"center", color:"#6b7280", fontWeight:500, fontSize:11, borderLeft:"2px solid #e5e7eb", borderBottom:"1px solid #e5e7eb" }}>日次合計</th>
+              </tr>
+              {/* 単価サブヘッダー */}
+              <tr style={{ background:"#f9fafb", borderBottom:"2px solid #e5e7eb" }}>
+                <th style={{ padding:"4px 12px", borderRight:"1px solid #e5e7eb", position:"sticky", left:0, background:"#f9fafb", zIndex:2 }}/>
+                {assignedDrivers.map((d,dri) =>
+                  rates.map((r,ri) => {
+                    const ci = dri*nR+ri;
+                    const active = focusedCell?.ci===ci;
+                    return (
+                      <th key={`${dri}-${ri}`}
+                        style={{ padding:"4px 8px", textAlign:"center", color:active?accent:"#6b7280", fontWeight:500, fontSize:10,
+                          borderLeft: ri===0&&dri>0?"1px solid #e5e7eb":"none",
+                          background: active?accent+"0e":"transparent", minWidth:60 }}>
+                        <div style={{ fontWeight:600 }}>{r.label}</div>
+                        <div style={{ color:accent, fontSize:9 }}>¥{r.sell.toLocaleString()}/¥{r.pay.toLocaleString()}</div>
+                      </th>
+                    );
+                  })
+                )}
+                {["売上","支払","粗利"].map((h,i)=>(
+                  <th key={h} style={{ padding:"4px 10px", textAlign:"right", color:"#9ca3af", fontWeight:500, fontSize:10, borderLeft:i===0?"2px solid #e5e7eb":"none", minWidth:76 }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {dayRows.map((day, di) => {
+                const dt = dayTotals[di];
+                const isActiveRow = focusedCell?.di === di;
+                const rowBg = isActiveRow ? accent+"08" : day.isWeekend ? "#f9fafb" : "#fff";
+                return (
+                  <tr key={di} style={{ borderBottom:"1px solid #f1f3f5", background:rowBg }}>
+                    <td style={{ padding:"4px 12px", borderRight:"1px solid #e5e7eb", fontWeight:500, position:"sticky", left:0, background:rowBg, zIndex:1,
+                      borderLeft: isActiveRow?`3px solid ${accent}`:"3px solid transparent" }}>
+                      <span style={{ fontSize:13, fontWeight:600, color:day.isSun?"#dc2626":day.dow===6?"#2563eb":"#111827" }}>{String(day.d).padStart(2," ")}</span>
+                      <span style={{ fontSize:10, color:"#9ca3af", marginLeft:3 }}>（{day.dayName}）</span>
+                    </td>
+                    {assignedDrivers.map((d,dri) =>
+                      rates.map((r,ri) => {
+                        const ci = dri*nR+ri;
+                        const isActive = isActiveRow && focusedCell?.ci===ci;
                         return (
-                          <td key={r.label} style={{ padding:"6px 10px", textAlign:"center" }}>
+                          <td key={ci} style={{ padding:"3px 4px", textAlign:"center", borderLeft:ri===0&&dri>0?"1px solid #e8eaed":"none" }}>
                             <input
-                              ref={el => { inputRefs.current[`${di}-${ri}`] = el; }}
-                              type="number" min="0" placeholder="0"
-                              value={entries[d.id]?.[r.label] ?? ""}
-                              onChange={e=>{
-                                setEntries(prev=>({...prev,[d.id]:{...prev[d.id],[r.label]:e.target.value}}));
-                                setSaved(false);
-                              }}
-                              onFocus={e=>{ e.target.select(); setFocusedCell({di,ri}); }}
-                              onBlur={()=>setFocusedCell(null)}
-                              onKeyDown={e=>handleKeyDown(e,di,ri)}
+                              ref={el => inputRefs.current[`${di}-${ci}`]=el}
+                              type="number" min="0" placeholder="—"
+                              value={getVal(day.dateStr, d.id, r.label)}
+                              onChange={e => setVal(day.dateStr, d.id, r.label, e.target.value)}
+                              onFocus={e => { e.target.select(); setFocusedCell({di, ci, dri}); }}
+                              onBlur={() => setFocusedCell(null)}
+                              onKeyDown={e => handleKeyDown(e, di, ci)}
                               style={{
-                                width:82, padding:"8px 6px",
-                                border: isActive?`2px solid ${accent}`:"1.5px solid #e5e7eb",
-                                borderRadius:5, fontSize:15, textAlign:"center",
+                                width:54, padding:"5px 2px",
+                                border: isActive?`2px solid ${accent}`:"1.5px solid",
+                                borderColor: isActive?accent:"#e5e7eb",
+                                borderRadius:4, fontSize:13, textAlign:"center",
                                 fontFamily:"inherit", outline:"none",
-                                background: isActive?"#fff":"#fafafa",
-                                boxShadow: isActive?`0 0 0 3px ${accent}25`:"none",
+                                background: isActive?"#fff": day.isWeekend?"#f4f5f7":"#fafafa",
+                                boxShadow: isActive?`0 0 0 3px ${accent}20`:"none",
                                 fontWeight: isActive?700:400,
-                                transition:"border-color .1s, box-shadow .1s, background .1s",
-                              }}/>
+                                color: day.isWeekend?"#9ca3af":"inherit",
+                                transition:"border-color .1s, box-shadow .1s",
+                              }}
+                            />
                           </td>
                         );
-                      })}
-                      <td style={{ padding:"10px 16px", textAlign:"right", fontWeight:600, color:accent }}>{rowSell>0?fmt(rowSell):"—"}</td>
-                      <td style={{ padding:"10px 16px", textAlign:"right", fontWeight:600 }}>{rowPay>0?fmt(rowPay):"—"}</td>
-                    </tr>
+                      })
+                    )}
+                    <td style={{ padding:"4px 10px", textAlign:"right", fontWeight:600, color:dt.sell>0?accent:"#e5e7eb", borderLeft:"2px solid #e5e7eb", fontSize:12 }}>
+                      {dt.sell>0 ? fmt(dt.sell) : "—"}
+                    </td>
+                    <td style={{ padding:"4px 10px", textAlign:"right", fontSize:12, color:dt.pay>0?"#374151":"#e5e7eb" }}>
+                      {dt.pay>0 ? fmt(dt.pay) : "—"}
+                    </td>
+                    <td style={{ padding:"4px 10px", textAlign:"right", fontWeight:600, color:dt.profit>0?"#16a34a":"#e5e7eb", fontSize:12 }}>
+                      {dt.profit>0 ? fmt(dt.profit) : "—"}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+            <tfoot>
+              {/* 件数合計 */}
+              <tr style={{ background:"#f9fafb", borderTop:"2px solid #e5e7eb" }}>
+                <td style={{ padding:"8px 12px", fontWeight:700, fontSize:12, borderRight:"1px solid #e5e7eb", position:"sticky", left:0, background:"#f9fafb" }}>月次合計</td>
+                {colTotals.map((col,ci) => {
+                  const dri = Math.floor(ci/nR), ri = ci%nR;
+                  return (
+                    <td key={ci}
+                      style={{ padding:"7px 6px", textAlign:"center", fontWeight:700, color:col.vol>0?"#111827":"#9ca3af", fontSize:13, borderLeft:ri===0&&dri>0?"1px solid #e8eaed":"none" }}>
+                      {col.vol>0 ? col.vol : "—"}
+                    </td>
                   );
                 })}
-                <tr style={{ background:"#f9fafb", borderTop:"2px solid #e5e7eb" }}>
-                  <td style={{ padding:"10px 16px", fontWeight:700 }}>合計</td>
-                  {totals.map(t=>(
-                    <td key={t.label} style={{ padding:"10px 12px", textAlign:"center", fontWeight:700 }}>{t.vol}</td>
-                  ))}
-                  <td style={{ padding:"10px 16px", textAlign:"right", fontWeight:700, color:accent }}>{totalSellD>0?fmt(totalSellD):"—"}</td>
-                  <td style={{ padding:"10px 16px", textAlign:"right", fontWeight:700 }}>{totalPayD>0?fmt(totalPayD):"—"}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </Card>
-
-        {/* 右: サマリー */}
-        <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
-          <Card style={{ padding:20 }}>
-            <div style={{ fontSize:13, fontWeight:700, marginBottom:14 }}>本日サマリー</div>
-            {[
-              ["売上", fmt(totalSellD), accent],
-              ["支払", fmt(totalPayD), "#374151"],
-              ["粗利", fmt(totalSellD-totalPayD), "#16a34a"],
-              ["粗利率", totalSellD>0?((totalSellD-totalPayD)/totalSellD*100).toFixed(1)+"%":"—", "#16a34a"],
-            ].map(([l,v,c])=>(
-              <div key={l} style={{ display:"flex", justifyContent:"space-between", fontSize:13, padding:"7px 0", borderBottom:"1px solid #f8f9fa" }}>
-                <span style={{ color:"#6b7280" }}>{l}</span>
-                <span style={{ fontWeight:700, color:c }}>{v}</span>
-              </div>
-            ))}
-            {totals.filter(t=>t.vol>0).map(t=>(
-              <div key={t.label} style={{ display:"flex", justifyContent:"space-between", fontSize:12, padding:"5px 0", color:"#9ca3af" }}>
-                <span>{t.label}</span>
-                <span>{t.vol}件</span>
-              </div>
-            ))}
-          </Card>
-
-          <button onClick={()=>setSaved(true)}
-            style={{ width:"100%", padding:"13px", background: saved?"#16a34a":accent, color:"#fff", border:"none", borderRadius:8, fontWeight:700, fontSize:15, display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
-            {saved
-              ? <><Ic name="check" size={16} color="#fff" strokeWidth={2.5}/> 保存済み</>
-              : <><span>実績を保存</span><span style={{ fontSize:11, opacity:0.65, marginLeft:4 }}>⌘S</span></>
-            }
-          </button>
-
-          <button onClick={()=>{
-              const header = ["日付","荷主","ドライバー",...selClient.rates.map(r=>r.label),"売上","支払","粗利"];
-              const rows = assignedDrivers.map(d=>{
-                const rowSell = selClient.rates.reduce((s,r)=>s+(Number(entries[d.id]?.[r.label])||0)*r.sell,0);
-                const rowPay  = selClient.rates.reduce((s,r)=>s+(Number(entries[d.id]?.[r.label])||0)*r.pay,0);
-                return [date, selClient.name, d.name, ...selClient.rates.map(r=>entries[d.id]?.[r.label]||0), rowSell, rowPay, rowSell-rowPay];
-              });
-              const csv = [header,...rows].map(r=>r.join(",")).join("\n");
-              const a = document.createElement("a"); a.href = "data:text/csv;charset=utf-8,﻿"+encodeURIComponent(csv); a.download = `実績_${selClient.name}_${date}.csv`; a.click();
-            }}
-            style={{ width:"100%", padding:"10px", border:"1.5px solid #e5e7eb", background:"#fff", color:"#374151", borderRadius:8, fontWeight:600, fontSize:13, cursor:"pointer" }}>
-            CSVエクスポート
-          </button>
-
-          <Card style={{ padding:16 }}>
-            <div style={{ fontSize:12, fontWeight:700, color:"#9ca3af", marginBottom:10 }}>{selClient.name} 直近実績</div>
-            {[
-              { date:"04/29（火）", vol:82, sell:12710, pay:10660 },
-              { date:"04/28（月）", vol:76, sell:11780, pay:9880 },
-              { date:"04/25（金）", vol:95, sell:14725, pay:12350 },
-            ].map((r,i)=>(
-              <div key={i} style={{ display:"flex", justifyContent:"space-between", fontSize:12, marginBottom:6 }}>
-                <span style={{ color:"#6b7280" }}>{r.date} {r.vol}件</span>
-                <span style={{ fontWeight:600 }}>{fmt(r.sell)}</span>
-              </div>
-            ))}
-          </Card>
+                <td style={{ padding:"7px 10px", textAlign:"right", fontWeight:800, color:monthTotals.sell>0?accent:"#9ca3af", borderLeft:"2px solid #e5e7eb" }}>
+                  {monthTotals.sell>0 ? fmt(monthTotals.sell) : "—"}
+                </td>
+                <td style={{ padding:"7px 10px", textAlign:"right", fontWeight:800, color:monthTotals.pay>0?"#374151":"#9ca3af" }}>
+                  {monthTotals.pay>0 ? fmt(monthTotals.pay) : "—"}
+                </td>
+                <td style={{ padding:"7px 10px", textAlign:"right", fontWeight:800, color:monthTotals.profit>0?"#16a34a":"#9ca3af" }}>
+                  {monthTotals.profit>0 ? fmt(monthTotals.profit) : "—"}
+                </td>
+              </tr>
+              {/* ドライバー別売上 */}
+              <tr style={{ background:"#fafbff", borderTop:"1px solid #e5e7eb" }}>
+                <td style={{ padding:"6px 12px", fontSize:10, color:"#9ca3af", borderRight:"1px solid #e5e7eb", position:"sticky", left:0, background:"#fafbff" }}>ドライバー別売上</td>
+                {colTotals.map((col,ci) => {
+                  const dri = Math.floor(ci/nR), ri = ci%nR;
+                  return (
+                    <td key={ci}
+                      style={{ padding:"5px 6px", textAlign:"center", fontSize:10, color:"#6b7280", borderLeft:ri===0&&dri>0?"1px solid #e8eaed":"none" }}>
+                      {col.sell>0 ? fmt(col.sell) : ""}
+                    </td>
+                  );
+                })}
+                <td colSpan={3} style={{ borderLeft:"2px solid #e5e7eb" }}/>
+              </tr>
+            </tfoot>
+          </table>
         </div>
+      </Card>
+
+      {/* アクションボタン */}
+      <div style={{ display:"flex", gap:10, marginTop:12 }}>
+        <button onClick={()=>setSaved(true)}
+          style={{ flex:2, padding:"12px", background:saved?"#16a34a":accent, color:"#fff", border:"none", borderRadius:7, fontWeight:700, fontSize:14, display:"flex", alignItems:"center", justifyContent:"center", gap:8, cursor:"pointer" }}>
+          {saved
+            ? <><Ic name="check" size={16} color="#fff" strokeWidth={2.5}/> 保存済み</>
+            : <><span>月次実績を保存</span><span style={{ fontSize:11, opacity:0.65 }}>⌘S</span></>
+          }
+        </button>
+        <button onClick={handleCSV}
+          style={{ flex:1, padding:"12px 16px", border:"1.5px solid #e5e7eb", background:"#fff", color:"#374151", borderRadius:7, fontWeight:600, fontSize:13, cursor:"pointer" }}>
+          CSVエクスポート
+        </button>
+        {confirmClear ? (
+          <div style={{ display:"flex", gap:6, alignItems:"center" }}>
+            <span style={{ fontSize:12, color:"#dc2626" }}>クリアしますか？</span>
+            <button onClick={()=>{ setEntries({}); setSaved(false); setConfirmClear(false); }}
+              style={{ padding:"10px 14px", background:"#dc2626", color:"#fff", border:"none", borderRadius:7, fontWeight:600, fontSize:12, cursor:"pointer" }}>確認</button>
+            <button onClick={()=>setConfirmClear(false)}
+              style={{ padding:"10px 14px", border:"1.5px solid #e5e7eb", background:"#fff", color:"#374151", borderRadius:7, fontSize:12, cursor:"pointer" }}>キャンセル</button>
+          </div>
+        ) : (
+          <button onClick={()=>setConfirmClear(true)}
+            style={{ padding:"12px 16px", border:"1.5px solid #fee2e2", background:"#fff", color:"#dc2626", borderRadius:7, fontWeight:600, fontSize:13, cursor:"pointer" }}>
+            クリア
+          </button>
+        )}
       </div>
     </div>
   );
