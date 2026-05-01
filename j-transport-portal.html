@@ -1570,7 +1570,7 @@ const ClientPage = ({ accent, setPage }) => {
 // ── 日次実績入力 ───────────────────────────────────────────────────────────
 const DailyInputPage = ({ accent }) => {
   const [selClient, setSelClient] = React.useState(clients[0]);
-  const [monthYear, setMonthYear] = React.useState("2025-04");
+  const [monthYear, setMonthYear] = React.useState(()=>{ const n=new Date(); return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}`; });
   const [entries, setEntries] = React.useState({});
   const [saved, setSaved] = React.useState(false);
   const [focusedCell, setFocusedCell] = React.useState(null);
@@ -1582,9 +1582,8 @@ const DailyInputPage = ({ accent }) => {
   const rates = selClient.rates.filter(r => r.sell > 0 || r.pay > 0);
   const nD = assignedDrivers.length;
   const nR = rates.length;
-  const nCols = nD * nR; // total input columns per row
+  const nCols = nD * nR;
 
-  // days in month
   const [yr, mo] = monthYear.split("-").map(Number);
   const daysInMonth = new Date(yr, mo, 0).getDate();
   const dayRows = Array.from({length: daysInMonth}, (_, i) => {
@@ -1594,84 +1593,95 @@ const DailyInputPage = ({ accent }) => {
       d: i+1,
       dateStr: `${monthYear}-${String(i+1).padStart(2,"0")}`,
       dayName: ["日","月","火","水","木","金","土"][dow],
-      dow,
-      isWeekend: dow===0 || dow===6,
-      isSun: dow===0,
+      dow, isWeekend: dow===0||dow===6, isSun: dow===0,
     };
   });
 
   const getVal = (dateStr, dId, rLabel) => entries[dateStr]?.[dId]?.[rLabel] ?? "";
   const setVal = (dateStr, dId, rLabel, v) => {
-    setEntries(p => ({
-      ...p,
-      [dateStr]: { ...(p[dateStr]||{}), [dId]: { ...((p[dateStr]||{})[dId]||{}), [rLabel]: v } }
-    }));
+    setEntries(p => ({ ...p, [dateStr]: { ...(p[dateStr]||{}), [dId]: { ...((p[dateStr]||{})[dId]||{}), [rLabel]: v } } }));
     setSaved(false);
   };
 
-  // day-level totals
   const dayTotals = dayRows.map(day => {
     let sell=0, pay=0;
     assignedDrivers.forEach(d => rates.forEach(r => {
       const v = Number(getVal(day.dateStr, d.id, r.label))||0;
-      sell += v * r.sell; pay += v * r.pay;
+      sell += v*r.sell; pay += v*r.pay;
     }));
     return { sell, pay, profit: sell-pay };
   });
-
-  // month totals
   const monthTotals = dayTotals.reduce((a,t)=>({sell:a.sell+t.sell,pay:a.pay+t.pay,profit:a.profit+t.profit}),{sell:0,pay:0,profit:0});
-
-  // column totals (vol per driver×rate)
-  const colTotals = assignedDrivers.flatMap((d,dri) =>
-    rates.map((r,ri) => ({
-      vol:  dayRows.reduce((s,day) => s+(Number(getVal(day.dateStr,d.id,r.label))||0),0),
-      sell: dayRows.reduce((s,day) => s+(Number(getVal(day.dateStr,d.id,r.label))||0)*r.sell,0),
+  const colTotals = assignedDrivers.flatMap((d) =>
+    rates.map((r) => ({
+      vol:  dayRows.reduce((s,day)=>s+(Number(getVal(day.dateStr,d.id,r.label))||0),0),
+      sell: dayRows.reduce((s,day)=>s+(Number(getVal(day.dateStr,d.id,r.label))||0)*r.sell,0),
     }))
   );
+  const inputDays = dayRows.filter((_,i)=>dayTotals[i].sell>0).length;
+  const workdays  = dayRows.filter(d=>!d.isWeekend).length;
 
-  const inputDays = dayRows.filter((_,i) => dayTotals[i].sell > 0).length;
-  const workdays  = dayRows.filter(d => !d.isWeekend).length;
+  // ── 今日・目標 ──
+  const now0 = new Date();
+  const currentMonthYear = `${now0.getFullYear()}-${String(now0.getMonth()+1).padStart(2,"0")}`;
+  const isCurrentMonth = monthYear === currentMonthYear;
+  const todayD = now0.getDate();
+  const todayStr = `${monthYear}-${String(todayD).padStart(2,"0")}`;
+  const todayDayRow = isCurrentMonth ? dayRows.find(r=>r.d===todayD) : null;
+  const dayNames7 = ["日","月","火","水","木","金","土"];
+  const todayLabel = isCurrentMonth ? `${now0.getMonth()+1}月${todayD}日（${dayNames7[now0.getDay()]}）` : "";
+  const dailyTargets = rates.reduce((obj,r)=>{
+    const mVol = selClient.monthlyVol[r.label]||0;
+    obj[r.label] = workdays>0&&mVol>0 ? Math.round(mVol/workdays) : 0;
+    return obj;
+  },{});
+  const todayCompletedCount = isCurrentMonth
+    ? assignedDrivers.filter(d=>rates.every(r=>getVal(todayStr,d.id,r.label)!=="")).length : 0;
+  const todayComplete = isCurrentMonth && todayDayRow && !todayDayRow.isWeekend
+    && todayCompletedCount===assignedDrivers.length;
 
-  // keyboard nav: Enter/↓ = next day, ↑ = prev day, Tab = next col, Shift+Tab = prev col
   const focusCell = (di, ci) => {
     let d=di, c=ci;
-    if (c < 0) { c=nCols-1; d--; }
-    if (c >= nCols) { c=0; d++; }
-    if (d < 0 || d >= daysInMonth) return;
+    if (c<0){c=nCols-1;d--;} if(c>=nCols){c=0;d++;}
+    if(d<0||d>=daysInMonth) return;
     inputRefs.current[`${d}-${c}`]?.focus();
   };
   const handleKeyDown = (e, di, ci) => {
-    if (e.key==='Enter'||e.key==='ArrowDown') { e.preventDefault(); focusCell(di+1, ci); }
-    else if (e.key==='ArrowUp') { e.preventDefault(); focusCell(di-1, ci); }
-    else if (e.key==='Tab') { e.preventDefault(); focusCell(di, ci+(e.shiftKey?-1:1)); }
+    if(e.key==='Enter'||e.key==='ArrowDown'){e.preventDefault();focusCell(di+1,ci);}
+    else if(e.key==='ArrowUp'){e.preventDefault();focusCell(di-1,ci);}
+    else if(e.key==='Tab'){e.preventDefault();focusCell(di,ci+(e.shiftKey?-1:1));}
   };
 
   React.useEffect(() => {
     const h = e => {
-      if ((e.metaKey||e.ctrlKey) && e.key==='s') { e.preventDefault(); setSaved(true); }
-      if (e.altKey && e.key>='1' && e.key<='9') {
+      if((e.metaKey||e.ctrlKey)&&e.key==='s'){e.preventDefault();setSaved(true);}
+      if(e.altKey&&e.key>='1'&&e.key<='9'){
         const idx=Number(e.key)-1;
-        if (idx<clientList.length) { setSelClient(clientList[idx]); setEntries({}); setSaved(false); }
+        if(idx<clientList.length){setSelClient(clientList[idx]);setEntries({});setSaved(false);}
       }
     };
-    window.addEventListener('keydown', h);
-    return () => window.removeEventListener('keydown', h);
+    window.addEventListener('keydown',h);
+    return ()=>window.removeEventListener('keydown',h);
   }, [clientList]);
 
   React.useEffect(() => {
     setTimeout(() => inputRefs.current["0-0"]?.focus(), 80);
+    if (isCurrentMonth) {
+      setTimeout(() => {
+        document.querySelector('[data-today="true"]')?.scrollIntoView({ behavior:"smooth", block:"center" });
+      }, 300);
+    }
   }, [selClient, monthYear]);
 
   const handleCSV = () => {
-    const rHeaders = assignedDrivers.flatMap(d => rates.map(r => `${d.name}:${r.label}`));
+    const rHeaders = assignedDrivers.flatMap(d=>rates.map(r=>`${d.name}:${r.label}`));
     const header = ["日付","曜日",...rHeaders,"売上合計","支払合計","粗利"];
-    const rows = dayRows.map((day,i) => {
-      const vals = assignedDrivers.flatMap(d => rates.map(r => getVal(day.dateStr,d.id,r.label)||0));
-      const {sell,pay,profit} = dayTotals[i];
-      return [day.dateStr, day.dayName, ...vals, sell, pay, profit];
+    const rows = dayRows.map((day,i)=>{
+      const vals = assignedDrivers.flatMap(d=>rates.map(r=>getVal(day.dateStr,d.id,r.label)||0));
+      const {sell,pay,profit}=dayTotals[i];
+      return [day.dateStr,day.dayName,...vals,sell,pay,profit];
     });
-    const footRow = ["月次合計","",...colTotals.map(c=>c.vol), monthTotals.sell, monthTotals.pay, monthTotals.profit];
+    const footRow = ["月次合計","",...colTotals.map(c=>c.vol),monthTotals.sell,monthTotals.pay,monthTotals.profit];
     const csv = [header,...rows,footRow].map(r=>r.join(",")).join("\n");
     const a=document.createElement("a");
     a.href="data:text/csv;charset=utf-8,﻿"+encodeURIComponent(csv);
@@ -1729,7 +1739,7 @@ const DailyInputPage = ({ accent }) => {
           { l:"月次支払",         v:monthTotals.pay>0?fmt(monthTotals.pay):"—",   c:"#d97706" },
           { l:"月次粗利",         v:monthTotals.profit>0?fmt(monthTotals.profit):"—", c:"#16a34a" },
           { l:"入力進捗",         v:`${inputDays} / ${workdays}日`, c:"#374151",
-            sub: inputDays===workdays&&workdays>0 ? "✓ 入力完了" : `残 ${workdays-inputDays}日` },
+            sub: inputDays===workdays&&workdays>0?"✓ 入力完了":`残 ${workdays-inputDays}日` },
         ].map(({l,v,c,sub})=>(
           <Card key={l} style={{ padding:"12px 16px" }}>
             <div style={{ fontSize:11, color:"#9ca3af", marginBottom:4 }}>{l}</div>
@@ -1739,17 +1749,74 @@ const DailyInputPage = ({ accent }) => {
         ))}
       </div>
 
+      {/* ── 今日のクイック入力パネル ── */}
+      {isCurrentMonth && todayDayRow && !todayDayRow.isWeekend && (
+        <Card style={{ marginBottom:14, border:`2px solid ${todayComplete?"#86efac":accent+"50"}`, background:todayComplete?"#f0fdf4":accent+"05" }}>
+          <div style={{ padding:"11px 18px", borderBottom:`1px solid ${todayComplete?"#bbf7d0":accent+"20"}`, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+            <div style={{ display:"flex", gap:9, alignItems:"center" }}>
+              <div style={{ width:8, height:8, borderRadius:"50%", background:todayComplete?"#16a34a":accent, flexShrink:0 }}/>
+              <span style={{ fontWeight:700, fontSize:14 }}>今日の入力</span>
+              <span style={{ fontSize:12, color:"#6b7280" }}>{todayLabel}</span>
+            </div>
+            {todayComplete
+              ? <span style={{ fontSize:13, color:"#16a34a", fontWeight:700 }}>✓ 全員入力完了</span>
+              : <span style={{ fontSize:12, color:"#6b7280" }}>{todayCompletedCount} / {assignedDrivers.length}名 完了</span>
+            }
+          </div>
+          <div style={{ padding:"14px 18px", display:"flex", gap:12, flexWrap:"wrap" }}>
+            {assignedDrivers.map(d => {
+              const dComplete = rates.every(r=>getVal(todayStr,d.id,r.label)!=="");
+              return (
+                <div key={d.id} style={{ flex:"1 1 180px", padding:"12px 14px", background:dComplete?"#f0fdf4":"#fff", border:`1.5px solid ${dComplete?"#86efac":"#e5e7eb"}`, borderRadius:8, minWidth:160 }}>
+                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10 }}>
+                    <div style={{ display:"flex", gap:6, alignItems:"center" }}>
+                      <Avatar name={d.name} size={22} bg={d.type==="自社"?"#dbeafe":"#ede9fe"} color={d.type==="自社"?"#1e40af":"#5b21b6"}/>
+                      <span style={{ fontWeight:600, fontSize:13 }}>{d.name}</span>
+                      <StatusBadge label={d.type}/>
+                    </div>
+                    {dComplete && <span style={{ fontSize:15, color:"#16a34a", fontWeight:700 }}>✓</span>}
+                  </div>
+                  {rates.map((r,ri)=>{
+                    const val = getVal(todayStr, d.id, r.label);
+                    const dt2 = dailyTargets[r.label];
+                    const numVal = Number(val);
+                    const isAnomaly = val!==""&&(numVal===0||(dt2>0&&numVal>dt2*3));
+                    return (
+                      <div key={r.label} style={{ marginBottom:ri<rates.length-1?8:0 }}>
+                        <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                          <label style={{ fontSize:11, color:"#6b7280", width:56, flexShrink:0 }}>{r.label}</label>
+                          <input type="number" min="0"
+                            value={val}
+                            onChange={e=>setVal(todayStr,d.id,r.label,e.target.value)}
+                            placeholder=""
+                            title={isAnomaly?(numVal===0?"0件？ 空欄にしてください":"通常より大幅に多い件数です"):""}
+                            style={{ width:72, padding:"6px 8px", border:`1.5px solid ${isAnomaly?"#f87171":"#e5e7eb"}`, borderRadius:5, fontSize:16, textAlign:"center", fontFamily:"inherit", outline:"none", background:isAnomaly?"#fff5f5":"#fafafa" }}
+                            onFocus={e=>{e.target.style.borderColor=isAnomaly?"#f87171":accent;e.target.style.boxShadow=`0 0 0 3px ${isAnomaly?"#fecaca50":accent+"20"}`;}}
+                            onBlur={e=>{e.target.style.borderColor=isAnomaly?"#f87171":"#e5e7eb";e.target.style.boxShadow="none";}}
+                          />
+                          <span style={{ fontSize:12, color:"#9ca3af" }}>件</span>
+                        </div>
+                        {isAnomaly&&<div style={{ fontSize:10, color:"#dc2626", marginTop:2, marginLeft:64 }}>{numVal===0?"0件？ 空欄にしてください":"通常より大幅に多い件数です"}</div>}
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+      )}
+
       {/* 月次テーブル */}
       <Card>
         <div style={{ overflowX:"auto" }}>
           <table style={{ borderCollapse:"collapse", fontSize:12, whiteSpace:"nowrap" }}>
             <thead>
-              {/* ドライバーグループヘッダー */}
               <tr style={{ background:"#f9fafb" }}>
-                <th style={{ padding:"8px 12px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:11, borderRight:"1px solid #e5e7eb", borderBottom:"1px solid #e5e7eb", minWidth:72, position:"sticky", left:0, background:"#f9fafb", zIndex:2 }}>日付</th>
-                {assignedDrivers.map((d, dri) => (
+                <th style={{ padding:"8px 12px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:11, borderRight:"1px solid #e5e7eb", borderBottom:"1px solid #e5e7eb", minWidth:90, position:"sticky", left:0, background:"#f9fafb", zIndex:2 }}>日付</th>
+                {assignedDrivers.map((d,dri)=>(
                   <th key={d.id} colSpan={nR}
-                    style={{ padding:"7px 12px", textAlign:"center", borderRight:"1px solid #e5e7eb", borderBottom:"1px solid #e5e7eb", background: focusedCell?.dri===dri?accent+"0e":"#f9fafb" }}>
+                    style={{ padding:"7px 12px", textAlign:"center", borderRight:"1px solid #e5e7eb", borderBottom:"1px solid #e5e7eb", background:focusedCell?.dri===dri?accent+"0e":"#f9fafb" }}>
                     <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:5 }}>
                       <Avatar name={d.name} size={18} bg={d.type==="自社"?"#dbeafe":"#ede9fe"} color={d.type==="自社"?"#1e40af":"#5b21b6"}/>
                       <span style={{ fontWeight:700, fontSize:12 }}>{d.name}</span>
@@ -1758,21 +1825,20 @@ const DailyInputPage = ({ accent }) => {
                   </th>
                 ))}
                 <th colSpan={3} style={{ padding:"7px 12px", textAlign:"center", color:"#6b7280", fontWeight:500, fontSize:11, borderLeft:"2px solid #e5e7eb", borderBottom:"1px solid #e5e7eb" }}>日次合計</th>
+                <th style={{ padding:"7px 8px", textAlign:"center", color:"#6b7280", fontWeight:500, fontSize:11, borderLeft:"1px solid #e5e7eb", borderBottom:"1px solid #e5e7eb", minWidth:40 }}>状態</th>
               </tr>
-              {/* 単価サブヘッダー */}
               <tr style={{ background:"#f9fafb", borderBottom:"2px solid #e5e7eb" }}>
                 <th style={{ padding:"4px 12px", borderRight:"1px solid #e5e7eb", position:"sticky", left:0, background:"#f9fafb", zIndex:2 }}/>
-                {assignedDrivers.map((d,dri) =>
-                  rates.map((r,ri) => {
-                    const ci = dri*nR+ri;
-                    const active = focusedCell?.ci===ci;
+                {assignedDrivers.map((d,dri)=>
+                  rates.map((r,ri)=>{
+                    const ci=dri*nR+ri;
+                    const active=focusedCell?.ci===ci;
                     return (
                       <th key={`${dri}-${ri}`}
                         style={{ padding:"4px 8px", textAlign:"center", color:active?accent:"#6b7280", fontWeight:500, fontSize:10,
-                          borderLeft: ri===0&&dri>0?"1px solid #e5e7eb":"none",
-                          background: active?accent+"0e":"transparent", minWidth:60 }}>
+                          borderLeft:ri===0&&dri>0?"1px solid #e5e7eb":"none",
+                          background:active?accent+"0e":"transparent", minWidth:60 }}>
                         <div style={{ fontWeight:600 }}>{r.label}</div>
-                        <div style={{ color:accent, fontSize:9 }}>¥{r.sell.toLocaleString()}/¥{r.pay.toLocaleString()}</div>
                       </th>
                     );
                   })
@@ -1780,44 +1846,56 @@ const DailyInputPage = ({ accent }) => {
                 {["売上","支払","粗利"].map((h,i)=>(
                   <th key={h} style={{ padding:"4px 10px", textAlign:"right", color:"#9ca3af", fontWeight:500, fontSize:10, borderLeft:i===0?"2px solid #e5e7eb":"none", minWidth:76 }}>{h}</th>
                 ))}
+                <th style={{ padding:"4px 8px", borderLeft:"1px solid #e5e7eb" }}/>
               </tr>
             </thead>
             <tbody>
-              {dayRows.map((day, di) => {
+              {dayRows.map((day,di)=>{
                 const dt = dayTotals[di];
-                const isActiveRow = focusedCell?.di === di;
-                const rowBg = isActiveRow ? accent+"08" : day.isWeekend ? "#f9fafb" : "#fff";
+                const isActiveRow = focusedCell?.di===di;
+                const isToday = day.dateStr===todayStr&&isCurrentMonth;
+                const rowBg = isActiveRow?accent+"08":isToday?accent+"06":day.isWeekend?"#f9fafb":"#fff";
+                const rowFilled = !day.isWeekend&&assignedDrivers.every(d=>rates.every(r=>getVal(day.dateStr,d.id,r.label)!==""));
+                const rowPartial = !rowFilled&&!day.isWeekend&&assignedDrivers.some(d=>rates.some(r=>getVal(day.dateStr,d.id,r.label)!==""));
                 return (
-                  <tr key={di} style={{ borderBottom:"1px solid #f1f3f5", background:rowBg }}>
+                  <tr key={di} data-today={isToday?"true":"false"} style={{ borderBottom:"1px solid #f1f3f5", background:rowBg }}>
                     <td style={{ padding:"4px 12px", borderRight:"1px solid #e5e7eb", fontWeight:500, position:"sticky", left:0, background:rowBg, zIndex:1,
-                      borderLeft: isActiveRow?`3px solid ${accent}`:"3px solid transparent" }}>
-                      <span style={{ fontSize:13, fontWeight:600, color:day.isSun?"#dc2626":day.dow===6?"#2563eb":"#111827" }}>{String(day.d).padStart(2," ")}</span>
-                      <span style={{ fontSize:10, color:"#9ca3af", marginLeft:3 }}>（{day.dayName}）</span>
+                      borderLeft:isActiveRow?`3px solid ${accent}`:isToday?`3px solid ${accent}80`:"3px solid transparent" }}>
+                      <div style={{ display:"flex", alignItems:"center", gap:5 }}>
+                        <span style={{ fontSize:13, fontWeight:600, color:day.isSun?"#dc2626":day.dow===6?"#2563eb":"#111827" }}>{String(day.d).padStart(2," ")}</span>
+                        <span style={{ fontSize:10, color:"#9ca3af" }}>（{day.dayName}）</span>
+                        {isToday&&<span style={{ fontSize:9, fontWeight:700, background:accent, color:"#fff", padding:"1px 5px", borderRadius:3, flexShrink:0 }}>TODAY</span>}
+                      </div>
                     </td>
-                    {assignedDrivers.map((d,dri) =>
-                      rates.map((r,ri) => {
-                        const ci = dri*nR+ri;
-                        const isActive = isActiveRow && focusedCell?.ci===ci;
+                    {assignedDrivers.map((d,dri)=>
+                      rates.map((r,ri)=>{
+                        const ci=dri*nR+ri;
+                        const isActive=isActiveRow&&focusedCell?.ci===ci;
+                        const val=getVal(day.dateStr,d.id,r.label);
+                        const numVal=Number(val);
+                        const dt2=dailyTargets[r.label];
+                        const isAnomaly=!day.isWeekend&&val!==""&&(numVal===0||(dt2>0&&numVal>dt2*3));
                         return (
                           <td key={ci} style={{ padding:"3px 4px", textAlign:"center", borderLeft:ri===0&&dri>0?"1px solid #e8eaed":"none" }}>
                             <input
-                              ref={el => inputRefs.current[`${di}-${ci}`]=el}
-                              type="number" min="0" placeholder="—"
-                              value={getVal(day.dateStr, d.id, r.label)}
-                              onChange={e => setVal(day.dateStr, d.id, r.label, e.target.value)}
-                              onFocus={e => { e.target.select(); setFocusedCell({di, ci, dri}); }}
-                              onBlur={() => setFocusedCell(null)}
-                              onKeyDown={e => handleKeyDown(e, di, ci)}
+                              ref={el=>inputRefs.current[`${di}-${ci}`]=el}
+                              type="number" min="0"
+                              placeholder={day.isWeekend?"—":""}
+                              title={isAnomaly?(numVal===0?"0件？ 空欄にしてください":"通常より大幅に多い件数です"):""}
+                              value={val}
+                              onChange={e=>setVal(day.dateStr,d.id,r.label,e.target.value)}
+                              onFocus={e=>{e.target.select();setFocusedCell({di,ci,dri});}}
+                              onBlur={()=>setFocusedCell(null)}
+                              onKeyDown={e=>handleKeyDown(e,di,ci)}
                               style={{
                                 width:54, padding:"5px 2px",
-                                border: isActive?`2px solid ${accent}`:"1.5px solid",
-                                borderColor: isActive?accent:"#e5e7eb",
+                                border:isAnomaly?"1.5px solid #f87171":isActive?`2px solid ${accent}`:"1.5px solid #e5e7eb",
                                 borderRadius:4, fontSize:13, textAlign:"center",
                                 fontFamily:"inherit", outline:"none",
-                                background: isActive?"#fff": day.isWeekend?"#f4f5f7":"#fafafa",
-                                boxShadow: isActive?`0 0 0 3px ${accent}20`:"none",
-                                fontWeight: isActive?700:400,
-                                color: day.isWeekend?"#9ca3af":"inherit",
+                                background:isAnomaly?"#fff5f5":isActive?"#fff":day.isWeekend?"#f4f5f7":"#fafafa",
+                                boxShadow:isActive?`0 0 0 3px ${accent}20`:"none",
+                                fontWeight:isActive?700:400,
+                                color:day.isWeekend?"#9ca3af":"inherit",
                                 transition:"border-color .1s, box-shadow .1s",
                               }}
                             />
@@ -1826,54 +1904,50 @@ const DailyInputPage = ({ accent }) => {
                       })
                     )}
                     <td style={{ padding:"4px 10px", textAlign:"right", fontWeight:600, color:dt.sell>0?accent:"#e5e7eb", borderLeft:"2px solid #e5e7eb", fontSize:12 }}>
-                      {dt.sell>0 ? fmt(dt.sell) : "—"}
+                      {dt.sell>0?fmt(dt.sell):"—"}
                     </td>
                     <td style={{ padding:"4px 10px", textAlign:"right", fontSize:12, color:dt.pay>0?"#374151":"#e5e7eb" }}>
-                      {dt.pay>0 ? fmt(dt.pay) : "—"}
+                      {dt.pay>0?fmt(dt.pay):"—"}
                     </td>
                     <td style={{ padding:"4px 10px", textAlign:"right", fontWeight:600, color:dt.profit>0?"#16a34a":"#e5e7eb", fontSize:12 }}>
-                      {dt.profit>0 ? fmt(dt.profit) : "—"}
+                      {dt.profit>0?fmt(dt.profit):"—"}
+                    </td>
+                    <td style={{ padding:"4px 8px", textAlign:"center", borderLeft:"1px solid #e5e7eb", fontSize:13 }}>
+                      {rowFilled?<span style={{ color:"#16a34a", fontWeight:700 }}>✓</span>
+                       :rowPartial?<span style={{ color:"#d97706" }}>…</span>:null}
                     </td>
                   </tr>
                 );
               })}
             </tbody>
             <tfoot>
-              {/* 件数合計 */}
               <tr style={{ background:"#f9fafb", borderTop:"2px solid #e5e7eb" }}>
                 <td style={{ padding:"8px 12px", fontWeight:700, fontSize:12, borderRight:"1px solid #e5e7eb", position:"sticky", left:0, background:"#f9fafb" }}>月次合計</td>
-                {colTotals.map((col,ci) => {
-                  const dri = Math.floor(ci/nR), ri = ci%nR;
+                {colTotals.map((col,ci)=>{
+                  const dri=Math.floor(ci/nR), ri=ci%nR;
                   return (
-                    <td key={ci}
-                      style={{ padding:"7px 6px", textAlign:"center", fontWeight:700, color:col.vol>0?"#111827":"#9ca3af", fontSize:13, borderLeft:ri===0&&dri>0?"1px solid #e8eaed":"none" }}>
-                      {col.vol>0 ? col.vol : "—"}
+                    <td key={ci} style={{ padding:"7px 6px", textAlign:"center", fontWeight:700, color:col.vol>0?"#111827":"#9ca3af", fontSize:13, borderLeft:ri===0&&dri>0?"1px solid #e8eaed":"none" }}>
+                      {col.vol>0?col.vol:"—"}
                     </td>
                   );
                 })}
-                <td style={{ padding:"7px 10px", textAlign:"right", fontWeight:800, color:monthTotals.sell>0?accent:"#9ca3af", borderLeft:"2px solid #e5e7eb" }}>
-                  {monthTotals.sell>0 ? fmt(monthTotals.sell) : "—"}
-                </td>
-                <td style={{ padding:"7px 10px", textAlign:"right", fontWeight:800, color:monthTotals.pay>0?"#374151":"#9ca3af" }}>
-                  {monthTotals.pay>0 ? fmt(monthTotals.pay) : "—"}
-                </td>
-                <td style={{ padding:"7px 10px", textAlign:"right", fontWeight:800, color:monthTotals.profit>0?"#16a34a":"#9ca3af" }}>
-                  {monthTotals.profit>0 ? fmt(monthTotals.profit) : "—"}
-                </td>
+                <td style={{ padding:"7px 10px", textAlign:"right", fontWeight:800, color:monthTotals.sell>0?accent:"#9ca3af", borderLeft:"2px solid #e5e7eb" }}>{monthTotals.sell>0?fmt(monthTotals.sell):"—"}</td>
+                <td style={{ padding:"7px 10px", textAlign:"right", fontWeight:800, color:monthTotals.pay>0?"#374151":"#9ca3af" }}>{monthTotals.pay>0?fmt(monthTotals.pay):"—"}</td>
+                <td style={{ padding:"7px 10px", textAlign:"right", fontWeight:800, color:monthTotals.profit>0?"#16a34a":"#9ca3af" }}>{monthTotals.profit>0?fmt(monthTotals.profit):"—"}</td>
+                <td style={{ borderLeft:"1px solid #e5e7eb" }}/>
               </tr>
-              {/* ドライバー別売上 */}
               <tr style={{ background:"#fafbff", borderTop:"1px solid #e5e7eb" }}>
                 <td style={{ padding:"6px 12px", fontSize:10, color:"#9ca3af", borderRight:"1px solid #e5e7eb", position:"sticky", left:0, background:"#fafbff" }}>ドライバー別売上</td>
-                {colTotals.map((col,ci) => {
-                  const dri = Math.floor(ci/nR), ri = ci%nR;
+                {colTotals.map((col,ci)=>{
+                  const dri=Math.floor(ci/nR), ri=ci%nR;
                   return (
-                    <td key={ci}
-                      style={{ padding:"5px 6px", textAlign:"center", fontSize:10, color:"#6b7280", borderLeft:ri===0&&dri>0?"1px solid #e8eaed":"none" }}>
-                      {col.sell>0 ? fmt(col.sell) : ""}
+                    <td key={ci} style={{ padding:"5px 6px", textAlign:"center", fontSize:10, color:"#6b7280", borderLeft:ri===0&&dri>0?"1px solid #e8eaed":"none" }}>
+                      {col.sell>0?fmt(col.sell):""}
                     </td>
                   );
                 })}
                 <td colSpan={3} style={{ borderLeft:"2px solid #e5e7eb" }}/>
+                <td style={{ borderLeft:"1px solid #e5e7eb" }}/>
               </tr>
             </tfoot>
           </table>
