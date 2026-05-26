@@ -3126,164 +3126,263 @@ const VehiclesPage = ({ accent }) => {
 };
 
 const AttendancePage = ({ accent }) => {
-  const [ci, setCi] = React.useState(true);
-  const [view, setView] = React.useState("calendar"); // "calendar" | "list"
+  const [tab, setTab] = React.useState("attendance"); // "attendance" | "schedule"
+  const [expandedDriver, setExpandedDriver] = React.useState(null);
+  const [weekOffset, setWeekOffset] = React.useState(0);
 
-  const monthRecords = [
-    { d:1,  day:"火", in:"08:00", out:"19:30", work:"10:30", ot:"1:30",  st:"出勤" },
-    { d:2,  day:"水", in:"08:05", out:"20:00", work:"10:55", ot:"1:55",  st:"出勤" },
-    { d:3,  day:"木", in:"07:55", out:"19:45", work:"10:50", ot:"1:50",  st:"出勤" },
-    { d:4,  day:"金", in:"08:10", out:"19:00", work:"9:50",  ot:"0:50",  st:"出勤" },
-    { d:5,  day:"土", in:"—",     out:"—",     work:"—",     ot:"—",     st:"休日" },
-    { d:6,  day:"日", in:"—",     out:"—",     work:"—",     ot:"—",     st:"休日" },
-    { d:7,  day:"月", in:"08:00", out:"20:30", work:"11:30", ot:"2:30",  st:"出勤" },
-    { d:8,  day:"火", in:"08:10", out:"19:15", work:"10:05", ot:"1:05",  st:"出勤" },
-    { d:9,  day:"水", in:"07:50", out:"20:00", work:"11:10", ot:"2:10",  st:"出勤" },
-    { d:10, day:"木", in:"08:05", out:"19:45", work:"10:40", ot:"1:40",  st:"出勤" },
-    { d:11, day:"金", in:"—",     out:"—",     work:"—",     ot:"—",     st:"有給" },
-    { d:12, day:"土", in:"—",     out:"—",     work:"—",     ot:"—",     st:"休日" },
-    { d:13, day:"日", in:"—",     out:"—",     work:"—",     ot:"—",     st:"休日" },
-    { d:14, day:"月", in:"08:00", out:"20:00", work:"11:00", ot:"2:00",  st:"出勤" },
-    { d:15, day:"火", in:"08:10", out:"19:30", work:"10:20", ot:"1:20",  st:"出勤" },
-    { d:16, day:"水", in:"08:05", out:"20:15", work:"11:10", ot:"2:10",  st:"出勤" },
-    { d:17, day:"木", in:"07:55", out:"19:00", work:"10:05", ot:"1:05",  st:"出勤" },
-    { d:18, day:"金", in:"08:00", out:"19:45", work:"10:45", ot:"1:45",  st:"出勤" },
-    { d:19, day:"土", in:"—",     out:"—",     work:"—",     ot:"—",     st:"休日" },
-    { d:20, day:"日", in:"—",     out:"—",     work:"—",     ot:"—",     st:"休日" },
-    { d:21, day:"月", in:"08:00", out:"20:30", work:"11:30", ot:"2:30",  st:"出勤" },
-    { d:22, day:"火", in:"08:10", out:"19:15", work:"10:05", ot:"1:05",  st:"出勤" },
-    { d:23, day:"水", in:"07:55", out:"20:00", work:"11:05", ot:"2:05",  st:"出勤" },
-    { d:24, day:"木", in:"08:05", out:"19:45", work:"10:40", ot:"1:40",  st:"出勤" },
-    { d:25, day:"金", in:"08:10", out:"19:00", work:"9:50",  ot:"0:50",  st:"出勤" },
-    { d:26, day:"土", in:"—",     out:"—",     work:"—",     ot:"—",     st:"休日" },
-    { d:27, day:"日", in:"—",     out:"—",     work:"—",     ot:"—",     st:"休日" },
-    { d:28, day:"月", in:"07:55", out:"19:45", work:"10:50", ot:"1:50",  st:"出勤" },
-    { d:29, day:"火", in:"—",     out:"—",     work:"—",     ot:"—",     st:"休日" },
-    { d:30, day:"水", in:"08:00", out:"—",     work:"—",     ot:"—",     st:"出勤中" },
+  const stColor = { "出勤":"#16a34a","出勤中":"#2563eb","有給":"#7c3aed","休日":"#9ca3af","欠勤":"#dc2626","公休":"#6b7280" };
+  const stBg    = { "出勤":"#f0fdf4","出勤中":"#eff6ff","有給":"#f5f3ff","休日":"#f8fafc","欠勤":"#fef2f2","公休":"#f9fafb" };
+
+  // 全ドライバー月次サマリー
+  const driverSummary = [
+    { id:"DR-01", name:"田中 一郎", type:"自社",    workDays:20, ot:"31h50m", otMin:1910, paidLeft:8,  absent:0, todaySt:"出勤中", in:"08:00" },
+    { id:"DR-02", name:"佐藤 次郎", type:"自社",    workDays:19, ot:"24h20m", otMin:1460, paidLeft:10, absent:0, todaySt:"出勤",   in:"08:15" },
+    { id:"DR-03", name:"鈴木 三郎", type:"協力会社", workDays:21, ot:"28h00m", otMin:1680, paidLeft:5,  absent:0, todaySt:"出勤中", in:"07:50" },
+    { id:"DR-04", name:"高橋 四郎", type:"自社",    workDays:18, ot:"19h30m", otMin:1170, paidLeft:12, absent:1, todaySt:"出勤",   in:"08:05" },
+    { id:"DR-05", name:"伊藤 五郎", type:"自社",    workDays:20, ot:"22h10m", otMin:1330, paidLeft:7,  absent:0, todaySt:"出勤中", in:"08:00" },
+    { id:"DR-06", name:"渡辺 六郎", type:"協力会社", workDays:20, ot:"25h45m", otMin:1545, paidLeft:3,  absent:0, todaySt:"出勤",   in:"08:20" },
+    { id:"DR-07", name:"中村 七郎", type:"自社",    workDays:19, ot:"21h00m", otMin:1260, paidLeft:9,  absent:0, todaySt:"出勤中", in:"07:55" },
+    { id:"DR-08", name:"小林 八郎", type:"協力会社", workDays:17, ot:"15h30m", otMin:930,  paidLeft:8,  absent:2, todaySt:"有給",   in:"—" },
+    { id:"DR-09", name:"加藤 九郎", type:"協力会社", workDays:20, ot:"20h15m", otMin:1215, paidLeft:6,  absent:0, todaySt:"出勤",   in:"08:10" },
+    { id:"DR-10", name:"吉田 十郎", type:"自社",    workDays:21, ot:"33h20m", otMin:2000, paidLeft:11, absent:0, todaySt:"出勤中", in:"07:45" },
   ];
 
-  const overtimeMin = monthRecords.filter(r=>r.ot!=="—").reduce((s,r)=>{
-    const [h,m]=r.ot.split(":").map(Number); return s+h*60+m;
-  },0);
-  const otH = Math.floor(overtimeMin/60), otM = overtimeMin%60;
-  const otLimit = 45*60;
+  // ドライバー詳細日次記録（DR-01のサンプルを各ドライバーに生成）
+  const genRecords = (seed) => {
+    const days = ["月","火","水","木","金","土","日"];
+    return Array.from({length:30},(_,i)=>{
+      const d=i+1;
+      const dow=(d+1+seed)%7;
+      const isWe=dow>=5;
+      const isHol=d===29;
+      if(isWe||isHol) return {d,day:days[dow],in:"—",out:"—",work:"—",ot:"—",st:isHol?"公休":"休日"};
+      const inH=7+((d*seed)%2), inM=((d*3)%6)*5;
+      const outH=18+((d+seed)%3), outM=((d*7)%6)*5;
+      const workMin=(outH-inH)*60+(outM-inM);
+      const otMin=Math.max(0,workMin-480);
+      return {d,day:days[dow],
+        in:`${String(inH).padStart(2,"0")}:${String(inM).padStart(2,"0")}`,
+        out:`${String(outH).padStart(2,"0")}:${String(outM).padStart(2,"0")}`,
+        work:`${Math.floor(workMin/60)}h${workMin%60>0?workMin%60+"m":""}`,
+        ot:otMin>0?`${Math.floor(otMin/60)}h${otMin%60>0?otMin%60+"m":""}` :"—",
+        st: d===1&&seed===0?"出勤中":"出勤"};
+    });
+  };
+  const detailRecords = Object.fromEntries(driverSummary.map((d,i)=>[d.id,genRecords(i+1)]));
 
-  const stColor = { "出勤":"#16a34a","出勤中":"#2563eb","有給":"#7c3aed","休日":"#d1d5db","—":"#f3f4f6" };
-  const stBg    = { "出勤":"#f0fdf4","出勤中":"#eff6ff","有給":"#f5f3ff","休日":"#f8fafc","—":"#fff" };
+  // 運行予定データ（今週）
+  const scheduleData = {
+    "DR-01": ["ASKUL","ASKUL","ASKUL","ASKUL","ASKUL","—","—"],
+    "DR-02": ["Bloomee","Bloomee","Bloomee","Bloomee","Bloomee","—","—"],
+    "DR-03": ["アクアクララ","アクアクララ","ASKUL","ASKUL","アクアクララ","—","—"],
+    "DR-04": ["カウネット","カウネット","ファミマ","ファミマ","カウネット","—","—"],
+    "DR-05": ["サーガ","Bloomee","サーガ","Bloomee","サーガ","—","—"],
+    "DR-06": ["日本トムソン","日本トムソン","タイヤ","タイヤ","日本トムソン","—","—"],
+    "DR-07": ["ASKUL","ASKUL","ASKUL","ASKUL","ASKUL","—","—"],
+    "DR-08": ["RICOH","RICOH","有給","RICOH","RICOH","—","—"],
+    "DR-09": ["旭食品","旭食品","旭食品","サーガ","旭食品","—","—"],
+    "DR-10": ["ファミマ","ファミマ","ファミマ","ファミマ","ファミマ","—","—"],
+  };
+  const clientColor = {
+    "ASKUL":"#dbeafe","Bloomee":"#fce7f3","アクアクララ":"#d1fae5","カウネット":"#fef9c3",
+    "サーガ":"#ede9fe","ファミマ":"#dcfce7","日本トムソン":"#fee2e2","タイヤ":"#ffedd5",
+    "RICOH":"#e0e7ff","旭食品":"#fef3c7","有給":"#f5f3ff","—":"transparent"
+  };
+  const clientTextColor = {
+    "ASKUL":"#1e40af","Bloomee":"#9d174d","アクアクララ":"#065f46","カウネット":"#854d0e",
+    "サーガ":"#5b21b6","ファミマ":"#14532d","日本トムソン":"#991b1b","タイヤ":"#9a3412",
+    "RICOH":"#3730a3","旭食品":"#92400e","有給":"#7c3aed","—":"#d1d5db"
+  };
+
+  // 今週の日付生成
+  const now = new Date();
+  const dow0 = now.getDay()===0?6:now.getDay()-1;
+  const mon = new Date(now); mon.setDate(now.getDate()-dow0+weekOffset*7);
+  const weekDays = Array.from({length:7},(_,i)=>{
+    const d=new Date(mon); d.setDate(mon.getDate()+i);
+    const isToday = d.toDateString()===now.toDateString();
+    return { label:`${d.getMonth()+1}/${d.getDate()}`, dayName:["月","火","水","木","金","土","日"][i], isToday, isSun:i===6, isSat:i===5 };
+  });
+  const weekLabel = `${weekDays[0].label}（月）〜 ${weekDays[4].label}（金）`;
+
+  const otLimit = 45*60;
 
   return (
     <div>
-      <div style={{ fontSize:20, fontWeight:700, marginBottom:20 }}>勤怠管理</div>
+      <div style={{ fontSize:20, fontWeight:700, marginBottom:16 }}>勤怠管理</div>
 
-      {/* 打刻 */}
-      <Card style={{ padding:24, marginBottom:16 }}>
-        <div style={{ display:"flex", alignItems:"center", gap:40, flexWrap:"wrap" }}>
-          <div>
-            <div style={{ fontSize:11, color:"#9ca3af", marginBottom:4 }}>本日 — 2025年4月30日（水）</div>
-            <div style={{ fontSize:40, fontWeight:300, letterSpacing:3 }}>{new Date().toTimeString().slice(0,5)}</div>
-          </div>
-          <div style={{ display:"flex", gap:10 }}>
-            <button onClick={()=>setCi(true)}
-              style={{ padding:"12px 24px", borderRadius:6, border:"none", background:ci?"#dbeafe":accent, color:ci?"#2563eb":"#fff", fontWeight:700, fontSize:14 }}>
-              {ci ? "出勤済　08:00" : "出勤打刻"}
-            </button>
-            <button onClick={()=>setCi(false)}
-              style={{ padding:"12px 24px", borderRadius:6, border:"1.5px solid #e5e7eb", background:"#fff", color:"#374151", fontWeight:600, fontSize:14 }}>退勤打刻</button>
-          </div>
-          <div style={{ marginLeft:"auto", display:"flex", gap:32 }}>
-            <div style={{ textAlign:"center" }}>
-              <div style={{ fontSize:22, fontWeight:700, color:"#d97706" }}>{otH}h {otM}m</div>
-              <div style={{ fontSize:11, color:"#9ca3af", marginTop:2 }}>今月残業</div>
-              <div style={{ width:80, height:4, background:"#f1f3f5", borderRadius:2, margin:"6px auto 0" }}>
-                <div style={{ width:`${Math.min(overtimeMin/otLimit*100,100)}%`, height:"100%", background:overtimeMin>otLimit*0.8?"#dc2626":"#d97706", borderRadius:2 }}/>
-              </div>
-              <div style={{ fontSize:10, color:"#9ca3af", marginTop:2 }}>上限45h</div>
-            </div>
-            <div style={{ textAlign:"center" }}>
-              <div style={{ fontSize:22, fontWeight:700, color:"#2563eb" }}>8日</div>
-              <div style={{ fontSize:11, color:"#9ca3af", marginTop:2 }}>有給残日数</div>
-              <div style={{ display:"flex", gap:2, justifyContent:"center", marginTop:6 }}>
-                {Array.from({length:20}).map((_,i)=>(
-                  <div key={i} style={{ width:6, height:6, borderRadius:1, background:i<8?accent:"#e5e7eb" }}/>
-                ))}
-              </div>
-              <div style={{ fontSize:10, color:"#9ca3af", marginTop:2 }}>残8/付与20日</div>
-            </div>
-            <div style={{ textAlign:"center" }}>
-              <div style={{ fontSize:22, fontWeight:700, color:"#16a34a" }}>20日</div>
-              <div style={{ fontSize:11, color:"#9ca3af", marginTop:2 }}>今月出勤日数</div>
-              <div style={{ fontSize:10, color:"#9ca3af", marginTop:8 }}>有給1日 / 休日9日</div>
-            </div>
-          </div>
-        </div>
-      </Card>
-
-      {/* カレンダー / リスト 切替 */}
-      <div style={{ display:"flex", justifyContent:"flex-end", gap:6, marginBottom:14 }}>
-        {["calendar","list"].map(v=>(
-          <button key={v} onClick={()=>setView(v)}
-            style={{ padding:"5px 14px", borderRadius:4, border:`1.5px solid ${view===v?accent:"#e5e7eb"}`, background:view===v?accent:"#fff", color:view===v?"#fff":"#374151", fontSize:13, fontWeight:view===v?600:400 }}>
-            {v==="calendar"?"カレンダー":"一覧"}
+      {/* タブ */}
+      <div style={{ display:"flex", gap:4, marginBottom:16, borderBottom:"2px solid #e5e7eb", paddingBottom:0 }}>
+        {[["attendance","勤怠一覧"],["schedule","運行予定"]].map(([v,l])=>(
+          <button key={v} onClick={()=>setTab(v)}
+            style={{ padding:"8px 20px", border:"none", background:"transparent", fontWeight:tab===v?700:400,
+              color:tab===v?accent:"#6b7280", fontSize:14, cursor:"pointer",
+              borderBottom:tab===v?`2px solid ${accent}`:"2px solid transparent", marginBottom:-2 }}>
+            {l}
           </button>
         ))}
       </div>
 
-      {view==="calendar" ? (
-        <Card style={{ padding:20 }}>
-          <div style={{ fontSize:13, fontWeight:700, marginBottom:16, color:"#374151" }}>2025年4月</div>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(7,1fr)", gap:4, marginBottom:8 }}>
-            {["月","火","水","木","金","土","日"].map(d=>(
-              <div key={d} style={{ textAlign:"center", fontSize:11, color: d==="土"?"#2563eb":d==="日"?"#dc2626":"#9ca3af", fontWeight:600, padding:"4px 0" }}>{d}</div>
+      {tab==="attendance" && (
+        <div>
+          {/* サマリーKPI */}
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12, marginBottom:16 }}>
+            {[
+              { label:"本日出勤", value:`${driverSummary.filter(d=>d.todaySt==="出勤"||d.todaySt==="出勤中").length}名`, sub:`全${driverSummary.length}名中`, color:"#16a34a" },
+              { label:"残業45h超過", value:`${driverSummary.filter(d=>d.otMin>=otLimit).length}名`, sub:"要注意", color:"#dc2626" },
+              { label:"本日有給", value:`${driverSummary.filter(d=>d.todaySt==="有給").length}名`, sub:"取得中", color:"#7c3aed" },
+              { label:"今月欠勤あり", value:`${driverSummary.filter(d=>d.absent>0).length}名`, sub:"要確認", color:"#d97706" },
+            ].map(k=>(
+              <Card key={k.label} style={{ padding:"14px 18px" }}>
+                <div style={{ fontSize:11, color:"#6b7280", marginBottom:6 }}>{k.label}</div>
+                <div style={{ fontSize:22, fontWeight:700, color:k.color }}>{k.value}</div>
+                <div style={{ fontSize:11, color:"#9ca3af", marginTop:4 }}>{k.sub}</div>
+              </Card>
             ))}
           </div>
-          {/* 4月1日は火曜（インデックス1）なのでMon=0からshift=1 */}
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(7,1fr)", gap:4 }}>
-            <div/>
-            {monthRecords.map(r=>(
-              <div key={r.d} style={{ aspectRatio:"1", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", borderRadius:6, background:stBg[r.st], border:`1px solid ${r.st==="出勤中"?accent+"60":"#e8eaed"}`, position:"relative" }}>
-                <div style={{ fontSize:12, fontWeight:r.d===30?800:500, color: r.day==="土"?"#2563eb":r.day==="日"?"#dc2626":"#374151" }}>{r.d}</div>
-                {r.st!=="休日" && r.st!=="—" && (
-                  <div style={{ width:8, height:8, borderRadius:"50%", background:stColor[r.st], marginTop:2 }}/>
-                )}
-                {r.st==="出勤中" && <div style={{ position:"absolute", top:2, right:2, width:5, height:5, borderRadius:"50%", background:accent, animation:"pulse 1.5s infinite" }}/>}
-              </div>
-            ))}
-          </div>
-          <div style={{ display:"flex", gap:16, marginTop:14, fontSize:11, color:"#6b7280" }}>
-            {[["出勤","#16a34a"],["出勤中","#2563eb"],["有給","#7c3aed"],["休日","#d1d5db"]].map(([l,c])=>(
-              <span key={l} style={{ display:"flex", alignItems:"center", gap:4 }}>
-                <span style={{ width:8, height:8, borderRadius:"50%", background:c, display:"inline-block" }}/>
-                {l}
-              </span>
-            ))}
-          </div>
-        </Card>
-      ) : (
-        <Card>
-          <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
-            <thead>
-              <tr style={{ background:"#f9fafb", borderBottom:"1px solid #e5e7eb" }}>
-                {["日付","出勤","退勤","実労働","残業","状態"].map(h=>(
-                  <th key={h} style={{ padding:"10px 16px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:12 }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[...monthRecords].reverse().map((r,idx)=>(
-                <tr key={r.d} style={{ borderBottom:"1px solid #f1f3f5", background:r.d===30?accent+"08":"transparent" }}>
-                  <td style={{ padding:"10px 16px", fontWeight:500 }}>04/{String(r.d).padStart(2,"0")}（{r.day}）</td>
-                  <td style={{ padding:"10px 16px" }}>{r.in}</td>
-                  <td style={{ padding:"10px 16px" }}>{r.out}</td>
-                  <td style={{ padding:"10px 16px", fontWeight:500 }}>{r.work}</td>
-                  <td style={{ padding:"10px 16px", color:r.ot!=="—"&&r.ot>"2:00"?"#d97706":"#374151", fontWeight:r.ot!=="—"&&r.ot>"2:00"?600:400 }}>{r.ot!=="—"?r.ot:"—"}</td>
-                  <td style={{ padding:"10px 16px" }}>
-                    <span style={{ padding:"2px 9px", borderRadius:4, fontSize:11.5, fontWeight:600, background:stBg[r.st]||"#f1f5f9", color:stColor[r.st]||"#475569" }}>{r.st}</span>
-                  </td>
+
+          {/* 全ドライバー一覧 */}
+          <Card>
+            <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
+              <thead>
+                <tr style={{ background:"#f9fafb", borderBottom:"1px solid #e5e7eb" }}>
+                  {["ドライバー","種別","今日の状況","出勤日数","残業時間","有給残","欠勤",""].map(h=>(
+                    <th key={h} style={{ padding:"10px 14px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:11, whiteSpace:"nowrap" }}>{h}</th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </Card>
+              </thead>
+              <tbody>
+                {driverSummary.map(d=>{
+                  const isExpanded = expandedDriver===d.id;
+                  const otWarn = d.otMin >= otLimit*0.9;
+                  const recs = detailRecords[d.id];
+                  return (
+                    <React.Fragment key={d.id}>
+                      <tr style={{ borderBottom:"1px solid #f1f3f5", background:isExpanded?accent+"06":"transparent", cursor:"pointer" }}
+                        onClick={()=>setExpandedDriver(isExpanded?null:d.id)}>
+                        <td style={{ padding:"11px 14px" }}>
+                          <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                            <Avatar name={d.name} size={28} bg={d.type==="自社"?"#dbeafe":"#ede9fe"} color={d.type==="自社"?"#1e40af":"#5b21b6"}/>
+                            <span style={{ fontWeight:600 }}>{d.name}</span>
+                          </div>
+                        </td>
+                        <td style={{ padding:"11px 14px" }}><StatusBadge label={d.type}/></td>
+                        <td style={{ padding:"11px 14px" }}>
+                          <span style={{ padding:"3px 10px", borderRadius:4, fontSize:11.5, fontWeight:600,
+                            background:stBg[d.todaySt]||"#f1f5f9", color:stColor[d.todaySt]||"#475569" }}>
+                            {d.todaySt}{d.in!=="—"?` ${d.in}〜`:""}
+                          </span>
+                        </td>
+                        <td style={{ padding:"11px 14px", fontWeight:600 }}>{d.workDays}日</td>
+                        <td style={{ padding:"11px 14px" }}>
+                          <span style={{ fontWeight:600, color:otWarn?"#dc2626":"#374151" }}>{d.ot}</span>
+                          {otWarn&&<span style={{ fontSize:10, color:"#dc2626", marginLeft:4 }}>⚠</span>}
+                        </td>
+                        <td style={{ padding:"11px 14px", color:d.paidLeft<=3?"#d97706":"#374151", fontWeight:d.paidLeft<=3?600:400 }}>{d.paidLeft}日</td>
+                        <td style={{ padding:"11px 14px", color:d.absent>0?"#dc2626":"#9ca3af", fontWeight:d.absent>0?600:400 }}>{d.absent>0?`${d.absent}日`:"—"}</td>
+                        <td style={{ padding:"11px 14px", color:"#9ca3af", fontSize:12 }}>{isExpanded?"▲":"▼"}</td>
+                      </tr>
+                      {isExpanded && (
+                        <tr>
+                          <td colSpan={8} style={{ padding:"0 0 8px 0", background:"#f9fafb", borderBottom:"1px solid #e5e7eb" }}>
+                            <div style={{ padding:"12px 16px" }}>
+                              <div style={{ fontSize:12, fontWeight:600, color:"#374151", marginBottom:8 }}>2026年5月 日次記録</div>
+                              <table style={{ width:"100%", borderCollapse:"collapse", fontSize:12 }}>
+                                <thead>
+                                  <tr style={{ background:"#f1f3f5" }}>
+                                    {["日付","出勤","退勤","実労働","残業","状態"].map(h=>(
+                                      <th key={h} style={{ padding:"6px 12px", textAlign:"left", color:"#6b7280", fontWeight:500 }}>{h}</th>
+                                    ))}
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {[...recs].reverse().map(r=>(
+                                    <tr key={r.d} style={{ borderBottom:"1px solid #e5e7eb" }}>
+                                      <td style={{ padding:"6px 12px", fontWeight:500 }}>5/{String(r.d).padStart(2,"0")}（{r.day}）</td>
+                                      <td style={{ padding:"6px 12px" }}>{r.in}</td>
+                                      <td style={{ padding:"6px 12px" }}>{r.out}</td>
+                                      <td style={{ padding:"6px 12px" }}>{r.work}</td>
+                                      <td style={{ padding:"6px 12px", color:r.ot!=="—"?"#d97706":"#9ca3af" }}>{r.ot}</td>
+                                      <td style={{ padding:"6px 12px" }}>
+                                        <span style={{ padding:"2px 8px", borderRadius:3, fontSize:11, fontWeight:600,
+                                          background:stBg[r.st]||"#f1f5f9", color:stColor[r.st]||"#6b7280" }}>{r.st}</span>
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  );
+                })}
+              </tbody>
+            </table>
+          </Card>
+        </div>
+      )}
+
+      {tab==="schedule" && (
+        <div>
+          {/* 週ナビ */}
+          <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:16 }}>
+            <button onClick={()=>setWeekOffset(w=>w-1)}
+              style={{ padding:"5px 12px", border:"1.5px solid #e5e7eb", borderRadius:4, background:"#fff", cursor:"pointer", fontSize:13 }}>＜ 前週</button>
+            <span style={{ fontWeight:600, fontSize:14 }}>{weekLabel}</span>
+            <button onClick={()=>setWeekOffset(w=>w+1)}
+              style={{ padding:"5px 12px", border:"1.5px solid #e5e7eb", borderRadius:4, background:"#fff", cursor:"pointer", fontSize:13 }}>次週 ＞</button>
+            {weekOffset!==0&&<button onClick={()=>setWeekOffset(0)}
+              style={{ padding:"5px 12px", border:`1.5px solid ${accent}`, borderRadius:4, background:accent+"10", color:accent, cursor:"pointer", fontSize:12, fontWeight:600 }}>今週</button>}
+          </div>
+
+          <Card style={{ overflowX:"auto" }}>
+            <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
+              <thead>
+                <tr style={{ background:"#f9fafb", borderBottom:"1px solid #e5e7eb" }}>
+                  <th style={{ padding:"10px 14px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:11, minWidth:130, borderRight:"1px solid #e5e7eb" }}>ドライバー</th>
+                  {weekDays.map((d,i)=>(
+                    <th key={i} style={{ padding:"10px 10px", textAlign:"center", color:d.isSun?"#dc2626":d.isSat?"#2563eb":d.isToday?accent:"#6b7280",
+                      fontWeight:d.isToday?700:500, fontSize:12, minWidth:90,
+                      background:d.isToday?accent+"0a":"transparent",
+                      borderRight:i<6?"1px solid #f1f3f5":"none" }}>
+                      <div>{d.label}</div>
+                      <div style={{ fontSize:10 }}>({d.dayName})</div>
+                      {d.isToday&&<div style={{ fontSize:9, background:accent, color:"#fff", borderRadius:2, padding:"1px 4px", marginTop:2, display:"inline-block" }}>TODAY</div>}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {driverSummary.map(d=>(
+                  <tr key={d.id} style={{ borderBottom:"1px solid #f1f3f5" }}>
+                    <td style={{ padding:"10px 14px", borderRight:"1px solid #e5e7eb" }}>
+                      <div style={{ display:"flex", alignItems:"center", gap:7 }}>
+                        <Avatar name={d.name} size={24} bg={d.type==="自社"?"#dbeafe":"#ede9fe"} color={d.type==="自社"?"#1e40af":"#5b21b6"}/>
+                        <div>
+                          <div style={{ fontWeight:600, fontSize:12 }}>{d.name}</div>
+                          <div style={{ fontSize:10, color:"#9ca3af" }}>{d.type}</div>
+                        </div>
+                      </div>
+                    </td>
+                    {(scheduleData[d.id]||[]).map((c,i)=>(
+                      <td key={i} style={{ padding:"8px 6px", textAlign:"center",
+                        background:weekDays[i]?.isToday?accent+"06":"transparent",
+                        borderRight:i<6?"1px solid #f1f3f5":"none" }}>
+                        {c!=="—"
+                          ? <span style={{ display:"inline-block", padding:"3px 8px", borderRadius:4, fontSize:11, fontWeight:600,
+                              background:clientColor[c]||"#f1f5f9", color:clientTextColor[c]||"#374151" }}>{c}</span>
+                          : <span style={{ color:"#e5e7eb", fontSize:12 }}>—</span>
+                        }
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Card>
+        </div>
       )}
     </div>
   );
