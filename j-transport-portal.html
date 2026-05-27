@@ -2024,7 +2024,7 @@ const DailyInputPage = ({ accent }) => {
           <table style={{ borderCollapse:"collapse", fontSize:12, whiteSpace:"nowrap" }}>
             <thead>
               <tr style={{ background:"#f9fafb" }}>
-                <th style={{ padding:"8px 12px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:11, borderRight:"1px solid #e5e7eb", borderBottom:"1px solid #e5e7eb", minWidth:90, position:"sticky", left:0, background:"#f9fafb", zIndex:2 }}>日付</th>
+                <th style={{ padding:"8px 12px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:11, borderRight:"1px solid #e5e7eb", borderBottom:"1px solid #e5e7eb", minWidth:90, position:"sticky", left:0, top:0, background:"#f9fafb", zIndex:5 }}>日付</th>
                 {assignedDrivers.map((d,dri)=>(
                   <th key={d.id} colSpan={nR}
                     style={{ padding:"7px 12px", textAlign:"center", borderRight:"1px solid #e5e7eb", borderBottom:"1px solid #e5e7eb", background:focusedCell?.dri===dri?accent+"0e":"#f9fafb" }}>
