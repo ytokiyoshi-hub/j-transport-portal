@@ -1971,12 +1971,6 @@ const DailyInputPage = ({ accent }) => {
           <div style={{ fontSize:20, fontWeight:700 }}>日次実績入力</div>
           <div style={{ fontSize:12, color:"#9ca3af", marginTop:2 }}>月次一覧・スプレッドシート形式</div>
         </div>
-        <div style={{ fontSize:11, color:"#6b7280", background:"#f8fafc", border:"1px solid #e5e7eb", borderRadius:6, padding:"5px 12px", lineHeight:2.2 }}>
-          <span style={{ fontWeight:700, color:"#374151" }}>キーボード</span>
-          {[["↑↓←→","セル移動"],["Enter","翌日"],["Tab","右列"],["Shift+Tab","左列"],["⌘S","保存"],["Alt+数字","荷主"]].map(([k,v])=>(
-            <span key={k} style={{ marginLeft:8 }}><span style={{ color:"#9ca3af" }}>{k}</span> {v}</span>
-          ))}
-        </div>
       </div>
 
       {/* 操作バー */}
