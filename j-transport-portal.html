@@ -2007,7 +2007,7 @@ const DailyInputPage = ({ accent }) => {
       </div>
 
       {/* 月次KPI */}
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:10, marginBottom:12 }}>
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:10, marginBottom:8 }}>
         {[
           { l:"月次売上（速報）", v:monthTotals.sell>0?fmt(monthTotals.sell):"—", c:accent },
           { l:"月次支払",         v:monthTotals.pay>0?fmt(monthTotals.pay):"—",   c:"#d97706" },
