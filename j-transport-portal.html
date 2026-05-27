@@ -3368,8 +3368,8 @@ const VehiclesPage = ({ accent }) => {
               ))}
 
               <div style={{ display:"flex", gap:8, marginTop:16 }}>
-                <button style={{ flex:1, padding:"9px", background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:600, fontSize:13 }}>車検予約</button>
-                <button style={{ flex:1, padding:"9px", border:"1px solid #e5e7eb", background:"#fff", color:"#374151", borderRadius:6, fontSize:13 }}>整備記録を追加</button>
+                <button onClick={()=>alert(sel.plate+" の車検予約を受け付けました（デモ）")} style={{ flex:1, padding:"9px", background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:600, fontSize:13, cursor:"pointer" }}>車検予約</button>
+                <button onClick={()=>alert(sel.plate+" の整備記録を追加しました（デモ）")} style={{ flex:1, padding:"9px", border:"1px solid #e5e7eb", background:"#fff", color:"#374151", borderRadius:6, fontSize:13, cursor:"pointer" }}>整備記録を追加</button>
               </div>
             </Card>
           );
