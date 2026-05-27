@@ -1454,7 +1454,7 @@ const DriverFinancePage = ({ accent }) => {
             </div>
 
             <div style={{ display:"flex", gap:10 }}>
-              <button onClick={()=>setSlipDriver(null)}
+              <button onClick={()=>window.print()}
                 style={{ flex:1, padding:"11px", background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:600, fontSize:13, cursor:"pointer" }}>印刷 / PDF保存</button>
               <button onClick={()=>setSlipDriver(null)}
                 style={{ flex:1, padding:"11px", border:"1.5px solid #e5e7eb", background:"#fff", color:"#374151", borderRadius:6, fontSize:13, cursor:"pointer" }}>閉じる</button>
