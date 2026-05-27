@@ -1931,11 +1931,17 @@ const DailyInputPage = ({ accent }) => {
     return ()=>window.removeEventListener('keydown',h);
   }, [clientList]);
 
+  const stickyHeaderRef = React.useRef(null);
   React.useEffect(() => {
     setTimeout(() => inputRefs.current["0-0"]?.focus(), 80);
     if (isCurrentMonth) {
       setTimeout(() => {
-        document.querySelector('[data-today="true"]')?.scrollIntoView({ behavior:"smooth", block:"center" });
+        const todayEl = document.querySelector('[data-today="true"]');
+        if (!todayEl) return;
+        const stickyH = stickyHeaderRef.current?.offsetHeight || 0;
+        const rect = todayEl.getBoundingClientRect();
+        const scroller = document.scrollingElement || document.documentElement;
+        scroller.scrollTo({ top: scroller.scrollTop + rect.top - stickyH - 20, behavior:"smooth" });
       }, 300);
     }
   }, [selClient, monthYear]);
@@ -1958,7 +1964,7 @@ const DailyInputPage = ({ accent }) => {
 
   return (
     <div>
-      <div style={{ position:"sticky", top:0, zIndex:20, background:"#f4f5f7", paddingTop:12, paddingBottom:12, marginTop:-12, boxShadow:"0 4px 12px -8px rgba(0,0,0,0.06)" }}>
+      <div ref={stickyHeaderRef} style={{ position:"sticky", top:0, zIndex:20, background:"#f4f5f7", paddingTop:12, paddingBottom:12, marginTop:-12, boxShadow:"0 4px 12px -8px rgba(0,0,0,0.06)" }}>
       {/* ヘッダー */}
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:12 }}>
         <div>
