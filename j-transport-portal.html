@@ -2115,10 +2115,10 @@ const DailyInputPage = ({ accent }) => {
                         );
                       })
                     )}
-                    <td style={{ padding:"4px 10px", textAlign:"right", fontWeight:600, color:dt.sell>0?accent:"#e5e7eb", borderLeft:"2px solid #e5e7eb", fontSize:12 }}>
+                    <td style={{ padding:"4px 10px", textAlign:"right", fontWeight:600, color:dt.sell>0?accent:"#e5e7eb", borderLeft:"2px solid #e5e7eb", borderRight:"1px solid #eceef0", fontSize:12 }}>
                       {dt.sell>0?fmt(dt.sell):"—"}
                     </td>
-                    <td style={{ padding:"4px 10px", textAlign:"right", fontSize:12, color:dt.pay>0?"#374151":"#e5e7eb" }}>
+                    <td style={{ padding:"4px 10px", textAlign:"right", fontSize:12, color:dt.pay>0?"#374151":"#e5e7eb", borderRight:"1px solid #eceef0" }}>
                       {dt.pay>0?fmt(dt.pay):"—"}
                     </td>
                     <td style={{ padding:"4px 10px", textAlign:"right", fontWeight:600, color:dt.profit>0?"#16a34a":"#e5e7eb", fontSize:12 }}>
