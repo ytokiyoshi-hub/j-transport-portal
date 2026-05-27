@@ -1790,10 +1790,53 @@ const DailyInputPage = ({ accent }) => {
   });
 
   const getVal = (dateStr, dId, rLabel) => entries[dateStr]?.[dId]?.[rLabel] ?? "";
+  const saveTimers = React.useRef({});
   const setVal = (dateStr, dId, rLabel, v) => {
     setEntries(p => ({ ...p, [dateStr]: { ...(p[dateStr]||{}), [dId]: { ...((p[dateStr]||{})[dId]||{}), [rLabel]: v } } }));
     setSaved(false);
+    const key = `${dateStr}|${dId}|${rLabel}`;
+    if (saveTimers.current[key]) clearTimeout(saveTimers.current[key]);
+    saveTimers.current[key] = setTimeout(async () => {
+      delete saveTimers.current[key];
+      if (!window.sb || !selClient?.id) return;
+      const numV = v === "" ? null : Number(v);
+      if (numV === null || isNaN(numV)) {
+        await window.sb.from("jt_daily_entries").delete()
+          .eq("entry_date", dateStr).eq("client_id", selClient.id)
+          .eq("driver_id", dId).eq("rate_label", rLabel);
+      } else {
+        await window.sb.from("jt_daily_entries").upsert({
+          entry_date: dateStr, client_id: selClient.id,
+          driver_id: dId, rate_label: rLabel, value: numV,
+        }, { onConflict: "entry_date,client_id,driver_id,rate_label" });
+      }
+      setSaved(true);
+    }, 400);
   };
+
+  // 月・荷主切替時に Supabase から実績をロード
+  React.useEffect(() => {
+    if (!window.sb || !selClient?.id) return;
+    (async () => {
+      const [yr, mo] = monthYear.split("-").map(Number);
+      const lastDay = new Date(yr, mo, 0).getDate();
+      const start = `${monthYear}-01`;
+      const end = `${monthYear}-${String(lastDay).padStart(2,"0")}`;
+      const { data, error } = await window.sb.from("jt_daily_entries")
+        .select("*").eq("client_id", selClient.id)
+        .gte("entry_date", start).lte("entry_date", end);
+      if (error) { console.error("[Supabase] entries load failed:", error); return; }
+      const next = {};
+      data.forEach(r => {
+        if (!next[r.entry_date]) next[r.entry_date] = {};
+        if (!next[r.entry_date][r.driver_id]) next[r.entry_date][r.driver_id] = {};
+        next[r.entry_date][r.driver_id][r.rate_label] = String(r.value);
+      });
+      setEntries(next);
+      setSaved(true);
+      console.log(`[Supabase] loaded ${data.length} entries for ${selClient.name} ${monthYear}`);
+    })();
+  }, [selClient?.id, monthYear]);
 
   const dayTotals = dayRows.map(day => {
     let sell=0, pay=0;
