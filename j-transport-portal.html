@@ -2037,28 +2037,28 @@ const DailyInputPage = ({ accent }) => {
               : <span style={{ fontSize:12, color:"#6b7280" }}>{todayCompletedCount} / {assignedDrivers.length}名 完了</span>
             }
           </div>
-          <div style={{ padding:"14px 18px", display:"flex", gap:12, flexWrap:"wrap" }}>
+          <div style={{ padding:"8px 14px 10px", display:"flex", gap:8, flexWrap:"wrap" }}>
             {assignedDrivers.map((d,di) => {
               const dComplete = rates.every(r=>getVal(todayStr,d.id,r.label)!=="");
               return (
-                <div key={d.id} style={{ flex:"1 1 180px", padding:"12px 14px", background:dComplete?"#f0fdf4":"#fff", border:`1.5px solid ${dComplete?"#86efac":"#e5e7eb"}`, borderRadius:8, minWidth:160 }}>
-                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10 }}>
-                    <div style={{ display:"flex", gap:6, alignItems:"center" }}>
-                      <Avatar name={d.name} size={22} bg={d.type==="自社"?"#dbeafe":"#ede9fe"} color={d.type==="自社"?"#1e40af":"#5b21b6"}/>
-                      <span style={{ fontWeight:600, fontSize:13 }}>{d.name}</span>
+                <div key={d.id} style={{ flex:"1 1 200px", padding:"6px 10px 8px", background:dComplete?"#f0fdf4":"#fff", border:`1.5px solid ${dComplete?"#86efac":"#e5e7eb"}`, borderRadius:6, minWidth:180 }}>
+                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:4 }}>
+                    <div style={{ display:"flex", gap:5, alignItems:"center" }}>
+                      <Avatar name={d.name} size={18} bg={d.type==="自社"?"#dbeafe":"#ede9fe"} color={d.type==="自社"?"#1e40af":"#5b21b6"}/>
+                      <span style={{ fontWeight:600, fontSize:12 }}>{d.name}</span>
                       <StatusBadge label={d.type}/>
                     </div>
-                    {dComplete && <span style={{ fontSize:15, color:"#16a34a", fontWeight:700 }}>✓</span>}
+                    {dComplete && <span style={{ fontSize:13, color:"#16a34a", fontWeight:700 }}>✓</span>}
                   </div>
-                  {rates.map((r,ri)=>{
-                    const val = getVal(todayStr, d.id, r.label);
-                    const dt2 = dailyTargets[r.label];
-                    const numVal = Number(val);
-                    const isAnomaly = val!==""&&(numVal===0||(dt2>0&&numVal>dt2*3));
-                    return (
-                      <div key={r.label} style={{ marginBottom:ri<rates.length-1?8:0 }}>
-                        <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                          <label style={{ fontSize:11, color:"#6b7280", width:56, flexShrink:0 }}>{r.label}</label>
+                  <div style={{ display:"flex", gap:6 }}>
+                    {rates.map((r,ri)=>{
+                      const val = getVal(todayStr, d.id, r.label);
+                      const dt2 = dailyTargets[r.label];
+                      const numVal = Number(val);
+                      const isAnomaly = val!==""&&(numVal===0||(dt2>0&&numVal>dt2*3));
+                      return (
+                        <div key={r.label} style={{ flex:1, display:"flex", flexDirection:"column", gap:2, minWidth:0 }}>
+                          <label style={{ fontSize:10, color:"#6b7280", textAlign:"center" }}>{r.label}</label>
                           <input type="number" min="0"
                             ref={el=>todayRefs.current[`${di}-${ri}`]=el}
                             autoComplete="off" autoCorrect="off" spellCheck="false"
@@ -2068,16 +2068,14 @@ const DailyInputPage = ({ accent }) => {
                             onKeyDown={e=>handleTodayKeyDown(e,di,ri)}
                             placeholder=""
                             title={isAnomaly?(numVal===0?"0件？ 空欄にしてください":"通常より大幅に多い件数です"):""}
-                            style={{ width:72, padding:"6px 8px", border:`1.5px solid ${isAnomaly?"#f87171":"#e5e7eb"}`, borderRadius:5, fontSize:16, textAlign:"center", fontFamily:"inherit", outline:"none", background:isAnomaly?"#fff5f5":"#fafafa" }}
-                            onFocus={e=>{e.target.style.borderColor=isAnomaly?"#f87171":accent;e.target.style.boxShadow=`0 0 0 3px ${isAnomaly?"#fecaca50":accent+"20"}`;}}
+                            style={{ width:"100%", padding:"4px 6px", border:`1.5px solid ${isAnomaly?"#f87171":"#e5e7eb"}`, borderRadius:4, fontSize:14, textAlign:"center", fontFamily:"inherit", outline:"none", background:isAnomaly?"#fff5f5":"#fafafa", minWidth:0 }}
+                            onFocus={e=>{e.target.style.borderColor=isAnomaly?"#f87171":accent;e.target.style.boxShadow=`0 0 0 2px ${isAnomaly?"#fecaca50":accent+"20"}`;}}
                             onBlur={e=>{e.target.style.borderColor=isAnomaly?"#f87171":"#e5e7eb";e.target.style.boxShadow="none";}}
                           />
-                          <span style={{ fontSize:12, color:"#9ca3af" }}>件</span>
                         </div>
-                        {isAnomaly&&<div style={{ fontSize:10, color:"#dc2626", marginTop:2, marginLeft:64 }}>{numVal===0?"0件？ 空欄にしてください":"通常より大幅に多い件数です"}</div>}
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
               );
             })}
