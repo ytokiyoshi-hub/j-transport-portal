@@ -1657,7 +1657,8 @@ const InvoicePage = ({ accent }) => {
 const ClientPage = ({ accent, setPage }) => {
   const [sel, setSel] = React.useState(null);
   const [search, setSearch] = React.useState("");
-  const list = clients.filter(c=>c.name.includes(search)||c.area.includes(search));
+  const [extraClients] = useLocalStorage("jt_extra_clients", []);
+  const list = [...clients, ...extraClients].filter(c=>c.name.includes(search)||c.area.includes(search));
 
   return (
     <div>
