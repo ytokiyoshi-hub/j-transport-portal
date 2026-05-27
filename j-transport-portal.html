@@ -979,7 +979,14 @@ const RateMasterPage = ({ accent, setPage }) => {
           <div style={{ fontSize:12, color:"#9ca3af", marginTop:2 }}>荷主ごとの売単価・支払単価を一元管理</div>
         </div>
         <div style={{ display:"flex", gap:8 }}>
-          <button style={{ padding:"7px 16px", border:"1.5px solid #e5e7eb", background:"#fff", color:"#374151", borderRadius:6, fontSize:13, fontWeight:600 }}>
+          <button onClick={()=>{
+              const head=["荷主コード","荷主名","エリア","業務区分","売単価","支払単価","粗利","粗利率"];
+              const rows=[head];
+              allClients.forEach(c=>ratesFor(c).forEach(r=>{ const gp=r.sell-r.pay; const rt=r.sell>0?Math.round(gp/r.sell*100)+"%":""; rows.push([c.id,c.name,c.area,r.label,r.sell,r.pay,gp,rt]); }));
+              const csv="﻿"+rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(",")).join("\r\n");
+              const url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8;"}));
+              const a=document.createElement("a"); a.href=url; a.download="単価マスタ.csv"; a.click(); URL.revokeObjectURL(url);
+            }} style={{ padding:"7px 16px", border:"1.5px solid #e5e7eb", background:"#fff", color:"#374151", borderRadius:6, fontSize:13, fontWeight:600, cursor:"pointer" }}>
             CSVエクスポート
           </button>
           <button onClick={()=>{ setForm({ ...blankForm, code: nextCode() }); setShowAdd(true); }} style={{ padding:"7px 16px", background:accent, color:"#fff", border:"none", borderRadius:6, fontSize:13, fontWeight:600, cursor:"pointer" }}>
