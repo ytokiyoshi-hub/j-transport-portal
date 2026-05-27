@@ -1792,7 +1792,6 @@ const DailyInputPage = ({ accent }) => {
   const getVal = (dateStr, dId, rLabel) => entries[dateStr]?.[dId]?.[rLabel] ?? "";
   const saveTimers = React.useRef({});
   const setVal = (dateStr, dId, rLabel, v) => {
-    console.log("[setVal]", dateStr, dId, rLabel, JSON.stringify(v));
     setEntries(p => ({ ...p, [dateStr]: { ...(p[dateStr]||{}), [dId]: { ...((p[dateStr]||{})[dId]||{}), [rLabel]: v } } }));
     setSaved(false);
     const key = `${dateStr}|${dId}|${rLabel}`;
@@ -2123,14 +2122,8 @@ const DailyInputPage = ({ accent }) => {
                               placeholder={day.isWeekend?"—":""}
                               title={isAnomaly?(numVal===0?"0件？ 空欄にしてください":"通常より大幅に多い件数です"):""}
                               value={val}
-                              onChange={e=>{
-                                console.log("[onChange]", `di=${di} ci=${ci}`, "domValue=", JSON.stringify(e.target.value));
-                                setVal(day.dateStr,d.id,r.label,e.target.value);
-                              }}
-                              onFocus={e=>{
-                                console.log("[onFocus]", `di=${di} ci=${ci}`, "domValue=", JSON.stringify(e.target.value), "stateVal=", JSON.stringify(val));
-                                setFocusedCell({di,ci,dri});
-                              }}
+                              onChange={e=>setVal(day.dateStr,d.id,r.label,e.target.value)}
+                              onFocus={()=>setFocusedCell({di,ci,dri})}
                               onBlur={()=>setFocusedCell(null)}
                               onKeyDown={e=>handleKeyDown(e,di,ci)}
                               style={{
@@ -2202,13 +2195,13 @@ const DailyInputPage = ({ accent }) => {
 
       {/* アクションボタン */}
       <div style={{ display:"flex", gap:10, marginTop:12 }}>
-        <button onClick={()=>setSaved(true)}
-          style={{ flex:2, padding:"12px", background:saved?"#16a34a":accent, color:"#fff", border:"none", borderRadius:7, fontWeight:700, fontSize:14, display:"flex", alignItems:"center", justifyContent:"center", gap:8, cursor:"pointer" }}>
+        <div
+          style={{ flex:2, padding:"12px", background:saved?"#f0fdf4":"#fffbeb", color:saved?"#15803d":"#b45309", border:`1.5px solid ${saved?"#bbf7d0":"#fde68a"}`, borderRadius:7, fontWeight:600, fontSize:13, display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
           {saved
-            ? <><Ic name="check" size={16} color="#fff" strokeWidth={2.5}/> 保存済み</>
-            : <><span>月次実績を保存</span><span style={{ fontSize:11, opacity:0.65 }}>⌘S</span></>
+            ? <><Ic name="check" size={16} color="#15803d" strokeWidth={2.5}/> 自動保存済み（Supabase）</>
+            : <><span style={{ display:"inline-block", width:8, height:8, borderRadius:"50%", background:"#f59e0b" }}/> 保存中…</>
           }
-        </button>
+        </div>
         <button onClick={handleCSV}
           style={{ flex:1, padding:"12px 16px", border:"1.5px solid #e5e7eb", background:"#fff", color:"#374151", borderRadius:7, fontWeight:600, fontSize:13, cursor:"pointer" }}>
           CSVエクスポート
