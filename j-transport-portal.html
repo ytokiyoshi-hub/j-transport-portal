@@ -3792,7 +3792,7 @@ const ApplyPage = ({ accent }) => {
             </tr>
           </thead>
           <tbody>
-            {pendingList.map((p,i)=>{
+            {[...submitted, ...pendingList].map((p,i)=>{
               const sc=stC(p.status);
               return (
                 <tr key={i} style={{ borderBottom:"1px solid #f1f3f5" }}>
