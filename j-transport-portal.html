@@ -9,6 +9,14 @@
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  window.sb = window.supabase.createClient(
+    "https://vcaavivnasktyuvwpdgy.supabase.co",
+    "sb_publishable_HXbrdVWzKPhXFLPQjiXFlQ_sO223P9N"
+  );
+  console.log("[Supabase] client initialized:", !!window.sb);
+</script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html, body, #root { height: 100%; }
@@ -942,7 +950,8 @@ const RateMasterPage = ({ accent, setPage }) => {
   const [editMode, setEditMode] = React.useState(false);
   const [extraClients, setExtraClients] = React.useState([]);
   const [showAdd, setShowAdd] = React.useState(false);
-  const blankForm = { name:"", area:"", billing:"個建て", billingCycle:"翌月末締め", rateLabel:"配完", sell:"", pay:"" };
+  const blankForm = { code:"", name:"", area:"", billing:"個建て", billingCycle:"翌月末締め", person:"", tel:"", address:"", rateLabel:"配完", sell:"", pay:"" };
+  const nextCode = () => "C-" + String(clients.length + extraClients.length + 1).padStart(2,"0");
   const [form, setForm] = React.useState(blankForm);
   const allClients = [...clients, ...extraClients];
   const billingOptions = ["個建て","個建て（2区分）","個建て（3区分）","スポット","固定（日額）","固定＋変動"];
@@ -958,7 +967,7 @@ const RateMasterPage = ({ accent, setPage }) => {
           <button style={{ padding:"7px 16px", border:"1.5px solid #e5e7eb", background:"#fff", color:"#374151", borderRadius:6, fontSize:13, fontWeight:600 }}>
             CSVエクスポート
           </button>
-          <button onClick={()=>{ setForm(blankForm); setShowAdd(true); }} style={{ padding:"7px 16px", background:accent, color:"#fff", border:"none", borderRadius:6, fontSize:13, fontWeight:600, cursor:"pointer" }}>
+          <button onClick={()=>{ setForm({ ...blankForm, code: nextCode() }); setShowAdd(true); }} style={{ padding:"7px 16px", background:accent, color:"#fff", border:"none", borderRadius:6, fontSize:13, fontWeight:600, cursor:"pointer" }}>
             + 荷主追加
           </button>
         </div>
@@ -976,7 +985,7 @@ const RateMasterPage = ({ accent, setPage }) => {
                   <span style={{ fontWeight:600, fontSize:13 }}>{c.name}</span>
                   <StatusBadge label={c.billing.replace("（2区分）","").replace("（3区分）","")}/>
                 </div>
-                <span style={{ fontSize:11, color:"#9ca3af" }}>{c.area}</span>
+                <span style={{ fontSize:11, color:"#9ca3af" }}><span style={{ fontFamily:"ui-monospace, monospace", color:"#6b7280" }}>{c.id}</span> ・ {c.area}</span>
               </button>
             ))}
           </div>
@@ -989,7 +998,7 @@ const RateMasterPage = ({ accent, setPage }) => {
               <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:20 }}>
                 <div>
                   <div style={{ fontSize:18, fontWeight:700 }}>{sel.name}</div>
-                  <div style={{ fontSize:12, color:"#9ca3af", marginTop:2 }}>{sel.area} ／ {sel.billingCycle}</div>
+                  <div style={{ fontSize:12, color:"#9ca3af", marginTop:2 }}><span style={{ fontFamily:"ui-monospace, monospace", color:"#6b7280", fontWeight:700 }}>{sel.id}</span> ／ {sel.area} ／ {sel.billingCycle}</div>
                 </div>
                 <button onClick={()=>setEditMode(!editMode)}
                   style={{ padding:"7px 14px", border:`1.5px solid ${accent}`, borderRadius:6, background: editMode?accent:"#fff", color: editMode?"#fff":accent, fontSize:13, fontWeight:600, display:"flex", alignItems:"center", gap:6 }}>
@@ -1067,6 +1076,19 @@ const RateMasterPage = ({ accent, setPage }) => {
                   {editMode && <button style={{ padding:"6px 12px", border:`1.5px dashed ${accent}`, borderRadius:6, background:"transparent", color:accent, fontSize:12, fontWeight:600 }}>+ 追加</button>}
                 </div>
               </div>
+
+              {/* 請求先情報 */}
+              <div style={{ marginTop:20 }}>
+                <div style={{ fontSize:12, fontWeight:700, color:"#9ca3af", marginBottom:10 }}>請求先情報（請求書に記載）</div>
+                <div style={{ display:"flex", flexDirection:"column", gap:8, fontSize:13 }}>
+                  {[["担当者", sel.person || sel.contact],["電話", sel.tel],["請求先住所", sel.address]].map(([label,val])=>(
+                    <div key={label} style={{ display:"flex", gap:12 }}>
+                      <div style={{ width:88, color:"#6b7280", flexShrink:0 }}>{label}</div>
+                      <div style={{ color: val && val !== "—" ? "#374151" : "#cbd5e1" }}>{val && val !== "—" ? val : "未登録"}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </Card>
 
             {/* 今月実績 */}
@@ -1105,13 +1127,23 @@ const RateMasterPage = ({ accent, setPage }) => {
             <div style={{ fontSize:12, color:"#9ca3af", marginBottom:20 }}>新しい荷主の基本情報と単価を登録します</div>
 
             <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
-              {[["荷主名","name","例）新規物流株式会社"],["エリア","area","例）東京西部・多摩"]].map(([label,key,ph])=>(
-                <label key={key} style={{ display:"flex", flexDirection:"column", gap:5 }}>
-                  <span style={{ fontSize:12, fontWeight:600, color:"#374151" }}>{label}</span>
-                  <input value={form[key]} onChange={e=>setForm({ ...form, [key]:e.target.value })} placeholder={ph}
+              <div style={{ display:"flex", gap:12 }}>
+                <label style={{ flex:"0 0 132px", display:"flex", flexDirection:"column", gap:5 }}>
+                  <span style={{ fontSize:12, fontWeight:600, color:"#374151" }}>荷主コード</span>
+                  <input value={form.code} onChange={e=>setForm({ ...form, code:e.target.value })} placeholder="C-12"
+                    style={{ padding:"9px 12px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, fontFamily:"ui-monospace, monospace", outline:"none" }}/>
+                </label>
+                <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5 }}>
+                  <span style={{ fontSize:12, fontWeight:600, color:"#374151" }}>荷主名</span>
+                  <input value={form.name} onChange={e=>setForm({ ...form, name:e.target.value })} placeholder="例）新規物流株式会社"
                     style={{ padding:"9px 12px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
                 </label>
-              ))}
+              </div>
+              <label style={{ display:"flex", flexDirection:"column", gap:5 }}>
+                <span style={{ fontSize:12, fontWeight:600, color:"#374151" }}>エリア</span>
+                <input value={form.area} onChange={e=>setForm({ ...form, area:e.target.value })} placeholder="例）東京西部・多摩"
+                  style={{ padding:"9px 12px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
+              </label>
 
               <div style={{ display:"flex", gap:12 }}>
                 <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5 }}>
@@ -1126,6 +1158,29 @@ const RateMasterPage = ({ accent, setPage }) => {
                   <input value={form.billingCycle} onChange={e=>setForm({ ...form, billingCycle:e.target.value })} placeholder="例）翌月末締め"
                     style={{ padding:"9px 12px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
                 </label>
+              </div>
+
+              <div style={{ background:"#f8fafc", borderRadius:8, padding:"14px 16px" }}>
+                <div style={{ fontSize:12, fontWeight:700, color:"#9ca3af", marginBottom:10 }}>請求先情報（請求書に記載）</div>
+                <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+                  <div style={{ display:"flex", gap:10 }}>
+                    <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5 }}>
+                      <span style={{ fontSize:11, color:"#6b7280" }}>担当者</span>
+                      <input value={form.person} onChange={e=>setForm({ ...form, person:e.target.value })} placeholder="例）物流管理部 田中様"
+                        style={{ padding:"8px 10px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
+                    </label>
+                    <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5 }}>
+                      <span style={{ fontSize:11, color:"#6b7280" }}>電話</span>
+                      <input value={form.tel} onChange={e=>setForm({ ...form, tel:e.target.value })} placeholder="例）03-1234-5678"
+                        style={{ padding:"8px 10px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
+                    </label>
+                  </div>
+                  <label style={{ display:"flex", flexDirection:"column", gap:5 }}>
+                    <span style={{ fontSize:11, color:"#6b7280" }}>請求先住所</span>
+                    <input value={form.address} onChange={e=>setForm({ ...form, address:e.target.value })} placeholder="例）東京都〇〇区〇〇 1-2-3"
+                      style={{ padding:"8px 10px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
+                  </label>
+                </div>
               </div>
 
               <div style={{ background:"#f8fafc", borderRadius:8, padding:"14px 16px" }}>
@@ -1152,10 +1207,13 @@ const RateMasterPage = ({ accent, setPage }) => {
 
             <div style={{ display:"flex", gap:10, marginTop:24 }}>
               <button onClick={()=>{
+                  const code = form.code.trim();
                   const name = form.name.trim();
+                  if (!code) { alert("荷主コードを入力してください"); return; }
                   if (!name) { alert("荷主名を入力してください"); return; }
+                  if (allClients.some(c => c.id === code)) { alert("荷主コード「" + code + "」は既に使われています"); return; }
                   const newClient = {
-                    id: "C-" + String(clients.length + extraClients.length + 1).padStart(2,"0"),
+                    id: code,
                     name,
                     area: form.area.trim() || "—",
                     billing: form.billing,
@@ -1163,7 +1221,10 @@ const RateMasterPage = ({ accent, setPage }) => {
                     rates: [{ label: form.rateLabel.trim() || "配完", sell: Number(form.sell)||0, pay: Number(form.pay)||0 }],
                     drivers: [],
                     monthlyVol: {},
-                    contact: "—",
+                    person: form.person.trim() || "—",
+                    tel: form.tel.trim() || "—",
+                    address: form.address.trim() || "—",
+                    contact: form.person.trim() || "—",
                     status: "稼働中",
                   };
                   setExtraClients([...extraClients, newClient]);
