@@ -1792,6 +1792,7 @@ const DailyInputPage = ({ accent }) => {
   const getVal = (dateStr, dId, rLabel) => entries[dateStr]?.[dId]?.[rLabel] ?? "";
   const saveTimers = React.useRef({});
   const setVal = (dateStr, dId, rLabel, v) => {
+    console.log("[setVal]", dateStr, dId, rLabel, JSON.stringify(v));
     setEntries(p => ({ ...p, [dateStr]: { ...(p[dateStr]||{}), [dId]: { ...((p[dateStr]||{})[dId]||{}), [rLabel]: v } } }));
     setSaved(false);
     const key = `${dateStr}|${dId}|${rLabel}`;
@@ -2117,6 +2118,8 @@ const DailyInputPage = ({ accent }) => {
                             <input
                               ref={el=>inputRefs.current[`${di}-${ci}`]=el}
                               type="number" min="0"
+                              autoComplete="off" autoCorrect="off" spellCheck="false"
+                              name={`cell-${di}-${ci}`}
                               placeholder={day.isWeekend?"—":""}
                               title={isAnomaly?(numVal===0?"0件？ 空欄にしてください":"通常より大幅に多い件数です"):""}
                               value={val}
