@@ -2101,15 +2101,14 @@ const DailyInputPage = ({ accent }) => {
                               onBlur={()=>setFocusedCell(null)}
                               onKeyDown={e=>handleKeyDown(e,di,ci)}
                               style={{
-                                width:54, padding:"5px 2px",
-                                border:isAnomaly?"1.5px solid #f87171":isActive?`2px solid ${accent}`:"1.5px solid #e5e7eb",
-                                borderRadius:4, fontSize:13, textAlign:"center",
+                                width:"100%", boxSizing:"border-box", padding:"6px 2px",
+                                border:"none", borderRadius:0, fontSize:13, textAlign:"center",
                                 fontFamily:"inherit", outline:"none",
-                                background:isAnomaly?"#fff5f5":isActive?"#fff":day.isWeekend?"#f4f5f7":"#fafafa",
-                                boxShadow:isActive?`0 0 0 3px ${accent}20`:"none",
+                                background:isAnomaly?"#fee2e2":isActive?accent+"1f":"transparent",
+                                boxShadow:isActive?`inset 0 0 0 2px ${accent}`:"none",
                                 fontWeight:isActive?700:400,
-                                color:day.isWeekend?"#9ca3af":"inherit",
-                                transition:"border-color .1s, box-shadow .1s",
+                                color:day.isWeekend?"#cbd5e1":isAnomaly?"#b91c1c":"inherit",
+                                transition:"background .1s, box-shadow .1s",
                               }}
                             />
                           </td>
