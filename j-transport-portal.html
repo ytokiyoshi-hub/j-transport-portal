@@ -2026,7 +2026,7 @@ const DailyInputPage = ({ accent }) => {
       {/* ── 今日のクイック入力パネル ── */}
       {isCurrentMonth && todayDayRow && !todayDayRow.isWeekend && (
         <Card style={{ marginBottom:8, border:`2px solid ${todayComplete?"#86efac":accent+"50"}`, background:todayComplete?"#f0fdf4":accent+"05" }}>
-          <div style={{ padding:"11px 18px", borderBottom:`1px solid ${todayComplete?"#bbf7d0":accent+"20"}`, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+          <div style={{ padding:"7px 14px", borderBottom:`1px solid ${todayComplete?"#bbf7d0":accent+"20"}`, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
             <div style={{ display:"flex", gap:9, alignItems:"center" }}>
               <div style={{ width:8, height:8, borderRadius:"50%", background:todayComplete?"#16a34a":accent, flexShrink:0 }}/>
               <span style={{ fontWeight:700, fontSize:14 }}>今日の入力</span>
