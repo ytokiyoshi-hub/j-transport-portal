@@ -2017,66 +2017,6 @@ const DailyInputPage = ({ accent }) => {
         ))}
       </div>
 
-      {/* ── 今日のクイック入力パネル ── */}
-      {isCurrentMonth && todayDayRow && !todayDayRow.isWeekend && (
-        <Card style={{ marginBottom:8, border:`2px solid ${todayComplete?"#86efac":accent+"50"}`, background:todayComplete?"#f0fdf4":accent+"05" }}>
-          <div style={{ padding:"7px 14px", borderBottom:`1px solid ${todayComplete?"#bbf7d0":accent+"20"}`, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-            <div style={{ display:"flex", gap:9, alignItems:"center" }}>
-              <div style={{ width:8, height:8, borderRadius:"50%", background:todayComplete?"#16a34a":accent, flexShrink:0 }}/>
-              <span style={{ fontWeight:700, fontSize:14 }}>今日の入力</span>
-              <span style={{ fontSize:12, color:"#6b7280" }}>{todayLabel}</span>
-            </div>
-            {todayComplete
-              ? <span style={{ fontSize:13, color:"#16a34a", fontWeight:700 }}>✓ 全員入力完了</span>
-              : <span style={{ fontSize:12, color:"#6b7280" }}>{todayCompletedCount} / {assignedDrivers.length}名 完了</span>
-            }
-          </div>
-          <div style={{ padding:"6px 12px 7px", display:"flex", gap:8, flexWrap:"wrap" }}>
-            {assignedDrivers.map((d,di) => {
-              const dComplete = rates.every(r=>getVal(todayStr,d.id,r.label)!=="");
-              return (
-                <div key={d.id} style={{ flex:"1 1 200px", padding:"6px 10px 8px", background:dComplete?"#f0fdf4":"#fff", border:`1.5px solid ${dComplete?"#86efac":"#e5e7eb"}`, borderRadius:6, minWidth:180 }}>
-                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:4 }}>
-                    <div style={{ display:"flex", gap:5, alignItems:"center" }}>
-                      <Avatar name={d.name} size={18} bg={d.type==="自社"?"#dbeafe":"#ede9fe"} color={d.type==="自社"?"#1e40af":"#5b21b6"}/>
-                      <span style={{ fontWeight:600, fontSize:12 }}>{d.name}</span>
-                      <StatusBadge label={d.type}/>
-                    </div>
-                    {dComplete && <span style={{ fontSize:13, color:"#16a34a", fontWeight:700 }}>✓</span>}
-                  </div>
-                  <div style={{ display:"flex", gap:6 }}>
-                    {rates.map((r,ri)=>{
-                      const val = getVal(todayStr, d.id, r.label);
-                      const dt2 = dailyTargets[r.label];
-                      const numVal = Number(val);
-                      const isAnomaly = val!==""&&(numVal===0||(dt2>0&&numVal>dt2*3));
-                      return (
-                        <div key={r.label} style={{ flex:1, display:"flex", flexDirection:"column", gap:2, minWidth:0 }}>
-                          <label style={{ fontSize:10, color:"#6b7280", textAlign:"center" }}>{r.label}</label>
-                          <input type="number" min="0"
-                            ref={el=>todayRefs.current[`${di}-${ri}`]=el}
-                            autoComplete="off" autoCorrect="off" spellCheck="false"
-                            data-1p-ignore="true" data-lpignore="true" data-form-type="other"
-                            value={val}
-                            onChange={e=>setVal(todayStr,d.id,r.label,e.target.value)}
-                            onKeyDown={e=>handleTodayKeyDown(e,di,ri)}
-                            placeholder=""
-                            title={isAnomaly?(numVal===0?"0件？ 空欄にしてください":"通常より大幅に多い件数です"):""}
-                            style={{ width:"100%", padding:"4px 6px", border:`1.5px solid ${isAnomaly?"#f87171":"#e5e7eb"}`, borderRadius:4, fontSize:14, textAlign:"center", fontFamily:"inherit", outline:"none", background:isAnomaly?"#fff5f5":"#fafafa", minWidth:0 }}
-                            onFocus={e=>{e.target.style.borderColor=isAnomaly?"#f87171":accent;e.target.style.boxShadow=`0 0 0 2px ${isAnomaly?"#fecaca50":accent+"20"}`;}}
-                            onBlur={e=>{e.target.style.borderColor=isAnomaly?"#f87171":"#e5e7eb";e.target.style.boxShadow="none";}}
-                          />
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </Card>
-      )}
-
       </div>
       {/* 月次テーブル */}
       <Card>
