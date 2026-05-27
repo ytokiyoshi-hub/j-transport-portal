@@ -2119,12 +2119,18 @@ const DailyInputPage = ({ accent }) => {
                               ref={el=>inputRefs.current[`${di}-${ci}`]=el}
                               type="number" min="0"
                               autoComplete="off" autoCorrect="off" spellCheck="false"
-                              name={`cell-${di}-${ci}`}
+                              data-1p-ignore="true" data-lpignore="true" data-form-type="other"
                               placeholder={day.isWeekend?"—":""}
                               title={isAnomaly?(numVal===0?"0件？ 空欄にしてください":"通常より大幅に多い件数です"):""}
                               value={val}
-                              onChange={e=>setVal(day.dateStr,d.id,r.label,e.target.value)}
-                              onFocus={e=>{e.target.select();setFocusedCell({di,ci,dri});}}
+                              onChange={e=>{
+                                console.log("[onChange]", `di=${di} ci=${ci}`, "domValue=", JSON.stringify(e.target.value));
+                                setVal(day.dateStr,d.id,r.label,e.target.value);
+                              }}
+                              onFocus={e=>{
+                                console.log("[onFocus]", `di=${di} ci=${ci}`, "domValue=", JSON.stringify(e.target.value), "stateVal=", JSON.stringify(val));
+                                setFocusedCell({di,ci,dri});
+                              }}
                               onBlur={()=>setFocusedCell(null)}
                               onKeyDown={e=>handleKeyDown(e,di,ci)}
                               style={{
