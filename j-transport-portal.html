@@ -2027,7 +2027,7 @@ const DailyInputPage = ({ accent }) => {
                 <th style={{ padding:"8px 12px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:11, borderRight:"1px solid #e5e7eb", borderBottom:"1px solid #e5e7eb", minWidth:90, position:"sticky", left:0, top:0, background:"#f9fafb", zIndex:5 }}>日付</th>
                 {assignedDrivers.map((d,dri)=>(
                   <th key={d.id} colSpan={nR}
-                    style={{ padding:"7px 12px", textAlign:"center", borderRight:"1px solid #e5e7eb", borderBottom:"1px solid #e5e7eb", background:focusedCell?.dri===dri?accent+"0e":"#f9fafb" }}>
+                    style={{ padding:"7px 12px", textAlign:"center", borderRight:"1px solid #e5e7eb", borderBottom:"1px solid #e5e7eb", background:focusedCell?.dri===dri?accent+"0e":"#f9fafb", position:"sticky", top:0, zIndex:3 }}>
                     <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:5 }}>
                       <Avatar name={d.name} size={18} bg={d.type==="自社"?"#dbeafe":"#ede9fe"} color={d.type==="自社"?"#1e40af":"#5b21b6"}/>
                       <span style={{ fontWeight:700, fontSize:12 }}>{d.name}</span>
