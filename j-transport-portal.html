@@ -1722,16 +1722,55 @@ const ClientPage = ({ accent, setPage }) => {
 
 // ── 日次実績入力 ───────────────────────────────────────────────────────────
 const DailyInputPage = ({ accent }) => {
-  const [selClient, setSelClient] = React.useState(clients[0]);
+  const [scClients, setScClients] = React.useState(null);
+  const [scDrivers, setScDrivers] = React.useState(null);
+  const clientSrc = scClients ?? clients;
+  const driverSrc = scDrivers ?? drivers;
+
+  const [selClient, setSelClient] = React.useState(clientSrc[0]);
   const [monthYear, setMonthYear] = React.useState(()=>{ const n=new Date(); return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}`; });
   const [entries, setEntries] = React.useState({});
   const [saved, setSaved] = React.useState(false);
   const [focusedCell, setFocusedCell] = React.useState(null);
   const [confirmClear, setConfirmClear] = React.useState(false);
   const inputRefs = React.useRef({});
-  const clientList = clients.filter(c => c.billing !== "スポット");
 
-  const assignedDrivers = drivers.filter(d => selClient.drivers.includes(d.id));
+  React.useEffect(() => {
+    (async () => {
+      const [{ data: cs }, { data: rates }, { data: cds }, { data: ds }] = await Promise.all([
+        window.sb.from("jt_clients").select("*").order("id"),
+        window.sb.from("jt_client_rates").select("*").order("sort_order"),
+        window.sb.from("jt_client_drivers").select("*"),
+        window.sb.from("jt_drivers").select("*").order("id"),
+      ]);
+      if (cs && rates && cds && ds) {
+        const transformed = cs.map(c => ({
+          id: c.id, name: c.name, area: c.area, billing: c.billing,
+          billingCycle: c.billing_cycle, monthlyVol: c.monthly_vol || {},
+          contact: c.contact, status: c.status,
+          rates: rates.filter(r => r.client_id === c.id).map(r => ({
+            label: r.label, sell: Number(r.sell), pay: Number(r.pay),
+          })),
+          drivers: cds.filter(cd => cd.client_id === c.id).map(cd => cd.driver_id),
+        }));
+        setScClients(transformed);
+        setScDrivers(ds);
+        console.log("[Supabase] loaded:", transformed.length, "clients,", ds.length, "drivers");
+      } else {
+        console.warn("[Supabase] fetch failed, using hardcoded fallback");
+      }
+    })();
+  }, []);
+
+  React.useEffect(() => {
+    if (scClients) {
+      const updated = scClients.find(c => c.id === selClient?.id);
+      if (updated) setSelClient(updated);
+    }
+  }, [scClients]);
+
+  const clientList = clientSrc.filter(c => c.billing !== "スポット");
+  const assignedDrivers = driverSrc.filter(d => selClient.drivers.includes(d.id));
   const rates = selClient.rates.filter(r => r.sell > 0 || r.pay > 0);
   const nD = assignedDrivers.length;
   const nR = rates.length;
