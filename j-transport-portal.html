@@ -3635,6 +3635,7 @@ const ApplyPage = ({ accent }) => {
   const [sel, setSel] = React.useState(null);
   const [ok, setOk] = React.useState(false);
   const [form, setForm] = React.useState({});
+  const [submitted, setSubmitted] = useLocalStorage("jt_applications", []);
   const [pendingList] = React.useState([
     { id:"A-042", type:"有給休暇申請", date:"2025-04-25", status:"承認待ち", approver:"田中 部長" },
     { id:"A-041", type:"残業申請",     date:"2025-04-22", status:"承認済み", approver:"田中 部長" },
