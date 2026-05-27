@@ -464,6 +464,18 @@ Object.assign(window, {
 </script>
 <script type="text/babel">
 
+// localStorage-backed state — persists across reloads. Drop-in replacement for React.useState.
+function useLocalStorage(key, initial) {
+  const [val, setVal] = React.useState(() => {
+    try { const s = localStorage.getItem(key); return s != null ? JSON.parse(s) : initial; }
+    catch (e) { return initial; }
+  });
+  React.useEffect(() => {
+    try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) {}
+  }, [key, val]);
+  return [val, setVal];
+}
+
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "accent": "#0ea5e9",
   "userName": "山本 拓也",
