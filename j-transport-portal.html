@@ -940,6 +940,12 @@ const PLPage = ({ accent }) => {
 const RateMasterPage = ({ accent, setPage }) => {
   const [sel, setSel] = React.useState(null);
   const [editMode, setEditMode] = React.useState(false);
+  const [extraClients, setExtraClients] = React.useState([]);
+  const [showAdd, setShowAdd] = React.useState(false);
+  const blankForm = { name:"", area:"", billing:"個建て", billingCycle:"翌月末締め", rateLabel:"配完", sell:"", pay:"" };
+  const [form, setForm] = React.useState(blankForm);
+  const allClients = [...clients, ...extraClients];
+  const billingOptions = ["個建て","個建て（2区分）","個建て（3区分）","スポット","固定（日額）","固定＋変動"];
 
   return (
     <div>
@@ -952,7 +958,7 @@ const RateMasterPage = ({ accent, setPage }) => {
           <button style={{ padding:"7px 16px", border:"1.5px solid #e5e7eb", background:"#fff", color:"#374151", borderRadius:6, fontSize:13, fontWeight:600 }}>
             CSVエクスポート
           </button>
-          <button style={{ padding:"7px 16px", background:accent, color:"#fff", border:"none", borderRadius:6, fontSize:13, fontWeight:600 }}>
+          <button onClick={()=>{ setForm(blankForm); setShowAdd(true); }} style={{ padding:"7px 16px", background:accent, color:"#fff", border:"none", borderRadius:6, fontSize:13, fontWeight:600, cursor:"pointer" }}>
             + 荷主追加
           </button>
         </div>
@@ -963,7 +969,7 @@ const RateMasterPage = ({ accent, setPage }) => {
         <Card>
           <SH title="荷主一覧"/>
           <div style={{ padding:"8px 0" }}>
-            {clients.map((c,i)=>(
+            {allClients.map((c,i)=>(
               <button key={i} onClick={()=>{ setSel(c); setEditMode(false); }}
                 style={{ width:"100%", padding:"12px 16px", border:"none", borderLeft: sel?.id===c.id ? `3px solid ${accent}` : "3px solid transparent", background: sel?.id===c.id ? "#f0f9ff" : "transparent", textAlign:"left", display:"flex", flexDirection:"column", gap:3 }}>
                 <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
@@ -1089,6 +1095,89 @@ const RateMasterPage = ({ accent, setPage }) => {
           </Card>
         )}
       </div>
+
+      {/* 荷主追加モーダル */}
+      {showAdd && (
+        <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,.45)", zIndex:9999, display:"flex", alignItems:"center", justifyContent:"center" }}
+          onClick={()=>setShowAdd(false)}>
+          <div style={{ background:"#fff", borderRadius:10, width:480, maxHeight:"85vh", overflowY:"auto", padding:32 }} onClick={e=>e.stopPropagation()}>
+            <div style={{ fontSize:18, fontWeight:700, marginBottom:4 }}>荷主を追加</div>
+            <div style={{ fontSize:12, color:"#9ca3af", marginBottom:20 }}>新しい荷主の基本情報と単価を登録します</div>
+
+            <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+              {[["荷主名","name","例）新規物流株式会社"],["エリア","area","例）東京西部・多摩"]].map(([label,key,ph])=>(
+                <label key={key} style={{ display:"flex", flexDirection:"column", gap:5 }}>
+                  <span style={{ fontSize:12, fontWeight:600, color:"#374151" }}>{label}</span>
+                  <input value={form[key]} onChange={e=>setForm({ ...form, [key]:e.target.value })} placeholder={ph}
+                    style={{ padding:"9px 12px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
+                </label>
+              ))}
+
+              <div style={{ display:"flex", gap:12 }}>
+                <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5 }}>
+                  <span style={{ fontSize:12, fontWeight:600, color:"#374151" }}>請求体系</span>
+                  <select value={form.billing} onChange={e=>setForm({ ...form, billing:e.target.value })}
+                    style={{ padding:"9px 12px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none", background:"#fff" }}>
+                    {billingOptions.map(o=><option key={o} value={o}>{o}</option>)}
+                  </select>
+                </label>
+                <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5 }}>
+                  <span style={{ fontSize:12, fontWeight:600, color:"#374151" }}>締め</span>
+                  <input value={form.billingCycle} onChange={e=>setForm({ ...form, billingCycle:e.target.value })} placeholder="例）翌月末締め"
+                    style={{ padding:"9px 12px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
+                </label>
+              </div>
+
+              <div style={{ background:"#f8fafc", borderRadius:8, padding:"14px 16px" }}>
+                <div style={{ fontSize:12, fontWeight:700, color:"#9ca3af", marginBottom:10 }}>初期単価（後から編集できます）</div>
+                <div style={{ display:"flex", gap:10 }}>
+                  <label style={{ flex:1.4, display:"flex", flexDirection:"column", gap:5 }}>
+                    <span style={{ fontSize:11, color:"#6b7280" }}>業務区分</span>
+                    <input value={form.rateLabel} onChange={e=>setForm({ ...form, rateLabel:e.target.value })}
+                      style={{ padding:"8px 10px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
+                  </label>
+                  <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5 }}>
+                    <span style={{ fontSize:11, color:"#6b7280" }}>売単価</span>
+                    <input value={form.sell} onChange={e=>setForm({ ...form, sell:e.target.value })} type="number" placeholder="0"
+                      style={{ padding:"8px 10px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
+                  </label>
+                  <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5 }}>
+                    <span style={{ fontSize:11, color:"#6b7280" }}>支払単価</span>
+                    <input value={form.pay} onChange={e=>setForm({ ...form, pay:e.target.value })} type="number" placeholder="0"
+                      style={{ padding:"8px 10px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display:"flex", gap:10, marginTop:24 }}>
+              <button onClick={()=>{
+                  const name = form.name.trim();
+                  if (!name) { alert("荷主名を入力してください"); return; }
+                  const newClient = {
+                    id: "C-" + String(clients.length + extraClients.length + 1).padStart(2,"0"),
+                    name,
+                    area: form.area.trim() || "—",
+                    billing: form.billing,
+                    billingCycle: form.billingCycle.trim() || "—",
+                    rates: [{ label: form.rateLabel.trim() || "配完", sell: Number(form.sell)||0, pay: Number(form.pay)||0 }],
+                    drivers: [],
+                    monthlyVol: {},
+                    contact: "—",
+                    status: "稼働中",
+                  };
+                  setExtraClients([...extraClients, newClient]);
+                  setSel(newClient);
+                  setEditMode(false);
+                  setShowAdd(false);
+                }}
+                style={{ flex:1, padding:"11px", background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:600, fontSize:13, cursor:"pointer" }}>追加する</button>
+              <button onClick={()=>setShowAdd(false)}
+                style={{ flex:1, padding:"11px", border:"1.5px solid #e5e7eb", background:"#fff", color:"#374151", borderRadius:6, fontSize:13, cursor:"pointer" }}>キャンセル</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -1652,6 +1741,8 @@ const DailyInputPage = ({ accent }) => {
   const handleKeyDown = (e, di, ci) => {
     if(e.key==='Enter'||e.key==='ArrowDown'){e.preventDefault();focusCell(di+1,ci);}
     else if(e.key==='ArrowUp'){e.preventDefault();focusCell(di-1,ci);}
+    else if(e.key==='ArrowLeft'){e.preventDefault();if(ci>0)focusCell(di,ci-1);}
+    else if(e.key==='ArrowRight'){e.preventDefault();if(ci<nCols-1)focusCell(di,ci+1);}
     else if(e.key==='Tab'){e.preventDefault();focusCell(di,ci+(e.shiftKey?-1:1));}
   };
 
@@ -1702,7 +1793,7 @@ const DailyInputPage = ({ accent }) => {
         </div>
         <div style={{ fontSize:11, color:"#6b7280", background:"#f8fafc", border:"1px solid #e5e7eb", borderRadius:6, padding:"5px 12px", lineHeight:2.2 }}>
           <span style={{ fontWeight:700, color:"#374151" }}>キーボード</span>
-          {[["Enter/↓","翌日"],["↑","前日"],["Tab","右列"],["Shift+Tab","左列"],["⌘S","保存"],["Alt+数字","荷主"]].map(([k,v])=>(
+          {[["↑↓←→","セル移動"],["Enter","翌日"],["Tab","右列"],["Shift+Tab","左列"],["⌘S","保存"],["Alt+数字","荷主"]].map(([k,v])=>(
             <span key={k} style={{ marginLeft:8 }}><span style={{ color:"#9ca3af" }}>{k}</span> {v}</span>
           ))}
         </div>
