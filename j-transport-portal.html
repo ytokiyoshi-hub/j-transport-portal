@@ -2022,7 +2022,7 @@ const DailyInputPage = ({ accent }) => {
       <Card>
         <div style={{ overflow:"auto", maxHeight:"calc(100vh - 320px)" }}>
           <table style={{ borderCollapse:"collapse", fontSize:12, whiteSpace:"nowrap" }}>
-            <thead>
+            <thead style={{ position:"sticky", top:0, zIndex:4 }}>
               <tr style={{ background:"#f9fafb" }}>
                 <th style={{ padding:"8px 12px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:11, borderRight:"1px solid #e5e7eb", borderBottom:"1px solid #e5e7eb", minWidth:90, position:"sticky", left:0, top:0, background:"#f9fafb", zIndex:5 }}>日付</th>
                 {assignedDrivers.map((d,dri)=>(
