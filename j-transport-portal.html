@@ -1990,12 +1990,23 @@ const DailyInputPage = ({ accent }) => {
         <div style={{ flex:1 }}>
           <label style={{ fontSize:11, color:"#9ca3af", display:"block", marginBottom:3 }}>荷主</label>
           <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
-            {clientList.map((c,i)=>(
+            {clientList.map((c,i)=>{
+              const on = selClient.id===c.id;
+              return (
               <button key={i} onClick={()=>{ setSelClient(c); setEntries({}); setSaved(false); }}
-                style={{ padding:"6px 12px", borderRadius:4, border:`1.5px solid ${selClient.id===c.id?accent:"#e5e7eb"}`, background:selClient.id===c.id?accent:"#fff", color:selClient.id===c.id?"#fff":"#374151", fontSize:12, fontWeight:selClient.id===c.id?600:400, cursor:"pointer" }}>
-                <span style={{ fontSize:9, opacity:0.6, marginRight:2 }}>{i+1}</span>{c.name}
+                onMouseEnter={e=>{ if(!on){ e.currentTarget.style.borderColor=accent; e.currentTarget.style.background=accent+"0c"; } }}
+                onMouseLeave={e=>{ if(!on){ e.currentTarget.style.borderColor="#e5e7eb"; e.currentTarget.style.background="#fff"; } }}
+                style={{ display:"flex", alignItems:"center", gap:7, padding:"6px 14px 6px 7px", borderRadius:999,
+                  border:`1.5px solid ${on?accent:"#e5e7eb"}`, background:on?accent:"#fff", color:on?"#fff":"#374151",
+                  fontSize:12.5, fontWeight:on?700:500, cursor:"pointer",
+                  boxShadow:on?`0 2px 8px -1px ${accent}55`:"0 1px 2px rgba(15,23,42,0.05)",
+                  transition:"border-color .12s, background .12s, box-shadow .12s" }}>
+                <span style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", width:19, height:19, borderRadius:"50%",
+                  fontSize:10, fontWeight:700, flexShrink:0, background:on?"rgba(255,255,255,0.25)":"#eef2f7", color:on?"#fff":"#94a3b8" }}>{i+1}</span>
+                {c.name}
               </button>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
