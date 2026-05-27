@@ -2048,7 +2048,7 @@ const DailyInputPage = ({ accent }) => {
                       <th key={`${dri}-${ri}`}
                         style={{ padding:"4px 8px", textAlign:"center", color:active?accent:"#6b7280", fontWeight:500, fontSize:10,
                           borderLeft:ri===0&&dri>0?"1px solid #e5e7eb":"none",
-                          background:active?accent+"0e":"transparent", minWidth:60 }}>
+                          background:active?accent+"0e":"#f9fafb", position:"sticky", top:36, zIndex:3, minWidth:60 }}>
                         <div style={{ fontWeight:600 }}>{r.label}</div>
                       </th>
                     );
