@@ -3735,7 +3735,11 @@ const ApplyPage = ({ accent }) => {
               {iField(f)}
             </div>
           ))}
-          <button onClick={()=>setOk(true)} style={{ width:"100%", padding:13, background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:700, fontSize:14, cursor:"pointer", marginTop:8 }}>申請を送信する</button>
+          <button onClick={()=>{
+              const rec = { id:"A-"+String(Date.now()).slice(-4), type:sel.name, date:new Date().toISOString().slice(0,10), status:"承認待ち", approver:form.approver||"—" };
+              setSubmitted(s=>[rec, ...s]);
+              setOk(true);
+            }} style={{ width:"100%", padding:13, background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:700, fontSize:14, cursor:"pointer", marginTop:8 }}>申請を送信する</button>
         </Card>
         <Card style={{ padding:20 }}>
           <div style={{ fontWeight:700, fontSize:13, marginBottom:12 }}>申請フロー</div>
