@@ -800,184 +800,477 @@ const SH = ({ title, action, onAction }) => (
   </div>
 );
 
-// ── 収支管理 ───────────────────────────────────────────────────────────────
-const PLPage = ({ accent }) => {
-  const [period, setPeriod] = React.useState("year"); // "year" | "half"
-  const margin = totalSell > 0 ? (totalProfit/totalSell*100).toFixed(1) : 0;
+// ── 収支管理（経営ダッシュボード） ──────────────────────────────────────────
+const TARGET_MARGIN = 25;     // 粗利率目標 (%)
+const ALERT_MARGIN_LOW = 10;  // 警告粗利率 (%)
+const ALERT_DROP_PCT = 20;    // 前月比急減アラート閾値 (%)
 
-  const _curForGraph = _hasCurrent ? REF_MONTH : LATEST_DATA_MONTH;
-  const allMonths = Array.from({length:12}, (_,i)=>{
-    const mk = "2025-"+String(i+1).padStart(2,"0");
-    let sell=0, pay=0;
-    Object.keys(monthlyHistory).forEach(cid=>{ const h=monthlyHistory[cid][mk]; if(h){ sell+=h.s; pay+=h.p; } });
-    return { m:"25/"+(i+1), sell, pay, current: mk===_curForGraph };
+// 全月キーを sorted で返す
+const ALL_MONTH_KEYS = (()=>{
+  const s = new Set();
+  Object.values(monthlyHistory).forEach(m => Object.keys(m).forEach(k => s.add(k)));
+  return Array.from(s).sort();
+})();
+
+// 月キー操作
+const prevMonthKey = (mk) => {
+  const [y,m] = mk.split('-').map(Number);
+  return m===1 ? `${y-1}-12` : `${y}-${String(m-1).padStart(2,'0')}`;
+};
+
+// クライアント×月の値取得
+const cm = (cid, mk) => (monthlyHistory[cid] && monthlyHistory[cid][mk]) || {s:0,p:0};
+// 全社合算
+const monthAgg = (mk) => {
+  let sell=0, pay=0;
+  clients.forEach(c => { const h = cm(c.id, mk); sell += h.s; pay += h.p; });
+  return { sell, pay, profit: sell-pay };
+};
+// 月ラベル整形
+const mkLabel = (mk) => mk ? `${mk.slice(0,4)}年${parseInt(mk.slice(5,7))}月` : "—";
+const mkShort = (mk) => mk ? `${mk.slice(2,4)}/${parseInt(mk.slice(5,7))}` : "—";
+
+const PLPage = ({ accent, setPage }) => {
+  const [selectedMonth, setSelectedMonth] = React.useState(LATEST_DATA_MONTH);
+  const [graphRange, setGraphRange] = React.useState("year"); // year | half
+  const [tblSort, setTblSort] = React.useState({key:"sell", dir:"desc"});
+
+  // === 当月・前月・年計の集計 ===
+  const cur = monthAgg(selectedMonth);
+  const prevMk = prevMonthKey(selectedMonth);
+  const prev = monthAgg(prevMk);
+  const curMargin = cur.sell>0 ? cur.profit/cur.sell*100 : 0;
+  const prevMargin = prev.sell>0 ? prev.profit/prev.sell*100 : 0;
+  const sellDelta = prev.sell>0 ? (cur.sell-prev.sell)/prev.sell*100 : 0;
+  const profitDelta = prev.profit>0 ? (cur.profit-prev.profit)/prev.profit*100 : 0;
+
+  // 当月の荷主別データ
+  const curByClient = clients.map(c => {
+    const h = cm(c.id, selectedMonth);
+    const ph = cm(c.id, prevMk);
+    // 直近3ヶ月平均（当月含む直近3）
+    const idx = ALL_MONTH_KEYS.indexOf(selectedMonth);
+    let avg3 = 0, n=0;
+    for (let k=Math.max(0,idx-2); k<=idx; k++) {
+      const v = cm(c.id, ALL_MONTH_KEYS[k]);
+      if (v.s>0) { avg3 += v.s; n++; }
+    }
+    avg3 = n>0 ? avg3/n : 0;
+    return {
+      id: c.id, name: c.name, billing: c.billing, billingCycle: c.billingCycle,
+      sell: h.s, pay: h.p, profit: h.s-h.p,
+      rate: h.s>0 ? (h.s-h.p)/h.s*100 : 0,
+      pct: cur.sell>0 ? h.s/cur.sell*100 : 0,
+      prevSell: ph.s,
+      sellDelta: ph.s>0 ? (h.s-ph.s)/ph.s*100 : (h.s>0?100:0),
+      avg3,
+      vsAvg: avg3>0 ? (h.s-avg3)/avg3*100 : 0,
+    };
   });
-  const curIdx = Math.max(0, allMonths.findIndex(d=>d.current));
-  const prevSell = curIdx>0 ? allMonths[curIdx-1].sell : totalSellDisp;
-  const prevProfit = curIdx>0 ? (allMonths[curIdx-1].sell - allMonths[curIdx-1].pay) : totalProfitDisp;
-  const barData = period==="half" ? allMonths.slice(6) : allMonths;
-  const maxBar = Math.max(...barData.map(d=>d.sell), 1);
-  const ytdSell   = allMonths.reduce((s,d)=>s+d.sell,0);
-  const ytdPay    = allMonths.reduce((s,d)=>s+d.pay,0);
-  const ytdProfit = ytdSell - ytdPay;
+  const curActive = curByClient.filter(r => r.sell>0);
+  const curSorted = [...curActive].sort((a,b)=>{
+    const k=tblSort.key, d=tblSort.dir==="asc"?1:-1;
+    return (a[k]-b[k])*d;
+  });
+
+  // === 経営アラート ===
+  const alerts = [];
+  // 1. トップ荷主依存度
+  const topClient = [...curActive].sort((a,b)=>b.sell-a.sell)[0];
+  if (topClient && topClient.pct>=30) {
+    alerts.push({
+      level: topClient.pct>=40?"high":"mid",
+      title:`売上集中: ${topClient.name} で ${topClient.pct.toFixed(1)}%`,
+      desc:`単一荷主依存度が高い。${topClient.name} の解約は当月売上で ¥${fmt(topClient.sell)} のインパクト。多角化検討。`
+    });
+  }
+  // 2. 粗利率低い荷主
+  const lowMargin = curActive.filter(r => r.rate<ALERT_MARGIN_LOW && r.sell>10000);
+  if (lowMargin.length>0) {
+    alerts.push({
+      level:"mid",
+      title:`粗利率 ${ALERT_MARGIN_LOW}%未満: ${lowMargin.length}社`,
+      desc: lowMargin.map(r=>`${r.name}（${r.rate.toFixed(1)}%）`).join('、')+" — 単価交渉 or 撤退判断"
+    });
+  }
+  // 3. 売上急減
+  const dropped = curActive.filter(r => r.sellDelta<=-ALERT_DROP_PCT && r.prevSell>0);
+  if (dropped.length>0) {
+    alerts.push({
+      level:"high",
+      title:`売上急減: ${dropped.length}社（前月比${-ALERT_DROP_PCT}%以上ダウン）`,
+      desc: dropped.map(r=>`${r.name}（${r.sellDelta.toFixed(0)}%）`).join('、')+" — 原因調査"
+    });
+  }
+  // 4. 入金遅延・未請求
+  const unpaid = invoices.filter(i=>i.status==="入金遅延");
+  const pending = invoices.filter(i=>i.status==="未請求");
+  if (unpaid.length>0) {
+    alerts.push({
+      level:"high",
+      title:`入金遅延: ${unpaid.length}件 ¥${fmt(unpaid.reduce((s,i)=>s+i.amount,0))}`,
+      desc: unpaid.map(i=>`${i.client}（${i.month}）`).join('、')+" — 至急督促"
+    });
+  }
+  if (pending.length>0) {
+    alerts.push({
+      level:"low",
+      title:`未請求: ${pending.length}件 ¥${fmt(pending.reduce((s,i)=>s+i.amount,0))}`,
+      desc:"請求書発行待ち。期日内発行で資金繰り改善"
+    });
+  }
+  // 5. 粗利率が目標下回り
+  if (curMargin>0 && curMargin < TARGET_MARGIN) {
+    alerts.push({
+      level:"mid",
+      title:`粗利率 ${curMargin.toFixed(1)}% — 目標 ${TARGET_MARGIN}% に未達`,
+      desc:`差 ${(TARGET_MARGIN-curMargin).toFixed(1)}pt。${(cur.sell*(TARGET_MARGIN-curMargin)/100).toFixed(0)|0} 円の粗利改善余地`
+    });
+  }
+
+  // === 12ヶ月推移 ===
+  const trend = ALL_MONTH_KEYS.map(mk => ({...monthAgg(mk), mk}));
+  const recentTrend = graphRange==="half" ? trend.slice(-6) : trend.slice(-12);
+  const maxTrend = Math.max(...recentTrend.map(d=>d.sell), 1);
+  // 3ヶ月移動平均
+  const ma3 = recentTrend.map((_,i) => {
+    const slice = recentTrend.slice(Math.max(0,i-2), i+1);
+    return slice.reduce((s,d)=>s+d.sell,0)/slice.length;
+  });
+
+  // === ドライバー収益性 ===
+  const inhouseDrivers = drivers.filter(d=>d.type==="自社");
+  const coopDrivers    = drivers.filter(d=>d.type==="協力会社");
+  // pay の自社/協力会社割合（近似: ドライバー人数比率）
+  const inhouseRatio = inhouseDrivers.length / Math.max(1, inhouseDrivers.length+coopDrivers.length);
+  const inhousePayEst = cur.pay * inhouseRatio;
+  const coopPayEst    = cur.pay - inhousePayEst;
+  const activeDriverCount = inhouseDrivers.length + coopDrivers.length;
+  const perDriverProfit   = activeDriverCount>0 ? cur.profit/activeDriverCount : 0;
+
+  // === 資金繰り予測（締め日別の入金スケジュール） ===
+  const cycleGroups = {};
+  curActive.forEach(r => {
+    const c = clients.find(x=>x.id===r.id);
+    const key = c?.billingCycle || "未設定";
+    if (!cycleGroups[key]) cycleGroups[key] = { clients:[], sell:0, pay:0 };
+    cycleGroups[key].clients.push(r);
+    cycleGroups[key].sell += r.sell;
+    cycleGroups[key].pay  += r.pay;
+  });
+
+  // === YTD（年計）===
+  const curYear = selectedMonth.slice(0,4);
+  const ytdMonths = ALL_MONTH_KEYS.filter(mk => mk.startsWith(curYear));
+  const ytdData = ytdMonths.reduce((acc,mk)=>{
+    const m = monthAgg(mk); acc.sell+=m.sell; acc.pay+=m.pay; return acc;
+  }, {sell:0,pay:0});
+  const ytdProfit = ytdData.sell - ytdData.pay;
+  const ytdMargin = ytdData.sell>0 ? ytdData.profit/ytdData.sell*100 : 0;
+  const ytdMonthCount = ytdMonths.length;
+  const monthAvg = ytdMonthCount>0 ? ytdData.sell/ytdMonthCount : 0;
+  // 年間着地予測 (月平均 × 12)
+  const projection = monthAvg * 12;
+  const projectionProfit = ytdMonthCount>0 ? (ytdProfit/ytdMonthCount)*12 : 0;
+
+  // 黒字荷主数
+  const profitableCount = curActive.filter(r=>r.profit>0).length;
+
+  // === スタイル ===
+  const SortHd = ({label, k, align="left"}) => {
+    const active = tblSort.key===k;
+    return (
+      <th onClick={()=>setTblSort({key:k, dir:active&&tblSort.dir==="desc"?"asc":"desc"})}
+        style={{ padding:"9px 12px", textAlign:align, color:active?accent:"#374151", fontWeight:600, fontSize:11.5, whiteSpace:"nowrap", cursor:"pointer", userSelect:"none", background:"#f9fafb" }}>
+        {label}{active&&<span style={{ marginLeft:3, fontSize:9 }}>{tblSort.dir==="desc"?"▼":"▲"}</span>}
+      </th>
+    );
+  };
+
+  const alertColor = (lv) => lv==="high"?"#dc2626":lv==="mid"?"#d97706":"#0ea5e9";
+  const alertBg    = (lv) => lv==="high"?"#fee2e2":lv==="mid"?"#fef3c7":"#dbeafe";
 
   return (
     <div>
-      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
+      {/* ── ヘッダ ── */}
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:18 }}>
         <div>
-          <div style={{ fontSize:20, fontWeight:700 }}>収支管理</div>
-          <div style={{ fontSize:12, color:"#9ca3af", marginTop:2 }}>{_hasCurrent ? `全荷主合算 ${REF_MONTH_LABEL}` : `今月（${REF_MONTH_LABEL}）実績未入力 ／ 最新確定: ${LATEST_MONTH_LABEL} を表示`}</div>
+          <div style={{ fontSize:20, fontWeight:700, display:"flex", alignItems:"center", gap:10 }}>
+            収支管理 <span style={{ fontSize:11, padding:"2px 8px", background:accent+"22", color:accent, borderRadius:99, fontWeight:600 }}>経営ダッシュボード</span>
+          </div>
+          <div style={{ fontSize:12, color:"#9ca3af", marginTop:3 }}>
+            対象月: {mkLabel(selectedMonth)} ／ 前月: {mkLabel(prevMk)}
+            {!_hasCurrent && selectedMonth===LATEST_DATA_MONTH && ` ／ 今月（${REF_MONTH_LABEL}）実績未入力のため最新確定月を表示`}
+          </div>
         </div>
-        <div style={{ display:"flex", gap:8, alignItems:"center" }}>
-          <div style={{ fontSize:12, color:"#9ca3af" }}>グラフ表示：</div>
-          {[{v:"half",l:"直近6ヶ月"},{v:"year",l:"12ヶ月"}].map(opt=>(
-            <button key={opt.v} onClick={()=>setPeriod(opt.v)}
-              style={{ padding:"5px 12px", borderRadius:4, border:`1.5px solid ${period===opt.v?accent:"#e5e7eb"}`, background:period===opt.v?accent:"#fff", color:period===opt.v?"#fff":"#374151", fontSize:12, fontWeight:period===opt.v?600:400, cursor:"pointer" }}>
-              {opt.l}
-            </button>
+        <div style={{ display:"flex", gap:10, alignItems:"center" }}>
+          <label style={{ fontSize:12, color:"#6b7280" }}>対象月：</label>
+          <select value={selectedMonth} onChange={e=>setSelectedMonth(e.target.value)}
+            style={{ padding:"7px 14px", border:`1.5px solid ${accent}`, borderRadius:6, background:"#fff", fontSize:13, fontWeight:600, color:"#111827", cursor:"pointer", fontFamily:"inherit", outline:"none" }}>
+            {ALL_MONTH_KEYS.slice().reverse().map(mk=>(
+              <option key={mk} value={mk}>{mkLabel(mk)}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* ── 経営KPI 6カード ── */}
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(6,1fr)", gap:10, marginBottom:14 }}>
+        {[
+          { l:"売上", v:fmt(cur.sell), sub:`前月比 ${sellDelta>=0?"+":""}${sellDelta.toFixed(1)}%`, c:accent, up: sellDelta>=0 },
+          { l:"支払", v:fmt(cur.pay),  sub:`原価率 ${cur.sell>0?(cur.pay/cur.sell*100).toFixed(1):"—"}%`, c:"#d97706", up:null },
+          { l:"粗利", v:fmt(cur.profit), sub:`前月比 ${profitDelta>=0?"+":""}${profitDelta.toFixed(1)}%`, c:"#16a34a", up: profitDelta>=0 },
+          { l:`粗利率（目標 ${TARGET_MARGIN}%）`, v:`${curMargin.toFixed(1)}%`, sub:`前月 ${prevMargin.toFixed(1)}% ／ ${curMargin>=TARGET_MARGIN?"目標達成":"目標未達"}`, c: curMargin>=TARGET_MARGIN?"#16a34a":curMargin>=ALERT_MARGIN_LOW?"#d97706":"#dc2626", up: curMargin>=TARGET_MARGIN },
+          { l:"受取勘定（未請求＋遅延）", v:fmt(pending.reduce((s,i)=>s+i.amount,0)+unpaid.reduce((s,i)=>s+i.amount,0)), sub:`未請求 ${pending.length} ／ 遅延 ${unpaid.length}`, c:"#7c3aed", up:null },
+          { l:"黒字荷主数", v:`${profitableCount} / ${curActive.length}`, sub: profitableCount===curActive.length?"全社黒字":`${curActive.length-profitableCount}社が赤字`, c:profitableCount===curActive.length?"#16a34a":"#dc2626", up: profitableCount===curActive.length },
+        ].map(({l,v,sub,c,up})=>(
+          <Card key={l} style={{ padding:"14px 16px" }}>
+            <div style={{ fontSize:10.5, color:"#9ca3af", marginBottom:6, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{l}</div>
+            <div style={{ fontSize:18, fontWeight:800, color:c, lineHeight:1.1 }}>{v}</div>
+            <div style={{ fontSize:10.5, color: up===true?"#16a34a":up===false?"#dc2626":"#9ca3af", marginTop:5 }}>{sub}</div>
+          </Card>
+        ))}
+      </div>
+
+      {/* ── 経営アラート ── */}
+      {alerts.length>0 && (
+        <Card style={{ marginBottom:14 }}>
+          <SH title={`経営アラート（${alerts.length}件）`}/>
+          <div style={{ padding:"10px 16px" }}>
+            {alerts.map((a,i)=>(
+              <div key={i} style={{ display:"flex", gap:10, padding:"9px 10px", marginBottom:6, background:alertBg(a.level), borderLeft:`4px solid ${alertColor(a.level)}`, borderRadius:4 }}>
+                <span style={{ fontSize:11, fontWeight:700, color:alertColor(a.level), minWidth:36, textTransform:"uppercase" }}>{a.level==="high"?"高":a.level==="mid"?"中":"情報"}</span>
+                <div style={{ flex:1 }}>
+                  <div style={{ fontSize:13, fontWeight:700, color:"#111827" }}>{a.title}</div>
+                  <div style={{ fontSize:11.5, color:"#6b7280", marginTop:2 }}>{a.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
+      {/* ── 月次推移 + 構成 ── */}
+      <div style={{ display:"grid", gridTemplateColumns:"1fr 320px", gap:14, marginBottom:14 }}>
+        <Card>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"10px 16px 4px" }}>
+            <div style={{ fontSize:13, fontWeight:700 }}>月次収支推移 ＋ 3ヶ月移動平均</div>
+            <div style={{ display:"flex", gap:5 }}>
+              {[{v:"half",l:"6ヶ月"},{v:"year",l:"12ヶ月"}].map(opt=>(
+                <button key={opt.v} onClick={()=>setGraphRange(opt.v)}
+                  style={{ padding:"3px 10px", borderRadius:4, border:`1.5px solid ${graphRange===opt.v?accent:"#94a3b8"}`, background:graphRange===opt.v?accent:"#fff", color:graphRange===opt.v?"#fff":"#374151", fontSize:11, fontWeight:graphRange===opt.v?600:400, cursor:"pointer" }}>
+                  {opt.l}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div style={{ padding:"10px 20px 16px" }}>
+            <div style={{ position:"relative", display:"flex", alignItems:"flex-end", gap:graphRange==="year"?5:12, height:180, marginBottom:10 }}>
+              {recentTrend.map((d,i)=>{
+                const isCur = d.mk===selectedMonth;
+                const h = (d.sell/maxTrend)*100;
+                const mh = (ma3[i]/maxTrend)*100;
+                return (
+                  <div key={i} style={{ flex:1, display:"flex", flexDirection:"column", height:"100%", justifyContent:"flex-end", alignItems:"center", position:"relative" }}>
+                    {isCur && <div style={{ fontSize:10, color:accent, fontWeight:700, marginBottom:2, whiteSpace:"nowrap" }}>¥{fmt(d.sell/10000)}万</div>}
+                    <div style={{ width:"100%", position:"relative", height:`${h}%`, minHeight:4 }}>
+                      <div style={{ position:"absolute", bottom:0, width:"100%", height:`${d.sell>0?(d.sell-d.pay)/d.sell*100:0}%`, background:isCur?"#86efac":"#dcfce7", borderRadius:"3px 3px 0 0" }}/>
+                      <div style={{ position:"absolute", bottom:`${d.sell>0?(d.sell-d.pay)/d.sell*100:0}%`, width:"100%", height:`${d.sell>0?d.pay/d.sell*100:0}%`, background:isCur?accent:"#cbd5e1" }}/>
+                    </div>
+                    {/* 移動平均ドット */}
+                    <div style={{ position:"absolute", left:"50%", bottom:`${mh}%`, transform:"translate(-50%,50%)", width:6, height:6, background:"#dc2626", borderRadius:"50%", zIndex:2 }}/>
+                    <div style={{ fontSize:9.5, color:isCur?accent:"#9ca3af", marginTop:5, fontWeight:isCur?700:400 }}>{mkShort(d.mk)}</div>
+                  </div>
+                );
+              })}
+            </div>
+            <div style={{ display:"flex", gap:14, fontSize:10.5, color:"#6b7280", borderTop:"1px solid #94a3b8", paddingTop:10 }}>
+              <span style={{ display:"flex", gap:4, alignItems:"center" }}><span style={{ width:10, height:10, background:"#dcfce7", borderRadius:2 }}/>粗利</span>
+              <span style={{ display:"flex", gap:4, alignItems:"center" }}><span style={{ width:10, height:10, background:"#cbd5e1", borderRadius:2 }}/>支払</span>
+              <span style={{ display:"flex", gap:4, alignItems:"center" }}><span style={{ width:10, height:10, background:accent, borderRadius:2 }}/>選択月</span>
+              <span style={{ display:"flex", gap:4, alignItems:"center" }}><span style={{ width:8, height:8, background:"#dc2626", borderRadius:"50%" }}/>3ヶ月移動平均</span>
+            </div>
+          </div>
+        </Card>
+
+        {/* 荷主構成（売上） */}
+        <Card>
+          <SH title="売上構成（当月）"/>
+          <div style={{ padding:"10px 16px" }}>
+            {[...curActive].sort((a,b)=>b.sell-a.sell).slice(0,10).map((r,i)=>(
+              <div key={i} style={{ marginBottom:8 }}>
+                <div style={{ display:"flex", justifyContent:"space-between", fontSize:11.5, marginBottom:3 }}>
+                  <span style={{ fontWeight:500 }}>{i+1}. {r.name}</span>
+                  <span style={{ fontWeight:700, color:accent }}>{r.pct.toFixed(1)}%</span>
+                </div>
+                <div style={{ height:5, background:"#f1f5f9", borderRadius:2 }}>
+                  <div style={{ width:`${r.pct}%`, height:"100%", background:r.pct>=30?"#dc2626":r.pct>=20?"#d97706":accent, borderRadius:2 }}/>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+
+      {/* ── 荷主別 詳細表（拡張） ── */}
+      <Card style={{ marginBottom:14 }}>
+        <SH title={`荷主別 月次収支詳細（${mkLabel(selectedMonth)}）`}/>
+        <div style={{ overflowX:"auto" }}>
+          <table style={{ width:"100%", borderCollapse:"collapse", fontSize:12.5 }}>
+            <thead>
+              <tr>
+                <SortHd label="荷主" k="name"/>
+                <th style={{ padding:"9px 12px", textAlign:"left", fontSize:11.5, color:"#6b7280", background:"#f9fafb" }}>体系/締め</th>
+                <SortHd label="売上" k="sell" align="right"/>
+                <SortHd label="支払" k="pay" align="right"/>
+                <SortHd label="粗利" k="profit" align="right"/>
+                <SortHd label="粗利率" k="rate" align="right"/>
+                <SortHd label="構成比" k="pct" align="right"/>
+                <SortHd label="前月比" k="sellDelta" align="right"/>
+                <SortHd label="3M平均" k="avg3" align="right"/>
+                <th style={{ padding:"9px 12px", textAlign:"center", fontSize:11.5, color:"#6b7280", background:"#f9fafb" }}>状態</th>
+              </tr>
+            </thead>
+            <tbody>
+              {curSorted.map((r,i)=>{
+                const warn = [];
+                if (r.rate<ALERT_MARGIN_LOW) warn.push({l:"低粗利", c:"#dc2626"});
+                if (r.sellDelta<=-ALERT_DROP_PCT) warn.push({l:"急減", c:"#dc2626"});
+                if (r.pct>=30) warn.push({l:"集中", c:"#d97706"});
+                if (r.profit<0) warn.push({l:"赤字", c:"#dc2626"});
+                return (
+                  <tr key={r.id} onMouseEnter={e=>e.currentTarget.style.background="#f8fafc"} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+                    <td style={{ padding:"10px 12px", fontWeight:700 }}>{r.name}</td>
+                    <td style={{ padding:"10px 12px", fontSize:11 }}>
+                      <div>{r.billing}</div>
+                      <div style={{ color:"#9ca3af" }}>{r.billingCycle}</div>
+                    </td>
+                    <td style={{ padding:"10px 12px", textAlign:"right", fontWeight:700, color:accent }}>{fmt(r.sell)}</td>
+                    <td style={{ padding:"10px 12px", textAlign:"right", color:"#374151" }}>{fmt(r.pay)}</td>
+                    <td style={{ padding:"10px 12px", textAlign:"right", fontWeight:700, color:r.profit>=0?"#16a34a":"#dc2626" }}>{fmt(r.profit)}</td>
+                    <td style={{ padding:"10px 12px", textAlign:"right", fontWeight:700, color:r.rate>=TARGET_MARGIN?"#16a34a":r.rate>=ALERT_MARGIN_LOW?"#d97706":"#dc2626" }}>{r.rate.toFixed(1)}%</td>
+                    <td style={{ padding:"10px 12px", textAlign:"right" }}>
+                      <div style={{ display:"flex", alignItems:"center", gap:6, justifyContent:"flex-end" }}>
+                        <div style={{ width:50, height:4, background:"#f1f5f9", borderRadius:2 }}>
+                          <div style={{ width:`${Math.min(r.pct,100)}%`, height:"100%", background:accent, borderRadius:2 }}/>
+                        </div>
+                        <span style={{ fontSize:11 }}>{r.pct.toFixed(1)}%</span>
+                      </div>
+                    </td>
+                    <td style={{ padding:"10px 12px", textAlign:"right", color:r.sellDelta>=0?"#16a34a":"#dc2626", fontWeight:600 }}>
+                      {r.prevSell>0 ? `${r.sellDelta>=0?"+":""}${r.sellDelta.toFixed(1)}%` : "—"}
+                    </td>
+                    <td style={{ padding:"10px 12px", textAlign:"right", color:"#6b7280", fontSize:11 }}>{fmt(Math.round(r.avg3))}</td>
+                    <td style={{ padding:"10px 12px", textAlign:"center" }}>
+                      <div style={{ display:"flex", gap:3, flexWrap:"wrap", justifyContent:"center" }}>
+                        {warn.length===0
+                          ? <span style={{ fontSize:10, padding:"2px 6px", background:"#dcfce7", color:"#16a34a", borderRadius:3, fontWeight:600 }}>健全</span>
+                          : warn.map((w,wi)=><span key={wi} style={{ fontSize:10, padding:"2px 6px", background:w.c+"22", color:w.c, borderRadius:3, fontWeight:600 }}>{w.l}</span>)
+                        }
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+            <tfoot>
+              <tr style={{ background:"#f9fafb" }}>
+                <td colSpan={2} style={{ padding:"11px 12px", fontWeight:700 }}>合計（{curActive.length}社）</td>
+                <td style={{ padding:"11px 12px", textAlign:"right", fontWeight:800, color:accent }}>{fmt(cur.sell)}</td>
+                <td style={{ padding:"11px 12px", textAlign:"right", fontWeight:800 }}>{fmt(cur.pay)}</td>
+                <td style={{ padding:"11px 12px", textAlign:"right", fontWeight:800, color:"#16a34a" }}>{fmt(cur.profit)}</td>
+                <td style={{ padding:"11px 12px", textAlign:"right", fontWeight:800 }}>{curMargin.toFixed(1)}%</td>
+                <td style={{ padding:"11px 12px", textAlign:"right", fontWeight:600 }}>100%</td>
+                <td style={{ padding:"11px 12px", textAlign:"right", fontWeight:600, color:sellDelta>=0?"#16a34a":"#dc2626" }}>{prev.sell>0?`${sellDelta>=0?"+":""}${sellDelta.toFixed(1)}%`:"—"}</td>
+                <td colSpan={2}/>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </Card>
+
+      {/* ── ドライバー収益性 + 締め日別資金繰り ── */}
+      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14, marginBottom:14 }}>
+        <Card>
+          <SH title="ドライバー収益性"/>
+          <div style={{ padding:"14px 18px" }}>
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:14 }}>
+              <div style={{ padding:"10px 12px", background:"#dbeafe", borderRadius:4 }}>
+                <div style={{ fontSize:11, color:"#1e40af" }}>自社ドライバー {inhouseDrivers.length}名</div>
+                <div style={{ fontSize:16, fontWeight:800, color:"#1e40af", marginTop:3 }}>¥{fmt(Math.round(inhousePayEst))}</div>
+                <div style={{ fontSize:10, color:"#1e40af", opacity:0.8, marginTop:2 }}>当月支払 推定（{(inhouseRatio*100).toFixed(0)}%）</div>
+              </div>
+              <div style={{ padding:"10px 12px", background:"#f3e8ff", borderRadius:4 }}>
+                <div style={{ fontSize:11, color:"#6b21a8" }}>協力会社 {coopDrivers.length}名</div>
+                <div style={{ fontSize:16, fontWeight:800, color:"#6b21a8", marginTop:3 }}>¥{fmt(Math.round(coopPayEst))}</div>
+                <div style={{ fontSize:10, color:"#6b21a8", opacity:0.8, marginTop:2 }}>当月支払 推定（{((1-inhouseRatio)*100).toFixed(0)}%）</div>
+              </div>
+            </div>
+            <div style={{ padding:"10px 12px", border:"1px solid #94a3b8", borderRadius:4, marginBottom:8 }}>
+              <div style={{ fontSize:11, color:"#9ca3af" }}>1ドライバーあたり粗利貢献（{activeDriverCount}名）</div>
+              <div style={{ fontSize:18, fontWeight:800, color:"#16a34a", marginTop:3 }}>¥{fmt(Math.round(perDriverProfit))}/名</div>
+              <div style={{ fontSize:10, color:"#9ca3af", marginTop:2 }}>当月粗利 ÷ 全ドライバー数</div>
+            </div>
+            <div style={{ fontSize:11, color:"#6b7280", lineHeight:1.5 }}>
+              詳細はドライバー別収支ページへ →
+              <button onClick={()=>setPage("driverfinance")} style={{ marginLeft:6, padding:"3px 10px", background:accent, color:"#fff", border:"none", borderRadius:4, fontSize:11, cursor:"pointer" }}>詳細</button>
+            </div>
+          </div>
+        </Card>
+
+        <Card>
+          <SH title="締め日別 資金繰り予測"/>
+          <div style={{ padding:"14px 18px" }}>
+            {Object.entries(cycleGroups).map(([cyc,grp])=>{
+              const dueLabel = cyc.includes("20日") ? "翌月20日 入金予定"
+                            : cyc==="当月末締め" ? "翌月10日頃 入金予定"
+                            : cyc==="翌月末締め" ? "翌々月10日頃 入金予定"
+                            : cyc==="案件都度" ? "案件完了後 即時"
+                            : "確認要";
+              return (
+                <div key={cyc} style={{ marginBottom:12, paddingBottom:10, borderBottom:"1px dashed #cbd5e1" }}>
+                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline" }}>
+                    <div>
+                      <div style={{ fontSize:13, fontWeight:700 }}>{cyc}</div>
+                      <div style={{ fontSize:10.5, color:"#9ca3af" }}>{dueLabel}</div>
+                    </div>
+                    <div style={{ textAlign:"right" }}>
+                      <div style={{ fontSize:15, fontWeight:800, color:accent }}>¥{fmt(grp.sell)}</div>
+                      <div style={{ fontSize:10, color:"#16a34a" }}>粗利 ¥{fmt(grp.sell-grp.pay)}</div>
+                    </div>
+                  </div>
+                  <div style={{ fontSize:10.5, color:"#6b7280", marginTop:4 }}>
+                    対象: {grp.clients.map(c=>c.name).join("、")}
+                  </div>
+                </div>
+              );
+            })}
+            <div style={{ display:"flex", justifyContent:"space-between", paddingTop:6 }}>
+              <span style={{ fontSize:12, fontWeight:700 }}>当月分 入金見込み合計</span>
+              <span style={{ fontSize:14, fontWeight:800, color:accent }}>¥{fmt(cur.sell)}</span>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* ── 年度ダイジェスト ── */}
+      <Card>
+        <SH title={`${curYear}年度 ダイジェスト（実績${ytdMonthCount}ヶ月）`}/>
+        <div style={{ padding:"14px 18px", display:"grid", gridTemplateColumns:"repeat(5,1fr)", gap:12 }}>
+          {[
+            { l:"累計売上",       v:`¥${fmt(ytdData.sell)}`,         sub:`月平均 ¥${fmt(Math.round(monthAvg))}`,   c:accent },
+            { l:"累計支払",       v:`¥${fmt(ytdData.pay)}`,          sub:`原価率 ${ytdData.sell>0?(ytdData.pay/ytdData.sell*100).toFixed(1):"—"}%`, c:"#d97706" },
+            { l:"累計粗利",       v:`¥${fmt(ytdProfit)}`,           sub:`粗利率 ${ytdData.sell>0?(ytdProfit/ytdData.sell*100).toFixed(1):"—"}%`,   c:"#16a34a" },
+            { l:"年間着地予測",   v:`¥${fmt(Math.round(projection))}`, sub:`月平均×12（${ytdMonthCount}ヶ月実績ベース）`, c:"#7c3aed" },
+            { l:"目標達成率",     v:`${curMargin>=TARGET_MARGIN?"達成":"未達"}`, sub:`粗利率 ${curMargin.toFixed(1)}% ／ 目標 ${TARGET_MARGIN}%`, c: curMargin>=TARGET_MARGIN?"#16a34a":"#dc2626" },
+          ].map(({l,v,sub,c})=>(
+            <div key={l} style={{ padding:"10px 12px", borderLeft:`3px solid ${c}`, background:"#fafbfc", borderRadius:4 }}>
+              <div style={{ fontSize:11, color:"#9ca3af", marginBottom:4 }}>{l}</div>
+              <div style={{ fontSize:16, fontWeight:800, color:c }}>{v}</div>
+              <div style={{ fontSize:10, color:"#9ca3af", marginTop:3 }}>{sub}</div>
+            </div>
           ))}
         </div>
-      </div>
-
-      {/* KPI */}
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12, marginBottom:14 }}>
-        {[
-          { l:`今月売上（${REF_MONTH_LABEL}）`,   v:fmt(totalSell),   sub:totalSell>0?`前月比 +${((totalSell/prevSell-1)*100).toFixed(1)}%`:`実績未入力。最新確定: ${LATEST_MONTH_LABEL}`, c:accent, up:totalSell>0 },
-          { l:`今月支払（${REF_MONTH_LABEL}）`,   v:fmt(totalPay),    sub:totalSell>0?`原価率 ${(totalPay/totalSell*100).toFixed(1)}%`:"—",  c:"#d97706", up:null },
-          { l:`今月粗利（${REF_MONTH_LABEL}）`,   v:fmt(totalProfit), sub:totalSell>0?`前月比 +${((totalProfit/prevProfit-1)*100).toFixed(1)}%`:"—", c:"#16a34a", up:totalSell>0 },
-          { l:`今月粗利率（${REF_MONTH_LABEL}）`, v:totalSell>0?margin+"%":"—", sub:totalSell>0?`前月 ${(prevProfit/prevSell*100).toFixed(1)}%`:"—",   c:"#374151", up:null },
-        ].map(({ l,v,sub,c,up })=>(
-          <Card key={l} style={{ padding:"16px 20px" }}>
-            <div style={{ fontSize:11, color:"#9ca3af", marginBottom:6 }}>{l}</div>
-            <div style={{ fontSize:22, fontWeight:700, color:c, lineHeight:1 }}>{v}</div>
-            <div style={{ fontSize:11.5, color: up===true?"#16a34a":up===false?"#d97706":"#9ca3af", marginTop:5, display:"flex", alignItems:"center", gap:3 }}>
-              {up===true && <Ic name="trending" size={11} color="#16a34a"/>}
-              {sub}
-            </div>
-          </Card>
-        ))}
-      </div>
-
-      {/* YTD サマリー */}
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:10, marginBottom:14 }}>
-        {[
-          { l:"2025年度 累計売上", v:fmt(ytdSell),   sub:"1月〜12月（12ヶ月）", c:accent },
-          { l:"2025年度 累計支払", v:fmt(ytdPay),    sub:`原価率 ${(ytdPay/ytdSell*100).toFixed(1)}%`, c:"#d97706" },
-          { l:"2025年度 累計粗利", v:fmt(ytdProfit), sub:`粗利率 ${(ytdProfit/ytdSell*100).toFixed(1)}%`, c:"#16a34a" },
-        ].map(({ l,v,sub,c })=>(
-          <Card key={l} style={{ padding:"14px 18px", borderLeft:`3px solid ${c}` }}>
-            <div style={{ fontSize:11, color:"#9ca3af", marginBottom:4 }}>{l}</div>
-            <div style={{ fontSize:18, fontWeight:700, color:c }}>{v}</div>
-            <div style={{ fontSize:11, color:"#9ca3af", marginTop:3 }}>{sub}</div>
-          </Card>
-        ))}
-      </div>
-
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 320px", gap:16, marginBottom:16 }}>
-        {/* 月次推移グラフ */}
-        <Card>
-          <SH title={`月次収支推移（${period==="half"?"直近6ヶ月":"12ヶ月"}）`}/>
-          <div style={{ padding:"20px 24px 16px" }}>
-            <div style={{ display:"flex", alignItems:"flex-end", gap:period==="year"?5:12, height:160, marginBottom:10 }}>
-              {barData.map((d,i)=>(
-                <div key={i} style={{ flex:1, display:"flex", flexDirection:"column", height:"100%", justifyContent:"flex-end", alignItems:"center" }}>
-                  {d.current && (
-                    <div style={{ fontSize:10, color:accent, fontWeight:700, marginBottom:2, whiteSpace:"nowrap" }}>
-                      {fmt(d.sell/10000)}万
-                    </div>
-                  )}
-                  <div style={{ width:"100%", position:"relative", height:`${(d.sell/maxBar)*100}%`, minHeight:4 }}>
-                    <div style={{ position:"absolute", bottom:0, width:"100%", height:`${(d.sell-d.pay)/d.sell*100}%`, background:d.current?"#dcfce7":"#e8f5e9", borderRadius:"3px 3px 0 0" }}/>
-                    <div style={{ position:"absolute", bottom:`${(d.sell-d.pay)/d.sell*100}%`, width:"100%", height:`${d.pay/d.sell*100}%`, background:d.current?accent+"60":"#e5e7eb" }}/>
-                  </div>
-                  <div style={{ fontSize:9.5, color:d.current?accent:"#9ca3af", marginTop:5, fontWeight:d.current?700:400 }}>{d.m}</div>
-                </div>
-              ))}
-            </div>
-            <div style={{ display:"flex", gap:16, fontSize:11, color:"#6b7280", borderTop:"1px solid #94a3b8", paddingTop:12 }}>
-              <span style={{ display:"flex", gap:4, alignItems:"center" }}><span style={{ width:10, height:10, background:"#dcfce7", border:"1px solid #16a34a", borderRadius:2, display:"inline-block" }}/> 粗利</span>
-              <span style={{ display:"flex", gap:4, alignItems:"center" }}><span style={{ width:10, height:10, background:"#e5e7eb", borderRadius:2, display:"inline-block" }}/> 支払</span>
-              <span style={{ display:"flex", gap:4, alignItems:"center" }}><span style={{ width:10, height:10, background:accent+"60", borderRadius:2, display:"inline-block" }}/> 当月</span>
-            </div>
-          </div>
-        </Card>
-
-        {/* 粗利率ランキング */}
-        <Card>
-          <SH title="荷主別 粗利率"/>
-          <div style={{ padding:"12px 20px" }}>
-            {[...monthlyDisplay].filter(r=>r.sell>0).sort((a,b)=>(b.profit/b.sell)-(a.profit/a.sell)).map((r,i)=>{
-              const rate = r.sell>0?(r.profit/r.sell*100).toFixed(1):0;
-              const c = clients.find(c=>c.name===r.name);
-              return (
-                <div key={i} style={{ marginBottom:12 }}>
-                  <div style={{ display:"flex", justifyContent:"space-between", fontSize:13, marginBottom:4 }}>
-                    <div style={{ display:"flex", gap:6, alignItems:"center" }}>
-                      <span style={{ fontSize:11, color:"#9ca3af", width:16 }}>{i+1}</span>
-                      <span style={{ fontWeight:500 }}>{r.name}</span>
-                      {c && <StatusBadge label={c.billing.replace("（2区分）","").replace("（3区分）","")}/>}
-                    </div>
-                    <span style={{ fontWeight:700, color: Number(rate)>=30?"#16a34a":Number(rate)>=20?accent:"#d97706" }}>{rate}%</span>
-                  </div>
-                  <div style={{ height:4, background:"#f1f3f5", borderRadius:2 }}>
-                    <div style={{ width:`${Math.min(Number(rate)*2,100)}%`, height:"100%", background: Number(rate)>=30?"#16a34a":Number(rate)>=20?accent:"#d97706", borderRadius:2 }}/>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </Card>
-      </div>
-
-      {/* 荷主別 収支一覧 */}
-      <Card>
-        <SH title="荷主別 月次収支一覧"/>
-        <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
-          <thead>
-            <tr style={{ background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
-              {["荷主","請求体系","売上","支払（ドライバー費）","粗利","粗利率","構成比"].map(h=>(
-                <th key={h} style={{ padding:"9px 16px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:12, whiteSpace:"nowrap" }}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {[...monthlyDisplay].filter(r=>r.sell>0).sort((a,b)=>b.sell-a.sell).map((r,i)=>{
-              const rate = r.sell>0?(r.profit/r.sell*100).toFixed(1):0;
-              const pct  = (r.sell/totalSell*100).toFixed(1);
-              const c = clients.find(c=>c.name===r.name);
-              return (
-                <tr key={i} style={{ borderBottom:"1px solid #94a3b8" }}
-                  onMouseEnter={e=>e.currentTarget.style.background="#f9fafb"}
-                  onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
-                  <td style={{ padding:"12px 16px", fontWeight:700 }}>{r.name}</td>
-                  <td style={{ padding:"12px 16px" }}>{c && <StatusBadge label={c.billing.replace("（2区分）","").replace("（3区分）","")}/>}</td>
-                  <td style={{ padding:"12px 16px", fontWeight:700, color:accent }}>{fmt(r.sell)}</td>
-                  <td style={{ padding:"12px 16px", color:"#374151" }}>{fmt(r.pay)}</td>
-                  <td style={{ padding:"12px 16px", fontWeight:700, color:"#16a34a" }}>{fmt(r.profit)}</td>
-                  <td style={{ padding:"12px 16px", fontWeight:600, color:Number(rate)>=30?"#16a34a":Number(rate)>=20?accent:"#d97706" }}>{rate}%</td>
-                  <td style={{ padding:"12px 16px" }}>
-                    <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                      <div style={{ width:60, height:4, background:"#f1f3f5", borderRadius:2 }}>
-                        <div style={{ width:`${pct}%`, height:"100%", background:accent, borderRadius:2 }}/>
-                      </div>
-                      <span style={{ fontSize:11, color:"#6b7280" }}>{pct}%</span>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-          <tfoot>
-            <tr style={{ background:"#f9fafb", borderTop:"2px solid #475569" }}>
-              <td colSpan={2} style={{ padding:"12px 16px", fontWeight:700 }}>合計</td>
-              <td style={{ padding:"12px 16px", fontWeight:700, color:accent }}>{fmt(totalSell)}</td>
-              <td style={{ padding:"12px 16px", fontWeight:700 }}>{fmt(totalPay)}</td>
-              <td style={{ padding:"12px 16px", fontWeight:700, color:"#16a34a" }}>{fmt(totalProfit)}</td>
-              <td style={{ padding:"12px 16px", fontWeight:700 }}>{margin}%</td>
-              <td style={{ padding:"12px 16px", color:"#9ca3af" }}>100%</td>
-            </tr>
-          </tfoot>
-        </table>
       </Card>
     </div>
   );
