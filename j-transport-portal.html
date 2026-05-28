@@ -4348,6 +4348,11 @@ const App = () => {
   const { theme } = useTheme();
   const [page, setPage] = React.useState("dashboard");
   const accent = theme.accent;
+  const mainScrollRef = React.useRef(null);
+  // ページ切替時にメインコンテンツのスクロールを先頭へ戻す
+  React.useEffect(() => {
+    if (mainScrollRef.current) mainScrollRef.current.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [page]);
   const pp = { accent, setPage };
 
   const pageMap = {
