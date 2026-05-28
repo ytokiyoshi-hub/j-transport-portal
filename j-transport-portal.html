@@ -4592,7 +4592,8 @@ const App = () => {
                     onMouseLeave={e=>{ if(!active) e.currentTarget.style.background="transparent"; }}>
                     <Ic name={item.icon} size={14} color={active?accent:theme.textSub}/>
                     <span style={{ flex:1 }}>{item.label}</span>
-                    {item.badge && <span style={{ background:theme.alert, color:"#fff", borderRadius:10, fontSize:10, padding:"1px 6px", fontWeight:700 }}>{item.badge}</span>}
+                    {item.id==="announce" && announceUnread>0 && <span style={{ background:theme.alert, color:"#fff", borderRadius:10, fontSize:10, padding:"1px 6px", fontWeight:700 }}>{announceUnread}</span>}
+                    {item.badge && item.id!=="announce" && <span style={{ background:theme.alert, color:"#fff", borderRadius:10, fontSize:10, padding:"1px 6px", fontWeight:700 }}>{item.badge}</span>}
                   </button>
                 );
               })}
