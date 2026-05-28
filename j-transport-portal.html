@@ -2487,11 +2487,17 @@ const DailyInputPage = ({ accent }) => {
       <Card>
         <div style={{ maxHeight:"calc(100vh - 320px)", overflow:"auto", position:"relative" }}>
           <style>{`
-            .jt-daily-tbl td, .jt-daily-tbl th { border-bottom: 1px solid #94a3b8; border-right: 1px solid #94a3b8; }
+            .jt-daily-tbl td, .jt-daily-tbl th { border-bottom: 1px solid #94a3b8; border-right: 1px solid #94a3b8; vertical-align: middle; }
             .jt-daily-tbl thead th { border-bottom: 2px solid #475569 !important; }
             .jt-daily-tbl tfoot td { border-top: 2px solid #475569; }
             .jt-daily-tbl tr td:first-child, .jt-daily-tbl tr th:first-child { border-left: 1px solid #94a3b8; }
             .jt-daily-tbl { border: 1px solid #475569; }
+            /* 行高さを固定し、 sticky 列のはみ出し描画を防止 */
+            .jt-daily-tbl tbody tr { height: 32px; }
+            .jt-daily-tbl tbody td { line-height: 1.2; box-sizing: border-box; overflow: hidden; }
+            .jt-daily-tbl tbody td input { display: block; vertical-align: middle; }
+            /* sticky 日付列の背景を確実に不透明化 (隣の値が透けないように) */
+            .jt-daily-tbl tbody td[style*="sticky"] { isolation: isolate; }
           `}</style>
           <table className="jt-daily-tbl" style={{ borderCollapse:"collapse", fontSize:12, whiteSpace:"nowrap" }}>
             <thead style={{ position:"sticky", top:0, zIndex:10 }}>
