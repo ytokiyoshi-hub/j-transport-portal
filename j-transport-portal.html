@@ -1295,6 +1295,17 @@ const RateMasterPage = ({ accent, setPage }) => {
   const allClients = [...clients, ...extraClients];
   const billingOptions = ["個建て","個建て（2区分）","個建て（3区分）","スポット","固定（日額）","固定＋変動"];
 
+  // 荷主管理ページからの「新規荷主追加」遷移時にモーダルを自動オープン
+  React.useEffect(() => {
+    try {
+      if (sessionStorage.getItem("jt_open_add_client") === "1") {
+        sessionStorage.removeItem("jt_open_add_client");
+        setForm({ ...blankForm, code: nextCode() });
+        setShowAdd(true);
+      }
+    } catch (e) {}
+  }, []);
+
   return (
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
