@@ -4012,8 +4012,9 @@ const ApplyPage = ({ accent }) => {
 // ── App ────────────────────────────────────────────────────────────────────
 const App = () => {
   const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  const { theme } = useTheme();
   const [page, setPage] = React.useState("dashboard");
-  const accent = tweaks.accent;
+  const accent = theme.accent;
   const pp = { accent, setPage };
 
   const pageMap = {
