@@ -2541,12 +2541,12 @@ const DailyInputPage = ({ accent }) => {
                 const rowPartial = !rowFilled&&!day.isWeekend&&assignedDrivers.some(d=>rates.some(r=>getVal(day.dateStr,d.id,r.label)!==""));
                 return (
                   <tr key={di} data-today={isToday?"true":"false"} style={{ borderBottom:"1px solid #94a3b8", background:rowBg }}>
-                    <td style={{ padding:"4px 12px", borderRight:"1px solid #94a3b8", fontWeight:500, position:"sticky", left:0, background:rowBg, zIndex:1,
+                    <td style={{ padding:"4px 12px", borderRight:"1px solid #94a3b8", fontWeight:500, position:"sticky", left:0, background:rowBg, zIndex:1, minWidth:96, whiteSpace:"nowrap",
                       borderLeft:isActiveRow?`3px solid ${accent}`:isToday?`3px solid ${accent}80`:"3px solid transparent" }}>
-                      <div style={{ display:"flex", alignItems:"center", gap:5 }}>
-                        <span style={{ fontSize:13, fontWeight:600, color:day.isSun?"#dc2626":day.dow===6?"#2563eb":"#111827" }}>{String(day.d).padStart(2," ")}</span>
-                        <span style={{ fontSize:10, color:"#9ca3af" }}>（{day.dayName}）</span>
-                        {isToday&&<span style={{ fontSize:9, fontWeight:700, background:accent, color:"#fff", padding:"1px 5px", borderRadius:3, flexShrink:0 }}>TODAY</span>}
+                      <div style={{ display:"flex", alignItems:"center", gap:6, whiteSpace:"nowrap" }}>
+                        <span style={{ fontSize:13, fontWeight:700, color:day.isSun?"#dc2626":day.dow===6?"#2563eb":"#111827", minWidth:18, textAlign:"right" }}>{day.d}</span>
+                        <span style={{ fontSize:10.5, color:day.isSun?"#dc2626":day.dow===6?"#2563eb":"#9ca3af", flexShrink:0 }}>（{day.dayName}）</span>
+                        {isToday&&<span style={{ fontSize:9, fontWeight:700, background:accent, color:"#fff", padding:"1px 5px", borderRadius:3, flexShrink:0, marginLeft:2 }}>TODAY</span>}
                       </div>
                     </td>
                     {assignedDrivers.map((d,dri)=>
