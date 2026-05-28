@@ -1734,13 +1734,26 @@ const DailyInputPage = ({ accent }) => {
   const nCols = nD * nR;
 
   const [yr, mo] = monthYear.split("-").map(Number);
-  const daysInMonth = new Date(yr, mo, 0).getDate();
+  const _cycle = (cycleOverrides && cycleOverrides[selClient?.id]) || selClient?.billingCycle || "翌月末締め";
+  const _cm = /翌月(\d+)日締め/.exec(_cycle);
+  const _cutoff = _cm ? parseInt(_cm[1]) : null;
+  const _fmtD = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+  let _bStart, _bEnd;
+  if (_cutoff && _cutoff < 28) {
+    _bStart = new Date(yr, mo-2, _cutoff+1);
+    _bEnd = new Date(yr, mo-1, _cutoff);
+  } else {
+    _bStart = new Date(yr, mo-1, 1);
+    _bEnd = new Date(yr, mo, 0);
+  }
+  const bStartStr = _fmtD(_bStart), bEndStr = _fmtD(_bEnd);
+  const daysInMonth = Math.round((_bEnd - _bStart)/86400000) + 1;
   const dayRows = Array.from({length: daysInMonth}, (_, i) => {
-    const date = new Date(yr, mo-1, i+1);
+    const date = new Date(_bStart); date.setDate(date.getDate()+i);
     const dow = date.getDay();
     return {
-      d: i+1,
-      dateStr: `${monthYear}-${String(i+1).padStart(2,"0")}`,
+      d: date.getDate(),
+      dateStr: _fmtD(date),
       dayName: ["日","月","火","水","木","金","土"][dow],
       dow, isWeekend: dow===0||dow===6, isSun: dow===0,
     };
