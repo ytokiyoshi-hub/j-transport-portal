@@ -2052,27 +2052,27 @@ const DailyInputPage = ({ accent }) => {
 
       {/* 操作バー（荷主） */}
       <div style={{ marginBottom:8 }}>
-        <div>
-          <label style={{ fontSize:11, color:"#9ca3af", display:"block", marginBottom:3 }}>荷主</label>
-          <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
-            {clientList.map((c,i)=>{
-              const on = selClient.id===c.id;
-              return (
-              <button key={i} onClick={()=>{ setSelClient(c); setEntries({}); setSaved(false); }}
-                onMouseEnter={e=>{ if(!on){ e.currentTarget.style.borderColor=accent; e.currentTarget.style.background=accent+"0c"; } }}
-                onMouseLeave={e=>{ if(!on){ e.currentTarget.style.borderColor="#e5e7eb"; e.currentTarget.style.background="#fff"; } }}
-                style={{ display:"flex", alignItems:"center", gap:7, padding:"6px 14px 6px 7px", borderRadius:999,
-                  border:`1.5px solid ${on?accent:"#e5e7eb"}`, background:on?accent:"#fff", color:on?"#fff":"#374151",
-                  fontSize:12.5, fontWeight:on?700:500, cursor:"pointer",
-                  boxShadow:on?`0 2px 8px -1px ${accent}55`:"0 1px 2px rgba(15,23,42,0.05)",
-                  transition:"border-color .12s, background .12s, box-shadow .12s" }}>
-                <span style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", width:19, height:19, borderRadius:"50%",
-                  fontSize:10, fontWeight:700, flexShrink:0, background:on?"rgba(255,255,255,0.25)":"#eef2f7", color:on?"#fff":"#94a3b8" }}>{i+1}</span>
-                {c.name}
-              </button>
-              );
-            })}
-          </div>
+        <label style={{ fontSize:11, color:"#9ca3af", display:"block", marginBottom:4 }}>荷主</label>
+        <div style={{ position:"relative", display:"inline-block" }}>
+          <select
+            value={selClient.id}
+            onChange={(e)=>{
+              const c = clientList.find(x=>x.id===e.target.value);
+              if(c){ setSelClient(c); setEntries({}); setSaved(false); }
+            }}
+            style={{
+              appearance:"none", WebkitAppearance:"none", MozAppearance:"none",
+              padding:"8px 36px 8px 14px", minWidth:260,
+              border:`1.5px solid ${accent}`, borderRadius:8, background:"#fff",
+              color:"#111827", fontSize:13.5, fontWeight:600,
+              fontFamily:"inherit", cursor:"pointer", outline:"none",
+              boxShadow:`0 2px 8px -2px ${accent}33`,
+            }}>
+            {clientList.map((c,i)=>(
+              <option key={c.id} value={c.id}>{(i+1).toString().padStart(2,"0")}. {c.name}（{c.id}）</option>
+            ))}
+          </select>
+          <span style={{ position:"absolute", right:12, top:"50%", transform:"translateY(-50%)", pointerEvents:"none", color:accent, fontSize:10 }}>▼</span>
         </div>
       </div>
 
