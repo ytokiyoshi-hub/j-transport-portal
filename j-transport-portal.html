@@ -1686,6 +1686,7 @@ const RateMasterPage = ({ accent, setPage }) => {
 const DriverFinancePage = ({ accent }) => {
   const [sel, setSel] = React.useState(null);
   const [slipDriver, setSlipDriver] = React.useState(null);
+  useEscapeToClose(!!slipDriver, ()=>setSlipDriver(null));
 
   // ドライバー別に荷主から収支計算
   const driverSummary = drivers.map(d => {
