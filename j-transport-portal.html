@@ -474,6 +474,16 @@ Object.assign(window, {
 </script>
 <script type="text/babel">
 
+// 任意の真値ステートが ON のとき ESC で OFF にする小ヘルパー
+function useEscapeToClose(open, close) {
+  React.useEffect(() => {
+    if (!open) return;
+    const h = (e) => { if (e.key === "Escape") close(); };
+    window.addEventListener("keydown", h);
+    return () => window.removeEventListener("keydown", h);
+  }, [open, close]);
+}
+
 // localStorage-backed state — persists across reloads. Drop-in replacement for React.useState.
 // 同一ウィンドウ内の複数インスタンス間でも同期する（カスタムイベント経由）
 function useLocalStorage(key, initial) {
@@ -977,7 +987,7 @@ const PLPage = ({ accent, setPage }) => {
   // === 資金繰り予測（締め日別の入金スケジュール） ===
   const cycleGroups = {};
   curActive.forEach(r => {
-    const c = clients.find(x=>x.id===r.id);
+    const c = clients.find(x=>x.id===r.id) || {};
     const key = c?.billingCycle || "未設定";
     if (!cycleGroups[key]) cycleGroups[key] = { clients:[], sell:0, pay:0 };
     cycleGroups[key].clients.push(r);
@@ -1423,7 +1433,7 @@ const RateMasterPage = ({ accent, setPage }) => {
                           <td style={{ padding:"10px 12px", fontWeight:600 }}>{r.label}</td>
                           <td style={{ padding:"10px 12px" }}>
                             {editMode ? (
-                              <input value={r.sell} type="number"
+                              <input value={r.sell} type="number" min="0"
                                 onChange={e=>setDraft(d=>d.map((x,xi)=>xi===ri?{...x, sell:Number(e.target.value)||0}:x))}
                                 style={{ width:90, padding:"4px 8px", border:"1.5px solid "+accent, borderRadius:4, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
                             ) : (
@@ -1433,7 +1443,7 @@ const RateMasterPage = ({ accent, setPage }) => {
                           </td>
                           <td style={{ padding:"10px 12px" }}>
                             {editMode ? (
-                              <input value={r.pay} type="number"
+                              <input value={r.pay} type="number" min="0"
                                 onChange={e=>setDraft(d=>d.map((x,xi)=>xi===ri?{...x, pay:Number(e.target.value)||0}:x))}
                                 style={{ width:90, padding:"4px 8px", border:"1.5px solid #e5e7eb", borderRadius:4, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
                             ) : (
@@ -1460,7 +1470,7 @@ const RateMasterPage = ({ accent, setPage }) => {
                 <div style={{ fontSize:12, fontWeight:700, color:"#9ca3af", marginBottom:10 }}>担当ドライバー</div>
                 <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
                   {driversFor(sel).map(did => {
-                    const d = drivers.find(dr=>dr.id===did);
+                    const d = drivers.find(dr=>dr.id===did) || {};
                     return d ? (
                       <div key={did} style={{ display:"flex", alignItems:"center", gap:8, padding:"6px 12px", background:"#f8fafc", borderRadius:6, border:"1px solid #94a3b8" }}>
                         <Avatar name={d.name} size={24} bg={d.type==="自社"?"#dbeafe":"#ede9fe"} color={d.type==="自社"?"#1e40af":"#5b21b6"}/>
@@ -1523,7 +1533,7 @@ const RateMasterPage = ({ accent, setPage }) => {
             <Card style={{ padding:20 }}>
               <div style={{ fontSize:13, fontWeight:700, marginBottom:14 }}>今月実績（速報）</div>
               {(() => {
-                const act = monthlyDisplay.find(r=>r.name===sel.name);
+                const act = monthlyDisplay.find(r=>r.name===sel.name) || {};
                 if (!act) return <div style={{ color:"#9ca3af", fontSize:13 }}>実績なし</div>;
                 return (
                   <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:16 }}>
@@ -1682,7 +1692,7 @@ const DriverFinancePage = ({ accent }) => {
     const breakdown = [];
     clients.forEach(c => {
       if (!c.drivers.includes(d.id)) return;
-      const act = monthlyDisplay.find(r=>r.name===c.name);
+      const act = monthlyDisplay.find(r=>r.name===c.name) || {};
       if (!act) return;
       // 担当ドライバー数で按分
       const driverCount = c.drivers.length;
@@ -1888,7 +1898,7 @@ const InvoicePage = ({ accent }) => {
   };
 
   const buildLineItems = (inv) => {
-    const c = clients.find(c=>c.name===inv.client);
+    const c = clients.find(c=>c.name===inv.client) || {};
     if (!c) return [];
     if (c.billing.includes("固定")) {
       const wdays = 22;
@@ -1897,7 +1907,7 @@ const InvoicePage = ({ accent }) => {
         ...(c.rates[1]?[{ label:c.rates[1].label, qty:Math.round(inv.amount*0.1/c.rates[1].sell)||1, unit:"個", unitPrice:c.rates[1].sell, amount:Math.round(inv.amount*0.1) }]:[]),
       ];
     }
-    const act = monthlyDisplay.find(r=>r.name===inv.client);
+    const act = monthlyDisplay.find(r=>r.name===inv.client) || {};
     if (!act) return c.rates.filter(r=>r.sell>0).map(r=>({ label:r.label, qty:"—", unit:"個", unitPrice:r.sell, amount:"—" }));
     const totalRateSell = c.rates.filter(r=>r.sell>0).reduce((s,r)=>s+r.sell,0)||1;
     return c.rates.filter(r=>r.sell>0).map(r=>{
@@ -2094,7 +2104,7 @@ const ClientPage = ({ accent, setPage }) => {
             </thead>
             <tbody>
               {list.map((c,i)=>{
-                const act = monthlyDisplay.find(r=>r.name===c.name);
+                const act = monthlyDisplay.find(r=>r.name===c.name) || {};
                 return (
                   <tr key={i} onClick={()=>setSel(sel?.id===c.id?null:c)}
                     style={{ borderBottom:"1px solid #94a3b8", cursor:"pointer", background:sel?.id===c.id?"#f0f9ff":"transparent", transition:"background .1s" }}>
@@ -2104,7 +2114,7 @@ const ClientPage = ({ accent, setPage }) => {
                     <td style={{ padding:"12px 14px" }}>
                       <div style={{ display:"flex", gap:4 }}>
                         {c.drivers.slice(0,3).map(did => {
-                          const d = drivers.find(dr=>dr.id===did);
+                          const d = drivers.find(dr=>dr.id===did) || {};
                           return d ? <div key={did} style={{ width:24, height:24, borderRadius:"50%", background:d.type==="自社"?"#dbeafe":"#ede9fe", display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, fontWeight:700, color:d.type==="自社"?"#1e40af":"#5b21b6" }}>{d.name[0]}</div> : null;
                         })}
                         {c.drivers.length > 3 && <div style={{ width:24, height:24, borderRadius:"50%", background:"#f1f5f9", display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, color:"#64748b" }}>+{c.drivers.length-3}</div>}
@@ -2135,7 +2145,7 @@ const ClientPage = ({ accent, setPage }) => {
               </div>
             ))}
             {(() => {
-              const act = monthlyDisplay.find(r=>r.name===sel.name);
+              const act = monthlyDisplay.find(r=>r.name===sel.name) || {};
               if (!act||act.sell===0) return null;
               return (
                 <div style={{ marginTop:16, background:"#f8fafc", borderRadius:6, padding:14 }}>
@@ -2205,7 +2215,7 @@ const DailyInputPage = ({ accent }) => {
 
   React.useEffect(() => {
     if (scClients) {
-      const updated = scClients.find(c => c.id === selClient?.id);
+      const updated = scClients.find(c => c.id === selClient?.id) || {};
       if (updated) setSelClient(updated);
     }
   }, [scClients]);
@@ -2460,7 +2470,7 @@ const DailyInputPage = ({ accent }) => {
           <select
             value={selClient.id}
             onChange={(e)=>{
-              const c = clientList.find(x=>x.id===e.target.value);
+              const c = clientList.find(x=>x.id===e.target.value) || {};
               if(c){ setSelClient(c); setEntries({}); setSaved(false); }
             }}
             style={{
@@ -2926,7 +2936,7 @@ const Dashboard = ({ accent, setPage }) => {
               let sellD=0, payD=0;
               clients.forEach(c=>{
                 if(!c.drivers.includes(d.id)) return;
-                const act=monthlyDisplay.find(r=>r.name===c.name);
+                const act=monthlyDisplay.find(r=>r.name===c.name) || {};
                 if(!act) return;
                 sellD+=Math.round(act.sell/c.drivers.length);
                 payD +=Math.round(act.pay /c.drivers.length);
@@ -3069,7 +3079,7 @@ const DriversPage = ({ accent, setPage }) => {
     const breakdown = [];
     clients.forEach(c => {
       if (!c.drivers.includes(d.id)) return;
-      const act = monthlyDisplay.find(r => r.name === c.name);
+      const act = monthlyDisplay.find(r => r.name === c.name) || {};
       if (!act) return;
       const share = 1 / c.drivers.length;
       const s = Math.round(act.sell * share);
@@ -3948,7 +3958,7 @@ const VehiclesPage = ({ accent }) => {
             </thead>
             <tbody>
               {list.map(v=>{
-                const d = drivers.find(dr=>dr.id===v.driverId);
+                const d = drivers.find(dr=>dr.id===v.driverId) || {};
                 const days = daysUntil(v.inspection);
                 const urgent = days <= 30;
                 const warn   = days <= 60 && days > 30;
@@ -3982,7 +3992,7 @@ const VehiclesPage = ({ accent }) => {
         </Card>
 
         {sel && (() => {
-          const d = drivers.find(dr=>dr.id===sel.driverId);
+          const d = drivers.find(dr=>dr.id===sel.driverId) || {};
           const days = daysUntil(sel.inspection);
           const urgent = days <= 30;
           return (
