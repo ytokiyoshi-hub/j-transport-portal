@@ -2097,7 +2097,14 @@ const DailyInputPage = ({ accent }) => {
       {/* 月次テーブル */}
       <Card>
         <div>
-          <table style={{ borderCollapse:"collapse", fontSize:12, whiteSpace:"nowrap" }}>
+          <style>{`
+            .jt-daily-tbl td, .jt-daily-tbl th { border-bottom: 1px solid #94a3b8; border-right: 1px solid #94a3b8; }
+            .jt-daily-tbl thead th { border-bottom: 2px solid #475569 !important; }
+            .jt-daily-tbl tfoot td { border-top: 2px solid #475569; }
+            .jt-daily-tbl tr td:first-child, .jt-daily-tbl tr th:first-child { border-left: 1px solid #94a3b8; }
+            .jt-daily-tbl { border: 1px solid #475569; }
+          `}</style>
+          <table className="jt-daily-tbl" style={{ borderCollapse:"collapse", fontSize:12, whiteSpace:"nowrap" }}>
             <thead style={{ position:"sticky", top:0, zIndex:4 }}>
               <tr style={{ background:"#f9fafb" }}>
                 <th style={{ padding:"8px 12px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:11, borderRight:"1px solid #cbd5e1", borderBottom:"1px solid #cbd5e1", minWidth:90, position:"sticky", left:0, top:0, background:"#f9fafb", zIndex:5 }}>日付</th>
