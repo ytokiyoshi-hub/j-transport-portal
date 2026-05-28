@@ -1687,6 +1687,7 @@ const DailyInputPage = ({ accent }) => {
   const [monthYear, setMonthYear] = React.useState("2025-10");
   const [entries, setEntries] = React.useState({});
   const [saved, setSaved] = React.useState(false);
+  const [cycleOverrides] = useLocalStorage("jt_cycle_overrides", {});
   const [focusedCell, setFocusedCell] = React.useState(null);
   const [confirmClear, setConfirmClear] = React.useState(false);
   const inputRefs = React.useRef({});
