@@ -721,6 +721,18 @@ const totalSell   = monthlyActuals.reduce((s,r)=>s+r.sell,0);
 const totalPay    = monthlyActuals.reduce((s,r)=>s+r.pay,0);
 const totalProfit = totalSell - totalPay;
 
+// 表示用フォールバック: 今月（REF_MONTH）にデータが無ければ最新確定月のデータを表示
+const _hasCurrent = totalSell > 0;
+const DISPLAY_MONTH = _hasCurrent ? REF_MONTH : LATEST_DATA_MONTH;
+const monthlyDisplay = _hasCurrent ? monthlyActuals : clients.map(c => {
+  const h = (monthlyHistory[c.id] && monthlyHistory[c.id][LATEST_DATA_MONTH]) || {s:0,p:0};
+  return { clientId: c.id, name: c.name, sell: h.s, pay: h.p, profit: h.s - h.p };
+});
+const totalSellDisp   = monthlyDisplay.reduce((s,r)=>s+r.sell,0);
+const totalPayDisp    = monthlyDisplay.reduce((s,r)=>s+r.pay,0);
+const totalProfitDisp = totalSellDisp - totalPayDisp;
+const DISPLAY_MONTH_LABEL = `${DISPLAY_MONTH.replace("-","年")}月`;
+
 // 請求データ（前月分含む）
 const invoices = [
   { id:"INV-2504-01", client:"ASKUL",             period:"2025-04", amount:508050, status:"未請求", due:"2025-05-20", issued:null },
