@@ -3234,6 +3234,151 @@ const ContactPage = ({ accent }) => {
   );
 };
 
+// ── AppearanceSettings（配色テーマ設定画面） ─────────────────────────────
+function AppearanceSettings() {
+  const { theme, setTheme, previewTheme, resetTheme, presets } = useTheme();
+  const [draft, setDraft] = React.useState(theme);
+  React.useEffect(() => { setDraft(theme); }, [theme]);
+
+  const onChange = (key, value) => {
+    const next = { ...draft, [key]: value };
+    setDraft(next); previewTheme(next);
+  };
+  const applyPreset = (preset) => { setDraft(preset); previewTheme(preset); };
+  const onSave = () => { setTheme(draft); alert('保存しました'); };
+  const onReset = () => { resetTheme(); setDraft(presets.default); alert('既定値に戻しました'); };
+
+  const fields = [
+    { group: '罫線', items: [
+      { key: 'line',     label: '薄罫',         hint: 'body の罫線' },
+      { key: 'lineDk',   label: '濃罫',         hint: '強調・thead 下' },
+    ]},
+    { group: 'アクセント（ブランド色）', items: [
+      { key: 'accent',   label: 'アクセント',   hint: '主アクション' },
+      { key: 'accentDk', label: 'アクセント濃', hint: 'hover' },
+      { key: 'accentLt', label: 'アクセント薄', hint: 'active 背景' },
+    ]},
+    { group: 'アラート（警告色）', items: [
+      { key: 'alert',    label: 'アラート',     hint: '削除・警告' },
+      { key: 'alertLt',  label: 'アラート薄',   hint: '背景' },
+    ]},
+    { group: '背景', items: [
+      { key: 'base',     label: '基面',         hint: 'カード地' },
+      { key: 'bg',       label: '補助',         hint: 'コンテンツ背景' },
+    ]},
+    { group: 'テキスト', items: [
+      { key: 'text',     label: '本文',         hint: '主要テキスト' },
+      { key: 'textSub',  label: 'サブ',         hint: 'ラベル・補助' },
+      { key: 'textMute', label: 'ミュート',     hint: '無効・脚注' },
+    ]},
+  ];
+  const presetLabels = { default: '既定', navy_strong: 'ネイビー濃', gray: 'グレー', blue: 'ブルー', green: 'グリーン', warm: 'ウォーム' };
+
+  const S = {
+    page: { padding: 20, background: draft.bg, minHeight: '100%', fontFamily: 'sans-serif' },
+    h1: { fontSize: 18, marginBottom: 16, color: draft.text },
+    card: { background: draft.base, border: `1px solid ${draft.line}`, padding: 16, marginBottom: 14, borderRadius: 6 },
+    cardHead: { fontSize: 13, fontWeight: 600, paddingBottom: 10, marginBottom: 10, borderBottom: `1px solid ${draft.line}`, color: draft.text },
+    sectionH: { fontSize: 12, fontWeight: 700, color: draft.textSub, letterSpacing: 0.4, padding: '10px 0 4px', borderBottom: `1px solid ${draft.line}`, marginBottom: 6 },
+    row: { display: 'flex', alignItems: 'center', gap: 16, padding: '6px 0' },
+    label: { width: 200, fontSize: 13, color: draft.text },
+    hint: { display: 'block', fontSize: 11, color: draft.textMute, marginTop: 2 },
+    picker: { display: 'flex', alignItems: 'center', gap: 10 },
+    color: { width: 46, height: 30, padding: 0, border: `1px solid ${draft.lineDk}`, cursor: 'pointer', background: 'transparent' },
+    hex: { fontFamily: 'monospace', fontSize: 12, width: 90, color: draft.text },
+    presetWrap: { display: 'flex', gap: 8, flexWrap: 'wrap' },
+    preset: { padding: '6px 12px', fontSize: 12, border: `1px solid ${draft.lineDk}`, background: draft.base, color: draft.text, cursor: 'pointer', minWidth: 110, display: 'inline-flex', alignItems: 'center', gap: 6 },
+    swatchSet: { display: 'inline-flex', gap: 2 },
+    swatch: (c) => ({ display: 'inline-block', width: 12, height: 12, background: c, border: '1px solid #00000022' }),
+    actions: { display: 'flex', gap: 10, marginTop: 18, paddingTop: 14, borderTop: `1px solid ${draft.line}` },
+    btnPrimary: { padding: '8px 16px', cursor: 'pointer', background: draft.accent, color: '#fff', border: `1px solid ${draft.accent}`, fontWeight: 600 },
+    btn: { padding: '8px 16px', cursor: 'pointer', background: draft.base, color: draft.text, border: `1px solid ${draft.lineDk}` },
+    note: { background: draft.accentLt, borderLeft: `3px solid ${draft.accent}`, padding: '10px 14px', fontSize: 12, color: draft.text, marginBottom: 14, borderRadius: 4 },
+  };
+
+  return (
+    <div style={S.page}>
+      <h1 style={S.h1}>外観設定（配色テーマ）</h1>
+      <div style={S.note}>
+        罫線・アクセント・アラート・背景・テキストの各色をカスタマイズできます。
+        変更は <b>即座にプレビュー反映</b>、「保存」で永続化（このブラウザに保存）。「既定に戻す」でリセット。
+      </div>
+      <div style={S.card}>
+        <div style={S.cardHead}>テーマプリセット（全色一括）</div>
+        <div style={S.presetWrap}>
+          {Object.keys(presets).map(key => {
+            const p = presets[key];
+            const swatches = [p.accent, p.lineDk, p.alert, p.bg];
+            return (
+              <button key={key} type="button" style={S.preset} onClick={() => applyPreset(p)}>
+                <span style={S.swatchSet}>{swatches.map((c, i) => <span key={i} style={S.swatch(c)} />)}</span>
+                {presetLabels[key] || key}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+      <div style={S.card}>
+        <div style={S.cardHead}>カスタム調整</div>
+        {fields.map(group => (
+          <React.Fragment key={group.group}>
+            <div style={S.sectionH}>{group.group}</div>
+            {group.items.map(it => (
+              <div style={S.row} key={it.key}>
+                <span style={S.label}>
+                  {it.label}
+                  <small style={S.hint}>{it.hint}（{it.key}）</small>
+                </span>
+                <span style={S.picker}>
+                  <input type="color" style={S.color} value={draft[it.key] || '#000000'} onChange={(e) => onChange(it.key, e.target.value)} />
+                  <span style={S.hex}>{draft[it.key]}</span>
+                </span>
+              </div>
+            ))}
+          </React.Fragment>
+        ))}
+        <div style={S.actions}>
+          <button type="button" style={S.btnPrimary} onClick={onSave}>保存して全画面に適用</button>
+          <button type="button" style={S.btn} onClick={onReset}>既定に戻す</button>
+        </div>
+      </div>
+      <div style={S.card}>
+        <div style={S.cardHead}>プレビュー</div>
+        <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+          <button style={S.btnPrimary}>主アクション</button>
+          <button style={S.btn}>標準</button>
+          <button style={{ ...S.btnPrimary, background: draft.alert, borderColor: draft.alert }}>削除</button>
+        </div>
+        <table style={{ borderCollapse: 'collapse', width: '100%', border: `1px solid ${draft.line}` }}>
+          <thead>
+            <tr style={{ background: draft.bg }}>
+              {['コード','品名','数量','ステータス'].map((h,i)=>(
+                <th key={h} style={{ padding: '8px 12px', border: `1px solid ${draft.line}`, borderBottom: `1px solid ${draft.lineDk}`, textAlign: i===2?'right':i===3?'center':'left', color: draft.textSub, fontSize: 12 }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {[
+              { c: 'S-00001', n: 'サンプルA', q: 120, s: { l: '出荷可',     bg: draft.accentLt, fg: draft.accent } },
+              { c: 'S-00002', n: 'サンプルB', q: 42,  s: { l: '保留',       bg: '#f1f5f9',      fg: draft.textSub } },
+              { c: 'S-00003', n: 'サンプルC', q: 8,   s: { l: '引当不足',   bg: draft.alertLt,  fg: draft.alert } },
+            ].map(row => (
+              <tr key={row.c}>
+                <td style={{ padding: '8px 12px', border: `1px solid ${draft.line}`, color: draft.text, fontSize: 13 }}>{row.c}</td>
+                <td style={{ padding: '8px 12px', border: `1px solid ${draft.line}`, color: draft.text, fontSize: 13 }}>{row.n}</td>
+                <td style={{ padding: '8px 12px', border: `1px solid ${draft.line}`, color: draft.text, fontSize: 13, textAlign: 'right' }}>{row.q}</td>
+                <td style={{ padding: '8px 12px', border: `1px solid ${draft.line}`, textAlign: 'center' }}>
+                  <span style={{ display: 'inline-block', padding: '2px 10px', background: row.s.bg, color: row.s.fg, borderRadius: 4, fontSize: 11 }}>{row.s.l}</span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
 // ── Nav & App ──────────────────────────────────────────────────────────────
 const navGroups = [
   { label:null, items:[
