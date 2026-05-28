@@ -1759,28 +1759,41 @@ const DailyInputPage = ({ accent }) => {
     }, 400);
   };
 
-  // 月・荷主切替時に Supabase から実績をロード
+  // 月・荷主切替時に実績をロード（埋め込みdailyActuals → Supabaseで上書き）
   React.useEffect(() => {
-    if (!window.sb || !selClient?.id) return;
-    (async () => {
-      const [yr, mo] = monthYear.split("-").map(Number);
-      const lastDay = new Date(yr, mo, 0).getDate();
-      const start = `${monthYear}-01`;
-      const end = `${monthYear}-${String(lastDay).padStart(2,"0")}`;
-      const { data, error } = await window.sb.from("jt_daily_entries")
-        .select("*").eq("client_id", selClient.id)
-        .gte("entry_date", start).lte("entry_date", end);
-      if (error) { console.error("[Supabase] entries load failed:", error); return; }
-      const next = {};
-      data.forEach(r => {
-        if (!next[r.entry_date]) next[r.entry_date] = {};
-        if (!next[r.entry_date][r.driver_id]) next[r.entry_date][r.driver_id] = {};
-        next[r.entry_date][r.driver_id][r.rate_label] = String(r.value);
+    const [yr, mo] = monthYear.split("-").map(Number);
+    const lastDay = new Date(yr, mo, 0).getDate();
+    const start = `${monthYear}-01`;
+    const end = `${monthYear}-${String(lastDay).padStart(2,"0")}`;
+    const next = {};
+    const da = (typeof dailyActuals !== "undefined" && dailyActuals[selClient?.id]) || {};
+    Object.keys(da).forEach(ds => {
+      if (ds < start || ds > end) return;
+      next[ds] = {};
+      Object.keys(da[ds]).forEach(did => {
+        next[ds][did] = {};
+        Object.keys(da[ds][did]).forEach(lbl => { next[ds][did][lbl] = String(da[ds][did][lbl]); });
       });
-      setEntries(next);
-      setSaved(true);
-      console.log(`[Supabase] loaded ${data.length} entries for ${selClient.name} ${monthYear}`);
-    })();
+    });
+    setEntries(next);
+    setSaved(true);
+    if (window.sb && selClient?.id) {
+      (async () => {
+        const { data, error } = await window.sb.from("jt_daily_entries")
+          .select("*").eq("client_id", selClient.id)
+          .gte("entry_date", start).lte("entry_date", end);
+        if (error || !data || !data.length) return;
+        setEntries(prev => {
+          const m = JSON.parse(JSON.stringify(prev));
+          data.forEach(r => {
+            if (!m[r.entry_date]) m[r.entry_date] = {};
+            if (!m[r.entry_date][r.driver_id]) m[r.entry_date][r.driver_id] = {};
+            m[r.entry_date][r.driver_id][r.rate_label] = String(r.value);
+          });
+          return m;
+        });
+      })();
+    }
   }, [selClient?.id, monthYear]);
 
   const dayTotals = dayRows.map(day => {
