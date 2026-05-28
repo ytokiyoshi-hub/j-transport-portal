@@ -941,7 +941,7 @@ const PLPage = ({ accent, setPage }) => {
   if (pending.length>0) {
     alerts.push({
       level:"low",
-      title:`未請求: ${pending.length}件 ¥${fmt(pending.reduce((s,i)=>s+i.amount,0))}`,
+      title:`未請求: ${pending.length}件 ${fmt(pending.reduce((s,i)=>s+i.amount,0))}`,
       desc:"請求書発行待ち。期日内発行で資金繰り改善"
     });
   }
