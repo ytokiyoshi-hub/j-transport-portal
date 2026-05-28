@@ -1698,9 +1698,9 @@ const DailyInputPage = ({ accent }) => {
           })),
           drivers: cds.filter(cd => cd.client_id === c.id).map(cd => cd.driver_id),
         }));
-        setScClients(transformed);
-        setScDrivers(ds);
-        console.log("[Supabase] loaded:", transformed.length, "clients,", ds.length, "drivers");
+        // 旧Supabaseマスタで実データ定数を上書きしない（収支・ダッシュと同一データ源に統一）
+        void transformed; void ds;
+        console.log("[Supabase] master fetch ignored; using embedded real data + dailyActuals");
       } else {
         console.warn("[Supabase] fetch failed, using hardcoded fallback");
       }
