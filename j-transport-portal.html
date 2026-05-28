@@ -3497,6 +3497,7 @@ const ManualPage = ({ accent }) => {
   const [search, setSearch] = React.useState("");
   const [catFilter, setCatFilter] = React.useState("すべて");
   const [openManual, setOpenManual] = React.useState(null);
+  useEscapeToClose(!!openManual, ()=>setOpenManual(null));
   const manuals = [
     { cat:"請求・支払管理", items:[
       { name:"月次請求書 作成手順",                    ver:"Rev.3", updated:"2025-04-01", tag:"重要" },
