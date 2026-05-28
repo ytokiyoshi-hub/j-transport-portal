@@ -2502,7 +2502,7 @@ const DailyInputPage = ({ accent }) => {
           <table className="jt-daily-tbl" style={{ borderCollapse:"collapse", fontSize:12, whiteSpace:"nowrap" }}>
             <thead style={{ position:"sticky", top:0, zIndex:10 }}>
               <tr style={{ background:"#f9fafb" }}>
-                <th style={{ padding:"8px 12px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:11, borderRight:"1px solid #94a3b8", borderBottom:"1px solid #94a3b8", minWidth:96, width:96, position:"sticky", left:0, top:0, background:"#f9fafb", zIndex:12 }}>日付</th>
+                <th style={{ padding:"8px 12px", textAlign:"center", color:"#6b7280", fontWeight:600, fontSize:11, borderRight:"1px solid #94a3b8", borderBottom:"1px solid #94a3b8", minWidth:96, width:96, position:"sticky", left:0, top:0, background:"#f9fafb", zIndex:12 }}>日付</th>
                 {assignedDrivers.map((d,dri)=>(
                   <th key={d.id} colSpan={nR}
                     style={{ padding:"7px 12px", textAlign:"center", borderRight:"1px solid #94a3b8", borderBottom:"1px solid #94a3b8", background:focusedCell?.dri===dri?accent+"0e":"#f9fafb", position:"sticky", top:0, zIndex:11 }}>
