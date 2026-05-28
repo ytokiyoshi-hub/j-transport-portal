@@ -1100,7 +1100,7 @@ const RateMasterPage = ({ accent, setPage }) => {
                       </div>
                     ) : null;
                   })}
-                  {editMode && <button style={{ padding:"6px 12px", border:`1.5px dashed ${accent}`, borderRadius:6, background:"transparent", color:accent, fontSize:12, fontWeight:600 }}>+ 追加</button>}
+                  {editMode && <button onClick={()=>alert("（デモ）担当ドライバーの割当：実運用では選択ダイアログを表示します")} style={{ padding:"6px 12px", border:`1.5px dashed ${accent}`, borderRadius:6, background:"transparent", color:accent, fontSize:12, fontWeight:600, cursor:"pointer" }}>+ 追加</button>}
                 </div>
               </div>
 
