@@ -1433,7 +1433,7 @@ const RateMasterPage = ({ accent, setPage }) => {
               <div>
                 <div style={{ fontSize:12, fontWeight:700, color:"#9ca3af", marginBottom:10 }}>担当ドライバー</div>
                 <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
-                  {sel.drivers.map(did => {
+                  {driversFor(sel).map(did => {
                     const d = drivers.find(dr=>dr.id===did);
                     return d ? (
                       <div key={did} style={{ display:"flex", alignItems:"center", gap:8, padding:"6px 12px", background:"#f8fafc", borderRadius:6, border:"1px solid #94a3b8" }}>
@@ -1442,10 +1442,40 @@ const RateMasterPage = ({ accent, setPage }) => {
                           <div style={{ fontSize:13, fontWeight:500 }}>{d.name}</div>
                           <div style={{ fontSize:10, color:"#9ca3af" }}><StatusBadge label={d.type}/></div>
                         </div>
+                        {editMode && (
+                          <button onClick={()=>{
+                            const cur = driversFor(sel);
+                            const next = cur.filter(x => x !== did);
+                            setDriverOverrides({ ...driverOverrides, [sel.id]: next });
+                          }} title="解除" style={{ marginLeft:4, padding:"2px 6px", border:"none", background:"transparent", color:"#9ca3af", cursor:"pointer", fontSize:14, lineHeight:1 }}>×</button>
+                        )}
                       </div>
                     ) : null;
                   })}
-                  {editMode && <button onClick={()=>alert("（デモ）担当ドライバーの割当：実運用では選択ダイアログを表示します")} style={{ padding:"6px 12px", border:`1.5px dashed ${accent}`, borderRadius:6, background:"transparent", color:accent, fontSize:12, fontWeight:600, cursor:"pointer" }}>+ 追加</button>}
+                  {editMode && (
+                    <div style={{ position:"relative" }}>
+                      <button onClick={()=>setShowDrvPicker(s=>!s)} style={{ padding:"6px 12px", border:`1.5px dashed ${accent}`, borderRadius:6, background:"transparent", color:accent, fontSize:12, fontWeight:600, cursor:"pointer" }}>+ ドライバー追加</button>
+                      {showDrvPicker && (
+                        <div style={{ position:"absolute", top:"110%", left:0, background:"#fff", border:"1px solid #94a3b8", borderRadius:6, padding:6, minWidth:200, maxHeight:280, overflowY:"auto", zIndex:20, boxShadow:"0 8px 24px rgba(0,0,0,0.12)" }}>
+                          {drivers.filter(d => !driversFor(sel).includes(d.id)).map(d=>(
+                            <button key={d.id} onClick={()=>{
+                              const cur = driversFor(sel);
+                              setDriverOverrides({ ...driverOverrides, [sel.id]: [...cur, d.id] });
+                              setShowDrvPicker(false);
+                            }} style={{ display:"block", width:"100%", padding:"6px 10px", background:"transparent", border:"none", textAlign:"left", fontSize:12, cursor:"pointer", borderRadius:4 }}
+                              onMouseEnter={e=>e.currentTarget.style.background="#f3f4f6"}
+                              onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+                              {d.name}
+                              <span style={{ color:"#9ca3af", marginLeft:6, fontSize:10 }}>{d.type}</span>
+                            </button>
+                          ))}
+                          {drivers.filter(d => !driversFor(sel).includes(d.id)).length===0 && (
+                            <div style={{ padding:"8px 10px", fontSize:11, color:"#9ca3af" }}>追加できるドライバーなし</div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 
