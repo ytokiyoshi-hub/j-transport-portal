@@ -2948,7 +2948,7 @@ const AnnouncePage = ({ accent }) => {
   const [openId, setOpenId] = React.useState(null);
   const [showForm, setShowForm] = React.useState(false);
   const [newPost, setNewPost] = React.useState({ title:"", cat:"運行", body:"" });
-  const [extraPosts, setExtraPosts] = React.useState([]);
+  const [extraPosts, setExtraPosts] = useLocalStorage("jt_extra_announces", []);
   const cats = ["すべて","重要","請求","運行","支払","人事","規程"];
   const allAnnounces = [...announces, ...extraPosts];
   const list = filter==="すべて" ? allAnnounces : allAnnounces.filter(a=>a.cat===filter);
