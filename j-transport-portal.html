@@ -1994,14 +1994,21 @@ const ClientPage = ({ accent, setPage }) => {
   return (
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
-        <div style={{ fontSize:20, fontWeight:700 }}>荷主管理</div>
+        <div>
+          <div style={{ fontSize:20, fontWeight:700 }}>荷主管理</div>
+          <div style={{ fontSize:12, color:"#9ca3af", marginTop:2 }}>全{list.length}社（自社{clients.length}＋追加{extraClients.length}）</div>
+        </div>
         <div style={{ display:"flex", gap:10 }}>
           <div style={{ position:"relative", display:"flex", alignItems:"center" }}>
             <div style={{ position:"absolute", left:10, pointerEvents:"none" }}><Ic name="search" size={13} color="#9ca3af"/></div>
             <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="荷主・エリア検索"
               style={{ paddingLeft:32, paddingRight:12, height:34, borderRadius:6, border:"1.5px solid #e5e7eb", fontSize:13, fontFamily:"inherit", outline:"none", width:200 }}/>
           </div>
-          <button onClick={()=>setPage("ratemaster")} style={{ padding:"7px 14px", border:`1.5px solid ${accent}`, background:"#fff", color:accent, borderRadius:6, fontSize:13, fontWeight:600 }}>単価マスタ</button>
+          <button onClick={()=>setPage("ratemaster")} style={{ padding:"7px 14px", border:`1.5px solid ${accent}`, background:"#fff", color:accent, borderRadius:6, fontSize:13, fontWeight:600, cursor:"pointer" }}>単価マスタ</button>
+          <button onClick={()=>{ try { sessionStorage.setItem("jt_open_add_client","1"); } catch(e){} setPage("ratemaster"); }}
+            style={{ padding:"7px 16px", background:accent, color:"#fff", border:"none", borderRadius:6, fontSize:13, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", gap:4 }}>
+            <span style={{ fontSize:15, lineHeight:1 }}>＋</span> 新規荷主追加
+          </button>
         </div>
       </div>
 
