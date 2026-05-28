@@ -562,7 +562,7 @@ const clients = [
     drivers:["DR-13"], monthlyVol:{}, contact:"—", status:"稼働中" },
 ];
 
-// ドライバーマスタ（実データ）
+// ドライバーマスタ（実データ・2025年実績反映）
 const drivers = [
   { id:"DR-01", name:"中村 竜二", type:"自社", area:"—", clients:["ASKUL","Bloomee","カウネット・NBC","サーガ","日本トムソン","RICOH","アクアクララ"] },
   { id:"DR-02", name:"國次 純平", type:"自社", area:"—", clients:["ASKUL","Bloomee","カウネット・NBC","日本トムソン","RICOH"] },
@@ -581,33 +581,24 @@ const drivers = [
 ];
 
 // 月次実績（2025年4月）
-const monthlyActuals = (() => {
-  const result = [];
-  clients.forEach(c => {
-    let sell = 0, pay = 0;
-    if (c.billing === "個建て" || c.billing === "個建て（2区分）" || c.billing === "個建て（3区分）") {
-      c.rates.forEach(r => {
-        const vol = c.monthlyVol[r.label] || 0;
-        sell += r.sell * vol;
-        pay  += r.pay  * vol;
-      });
-    } else if (c.billing === "固定（日額）") {
-      c.rates.forEach(r => {
-        const vol = c.monthlyVol[r.label] || 0;
-        sell += r.sell * vol;
-        pay  += r.pay  * vol;
-      });
-    } else if (c.billing === "固定＋変動") {
-      c.rates.forEach(r => {
-        const vol = c.monthlyVol[r.label] || 0;
-        sell += r.sell * vol;
-        pay  += r.pay  * vol;
-      });
-    }
-    result.push({ clientId: c.id, name: c.name, sell, pay, profit: sell - pay });
-  });
-  return result;
-})();
+const monthlyHistory = {
+  "C-01": { "2025-01":{s:1302155,p:1092130}, "2025-02":{s:1768550,p:1483300}, "2025-03":{s:1637265,p:1373190}, "2025-04":{s:1739100,p:1458600}, "2025-05":{s:1622695,p:1360970}, "2025-06":{s:2018255,p:1692730}, "2025-07":{s:1930525,p:1619150}, "2025-08":{s:1695080,p:1421680}, "2025-09":{s:2400330,p:2013180}, "2025-10":{s:1976560,p:1657760}, "2025-11":{s:5735,p:4810}, "2025-12":{s:159185,p:133510} },
+  "C-02": { "2025-01":{s:19200,p:17280}, "2025-02":{s:31400,p:28260}, "2025-03":{s:22600,p:20340}, "2025-04":{s:27400,p:24660}, "2025-05":{s:25800,p:23220}, "2025-06":{s:31800,p:28620}, "2025-07":{s:25200,p:22680}, "2025-08":{s:27200,p:24480}, "2025-09":{s:28200,p:25380}, "2025-10":{s:24600,p:22140}, "2025-11":{s:29800,p:26820}, "2025-12":{s:23200,p:20880} },
+  "C-03": { "2025-01":{s:696930,p:593550}, "2025-02":{s:826000,p:701000}, "2025-03":{s:723920,p:615700}, "2025-04":{s:835520,p:710200}, "2025-05":{s:754180,p:641300}, "2025-06":{s:853910,p:726850}, "2025-07":{s:975160,p:833600}, "2025-08":{s:926190,p:790650}, "2025-09":{s:716540,p:651400}, "2025-10":{s:585860,p:532600}, "2025-11":{s:540100,p:491000}, "2025-12":{s:559020,p:508200} },
+  "C-04": { "2025-01":{s:229090,p:192140}, "2025-02":{s:297600,p:249600}, "2025-03":{s:272955,p:228930}, "2025-04":{s:352005,p:295230}, "2025-05":{s:298840,p:250640}, "2025-06":{s:377580,p:316680}, "2025-07":{s:363475,p:304850}, "2025-08":{s:322865,p:270790}, "2025-09":{s:398040,p:333840}, "2025-10":{s:327360,p:274560}, "2025-11":{s:458800,p:384800}, "2025-12":{s:431985,p:362310} },
+  "C-05": { "2025-01":{s:5400,p:4050}, "2025-02":{s:4320,p:3240}, "2025-03":{s:5040,p:3780}, "2025-04":{s:5760,p:4320}, "2025-05":{s:6120,p:4590}, "2025-06":{s:4320,p:3240}, "2025-07":{s:4680,p:3510}, "2025-08":{s:2520,p:1890}, "2025-09":{s:7200,p:5400}, "2025-10":{s:5400,p:4050}, "2025-11":{s:5400,p:4050}, "2025-12":{s:5760,p:4320} },
+  "C-06": { "2025-01":{s:1050200,p:474660}, "2025-02":{s:842700,p:300500}, "2025-03":{s:1446700,p:578700}, "2025-04":{s:1136100,p:473400}, "2025-05":{s:918750,p:360100}, "2025-06":{s:807500,p:452000}, "2025-07":{s:642000,p:411500}, "2025-08":{s:337400,p:245500}, "2025-09":{s:604000,p:400400}, "2025-10":{s:833900,p:603700}, "2025-11":{s:632850,p:394200}, "2025-12":{s:844250,p:659500} },
+  "C-07": { "2025-02":{s:36000,p:28000}, "2025-03":{s:234000,p:182000}, "2025-04":{s:234000,p:175000}, "2025-05":{s:243000,p:189000}, "2025-06":{s:225000,p:175000}, "2025-07":{s:243000,p:189000}, "2025-08":{s:243000,p:189000}, "2025-09":{s:225000,p:175000}, "2025-10":{s:243000,p:189000}, "2025-11":{s:234000,p:182000}, "2025-12":{s:243000,p:189000} },
+  "C-08": { "2025-01":{s:28440,p:21330}, "2025-02":{s:32400,p:24300}, "2025-03":{s:24480,p:18360}, "2025-04":{s:22320,p:16740}, "2025-05":{s:15840,p:11880}, "2025-06":{s:22320,p:16740}, "2025-07":{s:22320,p:16740}, "2025-08":{s:16920,p:12690}, "2025-09":{s:26280,p:19710}, "2025-10":{s:8280,p:6210}, "2025-11":{s:1440,p:1080}, "2025-12":{s:3960,p:2970} },
+  "C-09": { "2025-01":{s:183420,p:135900}, "2025-02":{s:243120,p:180080}, "2025-03":{s:220460,p:163380}, "2025-04":{s:235320,p:174360}, "2025-05":{s:235860,p:174940}, "2025-06":{s:255840,p:189640}, "2025-07":{s:233100,p:172700}, "2025-08":{s:220240,p:163160}, "2025-09":{s:269780,p:199860}, "2025-10":{s:257590,p:190810}, "2025-11":{s:250620,p:185660}, "2025-12":{s:236580,p:175300} },
+  "C-10": { "2025-01":{s:65000,p:32000}, "2025-02":{s:70000,p:36000}, "2025-03":{s:80000,p:48000}, "2025-04":{s:80000,p:32000}, "2025-05":{s:85000,p:50000}, "2025-06":{s:70000,p:32000}, "2025-07":{s:75000,p:44500}, "2025-08":{s:75000,p:40500}, "2025-09":{s:75000,p:36000}, "2025-10":{s:95000,p:40000}, "2025-11":{s:65000,p:32000}, "2025-12":{s:90000,p:48000} },
+  "C-11": { "2025-11":{s:325610,p:292980}, "2025-12":{s:1128530,p:1015140} },
+};
+const REF_MONTH = "2025-10";  // 実績の代表月（最新の完全月）
+const monthlyActuals = clients.map(c => {
+  const h = (monthlyHistory[c.id] && monthlyHistory[c.id][REF_MONTH]) || {s:0,p:0};
+  return { clientId: c.id, name: c.name, sell: h.s, pay: h.p, profit: h.s - h.p };
+});
 
 const totalSell   = monthlyActuals.reduce((s,r)=>s+r.sell,0);
 const totalPay    = monthlyActuals.reduce((s,r)=>s+r.pay,0);
@@ -684,27 +675,20 @@ const SH = ({ title, action, onAction }) => (
 const PLPage = ({ accent }) => {
   const [period, setPeriod] = React.useState("year"); // "year" | "half"
   const margin = totalSell > 0 ? (totalProfit/totalSell*100).toFixed(1) : 0;
-  const prevSell = 2780000, prevProfit = 768000;
 
-  const allMonths = [
-    {m:"24/5",  sell:2180000, pay:1560000},
-    {m:"24/6",  sell:2240000, pay:1610000},
-    {m:"24/7",  sell:2390000, pay:1700000},
-    {m:"24/8",  sell:2310000, pay:1660000},
-    {m:"24/9",  sell:2280000, pay:1630000},
-    {m:"24/10", sell:2450000, pay:1750000},
-    {m:"24/11", sell:2520000, pay:1800000},
-    {m:"24/12", sell:2610000, pay:1870000},
-    {m:"25/1",  sell:2510000, pay:1780000},
-    {m:"25/2",  sell:2680000, pay:1890000},
-    {m:"25/3",  sell:2780000, pay:2012000},
-    {m:"25/4",  sell:totalSell, pay:totalPay, current:true},
-  ];
+  const allMonths = Array.from({length:12}, (_,i)=>{
+    const mk = "2025-"+String(i+1).padStart(2,"0");
+    let sell=0, pay=0;
+    Object.keys(monthlyHistory).forEach(cid=>{ const h=monthlyHistory[cid][mk]; if(h){ sell+=h.s; pay+=h.p; } });
+    return { m:"25/"+(i+1), sell, pay, current: mk===REF_MONTH };
+  });
+  const curIdx = Math.max(0, allMonths.findIndex(d=>d.current));
+  const prevSell = curIdx>0 ? allMonths[curIdx-1].sell : totalSell;
+  const prevProfit = curIdx>0 ? (allMonths[curIdx-1].sell - allMonths[curIdx-1].pay) : totalProfit;
   const barData = period==="half" ? allMonths.slice(6) : allMonths;
-  const maxBar = Math.max(...barData.map(d=>d.sell));
-
-  const ytdSell   = allMonths.filter(d=>d.m.startsWith("25")).reduce((s,d)=>s+d.sell,0);
-  const ytdPay    = allMonths.filter(d=>d.m.startsWith("25")).reduce((s,d)=>s+d.pay,0);
+  const maxBar = Math.max(...barData.map(d=>d.sell), 1);
+  const ytdSell   = allMonths.reduce((s,d)=>s+d.sell,0);
+  const ytdPay    = allMonths.reduce((s,d)=>s+d.pay,0);
   const ytdProfit = ytdSell - ytdPay;
 
   return (
@@ -747,7 +731,7 @@ const PLPage = ({ accent }) => {
       {/* YTD サマリー */}
       <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:10, marginBottom:14 }}>
         {[
-          { l:"2025年度 累計売上", v:fmt(ytdSell),   sub:"1月〜4月（4ヶ月）", c:accent },
+          { l:"2025年度 累計売上", v:fmt(ytdSell),   sub:"1月〜12月（12ヶ月）", c:accent },
           { l:"2025年度 累計支払", v:fmt(ytdPay),    sub:`原価率 ${(ytdPay/ytdSell*100).toFixed(1)}%`, c:"#d97706" },
           { l:"2025年度 累計粗利", v:fmt(ytdProfit), sub:`粗利率 ${(ytdProfit/ytdSell*100).toFixed(1)}%`, c:"#16a34a" },
         ].map(({ l,v,sub,c })=>(
