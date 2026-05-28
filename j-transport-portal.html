@@ -907,7 +907,7 @@ const PLPage = ({ accent, setPage }) => {
     alerts.push({
       level: topClient.pct>=40?"high":"mid",
       title:`売上集中: ${topClient.name} で ${topClient.pct.toFixed(1)}%`,
-      desc:`単一荷主依存度が高い。${topClient.name} の解約は当月売上で ¥${fmt(topClient.sell)} のインパクト。多角化検討。`
+      desc:`単一荷主依存度が高い。${topClient.name} の解約は当月売上で ${fmt(topClient.sell)} のインパクト。多角化検討。`
     });
   }
   // 2. 粗利率低い荷主
