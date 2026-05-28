@@ -1832,7 +1832,7 @@ const DailyInputPage = ({ accent }) => {
   });
   const _dailySum = dayTotals.reduce((a,t)=>({sell:a.sell+t.sell,pay:a.pay+t.pay,profit:a.profit+t.profit}),{sell:0,pay:0,profit:0});
   // 月次サマリー: monthlyHistory（元データ確定値）優先、無ければ日次集計フォールバック
-  const _mhVal = (typeof monthlyHistory!=="undefined" && monthlyHistory[selClient?.id] && monthlyHistory[selClient?.id][month]) || null;
+  const _mhVal = (typeof monthlyHistory!=="undefined" && selClient && monthlyHistory[selClient.id] && monthlyHistory[selClient.id][monthYear]) || null;
   const monthTotals = _mhVal ? { sell:_mhVal.s, pay:_mhVal.p, profit:_mhVal.s-_mhVal.p } : _dailySum;
   const colTotals = assignedDrivers.flatMap((d) =>
     rates.map((r) => ({
