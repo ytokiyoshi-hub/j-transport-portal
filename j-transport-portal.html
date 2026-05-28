@@ -1786,10 +1786,8 @@ const DailyInputPage = ({ accent }) => {
 
   // 月・荷主切替時に実績をロード（埋め込みdailyActuals → Supabaseで上書き）
   React.useEffect(() => {
-    const [yr, mo] = monthYear.split("-").map(Number);
-    const lastDay = new Date(yr, mo, 0).getDate();
-    const start = `${monthYear}-01`;
-    const end = `${monthYear}-${String(lastDay).padStart(2,"0")}`;
+    const start = bStartStr;
+    const end = bEndStr;
     const next = {};
     const da = (typeof dailyActuals !== "undefined" && dailyActuals[selClient?.id]) || {};
     Object.keys(da).forEach(ds => {
