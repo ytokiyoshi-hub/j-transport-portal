@@ -826,7 +826,7 @@ const PLPage = ({ accent }) => {
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
         <div>
           <div style={{ fontSize:20, fontWeight:700 }}>収支管理</div>
-          <div style={{ fontSize:12, color:"#9ca3af", marginTop:2 }}>全荷主合算・速報値</div>
+          <div style={{ fontSize:12, color:"#9ca3af", marginTop:2 }}>{_hasCurrent ? `全荷主合算 ${REF_MONTH_LABEL}` : `今月（${REF_MONTH_LABEL}）実績未入力 ／ 最新確定: ${LATEST_MONTH_LABEL} を表示`}</div>
         </div>
         <div style={{ display:"flex", gap:8, alignItems:"center" }}>
           <div style={{ fontSize:12, color:"#9ca3af" }}>グラフ表示：</div>
