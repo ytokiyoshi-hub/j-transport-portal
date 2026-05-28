@@ -2944,7 +2944,7 @@ const Dashboard = ({ accent, setPage }) => {
 // ── その他のページ（簡易） ─────────────────────────────────────────────────
 const AnnouncePage = ({ accent }) => {
   const [filter, setFilter] = React.useState("すべて");
-  const [readIds, setReadIds] = React.useState(announces.filter(a=>!a.unread).map(a=>a.id));
+  const [readIds, setReadIds] = useLocalStorage("jt_announce_read_ids", announces.filter(a=>!a.unread).map(a=>a.id));
   const [openId, setOpenId] = React.useState(null);
   const [showForm, setShowForm] = React.useState(false);
   const [newPost, setNewPost] = React.useState({ title:"", cat:"運行", body:"" });
