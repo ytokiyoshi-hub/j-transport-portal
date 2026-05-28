@@ -2840,7 +2840,7 @@ const Dashboard = ({ accent, setPage }) => {
               { name:"伊藤 誠",   client:"ASKUL",        status:"完了",     done:38, total:38, time:"14:30" },
               { name:"渡辺 翔",   client:"タイヤ配送",   status:"配達中",   done:6,  total:11, time:"16:50" },
             ].map((r,i)=>{
-              const pct = Math.round(r.done/r.total*100);
+              const pct = r.total>0 ? Math.round(r.done/r.total*100) : 0;
               const sc = r.status==="完了"?{bg:"#dcfce7",c:"#15803d"}:r.status==="配達中"?{bg:accent+"18",c:accent}:{bg:"#fee2e2",c:"#b91c1c"};
               return (
                 <div key={i} style={{ display:"flex", alignItems:"center", gap:12, padding:"9px 0", borderBottom:i<5?"1px solid #94a3b8":"none" }}>
