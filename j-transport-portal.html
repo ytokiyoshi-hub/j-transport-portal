@@ -1715,7 +1715,7 @@ const DailyInputPage = ({ accent }) => {
   }, [scClients]);
 
   const clientList = clientSrc.filter(c => c.billing !== "スポット");
-  const assignedDrivers = driverSrc.filter(d => selClient.drivers.includes(d.id));
+  const assignedDrivers = driverSrc.filter(d => selClient.drivers.includes(d.id) || (typeof dailyActuals!=="undefined" && dailyActuals[selClient.id] && Object.values(dailyActuals[selClient.id]).some(day=>day[d.id])));
   const rates = selClient.rates.filter(r => r.sell > 0 || r.pay > 0);
   const nD = assignedDrivers.length;
   const nR = rates.length;
