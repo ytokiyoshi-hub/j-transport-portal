@@ -475,14 +475,27 @@ Object.assign(window, {
 <script type="text/babel">
 
 // localStorage-backed state — persists across reloads. Drop-in replacement for React.useState.
+// 同一ウィンドウ内の複数インスタンス間でも同期する（カスタムイベント経由）
 function useLocalStorage(key, initial) {
   const [val, setVal] = React.useState(() => {
     try { const s = localStorage.getItem(key); return s != null ? JSON.parse(s) : initial; }
     catch (e) { return initial; }
   });
   React.useEffect(() => {
-    try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) {}
+    try {
+      localStorage.setItem(key, JSON.stringify(val));
+      window.dispatchEvent(new CustomEvent("jt-ls-change", { detail: { key, val } }));
+    } catch (e) {}
   }, [key, val]);
+  React.useEffect(() => {
+    const onChange = (e) => {
+      if (e.detail && e.detail.key === key) {
+        setVal(prev => JSON.stringify(prev) === JSON.stringify(e.detail.val) ? prev : e.detail.val);
+      }
+    };
+    window.addEventListener("jt-ls-change", onChange);
+    return () => window.removeEventListener("jt-ls-change", onChange);
+  }, [key]);
   return [val, setVal];
 }
 
