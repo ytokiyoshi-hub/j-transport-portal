@@ -2431,7 +2431,7 @@ const Dashboard = ({ accent, setPage }) => {
                     </div>
                     <div style={{ fontSize:11, color:"#9ca3af" }}>{a.type} · {a.date}</div>
                   </div>
-                  <button style={{ padding:"5px 10px", border:`1px solid ${accent}`, borderRadius:4, background:"#fff", color:accent, fontSize:11, fontWeight:600, cursor:"pointer" }}>確認</button>
+                  <button onClick={()=>alert(a.name+" を確認しました")} style={{ padding:"5px 10px", border:`1px solid ${accent}`, borderRadius:4, background:"#fff", color:accent, fontSize:11, fontWeight:600, cursor:"pointer" }}>確認</button>
                 </div>
               ))}
             </div>
