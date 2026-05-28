@@ -940,8 +940,15 @@ const RateMasterPage = ({ accent, setPage }) => {
                   <div style={{ fontSize:12, color:"#9ca3af", marginTop:2, display:"flex", alignItems:"center", gap:6 }}><span style={{ fontFamily:"ui-monospace, monospace", color:"#6b7280", fontWeight:700 }}>{sel.id}</span><span>／</span><span>{sel.area}</span><span>／</span><span style={{ color:"#6b7280" }}>締め:</span>{editMode ? (<select value={cycleDraft} onChange={e=>setCycleDraft(e.target.value)} style={{ padding:"2px 8px", border:`1.5px solid ${accent}`, borderRadius:4, fontSize:12, fontFamily:"inherit", outline:"none", background:"#fff" }}>{CYCLE_OPTIONS.map(o=><option key={o} value={o}>{o}</option>)}</select>) : (<span style={{ fontWeight:600, color:"#374151" }}>{cycleFor(sel)}</span>)}</div>
                 </div>
                 <button onClick={()=>{
-                    if (editMode) { setRateOverrides({ ...rateOverrides, [sel.id]: draft }); setEditMode(false); setDraft(null); }
-                    else { setDraft(ratesFor(sel).map(r=>({ ...r }))); setEditMode(true); }
+                    if (editMode) {
+                      setRateOverrides({ ...rateOverrides, [sel.id]: draft });
+                      setCycleOverrides({ ...cycleOverrides, [sel.id]: cycleDraft });
+                      setEditMode(false); setDraft(null);
+                    } else {
+                      setDraft(ratesFor(sel).map(r=>({ ...r })));
+                      setCycleDraft(cycleFor(sel));
+                      setEditMode(true);
+                    }
                   }}
                   style={{ padding:"7px 14px", border:`1.5px solid ${accent}`, borderRadius:6, background: editMode?accent:"#fff", color: editMode?"#fff":accent, fontSize:13, fontWeight:600, display:"flex", alignItems:"center", gap:6 }}>
                   <Ic name="edit" size={13} color={editMode?"#fff":accent}/>
