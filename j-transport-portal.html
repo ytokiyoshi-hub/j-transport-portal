@@ -3824,6 +3824,13 @@ const VehiclesPage = ({ accent }) => {
   const [statusFilter, setStatusFilter] = React.useState("すべて");
   const today = new Date("2025-04-30");
   const daysUntil = (dateStr) => Math.ceil((new Date(dateStr) - today) / 86400000);
+  // 整備記録／車検予約は localStorage に追記保存
+  const [maintExtras, setMaintExtras] = useLocalStorage("jt_vehicle_maintenance", {});
+  const [reservations, setReservations] = useLocalStorage("jt_vehicle_reservations", {});
+  const [showMaintForm, setShowMaintForm] = React.useState(false);
+  const [showResForm, setShowResForm] = React.useState(false);
+  const [maintDraft, setMaintDraft] = React.useState({date:"", item:""});
+  const [resDraft, setResDraft] = React.useState({date:"", note:""});
 
   const list = vehicleMaster.filter(v => statusFilter==="すべて" || v.status===statusFilter);
 
