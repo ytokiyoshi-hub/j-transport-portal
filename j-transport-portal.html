@@ -3541,12 +3541,64 @@ const ManualPage = ({ accent }) => {
                 </div>
                 <span style={{ fontSize:11, color:"#9ca3af", flexShrink:0 }}>{m.ver}</span>
                 <span style={{ fontSize:11, color:"#9ca3af", width:72, flexShrink:0 }}>{m.updated}</span>
-                <button onClick={()=>alert(m.name+" を開きます（デモ）")} style={{ padding:"5px 12px", border:`1px solid ${accent}`, borderRadius:5, background:"#fff", color:accent, fontSize:11, fontWeight:600, cursor:"pointer", flexShrink:0 }}>開く</button>
+                <button onClick={()=>setOpenManual({...m, cat:cat.cat})} style={{ padding:"5px 12px", border:`1px solid ${accent}`, borderRadius:5, background:"#fff", color:accent, fontSize:11, fontWeight:600, cursor:"pointer", flexShrink:0 }}>開く</button>
               </div>
             ))}
           </Card>
         </div>
       ))}
+
+      {openManual && (
+        <div onClick={()=>setOpenManual(null)} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.5)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:100, padding:24 }}>
+          <div onClick={e=>e.stopPropagation()} style={{ background:"#fff", borderRadius:10, width:680, maxWidth:"100%", maxHeight:"85vh", overflowY:"auto", padding:28 }}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:18, paddingBottom:14, borderBottom:`2px solid ${accent}` }}>
+              <div>
+                <div style={{ fontSize:11, color:"#9ca3af", marginBottom:4 }}>{openManual.cat}</div>
+                <div style={{ fontSize:20, fontWeight:700, color:"#111827" }}>{openManual.name}</div>
+                <div style={{ fontSize:11, color:"#6b7280", marginTop:6, display:"flex", gap:10 }}>
+                  <span>バージョン: {openManual.ver}</span>
+                  <span>更新日: {openManual.updated}</span>
+                  {openManual.tag && <span style={{ padding:"1px 6px", background:tagColor(openManual.tag)+"22", color:tagColor(openManual.tag), borderRadius:3, fontWeight:700 }}>{openManual.tag}</span>}
+                </div>
+              </div>
+              <button onClick={()=>setOpenManual(null)} style={{ background:"none", border:"none", fontSize:20, color:"#9ca3af", cursor:"pointer", lineHeight:1 }}>×</button>
+            </div>
+            <div style={{ fontSize:13, color:"#374151", lineHeight:1.8 }}>
+              <h3 style={{ fontSize:14, fontWeight:700, marginBottom:8, color:"#111827" }}>1. 目的</h3>
+              <p style={{ marginBottom:14 }}>本マニュアルは「{openManual.name}」の手順を全担当者に共有することを目的とします。実務上の判断基準と例外対応をまとめています。</p>
+
+              <h3 style={{ fontSize:14, fontWeight:700, marginBottom:8, color:"#111827" }}>2. 対象範囲</h3>
+              <p style={{ marginBottom:14 }}>{openManual.cat}に該当する全業務、および関連する管理部・運行管理部の担当者。</p>
+
+              <h3 style={{ fontSize:14, fontWeight:700, marginBottom:8, color:"#111827" }}>3. 基本フロー</h3>
+              <ol style={{ marginLeft:20, marginBottom:14 }}>
+                <li>受付・入力（システム連動）</li>
+                <li>確認・承認（責任者チェック）</li>
+                <li>実行（現場対応）</li>
+                <li>記録・報告（システム保存・上長報告）</li>
+              </ol>
+
+              <h3 style={{ fontSize:14, fontWeight:700, marginBottom:8, color:"#111827" }}>4. 注意事項</h3>
+              <ul style={{ marginLeft:20, marginBottom:14 }}>
+                <li>イレギュラー発生時は速やかに上長へ報告</li>
+                <li>法令・契約関連は管理部の事前確認が必要</li>
+                <li>変更履歴はバージョン管理（{openManual.ver} 時点）</li>
+              </ul>
+
+              <h3 style={{ fontSize:14, fontWeight:700, marginBottom:8, color:"#111827" }}>5. 問い合わせ</h3>
+              <p>本マニュアルに関する質問は、ポータル内「問い合わせ」より管理部へ送信してください。</p>
+
+              <div style={{ marginTop:20, padding:14, background:"#f9fafb", borderRadius:6, fontSize:12, color:"#6b7280" }}>
+                ※ 本ダイアログは社内ポータル内のマニュアル本文プレビュー機能です。詳細PDF版は社内共有ドライブから取得してください。
+              </div>
+            </div>
+            <div style={{ display:"flex", gap:8, marginTop:18, justifyContent:"flex-end" }}>
+              <button onClick={()=>window.print()} style={{ padding:"8px 16px", border:"1px solid #94a3b8", background:"#fff", borderRadius:6, fontSize:12, cursor:"pointer" }}>印刷</button>
+              <button onClick={()=>setOpenManual(null)} style={{ padding:"8px 16px", background:accent, color:"#fff", border:"none", borderRadius:6, fontSize:12, fontWeight:600, cursor:"pointer" }}>閉じる</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
