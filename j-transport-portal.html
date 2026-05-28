@@ -4038,66 +4038,66 @@ const App = () => {
   };
 
   return (
-    <div style={{ display:"flex", height:"100vh", background:"#f4f5f7" }}>
+    <div style={{ display:"flex", height:"100vh", background:theme.bg }}>
       {/* Sidebar */}
-      <div style={{ width:220, background:"#fff", borderRight:"1px solid #e8eaed", display:"flex", flexDirection:"column", flexShrink:0 }}>
-        <div style={{ padding:"18px 20px 14px", borderBottom:"1px solid #f1f3f5" }}>
+      <div style={{ width:220, background:theme.base, borderRight:`1px solid ${theme.line}`, display:"flex", flexDirection:"column", flexShrink:0 }}>
+        <div style={{ padding:"18px 20px 14px", borderBottom:`1px solid ${theme.line}` }}>
           <div style={{ display:"flex", alignItems:"center", gap:10 }}>
             <div style={{ width:32, height:32, background:accent, borderRadius:6, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
               <Ic name="truck" size={16} color="#fff" strokeWidth={2}/>
             </div>
             <div>
-              <div style={{ fontWeight:800, fontSize:14, color:"#111827", lineHeight:1.2, letterSpacing:-0.3 }}>J transport</div>
-              <div style={{ fontSize:10, color:"#9ca3af", marginTop:1 }}>社内ポータル</div>
+              <div style={{ fontWeight:800, fontSize:14, color:theme.text, lineHeight:1.2, letterSpacing:-0.3 }}>J transport</div>
+              <div style={{ fontSize:10, color:theme.textMute, marginTop:1 }}>社内ポータル</div>
             </div>
           </div>
         </div>
         <nav style={{ flex:1, padding:"8px 8px", overflowY:"auto" }}>
           {navGroups.map((group,gi)=>(
             <div key={gi}>
-              {group.label && <div style={{ fontSize:10, fontWeight:700, color:"#c4c9d4", letterSpacing:0.8, padding:"10px 10px 4px", textTransform:"uppercase" }}>{group.label}</div>}
+              {group.label && <div style={{ fontSize:10, fontWeight:700, color:theme.textMute, letterSpacing:0.8, padding:"10px 10px 4px", textTransform:"uppercase" }}>{group.label}</div>}
               {group.items.map(item=>{
                 const active=page===item.id;
                 return (
                   <button key={item.id} onClick={()=>setPage(item.id)}
-                    style={{ width:"100%", display:"flex", alignItems:"center", gap:9, padding:"7px 10px", borderRadius:6, border:"none", background:active?accent+"14":"transparent", color:active?accent:"#374151", cursor:"pointer", fontFamily:"inherit", fontSize:12.5, fontWeight:active?600:400, marginBottom:1, transition:"all .1s", textAlign:"left" }}
-                    onMouseEnter={e=>{ if(!active) e.currentTarget.style.background="#f3f4f6"; }}
+                    style={{ width:"100%", display:"flex", alignItems:"center", gap:9, padding:"7px 10px", borderRadius:6, border:"none", background:active?theme.accentLt:"transparent", color:active?accent:theme.text, cursor:"pointer", fontFamily:"inherit", fontSize:12.5, fontWeight:active?600:400, marginBottom:1, transition:"all .1s", textAlign:"left" }}
+                    onMouseEnter={e=>{ if(!active) e.currentTarget.style.background=theme.bg; }}
                     onMouseLeave={e=>{ if(!active) e.currentTarget.style.background="transparent"; }}>
-                    <Ic name={item.icon} size={14} color={active?accent:"#6b7280"}/>
+                    <Ic name={item.icon} size={14} color={active?accent:theme.textSub}/>
                     <span style={{ flex:1 }}>{item.label}</span>
-                    {item.badge && <span style={{ background:"#dc2626", color:"#fff", borderRadius:10, fontSize:10, padding:"1px 6px", fontWeight:700 }}>{item.badge}</span>}
+                    {item.badge && <span style={{ background:theme.alert, color:"#fff", borderRadius:10, fontSize:10, padding:"1px 6px", fontWeight:700 }}>{item.badge}</span>}
                   </button>
                 );
               })}
             </div>
           ))}
         </nav>
-        <div style={{ padding:"12px 16px", borderTop:"1px solid #f1f3f5", display:"flex", alignItems:"center", gap:10 }}>
-          <div style={{ width:28, height:28, borderRadius:"50%", background:accent+"20", display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:700, color:accent, flexShrink:0 }}>{tweaks.userName[0]}</div>
+        <div style={{ padding:"12px 16px", borderTop:`1px solid ${theme.line}`, display:"flex", alignItems:"center", gap:10 }}>
+          <div style={{ width:28, height:28, borderRadius:"50%", background:theme.accentLt, display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:700, color:accent, flexShrink:0 }}>{tweaks.userName[0]}</div>
           <div style={{ flex:1, minWidth:0 }}>
-            <div style={{ fontSize:12.5, fontWeight:600, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{tweaks.userName}</div>
-            <div style={{ fontSize:11, color:"#9ca3af" }}>{tweaks.dept}</div>
+            <div style={{ fontSize:12.5, fontWeight:600, color:theme.text, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{tweaks.userName}</div>
+            <div style={{ fontSize:11, color:theme.textMute }}>{tweaks.dept}</div>
           </div>
         </div>
       </div>
 
       {/* Main */}
       <div style={{ flex:1, display:"flex", flexDirection:"column", overflow:"hidden" }}>
-        <div style={{ background:"#fff", borderBottom:"1px solid #e8eaed", height:48, display:"flex", alignItems:"center", justifyContent:"space-between", padding:"0 24px", flexShrink:0 }}>
-          <div style={{ fontSize:12.5, color:"#9ca3af" }}>{navItems.find(n=>n.id===page)?.label}</div>
+        <div style={{ background:theme.base, borderBottom:`1px solid ${theme.line}`, height:48, display:"flex", alignItems:"center", justifyContent:"space-between", padding:"0 24px", flexShrink:0 }}>
+          <div style={{ fontSize:12.5, color:theme.textMute }}>{navItems.find(n=>n.id===page)?.label}</div>
           <div style={{ display:"flex", alignItems:"center", gap:14 }}>
             <div style={{ position:"relative" }}>
-              <Ic name="bell" size={17} color="#6b7280"/>
-              <div style={{ position:"absolute", top:-3, right:-3, width:12, height:12, borderRadius:"50%", background:"#dc2626", fontSize:8, fontWeight:700, color:"#fff", display:"flex", alignItems:"center", justifyContent:"center" }}>4</div>
+              <Ic name="bell" size={17} color={theme.textSub}/>
+              <div style={{ position:"absolute", top:-3, right:-3, width:12, height:12, borderRadius:"50%", background:theme.alert, fontSize:8, fontWeight:700, color:"#fff", display:"flex", alignItems:"center", justifyContent:"center" }}>4</div>
             </div>
             <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-              <div style={{ width:26, height:26, borderRadius:"50%", background:accent+"20", display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:700, color:accent }}>{tweaks.userName[0]}</div>
-              <span style={{ fontSize:13, fontWeight:500 }}>{tweaks.userName}</span>
+              <div style={{ width:26, height:26, borderRadius:"50%", background:theme.accentLt, display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:700, color:accent }}>{tweaks.userName[0]}</div>
+              <span style={{ fontSize:13, fontWeight:500, color:theme.text }}>{tweaks.userName}</span>
             </div>
           </div>
         </div>
         <div style={{ flex:1, overflowY:"auto", padding:"22px 28px" }}>
-          {pageMap[page] || <div style={{ color:"#9ca3af" }}>ページが見つかりません</div>}
+          {pageMap[page] || <div style={{ color:theme.textMute }}>ページが見つかりません</div>}
         </div>
       </div>
 
