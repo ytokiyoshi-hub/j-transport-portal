@@ -829,10 +829,10 @@ const PLPage = ({ accent }) => {
       {/* KPI */}
       <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12, marginBottom:14 }}>
         {[
-          { l:"今月売上",   v:fmt(totalSell),   sub:`前月比 +${((totalSell/prevSell-1)*100).toFixed(1)}%`, c:accent, up:true },
-          { l:"今月支払",   v:fmt(totalPay),    sub:`原価率 ${(totalPay/totalSell*100).toFixed(1)}%`,       c:"#d97706", up:null },
-          { l:"今月粗利",   v:fmt(totalProfit), sub:`前月比 +${((totalProfit/prevProfit-1)*100).toFixed(1)}%`, c:"#16a34a", up:true },
-          { l:"今月粗利率", v:margin+"%",       sub:`前月 ${(prevProfit/prevSell*100).toFixed(1)}%`,        c:"#374151", up:null },
+          { l:`今月売上（${REF_MONTH_LABEL}）`,   v:fmt(totalSell),   sub:totalSell>0?`前月比 +${((totalSell/prevSell-1)*100).toFixed(1)}%`:`実績未入力。最新確定: ${LATEST_MONTH_LABEL}`, c:accent, up:totalSell>0 },
+          { l:`今月支払（${REF_MONTH_LABEL}）`,   v:fmt(totalPay),    sub:totalSell>0?`原価率 ${(totalPay/totalSell*100).toFixed(1)}%`:"—",  c:"#d97706", up:null },
+          { l:`今月粗利（${REF_MONTH_LABEL}）`,   v:fmt(totalProfit), sub:totalSell>0?`前月比 +${((totalProfit/prevProfit-1)*100).toFixed(1)}%`:"—", c:"#16a34a", up:totalSell>0 },
+          { l:`今月粗利率（${REF_MONTH_LABEL}）`, v:totalSell>0?margin+"%":"—", sub:totalSell>0?`前月 ${(prevProfit/prevSell*100).toFixed(1)}%`:"—",   c:"#374151", up:null },
         ].map(({ l,v,sub,c,up })=>(
           <Card key={l} style={{ padding:"16px 20px" }}>
             <div style={{ fontSize:11, color:"#9ca3af", marginBottom:6 }}>{l}</div>
