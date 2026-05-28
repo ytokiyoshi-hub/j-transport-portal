@@ -4533,6 +4533,11 @@ const App = () => {
   const [page, setPage] = React.useState("dashboard");
   const accent = theme.accent;
   const mainScrollRef = React.useRef(null);
+  // お知らせ未読件数（AnnouncePage と localStorage を共有）
+  const [announceReadIds] = useLocalStorage("jt_announce_read_ids", announces.filter(a=>!a.unread).map(a=>a.id));
+  const [extraAnnounces] = useLocalStorage("jt_extra_announces", []);
+  const allAnnounces = [...announces, ...extraAnnounces];
+  const announceUnread = allAnnounces.filter(a => !announceReadIds.includes(a.id)).length;
   // ページ切替時にメインコンテンツのスクロールを先頭へ戻す
   React.useEffect(() => {
     if (mainScrollRef.current) mainScrollRef.current.scrollTo({ top: 0, left: 0, behavior: "auto" });
