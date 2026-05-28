@@ -2765,6 +2765,7 @@ const Dashboard = ({ accent, setPage }) => {
           <div style={{ padding:"6px 0" }}>
             {announces.map(a=>(
               <div key={a.id} style={{ display:"flex", gap:8, padding:"9px 20px", cursor:"pointer" }}
+                onClick={()=>setPage("announce")}
                 onMouseEnter={e=>e.currentTarget.style.background="#f9fafb"}
                 onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
                 {a.unread && <div style={{ width:5, height:5, borderRadius:"50%", background:accent, marginTop:6, flexShrink:0 }}/>}
