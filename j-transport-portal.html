@@ -4434,7 +4434,7 @@ const App = () => {
             </div>
           </div>
         </div>
-        <div style={{ flex:1, overflowY:"auto", padding:"22px 28px" }}>
+        <div ref={mainScrollRef} style={{ flex:1, overflowY:"auto", padding:"22px 28px" }}>
           {pageMap[page] || <div style={{ color:theme.textMute }}>ページが見つかりません</div>}
         </div>
       </div>
