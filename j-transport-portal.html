@@ -805,15 +805,16 @@ const PLPage = ({ accent }) => {
   const [period, setPeriod] = React.useState("year"); // "year" | "half"
   const margin = totalSell > 0 ? (totalProfit/totalSell*100).toFixed(1) : 0;
 
+  const _curForGraph = _hasCurrent ? REF_MONTH : LATEST_DATA_MONTH;
   const allMonths = Array.from({length:12}, (_,i)=>{
     const mk = "2025-"+String(i+1).padStart(2,"0");
     let sell=0, pay=0;
     Object.keys(monthlyHistory).forEach(cid=>{ const h=monthlyHistory[cid][mk]; if(h){ sell+=h.s; pay+=h.p; } });
-    return { m:"25/"+(i+1), sell, pay, current: mk===REF_MONTH };
+    return { m:"25/"+(i+1), sell, pay, current: mk===_curForGraph };
   });
   const curIdx = Math.max(0, allMonths.findIndex(d=>d.current));
-  const prevSell = curIdx>0 ? allMonths[curIdx-1].sell : totalSell;
-  const prevProfit = curIdx>0 ? (allMonths[curIdx-1].sell - allMonths[curIdx-1].pay) : totalProfit;
+  const prevSell = curIdx>0 ? allMonths[curIdx-1].sell : totalSellDisp;
+  const prevProfit = curIdx>0 ? (allMonths[curIdx-1].sell - allMonths[curIdx-1].pay) : totalProfitDisp;
   const barData = period==="half" ? allMonths.slice(6) : allMonths;
   const maxBar = Math.max(...barData.map(d=>d.sell), 1);
   const ytdSell   = allMonths.reduce((s,d)=>s+d.sell,0);
@@ -905,7 +906,7 @@ const PLPage = ({ accent }) => {
         <Card>
           <SH title="荷主別 粗利率"/>
           <div style={{ padding:"12px 20px" }}>
-            {[...monthlyActuals].filter(r=>r.sell>0).sort((a,b)=>(b.profit/b.sell)-(a.profit/a.sell)).map((r,i)=>{
+            {[...monthlyDisplay].filter(r=>r.sell>0).sort((a,b)=>(b.profit/b.sell)-(a.profit/a.sell)).map((r,i)=>{
               const rate = r.sell>0?(r.profit/r.sell*100).toFixed(1):0;
               const c = clients.find(c=>c.name===r.name);
               return (
@@ -940,7 +941,7 @@ const PLPage = ({ accent }) => {
             </tr>
           </thead>
           <tbody>
-            {[...monthlyActuals].filter(r=>r.sell>0).sort((a,b)=>b.sell-a.sell).map((r,i)=>{
+            {[...monthlyDisplay].filter(r=>r.sell>0).sort((a,b)=>b.sell-a.sell).map((r,i)=>{
               const rate = r.sell>0?(r.profit/r.sell*100).toFixed(1):0;
               const pct  = (r.sell/totalSell*100).toFixed(1);
               const c = clients.find(c=>c.name===r.name);
@@ -1159,7 +1160,7 @@ const RateMasterPage = ({ accent, setPage }) => {
             <Card style={{ padding:20 }}>
               <div style={{ fontSize:13, fontWeight:700, marginBottom:14 }}>今月実績（速報）</div>
               {(() => {
-                const act = monthlyActuals.find(r=>r.name===sel.name);
+                const act = monthlyDisplay.find(r=>r.name===sel.name);
                 if (!act) return <div style={{ color:"#9ca3af", fontSize:13 }}>実績なし</div>;
                 return (
                   <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:16 }}>
@@ -1318,7 +1319,7 @@ const DriverFinancePage = ({ accent }) => {
     const breakdown = [];
     clients.forEach(c => {
       if (!c.drivers.includes(d.id)) return;
-      const act = monthlyActuals.find(r=>r.name===c.name);
+      const act = monthlyDisplay.find(r=>r.name===c.name);
       if (!act) return;
       // 担当ドライバー数で按分
       const driverCount = c.drivers.length;
@@ -1533,7 +1534,7 @@ const InvoicePage = ({ accent }) => {
         ...(c.rates[1]?[{ label:c.rates[1].label, qty:Math.round(inv.amount*0.1/c.rates[1].sell)||1, unit:"個", unitPrice:c.rates[1].sell, amount:Math.round(inv.amount*0.1) }]:[]),
       ];
     }
-    const act = monthlyActuals.find(r=>r.name===inv.client);
+    const act = monthlyDisplay.find(r=>r.name===inv.client);
     if (!act) return c.rates.filter(r=>r.sell>0).map(r=>({ label:r.label, qty:"—", unit:"個", unitPrice:r.sell, amount:"—" }));
     const totalRateSell = c.rates.filter(r=>r.sell>0).reduce((s,r)=>s+r.sell,0)||1;
     return c.rates.filter(r=>r.sell>0).map(r=>{
@@ -1723,7 +1724,7 @@ const ClientPage = ({ accent, setPage }) => {
             </thead>
             <tbody>
               {list.map((c,i)=>{
-                const act = monthlyActuals.find(r=>r.name===c.name);
+                const act = monthlyDisplay.find(r=>r.name===c.name);
                 return (
                   <tr key={i} onClick={()=>setSel(sel?.id===c.id?null:c)}
                     style={{ borderBottom:"1px solid #94a3b8", cursor:"pointer", background:sel?.id===c.id?"#f0f9ff":"transparent", transition:"background .1s" }}>
@@ -1764,7 +1765,7 @@ const ClientPage = ({ accent, setPage }) => {
               </div>
             ))}
             {(() => {
-              const act = monthlyActuals.find(r=>r.name===sel.name);
+              const act = monthlyDisplay.find(r=>r.name===sel.name);
               if (!act||act.sell===0) return null;
               return (
                 <div style={{ marginTop:16, background:"#f8fafc", borderRadius:6, padding:14 }}>
@@ -2362,7 +2363,7 @@ const Dashboard = ({ accent, setPage }) => {
         <Card>
           <SH title={`荷主別 今月売上（${totalSell>0?REF_MONTH_LABEL:"最新確定 "+LATEST_MONTH_LABEL+" を表示"}）`} action="収支詳細→" onAction={()=>setPage("pl")}/>
           <div style={{ padding:"12px 20px" }}>
-            {[...monthlyActuals].filter(r=>r.sell>0).sort((a,b)=>b.sell-a.sell).slice(0,7).map((r,i)=>{
+            {[...monthlyDisplay].filter(r=>r.sell>0).sort((a,b)=>b.sell-a.sell).slice(0,7).map((r,i)=>{
               const rate = r.sell>0?(r.profit/r.sell*100).toFixed(0):0;
               return (
                 <div key={i} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:8, fontSize:13 }}>
@@ -2547,7 +2548,7 @@ const Dashboard = ({ accent, setPage }) => {
               let sellD=0, payD=0;
               clients.forEach(c=>{
                 if(!c.drivers.includes(d.id)) return;
-                const act=monthlyActuals.find(r=>r.name===c.name);
+                const act=monthlyDisplay.find(r=>r.name===c.name);
                 if(!act) return;
                 sellD+=Math.round(act.sell/c.drivers.length);
                 payD +=Math.round(act.pay /c.drivers.length);
@@ -2690,7 +2691,7 @@ const DriversPage = ({ accent, setPage }) => {
     const breakdown = [];
     clients.forEach(c => {
       if (!c.drivers.includes(d.id)) return;
-      const act = monthlyActuals.find(r => r.name === c.name);
+      const act = monthlyDisplay.find(r => r.name === c.name);
       if (!act) return;
       const share = 1 / c.drivers.length;
       const s = Math.round(act.sell * share);
