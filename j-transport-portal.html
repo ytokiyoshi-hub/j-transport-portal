@@ -2413,7 +2413,7 @@ const DailyInputPage = ({ accent }) => {
 
   const stickyHeaderRef = React.useRef(null);
   React.useEffect(() => {
-    setTimeout(() => inputRefs.current["0-0"]?.focus(), 80);
+    // 左上セルの自動フォーカスは行わない（ユーザーが選んだ時のみフォーカス）
     if (isCurrentMonth) {
       setTimeout(() => {
         const todayEl = document.querySelector('[data-today="true"]');
