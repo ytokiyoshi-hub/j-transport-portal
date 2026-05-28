@@ -29,6 +29,15 @@
   input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
   input[type="number"]::-webkit-inner-spin-button,
   input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; appearance: none; margin: 0; }
+
+  /* 全テーブル共通: 罫線をはっきり描画 (全ページ統一) */
+  table { border-collapse: collapse; }
+  table td, table th { border-bottom: 1px solid #94a3b8; border-right: 1px solid #94a3b8; }
+  table tr:last-child > td { border-bottom: 1px solid #94a3b8; }
+  table thead th { border-bottom: 2px solid #475569 !important; }
+  table tfoot td { border-top: 2px solid #475569; }
+  table > tbody > tr > td:last-child, table > tbody > tr > th:last-child,
+  table > thead > tr > th:last-child, table > tfoot > tr > td:last-child { border-right: none; }
 </style>
 </head>
 <body>
@@ -759,10 +768,10 @@ const Avatar = ({ name, size=32, bg="#e5e7eb", color="#374151" }) => (
   <div style={{ width:size, height:size, borderRadius:"50%", background:bg, color, display:"flex", alignItems:"center", justifyContent:"center", fontSize:size*0.38, fontWeight:700, flexShrink:0 }}>{name[0]}</div>
 );
 const Card = ({ children, style={} }) => (
-  <div style={{ background:"#fff", borderRadius:8, border:"1px solid #e8eaed", ...style }}>{children}</div>
+  <div style={{ background:"#fff", borderRadius:8, border:"1px solid #94a3b8", ...style }}>{children}</div>
 );
 const SH = ({ title, action, onAction }) => (
-  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"14px 20px", borderBottom:"1px solid #f1f3f5" }}>
+  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"14px 20px", borderBottom:"1px solid #94a3b8" }}>
     <span style={{ fontWeight:700, fontSize:14, color:"#111827" }}>{title}</span>
     {action && <button onClick={onAction} style={{ background:"none", border:"none", fontSize:12.5, color:"#6b7280", padding:0 }}>{action}</button>}
   </div>
@@ -861,7 +870,7 @@ const PLPage = ({ accent }) => {
                 </div>
               ))}
             </div>
-            <div style={{ display:"flex", gap:16, fontSize:11, color:"#6b7280", borderTop:"1px solid #f1f3f5", paddingTop:12 }}>
+            <div style={{ display:"flex", gap:16, fontSize:11, color:"#6b7280", borderTop:"1px solid #94a3b8", paddingTop:12 }}>
               <span style={{ display:"flex", gap:4, alignItems:"center" }}><span style={{ width:10, height:10, background:"#dcfce7", border:"1px solid #16a34a", borderRadius:2, display:"inline-block" }}/> 粗利</span>
               <span style={{ display:"flex", gap:4, alignItems:"center" }}><span style={{ width:10, height:10, background:"#e5e7eb", borderRadius:2, display:"inline-block" }}/> 支払</span>
               <span style={{ display:"flex", gap:4, alignItems:"center" }}><span style={{ width:10, height:10, background:accent+"60", borderRadius:2, display:"inline-block" }}/> 当月</span>
@@ -901,7 +910,7 @@ const PLPage = ({ accent }) => {
         <SH title="荷主別 月次収支一覧"/>
         <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
           <thead>
-            <tr style={{ background:"#f9fafb", borderBottom:"1px solid #e5e7eb" }}>
+            <tr style={{ background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
               {["荷主","請求体系","売上","支払（ドライバー費）","粗利","粗利率","構成比"].map(h=>(
                 <th key={h} style={{ padding:"9px 16px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:12, whiteSpace:"nowrap" }}>{h}</th>
               ))}
@@ -913,7 +922,7 @@ const PLPage = ({ accent }) => {
               const pct  = (r.sell/totalSell*100).toFixed(1);
               const c = clients.find(c=>c.name===r.name);
               return (
-                <tr key={i} style={{ borderBottom:"1px solid #f1f3f5" }}
+                <tr key={i} style={{ borderBottom:"1px solid #94a3b8" }}
                   onMouseEnter={e=>e.currentTarget.style.background="#f9fafb"}
                   onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
                   <td style={{ padding:"12px 16px", fontWeight:700 }}>{r.name}</td>
@@ -935,7 +944,7 @@ const PLPage = ({ accent }) => {
             })}
           </tbody>
           <tfoot>
-            <tr style={{ background:"#f9fafb", borderTop:"2px solid #e5e7eb" }}>
+            <tr style={{ background:"#f9fafb", borderTop:"2px solid #475569" }}>
               <td colSpan={2} style={{ padding:"12px 16px", fontWeight:700 }}>合計</td>
               <td style={{ padding:"12px 16px", fontWeight:700, color:accent }}>{fmt(totalSell)}</td>
               <td style={{ padding:"12px 16px", fontWeight:700 }}>{fmt(totalPay)}</td>
@@ -1042,7 +1051,7 @@ const RateMasterPage = ({ accent, setPage }) => {
                 <div style={{ fontSize:12, fontWeight:700, color:"#9ca3af", marginBottom:10 }}>単価設定</div>
                 <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
                   <thead>
-                    <tr style={{ background:"#f9fafb", borderBottom:"1px solid #e5e7eb" }}>
+                    <tr style={{ background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
                       {["業務区分","売単価（荷主→自社）","支払単価（自社→ドライバー）","粗利単価","粗利率"].map(h=>(
                         <th key={h} style={{ padding:"8px 12px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:12 }}>{h}</th>
                       ))}
@@ -1053,7 +1062,7 @@ const RateMasterPage = ({ accent, setPage }) => {
                       const gp = r.sell - r.pay;
                       const rate = r.sell > 0 ? (gp/r.sell*100).toFixed(0) : "—";
                       return (
-                        <tr key={ri} style={{ borderBottom:"1px solid #f1f3f5" }}>
+                        <tr key={ri} style={{ borderBottom:"1px solid #94a3b8" }}>
                           <td style={{ padding:"10px 12px", fontWeight:600 }}>{r.label}</td>
                           <td style={{ padding:"10px 12px" }}>
                             {editMode ? (
@@ -1096,7 +1105,7 @@ const RateMasterPage = ({ accent, setPage }) => {
                   {sel.drivers.map(did => {
                     const d = drivers.find(dr=>dr.id===did);
                     return d ? (
-                      <div key={did} style={{ display:"flex", alignItems:"center", gap:8, padding:"6px 12px", background:"#f8fafc", borderRadius:6, border:"1px solid #e5e7eb" }}>
+                      <div key={did} style={{ display:"flex", alignItems:"center", gap:8, padding:"6px 12px", background:"#f8fafc", borderRadius:6, border:"1px solid #94a3b8" }}>
                         <Avatar name={d.name} size={24} bg={d.type==="自社"?"#dbeafe":"#ede9fe"} color={d.type==="自社"?"#1e40af":"#5b21b6"}/>
                         <div>
                           <div style={{ fontSize:13, fontWeight:500 }}>{d.name}</div>
@@ -1309,7 +1318,7 @@ const DriverFinancePage = ({ accent }) => {
         <Card>
           <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
             <thead>
-              <tr style={{ background:"#f9fafb", borderBottom:"1px solid #e5e7eb" }}>
+              <tr style={{ background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
                 {["ドライバー","雇用","担当荷主数","売上按分","支払按分","粗利按分","ステータス"].map(h=>(
                   <th key={h} style={{ padding:"9px 14px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:12, whiteSpace:"nowrap" }}>{h}</th>
                 ))}
@@ -1318,7 +1327,7 @@ const DriverFinancePage = ({ accent }) => {
             <tbody>
               {driverSummary.map((d,i)=>(
                 <tr key={i} onClick={()=>setSel(sel?.id===d.id?null:d)}
-                  style={{ borderBottom:"1px solid #f1f3f5", cursor:"pointer", background:sel?.id===d.id?"#f0f9ff":"transparent", transition:"background .1s" }}>
+                  style={{ borderBottom:"1px solid #94a3b8", cursor:"pointer", background:sel?.id===d.id?"#f0f9ff":"transparent", transition:"background .1s" }}>
                   <td style={{ padding:"12px 14px" }}>
                     <div style={{ display:"flex", alignItems:"center", gap:8 }}>
                       <Avatar name={d.name} size={28} bg={d.type==="自社"?"#dbeafe":"#ede9fe"} color={d.type==="自社"?"#1e40af":"#5b21b6"}/>
@@ -1337,7 +1346,7 @@ const DriverFinancePage = ({ accent }) => {
               ))}
             </tbody>
             <tfoot>
-              <tr style={{ background:"#f9fafb", borderTop:"2px solid #e5e7eb" }}>
+              <tr style={{ background:"#f9fafb", borderTop:"2px solid #475569" }}>
                 <td colSpan={3} style={{ padding:"12px 14px", fontWeight:700 }}>合計</td>
                 <td style={{ padding:"12px 14px", fontWeight:700, color:accent }}>{fmt(totalSell)}</td>
                 <td style={{ padding:"12px 14px", fontWeight:700 }}>{fmt(totalPay)}</td>
@@ -1363,7 +1372,7 @@ const DriverFinancePage = ({ accent }) => {
             {sel.breakdown.length === 0 ? (
               <div style={{ fontSize:13, color:"#9ca3af" }}>担当荷主なし</div>
             ) : sel.breakdown.map((b,i)=>(
-              <div key={i} style={{ padding:"10px 0", borderBottom:"1px solid #f8f9fa" }}>
+              <div key={i} style={{ padding:"10px 0", borderBottom:"1px solid #94a3b8" }}>
                 <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
                   <span style={{ fontWeight:600, fontSize:13 }}>{b.client}</span>
                   <span style={{ fontWeight:700, color:accent }}>{fmt(b.pay)}</span>
@@ -1376,7 +1385,7 @@ const DriverFinancePage = ({ accent }) => {
             ))}
 
             {/* 合計 */}
-            <div style={{ display:"flex", justifyContent:"space-between", padding:"12px 0", borderTop:"2px solid #e5e7eb", marginTop:4 }}>
+            <div style={{ display:"flex", justifyContent:"space-between", padding:"12px 0", borderTop:"2px solid #475569", marginTop:4 }}>
               <span style={{ fontWeight:700 }}>支払合計（今月）</span>
               <span style={{ fontWeight:700, color:accent, fontSize:16 }}>{fmt(sel.totalPay)}</span>
             </div>
@@ -1388,7 +1397,7 @@ const DriverFinancePage = ({ accent }) => {
                   const csv = ["荷主,売上按分,支払按分,粗利", ...sel.breakdown.map(b=>`${b.client},${b.sell},${b.pay},${b.profit}`)].join("\n");
                   const a = document.createElement("a"); a.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv); a.download = `${sel.name}_2025-04.csv`; a.click();
                 }}
-                style={{ flex:1, padding:"9px", border:"1px solid #e5e7eb", background:"#fff", color:"#374151", borderRadius:6, fontSize:13, cursor:"pointer" }}>CSV出力</button>
+                style={{ flex:1, padding:"9px", border:"1px solid #94a3b8", background:"#fff", color:"#374151", borderRadius:6, fontSize:13, cursor:"pointer" }}>CSV出力</button>
             </div>
           </Card>
         )}
@@ -1413,7 +1422,7 @@ const DriverFinancePage = ({ accent }) => {
 
             {/* 宛名 */}
             <div style={{ marginBottom:24 }}>
-              <div style={{ fontSize:16, fontWeight:700, borderBottom:"1px solid #e5e7eb", paddingBottom:8, display:"flex", alignItems:"center", gap:10 }}>
+              <div style={{ fontSize:16, fontWeight:700, borderBottom:"1px solid #94a3b8", paddingBottom:8, display:"flex", alignItems:"center", gap:10 }}>
                 <Avatar name={slipDriver.name} size={32} bg={slipDriver.type==="自社"?"#dbeafe":"#ede9fe"} color={slipDriver.type==="自社"?"#1e40af":"#5b21b6"}/>
                 <span>{slipDriver.name} 様</span>
                 <StatusBadge label={slipDriver.type}/>
@@ -1425,13 +1434,13 @@ const DriverFinancePage = ({ accent }) => {
               <thead>
                 <tr style={{ background:"#f9fafb" }}>
                   {["業務内容（荷主）","売上按分","支払金額","粗利貢献"].map(h=>(
-                    <th key={h} style={{ padding:"8px 12px", textAlign:"left", borderBottom:"1px solid #e5e7eb", fontWeight:600, fontSize:12, color:"#374151" }}>{h}</th>
+                    <th key={h} style={{ padding:"8px 12px", textAlign:"left", borderBottom:"1px solid #94a3b8", fontWeight:600, fontSize:12, color:"#374151" }}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {slipDriver.breakdown.map((b,i)=>(
-                  <tr key={i} style={{ borderBottom:"1px solid #f1f3f5" }}>
+                  <tr key={i} style={{ borderBottom:"1px solid #94a3b8" }}>
                     <td style={{ padding:"10px 12px", fontWeight:500 }}>{b.client}</td>
                     <td style={{ padding:"10px 12px", color:"#6b7280" }}>{fmt(b.sell)}</td>
                     <td style={{ padding:"10px 12px", fontWeight:700, color:accent }}>{fmt(b.pay)}</td>
@@ -1440,7 +1449,7 @@ const DriverFinancePage = ({ accent }) => {
                 ))}
               </tbody>
               <tfoot>
-                <tr style={{ background:"#f9fafb", borderTop:"2px solid #e5e7eb" }}>
+                <tr style={{ background:"#f9fafb", borderTop:"2px solid #475569" }}>
                   <td style={{ padding:"12px", fontWeight:700 }}>合計</td>
                   <td style={{ padding:"12px", color:"#6b7280", fontWeight:600 }}>{fmt(slipDriver.totalSell)}</td>
                   <td style={{ padding:"12px", fontWeight:800, color:accent, fontSize:16 }}>{fmt(slipDriver.totalPay)}</td>
@@ -1542,7 +1551,7 @@ const InvoicePage = ({ accent }) => {
         <Card>
           <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
             <thead>
-              <tr style={{ background:"#f9fafb", borderBottom:"1px solid #e5e7eb" }}>
+              <tr style={{ background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
                 {["請求番号","荷主","対象月","請求金額","状態","支払期限","操作"].map(h=>(
                   <th key={h} style={{ padding:"9px 16px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:12, whiteSpace:"nowrap" }}>{h}</th>
                 ))}
@@ -1551,7 +1560,7 @@ const InvoicePage = ({ accent }) => {
             <tbody>
               {list.map((inv,i)=>(
                 <tr key={i} onClick={()=>setSel(sel?.id===inv.id?null:inv)}
-                  style={{ borderBottom:"1px solid #f1f3f5", cursor:"pointer", background:sel?.id===inv.id?"#f0f9ff":"transparent", transition:"background .1s" }}
+                  style={{ borderBottom:"1px solid #94a3b8", cursor:"pointer", background:sel?.id===inv.id?"#f0f9ff":"transparent", transition:"background .1s" }}
                   onMouseEnter={e=>{ if(sel?.id!==inv.id) e.currentTarget.style.background="#f9fafb"; }}
                   onMouseLeave={e=>{ if(sel?.id!==inv.id) e.currentTarget.style.background="transparent"; }}>
                   <td style={{ padding:"12px 16px", fontWeight:600, color:accent, fontSize:12 }}>{inv.id}</td>
@@ -1612,13 +1621,13 @@ const InvoicePage = ({ accent }) => {
               <thead>
                 <tr style={{ background:"#f9fafb" }}>
                   {["区分","数量","単価","小計"].map(h=>(
-                    <th key={h} style={{ padding:"6px 10px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:11, borderBottom:"1px solid #e5e7eb" }}>{h}</th>
+                    <th key={h} style={{ padding:"6px 10px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:11, borderBottom:"1px solid #94a3b8" }}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {buildLineItems(sel).map((item,ii)=>(
-                  <tr key={ii} style={{ borderBottom:"1px solid #f8f9fa" }}>
+                  <tr key={ii} style={{ borderBottom:"1px solid #94a3b8" }}>
                     <td style={{ padding:"7px 10px", fontWeight:500 }}>{item.label}</td>
                     <td style={{ padding:"7px 10px", color:"#6b7280" }}>{typeof item.qty==="number"?item.qty.toLocaleString():item.qty}{item.unit}</td>
                     <td style={{ padding:"7px 10px", color:"#6b7280" }}>{item.unitPrice>0?fmt(item.unitPrice):"—"}</td>
@@ -1627,7 +1636,7 @@ const InvoicePage = ({ accent }) => {
                 ))}
               </tbody>
               <tfoot>
-                <tr style={{ borderTop:"2px solid #e5e7eb", background:"#f9fafb" }}>
+                <tr style={{ borderTop:"2px solid #475569", background:"#f9fafb" }}>
                   <td colSpan={3} style={{ padding:"8px 10px", fontWeight:700 }}>合計</td>
                   <td style={{ padding:"8px 10px", fontWeight:700, color:accent }}>{fmt(sel.amount)}</td>
                 </tr>
@@ -1683,7 +1692,7 @@ const ClientPage = ({ accent, setPage }) => {
         <Card>
           <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
             <thead>
-              <tr style={{ background:"#f9fafb", borderBottom:"1px solid #e5e7eb" }}>
+              <tr style={{ background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
                 {["荷主","エリア","請求体系","担当ドライバー","今月売上","今月粗利","状態"].map(h=>(
                   <th key={h} style={{ padding:"9px 14px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:12, whiteSpace:"nowrap" }}>{h}</th>
                 ))}
@@ -1694,7 +1703,7 @@ const ClientPage = ({ accent, setPage }) => {
                 const act = monthlyActuals.find(r=>r.name===c.name);
                 return (
                   <tr key={i} onClick={()=>setSel(sel?.id===c.id?null:c)}
-                    style={{ borderBottom:"1px solid #f1f3f5", cursor:"pointer", background:sel?.id===c.id?"#f0f9ff":"transparent", transition:"background .1s" }}>
+                    style={{ borderBottom:"1px solid #94a3b8", cursor:"pointer", background:sel?.id===c.id?"#f0f9ff":"transparent", transition:"background .1s" }}>
                     <td style={{ padding:"12px 14px", fontWeight:700 }}>{c.name}</td>
                     <td style={{ padding:"12px 14px", color:"#6b7280", fontSize:12 }}>{c.area}</td>
                     <td style={{ padding:"12px 14px" }}><StatusBadge label={c.billing.replace("（2区分）","").replace("（3区分）","")}/></td>
@@ -1723,7 +1732,7 @@ const ClientPage = ({ accent, setPage }) => {
             <div style={{ fontSize:12, color:"#9ca3af", marginBottom:16 }}>{sel.area}</div>
             <div style={{ fontSize:12, fontWeight:700, color:"#9ca3af", marginBottom:8 }}>単価一覧</div>
             {sel.rates.map((r,ri)=>(
-              <div key={ri} style={{ display:"flex", justifyContent:"space-between", fontSize:13, padding:"7px 0", borderBottom:"1px solid #f8f9fa" }}>
+              <div key={ri} style={{ display:"flex", justifyContent:"space-between", fontSize:13, padding:"7px 0", borderBottom:"1px solid #94a3b8" }}>
                 <span style={{ color:"#374151" }}>{r.label}</span>
                 <div style={{ textAlign:"right" }}>
                   <span style={{ fontWeight:700, color:accent }}>{r.sell>0?fmt(r.sell):"要確認"}</span>
@@ -1748,7 +1757,7 @@ const ClientPage = ({ accent, setPage }) => {
             })()}
             <div style={{ marginTop:14, display:"flex", gap:8 }}>
               <button onClick={()=>setPage("invoice")} style={{ flex:1, padding:"9px", background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:600, fontSize:13 }}>請求書作成</button>
-              <button onClick={()=>setPage("ratemaster")} style={{ flex:1, padding:"9px", border:"1px solid #e5e7eb", background:"#fff", color:"#374151", borderRadius:6, fontSize:13 }}>単価編集</button>
+              <button onClick={()=>setPage("ratemaster")} style={{ flex:1, padding:"9px", border:"1px solid #94a3b8", background:"#fff", color:"#374151", borderRadius:6, fontSize:13 }}>単価編集</button>
             </div>
           </Card>
         )}
@@ -2107,10 +2116,10 @@ const DailyInputPage = ({ accent }) => {
           <table className="jt-daily-tbl" style={{ borderCollapse:"collapse", fontSize:12, whiteSpace:"nowrap" }}>
             <thead style={{ position:"sticky", top:0, zIndex:4 }}>
               <tr style={{ background:"#f9fafb" }}>
-                <th style={{ padding:"8px 12px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:11, borderRight:"1px solid #cbd5e1", borderBottom:"1px solid #cbd5e1", minWidth:90, position:"sticky", left:0, top:0, background:"#f9fafb", zIndex:5 }}>日付</th>
+                <th style={{ padding:"8px 12px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:11, borderRight:"1px solid #94a3b8", borderBottom:"1px solid #94a3b8", minWidth:90, position:"sticky", left:0, top:0, background:"#f9fafb", zIndex:5 }}>日付</th>
                 {assignedDrivers.map((d,dri)=>(
                   <th key={d.id} colSpan={nR}
-                    style={{ padding:"7px 12px", textAlign:"center", borderRight:"1px solid #cbd5e1", borderBottom:"1px solid #cbd5e1", background:focusedCell?.dri===dri?accent+"0e":"#f9fafb", position:"sticky", top:0, zIndex:3 }}>
+                    style={{ padding:"7px 12px", textAlign:"center", borderRight:"1px solid #94a3b8", borderBottom:"1px solid #94a3b8", background:focusedCell?.dri===dri?accent+"0e":"#f9fafb", position:"sticky", top:0, zIndex:3 }}>
                     <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:5 }}>
                       <Avatar name={d.name} size={18} bg={d.type==="自社"?"#dbeafe":"#ede9fe"} color={d.type==="自社"?"#1e40af":"#5b21b6"}/>
                       <span style={{ fontWeight:700, fontSize:12 }}>{d.name}</span>
@@ -2118,11 +2127,11 @@ const DailyInputPage = ({ accent }) => {
                     </div>
                   </th>
                 ))}
-                <th colSpan={3} style={{ padding:"7px 12px", textAlign:"center", color:"#6b7280", fontWeight:500, fontSize:11, borderLeft:"2px solid #64748b", borderBottom:"1px solid #cbd5e1", background:"#f9fafb", position:"sticky", top:0, zIndex:3 }}>日次合計</th>
-                <th style={{ padding:"7px 8px", textAlign:"center", color:"#6b7280", fontWeight:500, fontSize:11, borderLeft:"1px solid #cbd5e1", borderBottom:"1px solid #cbd5e1", minWidth:40, background:"#f9fafb", position:"sticky", top:0, zIndex:3 }}>状態</th>
+                <th colSpan={3} style={{ padding:"7px 12px", textAlign:"center", color:"#6b7280", fontWeight:500, fontSize:11, borderLeft:"2px solid #64748b", borderBottom:"1px solid #94a3b8", background:"#f9fafb", position:"sticky", top:0, zIndex:3 }}>日次合計</th>
+                <th style={{ padding:"7px 8px", textAlign:"center", color:"#6b7280", fontWeight:500, fontSize:11, borderLeft:"1px solid #94a3b8", borderBottom:"1px solid #94a3b8", minWidth:40, background:"#f9fafb", position:"sticky", top:0, zIndex:3 }}>状態</th>
               </tr>
               <tr style={{ background:"#f9fafb", borderBottom:"2px solid #64748b" }}>
-                <th style={{ padding:"4px 12px", borderRight:"1px solid #cbd5e1", position:"sticky", left:0, top:36, background:"#f9fafb", zIndex:5 }}/>
+                <th style={{ padding:"4px 12px", borderRight:"1px solid #94a3b8", position:"sticky", left:0, top:36, background:"#f9fafb", zIndex:5 }}/>
                 {assignedDrivers.map((d,dri)=>
                   rates.map((r,ri)=>{
                     const ci=dri*nR+ri;
@@ -2130,7 +2139,7 @@ const DailyInputPage = ({ accent }) => {
                     return (
                       <th key={`${dri}-${ri}`}
                         style={{ padding:"4px 8px", textAlign:"center", color:active?accent:"#6b7280", fontWeight:500, fontSize:10,
-                          borderLeft:ri===0&&dri>0?"1px solid #64748b":"none", borderRight:"1px solid #cbd5e1",
+                          borderLeft:ri===0&&dri>0?"1px solid #64748b":"none", borderRight:"1px solid #94a3b8",
                           background:active?accent+"0e":"#f9fafb", position:"sticky", top:36, zIndex:3, minWidth:60 }}>
                         <div style={{ fontWeight:600 }}>{r.label}</div>
                       </th>
@@ -2140,7 +2149,7 @@ const DailyInputPage = ({ accent }) => {
                 {["売上","支払","粗利"].map((h,i)=>(
                   <th key={h} style={{ padding:"4px 10px", textAlign:"right", color:"#9ca3af", fontWeight:500, fontSize:10, borderLeft:i===0?"2px solid #64748b":"none", minWidth:76, background:"#f9fafb", position:"sticky", top:36, zIndex:3 }}>{h}</th>
                 ))}
-                <th style={{ padding:"4px 8px", borderLeft:"1px solid #cbd5e1", background:"#f9fafb", position:"sticky", top:36, zIndex:3 }}/>
+                <th style={{ padding:"4px 8px", borderLeft:"1px solid #94a3b8", background:"#f9fafb", position:"sticky", top:36, zIndex:3 }}/>
               </tr>
             </thead>
             <tbody>
@@ -2152,8 +2161,8 @@ const DailyInputPage = ({ accent }) => {
                 const rowFilled = !day.isWeekend&&assignedDrivers.every(d=>rates.every(r=>getVal(day.dateStr,d.id,r.label)!==""));
                 const rowPartial = !rowFilled&&!day.isWeekend&&assignedDrivers.some(d=>rates.some(r=>getVal(day.dateStr,d.id,r.label)!==""));
                 return (
-                  <tr key={di} data-today={isToday?"true":"false"} style={{ borderBottom:"1px solid #cbd5e1", background:rowBg }}>
-                    <td style={{ padding:"4px 12px", borderRight:"1px solid #cbd5e1", fontWeight:500, position:"sticky", left:0, background:rowBg, zIndex:1,
+                  <tr key={di} data-today={isToday?"true":"false"} style={{ borderBottom:"1px solid #94a3b8", background:rowBg }}>
+                    <td style={{ padding:"4px 12px", borderRight:"1px solid #94a3b8", fontWeight:500, position:"sticky", left:0, background:rowBg, zIndex:1,
                       borderLeft:isActiveRow?`3px solid ${accent}`:isToday?`3px solid ${accent}80`:"3px solid transparent" }}>
                       <div style={{ display:"flex", alignItems:"center", gap:5 }}>
                         <span style={{ fontSize:13, fontWeight:600, color:day.isSun?"#dc2626":day.dow===6?"#2563eb":"#111827" }}>{String(day.d).padStart(2," ")}</span>
@@ -2170,7 +2179,7 @@ const DailyInputPage = ({ accent }) => {
                         const dt2=dailyTargets[r.label];
                         const isAnomaly=!day.isWeekend&&val!==""&&(numVal===0||(dt2>0&&numVal>dt2*3));
                         return (
-                          <td key={ci} style={{ padding:0, textAlign:"center", borderRight:"1px solid #cbd5e1", borderLeft:ri===0&&dri>0?"1px solid #64748b":"none" }}>
+                          <td key={ci} style={{ padding:0, textAlign:"center", borderRight:"1px solid #94a3b8", borderLeft:ri===0&&dri>0?"1px solid #64748b":"none" }}>
                             <input
                               ref={el=>inputRefs.current[`${di}-${ci}`]=el}
                               type="number" min="0"
@@ -2198,16 +2207,16 @@ const DailyInputPage = ({ accent }) => {
                         );
                       })
                     )}
-                    <td style={{ padding:"4px 10px", textAlign:"right", fontWeight:600, color:dt.sell>0?accent:"#e5e7eb", borderLeft:"2px solid #64748b", borderRight:"1px solid #cbd5e1", fontSize:12 }}>
+                    <td style={{ padding:"4px 10px", textAlign:"right", fontWeight:600, color:dt.sell>0?accent:"#e5e7eb", borderLeft:"2px solid #64748b", borderRight:"1px solid #94a3b8", fontSize:12 }}>
                       {dt.sell>0?fmt(dt.sell):"—"}
                     </td>
-                    <td style={{ padding:"4px 10px", textAlign:"right", fontSize:12, color:dt.pay>0?"#374151":"#e5e7eb", borderRight:"1px solid #cbd5e1" }}>
+                    <td style={{ padding:"4px 10px", textAlign:"right", fontSize:12, color:dt.pay>0?"#374151":"#e5e7eb", borderRight:"1px solid #94a3b8" }}>
                       {dt.pay>0?fmt(dt.pay):"—"}
                     </td>
                     <td style={{ padding:"4px 10px", textAlign:"right", fontWeight:600, color:dt.profit>0?"#16a34a":"#e5e7eb", fontSize:12 }}>
                       {dt.profit>0?fmt(dt.profit):"—"}
                     </td>
-                    <td style={{ padding:"4px 8px", textAlign:"center", borderLeft:"1px solid #cbd5e1", fontSize:13 }}>
+                    <td style={{ padding:"4px 8px", textAlign:"center", borderLeft:"1px solid #94a3b8", fontSize:13 }}>
                       {rowFilled?<span style={{ color:"#16a34a", fontWeight:700 }}>✓</span>
                        :rowPartial?<span style={{ color:"#d97706" }}>…</span>:null}
                     </td>
@@ -2217,11 +2226,11 @@ const DailyInputPage = ({ accent }) => {
             </tbody>
             <tfoot>
               <tr style={{ background:"#f9fafb", borderTop:"2px solid #64748b" }}>
-                <td style={{ padding:"8px 12px", fontWeight:700, fontSize:12, borderRight:"1px solid #cbd5e1", position:"sticky", left:0, background:"#f9fafb" }}>月次合計</td>
+                <td style={{ padding:"8px 12px", fontWeight:700, fontSize:12, borderRight:"1px solid #94a3b8", position:"sticky", left:0, background:"#f9fafb" }}>月次合計</td>
                 {colTotals.map((col,ci)=>{
                   const dri=Math.floor(ci/nR), ri=ci%nR;
                   return (
-                    <td key={ci} style={{ padding:"7px 6px", textAlign:"center", fontWeight:700, color:col.vol>0?"#111827":"#9ca3af", fontSize:13, borderLeft:ri===0&&dri>0?"1px solid #cbd5e1":"none" }}>
+                    <td key={ci} style={{ padding:"7px 6px", textAlign:"center", fontWeight:700, color:col.vol>0?"#111827":"#9ca3af", fontSize:13, borderLeft:ri===0&&dri>0?"1px solid #94a3b8":"none" }}>
                       {col.vol>0?col.vol:"—"}
                     </td>
                   );
@@ -2229,20 +2238,20 @@ const DailyInputPage = ({ accent }) => {
                 <td style={{ padding:"7px 10px", textAlign:"right", fontWeight:800, color:monthTotals.sell>0?accent:"#9ca3af", borderLeft:"2px solid #64748b" }}>{monthTotals.sell>0?fmt(monthTotals.sell):"—"}</td>
                 <td style={{ padding:"7px 10px", textAlign:"right", fontWeight:800, color:monthTotals.pay>0?"#374151":"#9ca3af" }}>{monthTotals.pay>0?fmt(monthTotals.pay):"—"}</td>
                 <td style={{ padding:"7px 10px", textAlign:"right", fontWeight:800, color:monthTotals.profit>0?"#16a34a":"#9ca3af" }}>{monthTotals.profit>0?fmt(monthTotals.profit):"—"}</td>
-                <td style={{ borderLeft:"1px solid #cbd5e1" }}/>
+                <td style={{ borderLeft:"1px solid #94a3b8" }}/>
               </tr>
-              <tr style={{ background:"#fafbff", borderTop:"1px solid #cbd5e1" }}>
-                <td style={{ padding:"6px 12px", fontSize:10, color:"#9ca3af", borderRight:"1px solid #cbd5e1", position:"sticky", left:0, background:"#fafbff" }}>ドライバー別売上</td>
+              <tr style={{ background:"#fafbff", borderTop:"1px solid #94a3b8" }}>
+                <td style={{ padding:"6px 12px", fontSize:10, color:"#9ca3af", borderRight:"1px solid #94a3b8", position:"sticky", left:0, background:"#fafbff" }}>ドライバー別売上</td>
                 {colTotals.map((col,ci)=>{
                   const dri=Math.floor(ci/nR), ri=ci%nR;
                   return (
-                    <td key={ci} style={{ padding:"5px 6px", textAlign:"center", fontSize:10, color:"#6b7280", borderLeft:ri===0&&dri>0?"1px solid #cbd5e1":"none" }}>
+                    <td key={ci} style={{ padding:"5px 6px", textAlign:"center", fontSize:10, color:"#6b7280", borderLeft:ri===0&&dri>0?"1px solid #94a3b8":"none" }}>
                       {col.sell>0?fmt(col.sell):""}
                     </td>
                   );
                 })}
                 <td colSpan={3} style={{ borderLeft:"2px solid #64748b" }}/>
-                <td style={{ borderLeft:"1px solid #cbd5e1" }}/>
+                <td style={{ borderLeft:"1px solid #94a3b8" }}/>
               </tr>
             </tfoot>
           </table>
@@ -2386,7 +2395,7 @@ const Dashboard = ({ accent, setPage }) => {
               { id:"faq",         icon:"question", label:"FAQ",               sub:"よくある質問" },
             ].map((item,i)=>(
               <button key={i} onClick={()=>setPage(item.id)}
-                style={{ width:"100%", display:"flex", alignItems:"center", gap:10, padding:"8px 16px", border:"none", background:"none", textAlign:"left", fontSize:13, color:"#374151", borderBottom:"1px solid #f8f9fa" }}
+                style={{ width:"100%", display:"flex", alignItems:"center", gap:10, padding:"8px 16px", border:"none", background:"none", textAlign:"left", fontSize:13, color:"#374151", borderBottom:"1px solid #94a3b8" }}
                 onMouseEnter={e=>e.currentTarget.style.background="#f9fafb"}
                 onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
                 <div style={{ width:28, height:28, borderRadius:6, background:accent+"12", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
@@ -2432,7 +2441,7 @@ const Dashboard = ({ accent, setPage }) => {
               const pct = Math.round(r.done/r.total*100);
               const sc = r.status==="完了"?{bg:"#dcfce7",c:"#15803d"}:r.status==="配達中"?{bg:accent+"18",c:accent}:{bg:"#fee2e2",c:"#b91c1c"};
               return (
-                <div key={i} style={{ display:"flex", alignItems:"center", gap:12, padding:"9px 0", borderBottom:i<5?"1px solid #f8f9fa":"none" }}>
+                <div key={i} style={{ display:"flex", alignItems:"center", gap:12, padding:"9px 0", borderBottom:i<5?"1px solid #94a3b8":"none" }}>
                   <Avatar name={r.name} size={28} bg="#f3f4f6" color="#374151"/>
                   <div style={{ flex:1, minWidth:0 }}>
                     <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:4 }}>
@@ -2462,7 +2471,7 @@ const Dashboard = ({ accent, setPage }) => {
                 { name:"鈴木 健太", type:"残業申請",     date:"4/28", urgent:true },
                 { name:"外部協力", type:"ドライバー追加", date:"4/29", urgent:false },
               ].map((a,i)=>(
-                <div key={i} style={{ display:"flex", alignItems:"center", gap:10, padding:"9px 20px", borderBottom:i<2?"1px solid #f8f9fa":"none" }}>
+                <div key={i} style={{ display:"flex", alignItems:"center", gap:10, padding:"9px 20px", borderBottom:i<2?"1px solid #94a3b8":"none" }}>
                   <Avatar name={a.name} size={26} bg="#f3f4f6" color="#374151"/>
                   <div style={{ flex:1, minWidth:0 }}>
                     <div style={{ fontSize:13, fontWeight:600, display:"flex", alignItems:"center", gap:6 }}>
@@ -2487,7 +2496,7 @@ const Dashboard = ({ accent, setPage }) => {
                 { done:false, label:"ドライバー支払明細 作成" },
                 { done:false, label:"月次収支レポート 提出" },
               ].map((t,i)=>(
-                <div key={i} style={{ display:"flex", alignItems:"center", gap:10, padding:"7px 0", borderBottom:i<4?"1px solid #f8f9fa":"none" }}>
+                <div key={i} style={{ display:"flex", alignItems:"center", gap:10, padding:"7px 0", borderBottom:i<4?"1px solid #94a3b8":"none" }}>
                   <div style={{ width:18, height:18, borderRadius:4, border:`1.5px solid ${t.done?"#16a34a":"#d1d5db"}`, background:t.done?"#16a34a":"#fff", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
                     {t.done && <Ic name="check" size={11} color="#fff" strokeWidth={3}/>}
                   </div>
@@ -2504,7 +2513,7 @@ const Dashboard = ({ accent, setPage }) => {
         <SH title="ドライバー別 支払サマリー（今月速報）" action="詳細→" onAction={()=>setPage("driverfinance")}/>
         <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
           <thead>
-            <tr style={{ background:"#f9fafb", borderBottom:"1px solid #e5e7eb" }}>
+            <tr style={{ background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
               {["ドライバー","雇用形態","担当荷主","売上按分","支払按分","粗利貢献","ステータス"].map(h=>(
                 <th key={h} style={{ padding:"8px 14px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:11.5, whiteSpace:"nowrap" }}>{h}</th>
               ))}
@@ -2521,7 +2530,7 @@ const Dashboard = ({ accent, setPage }) => {
                 payD +=Math.round(act.pay /c.drivers.length);
               });
               return (
-                <tr key={i} style={{ borderBottom:"1px solid #f1f3f5" }}>
+                <tr key={i} style={{ borderBottom:"1px solid #94a3b8" }}>
                   <td style={{ padding:"10px 14px" }}>
                     <div style={{ display:"flex", alignItems:"center", gap:7 }}>
                       <Avatar name={d.name} size={26} bg={d.type==="自社"?"#dbeafe":"#ede9fe"} color={d.type==="自社"?"#1e40af":"#5b21b6"}/>
@@ -2617,7 +2626,7 @@ const AnnouncePage = ({ accent }) => {
           const isRead = readIds.includes(a.id);
           const isOpen = openId === a.id;
           return (
-            <div key={a.id} style={{ borderBottom:i<list.length-1?"1px solid #f1f3f5":"none" }}>
+            <div key={a.id} style={{ borderBottom:i<list.length-1?"1px solid #94a3b8":"none" }}>
               <div onClick={()=>toggleOpen(a.id)}
                 style={{ display:"flex", gap:14, padding:"16px 20px", cursor:"pointer", borderLeft:isRead?"3px solid transparent":`3px solid ${accent}`, background:isOpen?accent+"07":"transparent", transition:"background .1s" }}
                 onMouseEnter={e=>{ if(!isOpen) e.currentTarget.style.background="#f9fafb"; }}
@@ -2635,7 +2644,7 @@ const AnnouncePage = ({ accent }) => {
                 </div>
               </div>
               {isOpen && a.body && (
-                <div style={{ padding:"12px 20px 20px 23px", background:"#fafbfc", borderTop:"1px solid #f1f3f5" }}>
+                <div style={{ padding:"12px 20px 20px 23px", background:"#fafbfc", borderTop:"1px solid #94a3b8" }}>
                   <div style={{ fontSize:13.5, color:"#374151", lineHeight:1.9, whiteSpace:"pre-wrap" }}>{a.body}</div>
                 </div>
               )}
@@ -2699,7 +2708,7 @@ const DriversPage = ({ accent, setPage }) => {
         <Card>
           <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
             <thead>
-              <tr style={{ background:"#f9fafb", borderBottom:"1px solid #e5e7eb" }}>
+              <tr style={{ background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
                 {["氏名","雇用形態","担当エリア","担当荷主数","今月売上按分","今月支払按分","粗利貢献"].map(h=>(
                   <th key={h} style={{ padding:"10px 16px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:12, whiteSpace:"nowrap" }}>{h}</th>
                 ))}
@@ -2708,7 +2717,7 @@ const DriversPage = ({ accent, setPage }) => {
             <tbody>
               {list.map((d,i)=>(
                 <tr key={d.id} onClick={()=>setSel(sel?.id===d.id?null:d)}
-                  style={{ borderBottom:"1px solid #f1f3f5", cursor:"pointer", background:sel?.id===d.id?accent+"0d":"transparent", transition:"background .1s" }}>
+                  style={{ borderBottom:"1px solid #94a3b8", cursor:"pointer", background:sel?.id===d.id?accent+"0d":"transparent", transition:"background .1s" }}>
                   <td style={{ padding:"12px 16px", borderLeft:sel?.id===d.id?`3px solid ${accent}`:"3px solid transparent", transition:"border-color .1s" }}>
                     <div style={{ display:"flex", gap:10, alignItems:"center" }}>
                       <Avatar name={d.name} size={32} bg={d.type==="自社"?"#dbeafe":"#ede9fe"} color={d.type==="自社"?"#1e40af":"#5b21b6"}/>
@@ -2725,7 +2734,7 @@ const DriversPage = ({ accent, setPage }) => {
               ))}
             </tbody>
             <tfoot>
-              <tr style={{ background:"#f9fafb", borderTop:"2px solid #e5e7eb" }}>
+              <tr style={{ background:"#f9fafb", borderTop:"2px solid #475569" }}>
                 <td colSpan={4} style={{ padding:"10px 16px", fontWeight:700 }}>合計（{list.length}名）</td>
                 <td style={{ padding:"10px 16px", fontWeight:700, color:accent }}>{fmt(list.reduce((s,d)=>s+d.totalSell,0))}</td>
                 <td style={{ padding:"10px 16px", fontWeight:700 }}>{fmt(list.reduce((s,d)=>s+d.totalPay,0))}</td>
@@ -2758,7 +2767,7 @@ const DriversPage = ({ accent, setPage }) => {
             <div style={{ fontSize:12, color:"#9ca3af", marginBottom:10 }}>今月財務サマリー（按分）</div>
             <div style={{ background:"#f8fafc", borderRadius:8, padding:14, marginBottom:16 }}>
               {[["売上按分",fmt(selSummary.totalSell),accent],["支払按分",fmt(selSummary.totalPay),"#d97706"],["粗利貢献",fmt(selSummary.totalProfit),"#16a34a"]].map(([l,v,c])=>(
-                <div key={l} style={{ display:"flex", justifyContent:"space-between", fontSize:13, padding:"6px 0", borderBottom:"1px solid #f1f3f5" }}>
+                <div key={l} style={{ display:"flex", justifyContent:"space-between", fontSize:13, padding:"6px 0", borderBottom:"1px solid #94a3b8" }}>
                   <span style={{ color:"#6b7280" }}>{l}</span>
                   <span style={{ fontWeight:700, color:c }}>{v}</span>
                 </div>
@@ -2767,7 +2776,7 @@ const DriversPage = ({ accent, setPage }) => {
 
             <div style={{ fontSize:12, color:"#9ca3af", marginBottom:8 }}>荷主別 支払内訳</div>
             {selSummary.breakdown.map((b,i)=>(
-              <div key={i} style={{ display:"flex", justifyContent:"space-between", fontSize:12.5, padding:"6px 0", borderBottom:"1px solid #f8f9fa" }}>
+              <div key={i} style={{ display:"flex", justifyContent:"space-between", fontSize:12.5, padding:"6px 0", borderBottom:"1px solid #94a3b8" }}>
                 <span style={{ color:"#374151" }}>{b.client}</span>
                 <span style={{ fontWeight:600 }}>{fmt(b.pay)}</span>
               </div>
@@ -2777,7 +2786,7 @@ const DriversPage = ({ accent, setPage }) => {
               <button onClick={()=>setPage("driverfinance")}
                 style={{ flex:1, padding:"9px", background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:600, fontSize:13 }}>支払明細を発行</button>
               <button onClick={()=>setSel(null)}
-                style={{ padding:"9px 14px", border:"1px solid #e5e7eb", background:"#fff", color:"#374151", borderRadius:6, fontSize:13 }}>閉じる</button>
+                style={{ padding:"9px 14px", border:"1px solid #94a3b8", background:"#fff", color:"#374151", borderRadius:6, fontSize:13 }}>閉じる</button>
             </div>
           </Card>
         )}
@@ -2850,7 +2859,7 @@ const SafetyPage = ({ accent }) => {
       <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16, marginBottom:16 }}>
         {/* ヒヤリハット記録 */}
         <Card>
-          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"14px 20px", borderBottom:"1px solid #f1f3f5" }}>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"14px 20px", borderBottom:"1px solid #94a3b8" }}>
             <span style={{ fontWeight:700, fontSize:14 }}>インシデント記録</span>
             <button onClick={()=>setShowIncidentForm(!showIncidentForm)}
               style={{ padding:"5px 12px", background:showIncidentForm?"#f3f4f6":accent, color:showIncidentForm?"#374151":"#fff", border:"none", borderRadius:5, fontSize:12, fontWeight:600 }}>
@@ -2859,7 +2868,7 @@ const SafetyPage = ({ accent }) => {
           </div>
 
           {showIncidentForm && (
-            <div style={{ padding:"16px 20px", borderBottom:"1px solid #f1f3f5", background:"#fafbfc" }}>
+            <div style={{ padding:"16px 20px", borderBottom:"1px solid #94a3b8", background:"#fafbfc" }}>
               {submittedIncident ? (
                 <div style={{ textAlign:"center", padding:"10px 0", color:"#16a34a", fontWeight:700 }}>
                   <Ic name="check" size={16} color="#16a34a" strokeWidth={2.5}/> 報告を受け付けました
@@ -2907,7 +2916,7 @@ const SafetyPage = ({ accent }) => {
 
           <div style={{ padding:"0 0 4px" }}>
             {incidents.map((inc,i)=>(
-              <div key={inc.id} style={{ padding:"12px 20px", borderBottom:"1px solid #f8f9fa" }}>
+              <div key={inc.id} style={{ padding:"12px 20px", borderBottom:"1px solid #94a3b8" }}>
                 <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
                   <div style={{ display:"flex", gap:6, alignItems:"center" }}>
                     <span style={{ fontSize:11, padding:"1px 7px", borderRadius:3, fontWeight:600,
@@ -2947,7 +2956,7 @@ const SafetyPage = ({ accent }) => {
           <Card style={{ padding:20 }}>
             <div style={{ fontWeight:700, fontSize:14, marginBottom:14 }}>アルコール検査 記録</div>
             {alcoholHistory.map((h,i)=>(
-              <div key={i} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", fontSize:13, padding:"8px 0", borderBottom:"1px solid #f8f9fa" }}>
+              <div key={i} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", fontSize:13, padding:"8px 0", borderBottom:"1px solid #94a3b8" }}>
                 <span style={{ color:"#6b7280", fontSize:12 }}>{h.date}</span>
                 <div style={{ display:"flex", alignItems:"center", gap:6 }}>
                   <div style={{ width:7, height:7, borderRadius:"50%", background:"#16a34a" }}/>
@@ -3044,7 +3053,7 @@ const FAQPage = ({ accent }) => {
             {cat.items.map((f,fi)=>{
               const key=`${ci}-${fi}`; const isOpen=open===key;
               return (
-                <div key={fi} style={{ borderBottom:fi<cat.items.length-1?"1px solid #f1f3f5":"none" }}>
+                <div key={fi} style={{ borderBottom:fi<cat.items.length-1?"1px solid #94a3b8":"none" }}>
                   <button onClick={()=>setOpen(isOpen?null:key)} style={{ width:"100%", display:"flex", justifyContent:"space-between", alignItems:"center", padding:"16px 20px", background:"none", border:"none", textAlign:"left", gap:16 }}>
                     <div style={{ display:"flex", alignItems:"flex-start", gap:10, flex:1 }}>
                       <span style={{ fontSize:13, fontWeight:700, color:accent, flexShrink:0, marginTop:1 }}>Q</span>
@@ -3053,7 +3062,7 @@ const FAQPage = ({ accent }) => {
                     <div style={{ transform:isOpen?"rotate(180deg)":"none", transition:"transform .2s", flexShrink:0 }}><Ic name="chevronD" size={16} color="#9ca3af"/></div>
                   </button>
                   {isOpen && (
-                    <div style={{ padding:"0 20px 16px 20px", borderTop:"1px solid #f1f3f5", background:"#fafafa" }}>
+                    <div style={{ padding:"0 20px 16px 20px", borderTop:"1px solid #94a3b8", background:"#fafafa" }}>
                       <div style={{ display:"flex", gap:10, paddingTop:12 }}>
                         <span style={{ fontSize:13, fontWeight:700, color:"#16a34a", flexShrink:0, marginTop:2 }}>A</span>
                         <div style={{ fontSize:13.5, color:"#374151", lineHeight:1.8 }}>{f.a}</div>
@@ -3151,7 +3160,7 @@ const ManualPage = ({ accent }) => {
           <div style={{ fontSize:12, fontWeight:700, color:"#9ca3af", marginBottom:10 }}>{cat.cat}（{cat.items.length}件）</div>
           <Card>
             {cat.items.map((m,mi)=>(
-              <div key={mi} style={{ display:"flex", alignItems:"center", padding:"13px 20px", borderBottom:mi<cat.items.length-1?"1px solid #f1f3f5":"none", gap:14 }}
+              <div key={mi} style={{ display:"flex", alignItems:"center", padding:"13px 20px", borderBottom:mi<cat.items.length-1?"1px solid #94a3b8":"none", gap:14 }}
                 onMouseEnter={e=>e.currentTarget.style.background="#f9fafb"}
                 onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
                 <Ic name="document" size={15} color={accent}/>
@@ -3469,7 +3478,7 @@ const VehiclesPage = ({ accent }) => {
         <Card>
           <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
             <thead>
-              <tr style={{ background:"#f9fafb", borderBottom:"1px solid #e5e7eb" }}>
+              <tr style={{ background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
                 {["ナンバー","車種","担当ドライバー","状態","走行距離","車検期限"].map(h=>(
                   <th key={h} style={{ padding:"10px 16px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:12, whiteSpace:"nowrap" }}>{h}</th>
                 ))}
@@ -3483,7 +3492,7 @@ const VehiclesPage = ({ accent }) => {
                 const warn   = days <= 60 && days > 30;
                 return (
                   <tr key={v.id} onClick={()=>setSel(sel?.id===v.id?null:v)}
-                    style={{ borderBottom:"1px solid #f1f3f5", cursor:"pointer", background: sel?.id===v.id?accent+"0d": urgent?"#fff5f5":"transparent", transition:"background .1s" }}>
+                    style={{ borderBottom:"1px solid #94a3b8", cursor:"pointer", background: sel?.id===v.id?accent+"0d": urgent?"#fff5f5":"transparent", transition:"background .1s" }}>
                     <td style={{ padding:"12px 16px", fontWeight:700, borderLeft:sel?.id===v.id?`3px solid ${accent}`:"3px solid transparent", transition:"border-color .1s" }}>{v.plate}</td>
                     <td style={{ padding:"12px 16px", color:"#374151" }}>{v.type}</td>
                     <td style={{ padding:"12px 16px" }}>
@@ -3550,7 +3559,7 @@ const VehiclesPage = ({ accent }) => {
 
               <div style={{ fontSize:12, color:"#9ca3af", marginBottom:8 }}>整備・点検履歴</div>
               {sel.maintenance.map((m,i)=>(
-                <div key={i} style={{ display:"flex", gap:10, padding:"8px 0", borderBottom:"1px solid #f8f9fa", fontSize:13 }}>
+                <div key={i} style={{ display:"flex", gap:10, padding:"8px 0", borderBottom:"1px solid #94a3b8", fontSize:13 }}>
                   <span style={{ color:"#9ca3af", fontSize:12, width:80, flexShrink:0 }}>{m.date}</span>
                   <span style={{ color:"#374151" }}>{m.item}</span>
                 </div>
@@ -3558,7 +3567,7 @@ const VehiclesPage = ({ accent }) => {
 
               <div style={{ display:"flex", gap:8, marginTop:16 }}>
                 <button onClick={()=>alert(sel.plate+" の車検予約を受け付けました（デモ）")} style={{ flex:1, padding:"9px", background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:600, fontSize:13, cursor:"pointer" }}>車検予約</button>
-                <button onClick={()=>alert(sel.plate+" の整備記録を追加しました（デモ）")} style={{ flex:1, padding:"9px", border:"1px solid #e5e7eb", background:"#fff", color:"#374151", borderRadius:6, fontSize:13, cursor:"pointer" }}>整備記録を追加</button>
+                <button onClick={()=>alert(sel.plate+" の整備記録を追加しました（デモ）")} style={{ flex:1, padding:"9px", border:"1px solid #94a3b8", background:"#fff", color:"#374151", borderRadius:6, fontSize:13, cursor:"pointer" }}>整備記録を追加</button>
               </div>
             </Card>
           );
@@ -3655,7 +3664,7 @@ const AttendancePage = ({ accent }) => {
       <div style={{ fontSize:20, fontWeight:700, marginBottom:16 }}>勤怠管理</div>
 
       {/* タブ */}
-      <div style={{ display:"flex", gap:4, marginBottom:16, borderBottom:"2px solid #e5e7eb", paddingBottom:0 }}>
+      <div style={{ display:"flex", gap:4, marginBottom:16, borderBottom:"2px solid #475569", paddingBottom:0 }}>
         {[["attendance","勤怠一覧"],["schedule","運行予定"]].map(([v,l])=>(
           <button key={v} onClick={()=>setTab(v)}
             style={{ padding:"8px 20px", border:"none", background:"transparent", fontWeight:tab===v?700:400,
@@ -3688,7 +3697,7 @@ const AttendancePage = ({ accent }) => {
           <Card>
             <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
               <thead>
-                <tr style={{ background:"#f9fafb", borderBottom:"1px solid #e5e7eb" }}>
+                <tr style={{ background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
                   {["ドライバー","種別","今日の状況","出勤日数","残業時間","有給残","欠勤",""].map(h=>(
                     <th key={h} style={{ padding:"10px 14px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:11, whiteSpace:"nowrap" }}>{h}</th>
                   ))}
@@ -3701,7 +3710,7 @@ const AttendancePage = ({ accent }) => {
                   const recs = detailRecords[d.id];
                   return (
                     <React.Fragment key={d.id}>
-                      <tr style={{ borderBottom:"1px solid #f1f3f5", background:isExpanded?accent+"06":"transparent", cursor:"pointer" }}
+                      <tr style={{ borderBottom:"1px solid #94a3b8", background:isExpanded?accent+"06":"transparent", cursor:"pointer" }}
                         onClick={()=>setExpandedDriver(isExpanded?null:d.id)}>
                         <td style={{ padding:"11px 14px" }}>
                           <div style={{ display:"flex", alignItems:"center", gap:8 }}>
@@ -3727,7 +3736,7 @@ const AttendancePage = ({ accent }) => {
                       </tr>
                       {isExpanded && (
                         <tr>
-                          <td colSpan={8} style={{ padding:"0 0 8px 0", background:"#f9fafb", borderBottom:"1px solid #e5e7eb" }}>
+                          <td colSpan={8} style={{ padding:"0 0 8px 0", background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
                             <div style={{ padding:"12px 16px" }}>
                               <div style={{ fontSize:12, fontWeight:600, color:"#374151", marginBottom:8 }}>2026年5月 日次記録</div>
                               <table style={{ width:"100%", borderCollapse:"collapse", fontSize:12 }}>
@@ -3740,7 +3749,7 @@ const AttendancePage = ({ accent }) => {
                                 </thead>
                                 <tbody>
                                   {[...recs].reverse().map(r=>(
-                                    <tr key={r.d} style={{ borderBottom:"1px solid #e5e7eb" }}>
+                                    <tr key={r.d} style={{ borderBottom:"1px solid #94a3b8" }}>
                                       <td style={{ padding:"6px 12px", fontWeight:500 }}>5/{String(r.d).padStart(2,"0")}（{r.day}）</td>
                                       <td style={{ padding:"6px 12px" }}>{r.in}</td>
                                       <td style={{ padding:"6px 12px" }}>{r.out}</td>
@@ -3783,13 +3792,13 @@ const AttendancePage = ({ accent }) => {
           <Card style={{ overflowX:"auto" }}>
             <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
               <thead>
-                <tr style={{ background:"#f9fafb", borderBottom:"1px solid #e5e7eb" }}>
-                  <th style={{ padding:"10px 14px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:11, minWidth:130, borderRight:"1px solid #e5e7eb" }}>ドライバー</th>
+                <tr style={{ background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
+                  <th style={{ padding:"10px 14px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:11, minWidth:130, borderRight:"1px solid #94a3b8" }}>ドライバー</th>
                   {weekDays.map((d,i)=>(
                     <th key={i} style={{ padding:"10px 10px", textAlign:"center", color:d.isSun?"#dc2626":d.isSat?"#2563eb":d.isToday?accent:"#6b7280",
                       fontWeight:d.isToday?700:500, fontSize:12, minWidth:90,
                       background:d.isToday?accent+"0a":"transparent",
-                      borderRight:i<6?"1px solid #f1f3f5":"none" }}>
+                      borderRight:i<6?"1px solid #94a3b8":"none" }}>
                       <div>{d.label}</div>
                       <div style={{ fontSize:10 }}>({d.dayName})</div>
                       {d.isToday&&<div style={{ fontSize:9, background:accent, color:"#fff", borderRadius:2, padding:"1px 4px", marginTop:2, display:"inline-block" }}>TODAY</div>}
@@ -3799,8 +3808,8 @@ const AttendancePage = ({ accent }) => {
               </thead>
               <tbody>
                 {driverSummary.map(d=>(
-                  <tr key={d.id} style={{ borderBottom:"1px solid #f1f3f5" }}>
-                    <td style={{ padding:"10px 14px", borderRight:"1px solid #e5e7eb" }}>
+                  <tr key={d.id} style={{ borderBottom:"1px solid #94a3b8" }}>
+                    <td style={{ padding:"10px 14px", borderRight:"1px solid #94a3b8" }}>
                       <div style={{ display:"flex", alignItems:"center", gap:7 }}>
                         <Avatar name={d.name} size={24} bg={d.type==="自社"?"#dbeafe":"#ede9fe"} color={d.type==="自社"?"#1e40af":"#5b21b6"}/>
                         <div>
@@ -3812,7 +3821,7 @@ const AttendancePage = ({ accent }) => {
                     {(scheduleData[d.id]||[]).map((c,i)=>(
                       <td key={i} style={{ padding:"8px 6px", textAlign:"center",
                         background:weekDays[i]?.isToday?accent+"06":"transparent",
-                        borderRight:i<6?"1px solid #f1f3f5":"none" }}>
+                        borderRight:i<6?"1px solid #94a3b8":"none" }}>
                         {c!=="—"
                           ? <span style={{ display:"inline-block", padding:"3px 8px", borderRadius:4, fontSize:11, fontWeight:600,
                               background:clientColor[c]||"#f1f5f9", color:clientTextColor[c]||"#374151" }}>{c}</span>
@@ -3952,7 +3961,7 @@ const ApplyPage = ({ accent }) => {
               <div style={{ paddingTop:2, fontSize:12.5, color: i===0?"#111827":"#6b7280", fontWeight:i===0?600:400 }}>{s}</div>
             </div>
           ))}
-          <div style={{ borderTop:"1px solid #f1f3f5", marginTop:16, paddingTop:12 }}>
+          <div style={{ borderTop:"1px solid #94a3b8", marginTop:16, paddingTop:12 }}>
             <div style={{ fontSize:11.5, color:"#9ca3af", lineHeight:1.7 }}>通常2〜3営業日<br/>緊急の場合は運行管理（内線301）へ直接連絡してください</div>
           </div>
         </Card>
@@ -3985,7 +3994,7 @@ const ApplyPage = ({ accent }) => {
       <Card>
         <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
           <thead>
-            <tr style={{ background:"#f9fafb", borderBottom:"1px solid #e5e7eb" }}>
+            <tr style={{ background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
               {["申請番号","申請種別","申請日","承認者","ステータス",""].map(h=>(
                 <th key={h} style={{ padding:"9px 16px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:11.5 }}>{h}</th>
               ))}
@@ -3995,7 +4004,7 @@ const ApplyPage = ({ accent }) => {
             {[...submitted, ...pendingList].map((p,i)=>{
               const sc=stC(p.status);
               return (
-                <tr key={i} style={{ borderBottom:"1px solid #f1f3f5" }}>
+                <tr key={i} style={{ borderBottom:"1px solid #94a3b8" }}>
                   <td style={{ padding:"11px 16px", color:"#6b7280", fontSize:12 }}>{p.id}</td>
                   <td style={{ padding:"11px 16px", fontWeight:600 }}>{p.type}</td>
                   <td style={{ padding:"11px 16px", color:"#6b7280" }}>{p.date}</td>
@@ -4004,7 +4013,7 @@ const ApplyPage = ({ accent }) => {
                     <span style={{ padding:"3px 8px", borderRadius:4, fontSize:11.5, fontWeight:600, background:sc.bg, color:sc.c }}>{p.status}</span>
                   </td>
                   <td style={{ padding:"11px 16px" }}>
-                    <button onClick={()=>alert(p.id+" "+p.type+" / 状態: "+p.status+" / 承認者: "+p.approver)} style={{ padding:"4px 10px", border:"1px solid #e5e7eb", borderRadius:4, background:"#fff", fontSize:11, color:"#6b7280", cursor:"pointer" }}>詳細</button>
+                    <button onClick={()=>alert(p.id+" "+p.type+" / 状態: "+p.status+" / 承認者: "+p.approver)} style={{ padding:"4px 10px", border:"1px solid #94a3b8", borderRadius:4, background:"#fff", fontSize:11, color:"#6b7280", cursor:"pointer" }}>詳細</button>
                   </td>
                 </tr>
               );
