@@ -815,8 +815,9 @@ const StatusBadge = ({ label }) => {
 const Avatar = ({ name, size=32, bg="#e5e7eb", color="#374151" }) => (
   <div style={{ width:size, height:size, borderRadius:"50%", background:bg, color, display:"flex", alignItems:"center", justifyContent:"center", fontSize:size*0.38, fontWeight:700, flexShrink:0 }}>{name[0]}</div>
 );
-const Card = ({ children, style={} }) => (
-  <div style={{ background:"#fff", borderRadius:8, border:"1px solid #94a3b8", ...style }}>{children}</div>
+const Card = ({ children, style={}, onClick, onMouseEnter, onMouseLeave, title }) => (
+  <div onClick={onClick} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} title={title}
+    style={{ background:"#fff", borderRadius:8, border:"1px solid #94a3b8", ...style }}>{children}</div>
 );
 const SH = ({ title, action, onAction }) => (
   <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"14px 20px", borderBottom:"1px solid #94a3b8" }}>
