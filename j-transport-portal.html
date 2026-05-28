@@ -2483,9 +2483,9 @@ const DailyInputPage = ({ accent }) => {
       </div>
 
       </div>
-      {/* 月次テーブル */}
+      {/* 月次テーブル — 独立スクロール領域内で thead を sticky 化 */}
       <Card>
-        <div>
+        <div style={{ maxHeight:"calc(100vh - 320px)", overflow:"auto", position:"relative" }}>
           <style>{`
             .jt-daily-tbl td, .jt-daily-tbl th { border-bottom: 1px solid #94a3b8; border-right: 1px solid #94a3b8; }
             .jt-daily-tbl thead th { border-bottom: 2px solid #475569 !important; }
@@ -2496,10 +2496,10 @@ const DailyInputPage = ({ accent }) => {
           <table className="jt-daily-tbl" style={{ borderCollapse:"collapse", fontSize:12, whiteSpace:"nowrap" }}>
             <thead style={{ position:"sticky", top:0, zIndex:10 }}>
               <tr style={{ background:"#f9fafb" }}>
-                <th style={{ padding:"8px 12px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:11, borderRight:"1px solid #94a3b8", borderBottom:"1px solid #94a3b8", minWidth:96, width:96, position:"sticky", left:0, top:0, background:"#f9fafb", zIndex:5 }}>日付</th>
+                <th style={{ padding:"8px 12px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:11, borderRight:"1px solid #94a3b8", borderBottom:"1px solid #94a3b8", minWidth:96, width:96, position:"sticky", left:0, top:0, background:"#f9fafb", zIndex:12 }}>日付</th>
                 {assignedDrivers.map((d,dri)=>(
                   <th key={d.id} colSpan={nR}
-                    style={{ padding:"7px 12px", textAlign:"center", borderRight:"1px solid #94a3b8", borderBottom:"1px solid #94a3b8", background:focusedCell?.dri===dri?accent+"0e":"#f9fafb", position:"sticky", top:0, zIndex:3 }}>
+                    style={{ padding:"7px 12px", textAlign:"center", borderRight:"1px solid #94a3b8", borderBottom:"1px solid #94a3b8", background:focusedCell?.dri===dri?accent+"0e":"#f9fafb", position:"sticky", top:0, zIndex:11 }}>
                     <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:5 }}>
                       <Avatar name={d.name} size={18} bg={d.type==="自社"?"#dbeafe":"#ede9fe"} color={d.type==="自社"?"#1e40af":"#5b21b6"}/>
                       <span style={{ fontWeight:700, fontSize:12 }}>{d.name}</span>
@@ -2507,11 +2507,11 @@ const DailyInputPage = ({ accent }) => {
                     </div>
                   </th>
                 ))}
-                <th colSpan={3} style={{ padding:"7px 12px", textAlign:"center", color:"#6b7280", fontWeight:500, fontSize:11, borderLeft:"2px solid #64748b", borderBottom:"1px solid #94a3b8", background:"#f9fafb", position:"sticky", top:0, zIndex:3 }}>日次合計</th>
-                <th style={{ padding:"7px 8px", textAlign:"center", color:"#6b7280", fontWeight:500, fontSize:11, borderLeft:"1px solid #94a3b8", borderBottom:"1px solid #94a3b8", minWidth:40, background:"#f9fafb", position:"sticky", top:0, zIndex:3 }}>状態</th>
+                <th colSpan={3} style={{ padding:"7px 12px", textAlign:"center", color:"#6b7280", fontWeight:500, fontSize:11, borderLeft:"2px solid #64748b", borderBottom:"1px solid #94a3b8", background:"#f9fafb", position:"sticky", top:0, zIndex:11 }}>日次合計</th>
+                <th style={{ padding:"7px 8px", textAlign:"center", color:"#6b7280", fontWeight:500, fontSize:11, borderLeft:"1px solid #94a3b8", borderBottom:"1px solid #94a3b8", minWidth:40, background:"#f9fafb", position:"sticky", top:0, zIndex:11 }}>状態</th>
               </tr>
               <tr style={{ background:"#f9fafb", borderBottom:"2px solid #64748b" }}>
-                <th style={{ padding:"4px 12px", borderRight:"1px solid #94a3b8", position:"sticky", left:0, top:36, background:"#f9fafb", zIndex:5 }}/>
+                <th style={{ padding:"4px 12px", borderRight:"1px solid #94a3b8", position:"sticky", left:0, top:36, background:"#f9fafb", zIndex:12 }}/>
                 {assignedDrivers.map((d,dri)=>
                   rates.map((r,ri)=>{
                     const ci=dri*nR+ri;
@@ -2520,16 +2520,16 @@ const DailyInputPage = ({ accent }) => {
                       <th key={`${dri}-${ri}`}
                         style={{ padding:"4px 8px", textAlign:"center", color:active?accent:"#6b7280", fontWeight:500, fontSize:10,
                           borderLeft:ri===0&&dri>0?"1px solid #64748b":"none", borderRight:"1px solid #94a3b8",
-                          background:active?accent+"0e":"#f9fafb", position:"sticky", top:36, zIndex:3, minWidth:72, width:72 }}>
+                          background:active?accent+"0e":"#f9fafb", position:"sticky", top:36, zIndex:11, minWidth:72, width:72 }}>
                         <div style={{ fontWeight:600 }}>{r.label}</div>
                       </th>
                     );
                   })
                 )}
                 {["売上","支払","粗利"].map((h,i)=>(
-                  <th key={h} style={{ padding:"4px 10px", textAlign:"right", color:"#9ca3af", fontWeight:500, fontSize:10, borderLeft:i===0?"2px solid #64748b":"none", minWidth:76, background:"#f9fafb", position:"sticky", top:36, zIndex:3 }}>{h}</th>
+                  <th key={h} style={{ padding:"4px 10px", textAlign:"right", color:"#9ca3af", fontWeight:500, fontSize:10, borderLeft:i===0?"2px solid #64748b":"none", minWidth:76, background:"#f9fafb", position:"sticky", top:36, zIndex:11 }}>{h}</th>
                 ))}
-                <th style={{ padding:"4px 8px", borderLeft:"1px solid #94a3b8", background:"#f9fafb", position:"sticky", top:36, zIndex:3 }}/>
+                <th style={{ padding:"4px 8px", borderLeft:"1px solid #94a3b8", background:"#f9fafb", position:"sticky", top:36, zIndex:11 }}/>
               </tr>
             </thead>
             <tbody>
