@@ -2127,25 +2127,37 @@ const InvoicePage = ({ accent }) => {
                 </button>
               )}
               <button onClick={()=>{
-                // 新規ウィンドウに請求書だけ書き出して印刷（最も確実）
+                // iframe を生成して印刷（ポップアップブロックを回避、デバッグ可能）
                 const card = document.querySelector('.invoice-print');
                 if (!card) { alert('請求書が見つかりません'); return; }
                 const clone = card.cloneNode(true);
-                // 印刷用ヘッダ・フッタを表示、画面用UIを削除
                 clone.querySelectorAll('.invoice-print-header, .invoice-print-footer').forEach(el => el.style.display = 'block');
                 clone.querySelectorAll('.no-print').forEach(el => el.remove());
-                const w = window.open('', '_blank', 'width=900,height=1200');
-                if (!w) { alert('ポップアップを許可してください'); return; }
-                w.document.open();
-                w.document.write(`<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>請求書 ${sel.id} - ${sel.client}</title>
+                // 既存 iframe を削除
+                const old = document.getElementById('jt-print-iframe');
+                if (old) old.remove();
+                const iframe = document.createElement('iframe');
+                iframe.id = 'jt-print-iframe';
+                iframe.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden;';
+                document.body.appendChild(iframe);
+                const doc = iframe.contentWindow.document;
+                doc.open();
+                doc.write(`<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>請求書 ${sel.id} - ${sel.client}</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Noto Sans JP', 'Hiragino Sans', sans-serif; padding: 18mm; color: #111827; background: #fff; }
+  body { font-family: 'Noto Sans JP', 'Hiragino Sans', sans-serif; padding: 14mm; color: #111827; background: #fff; font-size: 12px; line-height: 1.5; }
   table { border-collapse: collapse; width: 100%; }
+  td, th { vertical-align: middle; }
+  .invoice-print { background: #fff; padding: 0; border: none; box-shadow: none; }
   @page { size: A4 portrait; margin: 0; }
   @media print { body { padding: 12mm; } }
-</style></head><body>${clone.outerHTML}<script>window.onload = function(){ setTimeout(function(){ window.print(); }, 100); }<\/script></body></html>`);
-                w.document.close();
+</style></head><body>${clone.outerHTML}</body></html>`);
+                doc.close();
+                // 描画完了後に印刷
+                setTimeout(() => {
+                  try { iframe.contentWindow.focus(); iframe.contentWindow.print(); } catch(e) { alert('印刷に失敗: '+e.message); }
+                  setTimeout(() => iframe.remove(), 1500);
+                }, 250);
               }} style={{ padding:"10px", background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:600, fontSize:13, cursor:"pointer" }}>
                 請求書を印刷 / PDF保存
               </button>
