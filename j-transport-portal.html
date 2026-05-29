@@ -4835,6 +4835,42 @@ const App = () => {
   React.useEffect(() => {
     if (mainScrollRef.current) mainScrollRef.current.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, [page]);
+  // 起動時に Supabase の jt_daily_entries を読み込み、jt_daily_edits (localStorage) へ同期
+  // → 別端末で入力したデータがこの端末の収支管理/ダッシュボード等に反映される
+  React.useEffect(() => {
+    if (!window.sb) return;
+    (async () => {
+      try {
+        const { data, error } = await window.sb.from("jt_daily_entries").select("*");
+        if (error || !data || !data.length) return;
+        // Supabase rows → nested structure {cid: {date: {did: {lbl: "value"}}}}
+        const sb = {};
+        data.forEach(r => {
+          if (!sb[r.client_id]) sb[r.client_id] = {};
+          if (!sb[r.client_id][r.entry_date]) sb[r.client_id][r.entry_date] = {};
+          if (!sb[r.client_id][r.entry_date][r.driver_id]) sb[r.client_id][r.entry_date][r.driver_id] = {};
+          sb[r.client_id][r.entry_date][r.driver_id][r.rate_label] = String(r.value);
+        });
+        // 既存 localStorage edits とマージ（local 優先）
+        const existing = (()=>{ try { return JSON.parse(localStorage.getItem("jt_daily_edits")||"{}"); } catch { return {}; } })();
+        const merged = JSON.parse(JSON.stringify(sb));
+        Object.keys(existing).forEach(cid => {
+          if (!merged[cid]) merged[cid] = {};
+          Object.keys(existing[cid]).forEach(d => {
+            if (!merged[cid][d]) merged[cid][d] = {};
+            Object.keys(existing[cid][d]).forEach(did => {
+              if (!merged[cid][d][did]) merged[cid][d][did] = {};
+              Object.assign(merged[cid][d][did], existing[cid][d][did]);
+            });
+          });
+        });
+        localStorage.setItem("jt_daily_edits", JSON.stringify(merged));
+        // 他コンポーネントが useLocalStorage で購読しているので change イベントで再描画を促す
+        window.dispatchEvent(new CustomEvent("jt-ls-change", { detail: { key: "jt_daily_edits", val: merged } }));
+        console.log("[Supabase] jt_daily_entries synced:", data.length, "rows →", Object.keys(merged).length, "clients");
+      } catch (e) { console.warn("[Supabase] sync failed:", e); }
+    })();
+  }, []);
   const pp = { accent, setPage };
 
   const pageMap = {
