@@ -1049,7 +1049,7 @@ const PLPage = ({ accent, setPage }) => {
   }
 
   // === 12ヶ月推移 ===
-  const trend = ALL_MONTH_KEYS.map(mk => ({...monthAgg(mk), mk}));
+  const trend = ALL_MONTH_KEYS.map(mk => ({...monthAgg(mk, dailyEdits), mk}));
   const recentTrend = graphRange==="half" ? trend.slice(-6) : trend.slice(-12);
   const maxTrend = Math.max(...recentTrend.map(d=>d.sell), 1);
   // 3ヶ月移動平均
