@@ -966,13 +966,13 @@ const PLPage = ({ accent, setPage }) => {
 
   // 当月の荷主別データ
   const curByClient = clients.map(c => {
-    const h = cm(c.id, selectedMonth);
-    const ph = cm(c.id, prevMk);
+    const h = cm(c.id, selectedMonth, dailyEdits);
+    const ph = cm(c.id, prevMk, dailyEdits);
     // 直近3ヶ月平均（当月含む直近3）
     const idx = ALL_MONTH_KEYS.indexOf(selectedMonth);
     let avg3 = 0, n=0;
     for (let k=Math.max(0,idx-2); k<=idx; k++) {
-      const v = cm(c.id, ALL_MONTH_KEYS[k]);
+      const v = cm(c.id, ALL_MONTH_KEYS[k], dailyEdits);
       if (v.s>0) { avg3 += v.s; n++; }
     }
     avg3 = n>0 ? avg3/n : 0;
