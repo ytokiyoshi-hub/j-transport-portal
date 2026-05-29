@@ -2951,6 +2951,11 @@ const Dashboard = ({ accent, setPage }) => {
     const h = cm(c.id, REF_MONTH, dailyEdits);
     return { clientId: c.id, name: c.name, sell: h.s, pay: h.p, profit: h.s - h.p };
   });
+  // 表示用フォールバック（今月実績がなければ最新確定月）
+  const monthlyDisplay = totalSell > 0 ? monthlyActuals : clients.map(c => {
+    const h = cm(c.id, LATEST_DATA_MONTH, dailyEdits);
+    return { clientId: c.id, name: c.name, sell: h.s, pay: h.p, profit: h.s - h.p };
+  });
   const margin = totalSell>0?(totalProfit/totalSell*100).toFixed(1):0;
 
   const pendingInv = invoices.filter(i=>i.status==="未請求").reduce((s,i)=>s+i.amount,0);
