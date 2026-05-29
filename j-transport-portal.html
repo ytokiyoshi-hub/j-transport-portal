@@ -1771,20 +1771,25 @@ const DriverFinancePage = ({ accent }) => {
   const [sel, setSel] = React.useState(null);
   const [slipDriver, setSlipDriver] = React.useState(null);
   useEscapeToClose(!!slipDriver, ()=>setSlipDriver(null));
+  // 日次入力の編集を反映するために live aggregation
+  const [dailyEdits] = useLocalStorage("jt_daily_edits", {});
 
+  // 表示月: 今月実績があれば今月、なければ最新確定月
+  const _refAgg = monthAgg(REF_MONTH, dailyEdits);
+  const _displayMonth = _refAgg.sell > 0 ? REF_MONTH : LATEST_DATA_MONTH;
   // ドライバー別に荷主から収支計算
   const driverSummary = drivers.map(d => {
     let totalSellD = 0, totalPayD = 0;
     const breakdown = [];
     clients.forEach(c => {
       if (!c.drivers.includes(d.id)) return;
-      const act = monthlyDisplay.find(r=>r.name===c.name) || {};
+      const act = cm(c.id, _displayMonth, dailyEdits);
       if (!act) return;
       // 担当ドライバー数で按分
       const driverCount = c.drivers.length;
       const share = 1 / driverCount;
-      const s = Math.round(act.sell * share);
-      const p = Math.round(act.pay  * share);
+      const s = Math.round(act.s * share);
+      const p = Math.round(act.p * share);
       totalSellD += s;
       totalPayD  += p;
       breakdown.push({ client: c.name, billing: c.billing, sell: s, pay: p, profit: s - p });
