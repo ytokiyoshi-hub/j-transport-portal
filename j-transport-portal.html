@@ -4964,7 +4964,7 @@ const DispatchPage = ({ accent, setPage }) => {
     setDispatch(prev=>{
       const next={...prev};
       weekDays.forEach(wd=>{
-        if(wd.isWeekend) return;
+        if(wd.isWeekend || confirmed[wd.dk]) return;
         const day={...(next[wd.dk]||{})};
         drivers.forEach(dr=>{ if(day[dr.id]) return; const ac=assignableClients(dr.id); if(ac.length) day[dr.id]=ac[0].id; });
         if(Object.keys(day).length) next[wd.dk]=day;
