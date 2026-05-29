@@ -4981,8 +4981,53 @@ const DispatchPage = ({ accent, setPage }) => {
     });
   };
   const clearWeekDisp = () => {
-    if(!confirm("今週の配車をすべてクリアします。よろしいですか？")) return;
-    setDispatch(prev=>{ const next={...prev}; weekDays.forEach(wd=>delete next[wd.dk]); return next; });
+    if(!confirm("今週の配車をすべてクリアします。（確定済みの日は保持されます）よろしいですか？")) return;
+    setDispatch(prev=>{ const next={...prev}; weekDays.forEach(wd=>{ if(!confirmed[wd.dk]) delete next[wd.dk]; }); return next; });
+  };
+
+  // ── 配車先の確定 ──
+  const isConfirmed = (dk) => !!confirmed[dk];
+  const toggleConfirmDay = (dk) => {
+    const has = dispCountFor(dk) > 0;
+    if(!confirmed[dk] && !has){ alert("この日には配車が入力されていないため、確定できません。"); return; }
+    setConfirmed(prev=>{ const next={...prev}; if(next[dk]) delete next[dk]; else next[dk]=new Date().toISOString(); return next; });
+  };
+  const confirmWeek = () => {
+    const target = weekDays.filter(wd=>dispCountFor(wd.dk)>0 && !confirmed[wd.dk]);
+    if(!target.length){ alert("確定できる配車（入力済みで未確定の日）がありません。"); return; }
+    if(!confirm(`今週の配車 ${target.length}日分を確定します。\n確定後は自動配車・先週コピー・週クリアの対象外になり、請求連動の集計対象になります。\nよろしいですか？`)) return;
+    setConfirmed(prev=>{ const next={...prev}; const ts=new Date().toISOString(); target.forEach(wd=>{ next[wd.dk]=ts; }); return next; });
+  };
+  const unconfirmWeek = () => {
+    const target = weekDays.filter(wd=>confirmed[wd.dk]);
+    if(!target.length) return;
+    if(!confirm(`今週の確定済み ${target.length}日分を解除します。よろしいですか？`)) return;
+    setConfirmed(prev=>{ const next={...prev}; target.forEach(wd=>delete next[wd.dk]); return next; });
+  };
+
+  // 確定セル → 実績(dailyActuals + jt_daily_edits)の読み取り専用ジョイン（computeLiveSum と同じセル単位マージ）
+  const cellBilling = (cid, dk, did) => {
+    const c = clients.find(x=>x.id===cid); if(!c) return {sell:0,pay:0,has:false};
+    const baseDrv = (dailyActuals[cid]&&dailyActuals[cid][dk]&&dailyActuals[cid][dk][did]) || {};
+    const editDrv = (dailyEdits[cid]&&dailyEdits[cid][dk]&&dailyEdits[cid][dk][did]) || {};
+    const labels = new Set([...Object.keys(baseDrv), ...Object.keys(editDrv)]);
+    let sell=0, pay=0, has=false;
+    labels.forEach(lbl=>{ const editV=editDrv[lbl]; const v=editV!==undefined?editV:baseDrv[lbl]; const cnt=Number(v)||0; const r=c.rates.find(rr=>rr.label===lbl); if(r&&cnt){ sell+=cnt*r.sell; pay+=cnt*r.pay; has=true; } });
+    return {sell, pay, has};
+  };
+
+  // 荷主×締め期間内の「配車のべ件数 / 確定日数」（読み取り専用）
+  const dispatchPeriodInfo = (cid, mk) => {
+    const c = clients.find(x=>x.id===cid) || {};
+    const bp = billingPeriodFor(mk, c.billingCycle);
+    let count=0; const days=new Set(); const cfDays=new Set();
+    Object.keys(dispatch).forEach(dk=>{
+      if(dk < bp.start || dk > bp.end) return;
+      const day = dispatch[dk]||{};
+      const assigned = Object.keys(day).filter(did=>day[did]===cid);
+      if(assigned.length){ count+=assigned.length; days.add(dk); if(confirmed[dk]) cfDays.add(dk); }
+    });
+    return { count, days:days.size, confirmedDays:cfDays.size, bp };
   };
 
   // ── シフトデータ操作 ──
