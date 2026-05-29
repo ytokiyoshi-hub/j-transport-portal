@@ -2451,9 +2451,12 @@ const DailyInputPage = ({ accent }) => {
     return { sell, pay, profit: sell-pay };
   });
   const _dailySum = dayTotals.reduce((a,t)=>({sell:a.sell+t.sell,pay:a.pay+t.pay,profit:a.profit+t.profit}),{sell:0,pay:0,profit:0});
-  // 月次サマリー: monthlyHistory（元データ確定値）優先、無ければ日次集計フォールバック
+  // 月次サマリー: 日次入力があればそれを正とする（ユーザー編集を即時反映）。無ければ monthlyHistory にフォールバック。
   const _mhVal = (typeof monthlyHistory!=="undefined" && selClient && monthlyHistory[selClient.id] && monthlyHistory[selClient.id][monthYear]) || null;
-  const monthTotals = _mhVal ? { sell:_mhVal.s, pay:_mhVal.p, profit:_mhVal.s-_mhVal.p } : _dailySum;
+  const _hasDaily = _dailySum.sell > 0 || _dailySum.pay > 0;
+  const monthTotals = _hasDaily
+    ? _dailySum
+    : (_mhVal ? { sell:_mhVal.s, pay:_mhVal.p, profit:_mhVal.s-_mhVal.p } : _dailySum);
   const colTotals = assignedDrivers.flatMap((d) =>
     rates.map((r) => ({
       vol:  dayRows.reduce((s,day)=>s+(Number(getVal(day.dateStr,d.id,r.label))||0),0),
