@@ -5144,7 +5144,7 @@ const DispatchPage = ({ accent, setPage }) => {
       <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12, marginBottom:16 }}>
         {(tab==="dispatch" ? [
           { label:"今週のべ配車", value:`${weekDispTotal}件`, sub:`平日 ${weekdayDispTotal}件`, color:accent },
-          { label:"平日1日あたり", value:`${Math.round(weekdayDispTotal/5)}件`, sub:"月〜金平均", color:"#0891b2" },
+          { label:"確定状況", value:`${weekConfirmedDays}/${weekDispDays}日`, sub:weekConfirmedDays>0?`確定済み ${weekConfirmedDays}日`:(weekDispDays>0?"未確定":"配車なし"), color:weekConfirmedDays>0?"#15803d":(weekDispDays>0?"#d97706":"#9ca3af") },
           { label:"稼働ドライバー", value:`${activeDriverIds.size}名`, sub:`全${drivers.length}名中`, color:"#16a34a" },
           { label:"空き枠（平日）", value:`${openSlots}`, sub:"未配車セル", color:openSlots>0?"#d97706":"#9ca3af" },
         ] : [
