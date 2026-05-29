@@ -2310,6 +2310,15 @@ const ClientPage = ({ accent, setPage }) => {
   const [sel, setSel] = React.useState(null);
   const [search, setSearch] = React.useState("");
   const [extraClients] = useLocalStorage("jt_extra_clients", []);
+  // 上位荷主マスタ & 紐付けマップ
+  const [parents] = useLocalStorage("jt_parent_clients", []);
+  const [parentMap, setParentMap] = useLocalStorage("jt_client_parent_map", {});
+  const assignParent = (clientId, parentId) => {
+    const next = { ...parentMap };
+    if (!parentId) delete next[clientId];
+    else next[clientId] = parentId;
+    setParentMap(next);
+  };
   const list = [...clients, ...extraClients].filter(c=>c.name.includes(search)||c.area.includes(search));
 
   return (
