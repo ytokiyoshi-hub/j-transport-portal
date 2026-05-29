@@ -2127,20 +2127,25 @@ const InvoicePage = ({ accent }) => {
                 </button>
               )}
               <button onClick={()=>{
-                // 印刷専用ヘッダ/フッタを一時表示してから印刷
+                // 新規ウィンドウに請求書だけ書き出して印刷（最も確実）
                 const card = document.querySelector('.invoice-print');
-                if (!card) { window.print(); return; }
-                const hdr = card.querySelector('.invoice-print-header');
-                const ftr = card.querySelector('.invoice-print-footer');
-                if (hdr) hdr.style.display = 'block';
-                if (ftr) ftr.style.display = 'block';
-                setTimeout(() => {
-                  window.print();
-                  setTimeout(() => {
-                    if (hdr) hdr.style.display = 'none';
-                    if (ftr) ftr.style.display = 'none';
-                  }, 500);
-                }, 80);
+                if (!card) { alert('請求書が見つかりません'); return; }
+                const clone = card.cloneNode(true);
+                // 印刷用ヘッダ・フッタを表示、画面用UIを削除
+                clone.querySelectorAll('.invoice-print-header, .invoice-print-footer').forEach(el => el.style.display = 'block');
+                clone.querySelectorAll('.no-print').forEach(el => el.remove());
+                const w = window.open('', '_blank', 'width=900,height=1200');
+                if (!w) { alert('ポップアップを許可してください'); return; }
+                w.document.open();
+                w.document.write(`<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>請求書 ${sel.id} - ${sel.client}</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Noto Sans JP', 'Hiragino Sans', sans-serif; padding: 18mm; color: #111827; background: #fff; }
+  table { border-collapse: collapse; width: 100%; }
+  @page { size: A4 portrait; margin: 0; }
+  @media print { body { padding: 12mm; } }
+</style></head><body>${clone.outerHTML}<script>window.onload = function(){ setTimeout(function(){ window.print(); }, 100); }<\/script></body></html>`);
+                w.document.close();
               }} style={{ padding:"10px", background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:600, fontSize:13, cursor:"pointer" }}>
                 請求書を印刷 / PDF保存
               </button>
