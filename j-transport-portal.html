@@ -5115,6 +5115,8 @@ const DispatchPage = ({ accent, setPage }) => {
         ))}
       </div>
 
+      {tab !== "bill" && (
+      <>
       {/* 週ナビ + 操作 */}
       <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:14, flexWrap:"wrap" }}>
         <button onClick={()=>setWeekOffset(w=>w-1)} style={navBtn}>＜ 前週</button>
