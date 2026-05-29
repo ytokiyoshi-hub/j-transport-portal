@@ -2513,36 +2513,17 @@ const DailyInputPage = ({ accent }) => {
       <Card>
         <div style={{ maxHeight:"calc(100vh - 320px)", overflow:"auto", position:"relative" }}>
           <style>{`
-            /* border-collapse: separate にすることで sticky 時の罫線描画ズレを根絶 */
-            .jt-daily-tbl { border-collapse: separate; border-spacing: 0; border: 1px solid #475569; }
-            /* 各セルの罫線は box-shadow で表現（layout に影響せず subpixel ずれを起こさない） */
+            .jt-daily-tbl { border-collapse: collapse; border: 1px solid #94a3b8; }
             .jt-daily-tbl td, .jt-daily-tbl th {
+              border-bottom: 1px solid #94a3b8;
+              border-right: 1px solid #94a3b8;
               vertical-align: middle;
-              box-shadow: inset -1px -1px 0 #94a3b8;
             }
-            /* thead の最終下端は太線 */
-            .jt-daily-tbl thead tr:last-child > th { box-shadow: inset -1px -2px 0 #475569; }
-            /* tfoot 上端の太線 */
-            .jt-daily-tbl tfoot td { box-shadow: inset -1px 0 0 #94a3b8, inset 0 2px 0 #475569; }
-            /* 行高さを固定 */
+            .jt-daily-tbl thead th { border-bottom: 1px solid #94a3b8; }
             .jt-daily-tbl tbody tr { height: 32px; }
             .jt-daily-tbl tbody td { line-height: 1.2; box-sizing: border-box; overflow: hidden; }
             .jt-daily-tbl tbody td input { display: block; vertical-align: middle; }
-            /* 土日行 */
-            .jt-daily-tbl tbody tr.jt-weekend > td { background: #f1f5f9; }
-            .jt-daily-tbl tbody tr.jt-weekend > td:first-child { background: #e2e8f0; }
-            /* 日付列の右側を太線＋影で完全分離 */
-            .jt-daily-tbl thead th:first-child,
-            .jt-daily-tbl tbody td:first-child {
-              box-shadow: inset -3px 0 0 #1e293b, inset 0 -1px 0 #94a3b8, 6px 0 8px -3px rgba(0,0,0,0.2);
-              z-index: 5;
-            }
-            .jt-daily-tbl thead tr:last-child > th:first-child {
-              box-shadow: inset -3px 0 0 #1e293b, inset 0 -2px 0 #475569, 6px 0 8px -3px rgba(0,0,0,0.2);
-            }
-            /* sticky 列の背景を不透明化 */
-            .jt-daily-tbl tbody td { background-clip: padding-box; }
-            .jt-daily-tbl thead th { background: #f9fafb !important; }
+            .jt-daily-tbl tbody tr.jt-weekend > td { background: #f8fafc; }
           `}</style>
           <table className="jt-daily-tbl" style={{ borderCollapse:"collapse", fontSize:12, whiteSpace:"nowrap", tableLayout:"fixed" }}>
             <colgroup>
