@@ -2000,12 +2000,15 @@ const InvoicePage = ({ accent }) => {
         ...(c.rates[1]?[{ label:c.rates[1].label, qty:Math.round(inv.amount*0.1/c.rates[1].sell)||1, unit:"個", unitPrice:c.rates[1].sell, amount:Math.round(inv.amount*0.1) }]:[]),
       ];
     }
-    const act = monthlyDisplay.find(r=>r.name===inv.client) || {};
-    if (!act) return c.rates.filter(r=>r.sell>0).map(r=>({ label:r.label, qty:"—", unit:"個", unitPrice:r.sell, amount:"—" }));
+    // 請求対象月を invoice.month から抽出（"2026-05" 形式）。なければ最新確定月。
+    const invMonthKey = inv.month && /^\d{4}-\d{2}/.test(inv.month) ? inv.month.slice(0,7) : LATEST_DATA_MONTH;
+    const actLive = cm(c.id, invMonthKey, dailyEdits);
+    const actSell = actLive.s;
+    if (!actSell) return c.rates.filter(r=>r.sell>0).map(r=>({ label:r.label, qty:"—", unit:"個", unitPrice:r.sell, amount:"—" }));
     const totalRateSell = c.rates.filter(r=>r.sell>0).reduce((s,r)=>s+r.sell,0)||1;
     return c.rates.filter(r=>r.sell>0).map(r=>{
       const share = r.sell/totalRateSell;
-      const est = Math.round(act.sell*share);
+      const est = Math.round(actSell*share);
       const qty = r.sell>0?Math.round(est/r.sell):0;
       return { label:r.label, qty, unit:"個", unitPrice:r.sell, amount:est };
     });
