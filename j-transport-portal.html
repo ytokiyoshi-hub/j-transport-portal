@@ -1083,7 +1083,7 @@ const PLPage = ({ accent, setPage }) => {
   const curYear = selectedMonth.slice(0,4);
   const ytdMonths = ALL_MONTH_KEYS.filter(mk => mk.startsWith(curYear));
   const ytdData = ytdMonths.reduce((acc,mk)=>{
-    const m = monthAgg(mk); acc.sell+=m.sell; acc.pay+=m.pay; return acc;
+    const m = monthAgg(mk, dailyEdits); acc.sell+=m.sell; acc.pay+=m.pay; return acc;
   }, {sell:0,pay:0});
   const ytdProfit = ytdData.sell - ytdData.pay;
   const ytdMargin = ytdData.sell>0 ? ytdData.profit/ytdData.sell*100 : 0;
