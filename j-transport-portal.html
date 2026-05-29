@@ -4921,11 +4921,15 @@ const SHIFT_STYLE = {
   "有休":{bg:"#f5f3ff",fg:"#7c3aed"}, "休":{bg:"#f1f5f9",fg:"#94a3b8"},
 };
 
-const DispatchPage = ({ accent }) => {
-  const [tab, setTab] = React.useState("dispatch"); // dispatch | shift
+const DispatchPage = ({ accent, setPage }) => {
+  const [tab, setTab] = React.useState("dispatch"); // dispatch | shift | bill
   const [weekOffset, setWeekOffset] = React.useState(0);
   const [dispatch, setDispatch] = useLocalStorage("jt_dispatch", {});
   const [shifts, setShifts] = useLocalStorage("jt_shifts", {});
+  const [confirmed, setConfirmed] = useLocalStorage("jt_dispatch_confirmed", {});
+  const [dailyEdits] = useLocalStorage("jt_daily_edits", {});
+  const [billMonth, setBillMonth] = React.useState(REF_MONTH);
+  const shiftMonth = (delta) => { const [y,m]=billMonth.split("-").map(Number); const d=new Date(y,m-1+delta,1); setBillMonth(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`); };
 
   const now = new Date();
   const dkOf = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
