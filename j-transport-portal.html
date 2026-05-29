@@ -1974,6 +1974,8 @@ const InvoicePage = ({ accent }) => {
   const [sel, setSel] = React.useState(null);
   const [issuedArr, setIssuedArr] = useLocalStorage("jt_issued", []);
   const [remindedArr, setRemindedArr] = useLocalStorage("jt_reminded", []);
+  // 日次入力の編集を請求金額・明細に反映
+  const [dailyEdits] = useLocalStorage("jt_daily_edits", {});
   const issuedSet = new Set(issuedArr);
   const remindedSet = new Set(remindedArr);
   const setIssuedSet = (fn) => setIssuedArr(prev => Array.from(fn(new Set(prev))));
