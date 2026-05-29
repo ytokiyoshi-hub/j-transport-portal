@@ -5289,8 +5289,120 @@ const DispatchPage = ({ accent, setPage }) => {
 
       <div style={{ fontSize:11, color:"#9ca3af", marginTop:10, lineHeight:1.7 }}>
         ※ 配車・シフトの変更はブラウザに自動保存され、ページ移動・リロード後も保持されます。<br/>
-        ※ 配車先の選択肢は、各ドライバーが担当する荷主（荷主マスタの担当ドライバー設定）に基づいて表示されます。
+        ※ 配車先の選択肢は、各ドライバーが担当する荷主（荷主マスタの担当ドライバー設定）に基づいて表示されます。<br/>
+        ※「週を確定」または日付ヘッダの「未確定」チップで配車を確定できます。確定した日はロックされ、「請求連動」タブで実績（売上）と突合されます。
       </div>
+      </>
+      )}
+
+      {tab === "bill" && (() => {
+        const rows = clients.map(c=>{
+          const v = cm(c.id, billMonth, dailyEdits);
+          const di = dispatchPeriodInfo(c.id, billMonth);
+          const profit = v.s - v.p;
+          const margin = v.s>0 ? profit/v.s*100 : 0;
+          let status, sc, sb;
+          if(di.confirmedDays>0){ status = v.s>0?"連動済":"確定（実績待ち）"; sc=v.s>0?"#15803d":"#b45309"; sb=v.s>0?"#dcfce7":"#fef3c7"; }
+          else if(di.count>0){ status="未確定"; sc="#0369a1"; sb="#e0f2fe"; }
+          else if(v.s>0){ status="実績のみ"; sc="#64748b"; sb="#f1f5f9"; }
+          else { status="—"; sc="#cbd5e1"; sb="transparent"; }
+          return {c, v, di, profit, margin, status, sc, sb};
+        });
+        const tot = rows.reduce((a,r)=>({s:a.s+r.v.s,p:a.p+r.v.p,count:a.count+r.di.count,cc:a.cc+r.di.confirmedCount}),{s:0,p:0,count:0,cc:0});
+        const totProfit = tot.s - tot.p;
+        const totMargin = tot.s>0 ? totProfit/tot.s*100 : 0;
+        const needAttention = rows.filter(r=>r.status==="未確定"||r.status==="確定（実績待ち）").length;
+        const linked = rows.filter(r=>r.status==="連動済").length;
+        const navLink = (label, page, color) => (
+          <button onClick={()=>setPage(page)} style={{ padding:"7px 14px", borderRadius:6, border:`1.5px solid ${color}`, background:"#fff", color, fontSize:12.5, fontWeight:600, cursor:"pointer" }}>{label} →</button>
+        );
+        const kpis = [
+          { label:"請求対象 売上", value:fmt(tot.s), sub:mkLabel(billMonth)+"（締め期間ベース）", color:accent },
+          { label:"粗利", value:fmt(totProfit), sub:`粗利率 ${totMargin.toFixed(1)}%`, color:totProfit>=0?"#16a34a":"#dc2626" },
+          { label:"確定配車のべ", value:`${tot.cc}件`, sub:`配車のべ ${tot.count}件中`, color:"#15803d" },
+          { label:"要確認", value:`${needAttention}社`, sub:`連動済 ${linked}社`, color:needAttention>0?"#d97706":"#9ca3af" },
+        ];
+        return (
+          <div>
+            {/* 月ナビ + 関連ページ導線 */}
+            <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:14, flexWrap:"wrap" }}>
+              <button onClick={()=>shiftMonth(-1)} style={navBtn}>＜ 前月</button>
+              <span style={{ fontWeight:700, fontSize:15, minWidth:130, textAlign:"center" }}>{mkLabel(billMonth)}</span>
+              <button onClick={()=>shiftMonth(1)} style={navBtn}>翌月 ＞</button>
+              {billMonth!==REF_MONTH && <button onClick={()=>setBillMonth(REF_MONTH)} style={{ ...navBtn, border:`1.5px solid ${accent}`, background:accent+"10", color:accent, fontWeight:600 }}>今月</button>}
+              <div style={{ flex:1 }}/>
+              {navLink("収支管理","pl","#2563eb")}
+              {navLink("請求管理","invoice","#7c3aed")}
+              {navLink("日次実績入力","daily","#0891b2")}
+            </div>
+
+            {/* KPI */}
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12, marginBottom:16 }}>
+              {kpis.map(k=>(
+                <Card key={k.label} style={{ padding:"14px 18px" }}>
+                  <div style={{ fontSize:11, color:"#6b7280", marginBottom:6 }}>{k.label}</div>
+                  <div style={{ fontSize:21, fontWeight:700, color:k.color }}>{k.value}</div>
+                  <div style={{ fontSize:11, color:"#9ca3af", marginTop:4 }}>{k.sub}</div>
+                </Card>
+              ))}
+            </div>
+
+            {/* 突合テーブル */}
+            <Card style={{ overflowX:"auto", padding:0 }}>
+              <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
+                <thead>
+                  <tr style={{ background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
+                    {["荷主","締め","配車のべ","確定日","売上（請求）","支払","粗利","粗利率","連動状態"].map((h,i)=>(
+                      <th key={i} style={{ padding:"9px 12px", textAlign:i===0?"left":(i>=2&&i<=7?"right":"center"), color:"#6b7280", fontWeight:600, fontSize:11, whiteSpace:"nowrap",
+                        position:i===0?"sticky":"static", left:0, background:"#f9fafb", borderRight:i===0?"1px solid #94a3b8":"none", zIndex:i===0?2:1 }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map(r=>(
+                    <tr key={r.c.id} style={{ borderBottom:"1px solid #e5e7eb" }}>
+                      <td style={{ padding:"8px 12px", borderRight:"1px solid #e5e7eb", position:"sticky", left:0, background:"#fff", zIndex:1 }}>
+                        <div style={{ fontWeight:600, fontSize:12.5 }}>{DISPATCH_CLIENT_SHORT[r.c.id]||r.c.name}</div>
+                        <div style={{ fontSize:10, color:"#9ca3af" }}>{r.c.id}</div>
+                      </td>
+                      <td style={{ padding:"8px 12px", textAlign:"center", fontSize:11, color:"#6b7280", whiteSpace:"nowrap" }}>{r.c.billingCycle||"—"}</td>
+                      <td style={{ padding:"8px 12px", textAlign:"right", fontWeight:600, color:r.di.count>0?"#111827":"#cbd5e1" }}>{r.di.count||"—"}</td>
+                      <td style={{ padding:"8px 12px", textAlign:"right", fontWeight:600, color:r.di.confirmedDays>0?"#15803d":"#cbd5e1" }}>{r.di.confirmedDays?`${r.di.confirmedDays}日`:"—"}</td>
+                      <td style={{ padding:"8px 12px", textAlign:"right", fontWeight:700, color:r.v.s>0?"#111827":"#cbd5e1" }}>{r.v.s>0?fmt(r.v.s):"—"}</td>
+                      <td style={{ padding:"8px 12px", textAlign:"right", color:r.v.p>0?"#374151":"#cbd5e1" }}>{r.v.p>0?fmt(r.v.p):"—"}</td>
+                      <td style={{ padding:"8px 12px", textAlign:"right", fontWeight:600, color:r.profit>=0?"#16a34a":"#dc2626" }}>{r.v.s>0?fmt(r.profit):"—"}</td>
+                      <td style={{ padding:"8px 12px", textAlign:"right", fontSize:12, color:"#6b7280" }}>{r.v.s>0?r.margin.toFixed(1)+"%":"—"}</td>
+                      <td style={{ padding:"8px 12px", textAlign:"center" }}>
+                        <span style={{ fontSize:11, fontWeight:700, padding:"2px 8px", borderRadius:10, color:r.sc, background:r.sb }}>{r.status}</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr style={{ borderTop:"2px solid #94a3b8", background:"#f9fafb" }}>
+                    <td style={{ padding:"9px 12px", fontWeight:700, fontSize:12, color:"#374151", borderRight:"1px solid #94a3b8", position:"sticky", left:0, background:"#f9fafb", zIndex:1 }}>合計（{rows.length}社）</td>
+                    <td/>
+                    <td style={{ padding:"9px 12px", textAlign:"right", fontWeight:700 }}>{tot.count||"—"}</td>
+                    <td style={{ padding:"9px 12px", textAlign:"right", fontWeight:700, color:"#15803d" }}>{tot.cc||"—"}</td>
+                    <td style={{ padding:"9px 12px", textAlign:"right", fontWeight:700, color:accent }}>{fmt(tot.s)}</td>
+                    <td style={{ padding:"9px 12px", textAlign:"right", fontWeight:700 }}>{fmt(tot.p)}</td>
+                    <td style={{ padding:"9px 12px", textAlign:"right", fontWeight:700, color:totProfit>=0?"#16a34a":"#dc2626" }}>{fmt(totProfit)}</td>
+                    <td style={{ padding:"9px 12px", textAlign:"right", fontWeight:700, color:"#6b7280" }}>{totMargin.toFixed(1)}%</td>
+                    <td/>
+                  </tr>
+                </tfoot>
+              </table>
+            </Card>
+
+            <div style={{ fontSize:11, color:"#9ca3af", marginTop:10, lineHeight:1.8 }}>
+              ※「請求連動」は確定した配車を実績（日次実績・収支）と<b>読み取り専用</b>で突合する画面です。配車の確定によって請求金額そのものが書き換わることはありません。<br/>
+              ※ 売上・支払・粗利は各荷主の<b>締め期間</b>（{mkLabel(billMonth)}）で集計しています（収支管理・請求管理と同一ロジック）。<br/>
+              ※ 連動状態: <b style={{color:"#15803d"}}>連動済</b>=確定配車あり＋実績あり／<b style={{color:"#b45309"}}>確定（実績待ち）</b>=確定済だが実績未入力／<b style={{color:"#0369a1"}}>未確定</b>=配車はあるが未確定／<b style={{color:"#64748b"}}>実績のみ</b>=配車登録なし。<br/>
+              ※ 実際の請求書発行・入金消込は「請求管理」、金額の修正は「日次実績入力」で行ってください。
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 };
