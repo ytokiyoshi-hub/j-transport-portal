@@ -2941,6 +2941,16 @@ const Dashboard = ({ accent, setPage }) => {
   const days = ["日","月","火","水","木","金","土"];
   const dateStr = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日（${days[now.getDay()]}）`;
   const timeStr = now.toTimeString().slice(0,5);
+  // 日次入力の編集を反映するために live aggregation を行う
+  const [dailyEdits] = useLocalStorage("jt_daily_edits", {});
+  const liveAgg = monthAgg(REF_MONTH, dailyEdits);
+  const totalSell   = liveAgg.sell;
+  const totalPay    = liveAgg.pay;
+  const totalProfit = liveAgg.profit;
+  const monthlyActuals = clients.map(c => {
+    const h = cm(c.id, REF_MONTH, dailyEdits);
+    return { clientId: c.id, name: c.name, sell: h.s, pay: h.p, profit: h.s - h.p };
+  });
   const margin = totalSell>0?(totalProfit/totalSell*100).toFixed(1):0;
 
   const pendingInv = invoices.filter(i=>i.status==="未請求").reduce((s,i)=>s+i.amount,0);
