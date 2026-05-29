@@ -2583,9 +2583,11 @@ const DailyInputPage = ({ accent }) => {
     try { next.select && next.select(); } catch {}
   };
   const handleKeyDown = (e, di, ci) => {
+    // IME 変換中（半角/全角ONの日本語入力で数字確定 Enter 等）は処理しない。
+    // この Enter は IME 確定用で、移動 Enter とは別物。e.isComposing / keyCode 229 / e.nativeEvent.isComposing を全てチェック。
+    if (e.isComposing || e.keyCode === 229 || (e.nativeEvent && e.nativeEvent.isComposing)) return;
     if(e.key==='Enter'||e.key==='ArrowDown'){
       e.preventDefault(); e.stopPropagation();
-      // blur せず直接 focus 移動。focusCell 内で次セルを select() するので前の値が下のセルに残らない。
       focusCell(di+1,ci);
     }
     else if(e.key==='ArrowUp'){e.preventDefault(); e.stopPropagation(); focusCell(di-1,ci);}
