@@ -3242,7 +3242,8 @@ const AnnouncePage = ({ accent }) => {
   const [newPost, setNewPost] = React.useState({ title:"", cat:"運行", body:"" });
   const [extraPosts, setExtraPosts] = useLocalStorage("jt_extra_announces", []);
   const cats = ["すべて","重要","請求","運行","支払","人事","規程"];
-  const allAnnounces = [...announces, ...extraPosts];
+  // 新規投稿(extraPosts)を先頭に表示 → 「明日は全員休み」など即時周知すべき投稿が埋もれない
+  const allAnnounces = [...extraPosts, ...announces];
   const list = filter==="すべて" ? allAnnounces : allAnnounces.filter(a=>a.cat===filter);
   const unreadCount = allAnnounces.filter(a=>!readIds.includes(a.id)).length;
 
