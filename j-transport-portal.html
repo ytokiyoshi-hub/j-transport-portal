@@ -2485,18 +2485,29 @@ const DailyInputPage = ({ accent }) => {
   const todayComplete = isCurrentMonth && todayDayRow && !todayDayRow.isWeekend
     && todayCompletedCount===assignedDrivers.length;
 
-  const focusCell = (di, ci) => {
-    let d=di, c=ci;
+  const focusCell = (d, c) => {
     if (c<0){c=nCols-1;d--;} if(c>=nCols){c=0;d++;}
     if(d<0||d>=daysInMonth) return;
-    inputRefs.current[`${d}-${c}`]?.focus();
+    const next = inputRefs.current[`${d}-${c}`];
+    if (!next) return;
+    // 次セルの value を確実に state と同期させてから focus（ブラウザ autofill による「数字が下の行に入る」現象を防ぐ）
+    try { next.value = next.value; } catch {}
+    next.focus();
+    // テキスト全選択（次回入力が上書きされ、前のセルの値が残らない）
+    try { next.select && next.select(); } catch {}
   };
   const handleKeyDown = (e, di, ci) => {
-    if(e.key==='Enter'||e.key==='ArrowDown'){e.preventDefault();focusCell(di+1,ci);}
-    else if(e.key==='ArrowUp'){e.preventDefault();focusCell(di-1,ci);}
-    else if(e.key==='ArrowLeft'){e.preventDefault();if(ci>0)focusCell(di,ci-1);}
-    else if(e.key==='ArrowRight'){e.preventDefault();if(ci<nCols-1)focusCell(di,ci+1);}
-    else if(e.key==='Tab'){e.preventDefault();focusCell(di,ci+(e.shiftKey?-1:1));}
+    if(e.key==='Enter'||e.key==='ArrowDown'){
+      e.preventDefault(); e.stopPropagation();
+      // 現セルを blur して controlled value を確定 → 次フレームで次セル focus（autofill による次セル汚染を防ぐ）
+      const cur = e.currentTarget;
+      if (cur && cur.blur) cur.blur();
+      requestAnimationFrame(()=>focusCell(di+1,ci));
+    }
+    else if(e.key==='ArrowUp'){e.preventDefault(); e.stopPropagation(); focusCell(di-1,ci);}
+    else if(e.key==='ArrowLeft'){e.preventDefault(); e.stopPropagation(); if(ci>0)focusCell(di,ci-1);}
+    else if(e.key==='ArrowRight'){e.preventDefault(); e.stopPropagation(); if(ci<nCols-1)focusCell(di,ci+1);}
+    else if(e.key==='Tab'){e.preventDefault(); e.stopPropagation(); focusCell(di,ci+(e.shiftKey?-1:1));}
   };
 
   // 今日のクイック入力パネル用の十字キー＆Enter移動
