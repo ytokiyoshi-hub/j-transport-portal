@@ -952,11 +952,13 @@ const PLPage = ({ accent, setPage }) => {
   const [selectedMonth, setSelectedMonth] = React.useState(LATEST_DATA_MONTH);
   const [graphRange, setGraphRange] = React.useState("year"); // year | half
   const [tblSort, setTblSort] = React.useState({key:"sell", dir:"desc"});
+  // 日次入力ページからの編集を反映するために localStorage 経由で購読
+  const [dailyEdits] = useLocalStorage("jt_daily_edits", {});
 
   // === 当月・前月・年計の集計 ===
-  const cur = monthAgg(selectedMonth);
+  const cur = monthAgg(selectedMonth, dailyEdits);
   const prevMk = prevMonthKey(selectedMonth);
-  const prev = monthAgg(prevMk);
+  const prev = monthAgg(prevMk, dailyEdits);
   const curMargin = cur.sell>0 ? cur.profit/cur.sell*100 : 0;
   const prevMargin = prev.sell>0 ? prev.profit/prev.sell*100 : 0;
   const sellDelta = prev.sell>0 ? (cur.sell-prev.sell)/prev.sell*100 : 0;
