@@ -948,6 +948,68 @@ const monthAgg = (mk, dailyEdits) => {
 const mkLabel = (mk) => mk ? `${mk.slice(0,4)}年${parseInt(mk.slice(5,7))}月` : "—";
 const mkShort = (mk) => mk ? `${mk.slice(2,4)}/${parseInt(mk.slice(5,7))}` : "—";
 
+// 収支管理ページの上位荷主別サマリブロック
+const ParentClientSummaryBlock = ({ accent, selectedMonth, dailyEdits }) => {
+  const [parents] = useLocalStorage("jt_parent_clients", []);
+  const [parentMap] = useLocalStorage("jt_client_parent_map", {});
+  if (parents.length === 0) return null;
+  // 上位荷主ごとに集計、未紐付け分も「未設定」グループに
+  const groups = parents.map(p => {
+    const childIds = Object.keys(parentMap).filter(cid => parentMap[cid] === p.id);
+    let sell=0, pay=0;
+    childIds.forEach(cid => { const v = cm(cid, selectedMonth, dailyEdits); sell += v.s; pay += v.p; });
+    return { id:p.id, name:p.name, count:childIds.length, sell, pay, profit:sell-pay, rate: sell>0?(sell-pay)/sell*100:0 };
+  });
+  const unassigned = clients.filter(c => !parentMap[c.id]);
+  let usSell=0, usPay=0;
+  unassigned.forEach(c => { const v = cm(c.id, selectedMonth, dailyEdits); usSell += v.s; usPay += v.p; });
+  if (unassigned.length > 0) groups.push({ id:"__unassigned__", name:"未紐付け（個別）", count:unassigned.length, sell:usSell, pay:usPay, profit:usSell-usPay, rate: usSell>0?(usSell-usPay)/usSell*100:0 });
+  const sorted = [...groups].sort((a,b)=>b.sell-a.sell);
+  const total = sorted.reduce((a,g)=>a+g.sell, 0);
+
+  return (
+    <Card style={{ marginBottom:14, padding:0 }}>
+      <div style={{ padding:"12px 16px", borderBottom:"1px solid #e5e7eb", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+        <div style={{ fontSize:14, fontWeight:700 }}>上位荷主別 月次サマリ（{mkLabel(selectedMonth)}）</div>
+        <div style={{ fontSize:11, color:"#9ca3af" }}>下位荷主の合算を発注元単位で表示</div>
+      </div>
+      <table style={{ width:"100%", borderCollapse:"collapse", fontSize:12.5 }}>
+        <thead>
+          <tr style={{ background:"#f9fafb", borderBottom:"1px solid #e5e7eb" }}>
+            {["上位荷主","紐付け件数","売上","支払","粗利","粗利率","構成比"].map(h=>(
+              <th key={h} style={{ padding:"8px 14px", textAlign:h==="上位荷主"?"left":"right", color:"#6b7280", fontWeight:500, fontSize:11.5 }}>{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {sorted.map(g=>{
+            const pct = total>0 ? g.sell/total*100 : 0;
+            const isUnassigned = g.id === "__unassigned__";
+            return (
+              <tr key={g.id} style={{ borderBottom:"1px solid #f3f4f6", background:isUnassigned?"#fef3c7":"transparent" }}>
+                <td style={{ padding:"9px 14px", fontWeight:600, color:isUnassigned?"#92400e":"#1a1f2e" }}>{g.name}</td>
+                <td style={{ padding:"9px 14px", textAlign:"right", color:"#6b7280" }}>{g.count}件</td>
+                <td style={{ padding:"9px 14px", textAlign:"right", fontWeight:700, color:accent }}>{g.sell>0?fmt(g.sell):"—"}</td>
+                <td style={{ padding:"9px 14px", textAlign:"right", color:"#6b7280" }}>{g.pay>0?fmt(g.pay):"—"}</td>
+                <td style={{ padding:"9px 14px", textAlign:"right", fontWeight:700, color:g.profit>0?"#16a34a":"#9ca3af" }}>{g.profit!==0?fmt(g.profit):"—"}</td>
+                <td style={{ padding:"9px 14px", textAlign:"right", color:g.rate>=15?"#16a34a":g.rate>=10?"#d97706":"#dc2626" }}>{g.sell>0?g.rate.toFixed(1)+"%":"—"}</td>
+                <td style={{ padding:"9px 14px", textAlign:"right" }}>
+                  <div style={{ display:"inline-flex", alignItems:"center", gap:6 }}>
+                    <div style={{ width:60, height:6, background:"#e5e7eb", borderRadius:3, overflow:"hidden" }}>
+                      <div style={{ width:`${pct}%`, height:"100%", background:accent }}/>
+                    </div>
+                    <span style={{ fontSize:11, color:"#6b7280", minWidth:36 }}>{pct.toFixed(0)}%</span>
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </Card>
+  );
+};
+
 const PLPage = ({ accent, setPage }) => {
   const [selectedMonth, setSelectedMonth] = React.useState(LATEST_DATA_MONTH);
   const [graphRange, setGraphRange] = React.useState("year"); // year | half
