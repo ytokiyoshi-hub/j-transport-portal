@@ -2449,6 +2449,17 @@ const DailyInputPage = ({ accent }) => {
   const saveTimers = React.useRef({});
   const setVal = (dateStr, dId, rLabel, v) => {
     setEntries(p => ({ ...p, [dateStr]: { ...(p[dateStr]||{}), [dId]: { ...((p[dateStr]||{})[dId]||{}), [rLabel]: v } } }));
+    // localStorage の "jt_daily_edits" にも保存 → 収支管理・ダッシュボード等の他ページで即時反映
+    setDailyEdits(prev => {
+      const cid = selClient?.id;
+      if (!cid) return prev;
+      const next = { ...prev };
+      next[cid] = { ...(next[cid] || {}) };
+      next[cid][dateStr] = { ...(next[cid][dateStr] || {}) };
+      next[cid][dateStr][dId] = { ...(next[cid][dateStr][dId] || {}) };
+      next[cid][dateStr][dId][rLabel] = v;
+      return next;
+    });
     setSaved(false);
     const key = `${dateStr}|${dId}|${rLabel}`;
     if (saveTimers.current[key]) clearTimeout(saveTimers.current[key]);
