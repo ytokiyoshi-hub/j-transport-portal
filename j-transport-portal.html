@@ -5065,6 +5065,8 @@ const DispatchPage = ({ accent, setPage }) => {
     return s + drivers.filter(dr=>assignableClients(dr.id).length>0 && !getDisp(wd.dk,dr.id)).length;
   },0);
   const driverWeekDays = (did) => weekDays.filter(wd=>getDisp(wd.dk,did)).length;
+  const weekDispDays = weekDays.filter(wd=>dispCountFor(wd.dk)>0).length;
+  const weekConfirmedDays = weekDays.filter(wd=>isConfirmed(wd.dk)).length;
 
   const shiftCount = (dk,states) => { const day=shifts[dk]||{}; return Object.values(day).filter(v=>states.includes(v)).length; };
   const weekWork = weekDays.reduce((s,wd)=>s+shiftCount(wd.dk,["日勤","早番","遅番"]),0);
