@@ -2529,6 +2529,10 @@ const DailyInputPage = ({ accent }) => {
             /* 土日行は別色背景にして thead/ 平日と区別 */
             .jt-daily-tbl tbody tr.jt-weekend > td { background: #f1f5f9 !important; }
             .jt-daily-tbl tbody tr.jt-weekend > td:first-child { background: #e2e8f0 !important; }
+            /* 日付列 と データ列の境界を太線で確実に分離 */
+            .jt-daily-tbl thead th:first-child, .jt-daily-tbl tbody td:first-child { border-right: 2.5px solid #475569 !important; }
+            /* tbody 各セル：データ無し（空）時の背景も白で確実に */
+            .jt-daily-tbl tbody td { background-clip: padding-box; }
           `}</style>
           <table className="jt-daily-tbl" style={{ borderCollapse:"collapse", fontSize:12, whiteSpace:"nowrap", tableLayout:"fixed" }}>
             <colgroup>
