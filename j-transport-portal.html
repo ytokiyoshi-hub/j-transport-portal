@@ -2829,6 +2829,8 @@ const DailyInputPage = ({ accent }) => {
                             <input
                               ref={el=>inputRefs.current[`${di}-${ci}`]=el}
                               type="number" min="0"
+                              inputMode="numeric"
+                              lang="en"
                               name={`cell-${selClient.id}-${di}-${ci}`}
                               autoComplete="off" autoCorrect="off" spellCheck="false"
                               data-1p-ignore="true" data-lpignore="true" data-form-type="other"
@@ -2838,7 +2840,9 @@ const DailyInputPage = ({ accent }) => {
                               onChange={e=>setVal(day.dateStr,d.id,r.label,e.target.value)}
                               onFocus={(e)=>{ setFocusedCell({di,ci,dri}); try{e.target.select && e.target.select();}catch{} }}
                               onBlur={()=>setFocusedCell(null)}
-                              onKeyDown={e=>handleKeyDown(e,di,ci)}
+                              onCompositionStart={e=>{ e.target.dataset.composing='1'; }}
+                              onCompositionEnd={e=>{ delete e.target.dataset.composing; }}
+                              onKeyDown={e=>{ if(e.currentTarget.dataset.composing) return; handleKeyDown(e,di,ci); }}
                               style={{
                                 width:"100%", boxSizing:"border-box", padding:"6px 8px",
                                 border:"none", borderRadius:0, fontSize:13, textAlign:"center",
