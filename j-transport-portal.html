@@ -4903,6 +4903,322 @@ const VehiclesPage = ({ accent }) => {
   );
 };
 
+// ── 配車管理（DispatchPage）: 週間配車表 + シフト管理 ─────────────────────
+const DISPATCH_CLIENT_COLORS = {
+  "C-01":{bg:"#dbeafe",fg:"#1e40af"}, "C-02":{bg:"#fce7f3",fg:"#9d174d"}, "C-03":{bg:"#d1fae5",fg:"#065f46"},
+  "C-04":{bg:"#fef9c3",fg:"#854d0e"}, "C-05":{bg:"#ede9fe",fg:"#5b21b6"}, "C-06":{bg:"#e2e8f0",fg:"#334155"},
+  "C-07":{bg:"#dcfce7",fg:"#14532d"}, "C-08":{bg:"#fee2e2",fg:"#991b1b"}, "C-09":{bg:"#e0e7ff",fg:"#3730a3"},
+  "C-10":{bg:"#ffedd5",fg:"#9a3412"}, "C-11":{bg:"#fef3c7",fg:"#92400e"},
+};
+const DISPATCH_CLIENT_SHORT = {
+  "C-01":"ASKUL","C-02":"Bloomee","C-03":"アクア","C-04":"カウネット","C-05":"サーガ","C-06":"スポット",
+  "C-07":"ファミマ","C-08":"トムソン","C-09":"RICOH","C-10":"旭食品","C-11":"タイヤ",
+};
+const SHIFT_STATES = ["日勤","早番","遅番","有休","休"];
+const SHIFT_STYLE = {
+  "日勤":{bg:"#eff6ff",fg:"#2563eb"}, "早番":{bg:"#ecfeff",fg:"#0891b2"}, "遅番":{bg:"#fff7ed",fg:"#c2410c"},
+  "有休":{bg:"#f5f3ff",fg:"#7c3aed"}, "休":{bg:"#f1f5f9",fg:"#94a3b8"},
+};
+
+const DispatchPage = ({ accent }) => {
+  const [tab, setTab] = React.useState("dispatch"); // dispatch | shift
+  const [weekOffset, setWeekOffset] = React.useState(0);
+  const [dispatch, setDispatch] = useLocalStorage("jt_dispatch", {});
+  const [shifts, setShifts] = useLocalStorage("jt_shifts", {});
+
+  const now = new Date();
+  const dkOf = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+  const dow0 = now.getDay()===0?6:now.getDay()-1;
+  const mon = new Date(now); mon.setHours(0,0,0,0); mon.setDate(now.getDate()-dow0+weekOffset*7);
+  const dayNames = ["月","火","水","木","金","土","日"];
+  const weekDays = Array.from({length:7},(_,i)=>{
+    const d = new Date(mon); d.setDate(mon.getDate()+i);
+    return { date:d, dk:dkOf(d), label:`${d.getMonth()+1}/${d.getDate()}`, dayName:dayNames[i],
+      isToday:d.toDateString()===now.toDateString(), isSun:i===6, isSat:i===5, isWeekend:i>=5 };
+  });
+  const prevWeekDk = weekDays.map(wd=>{ const d=new Date(wd.date); d.setDate(d.getDate()-7); return dkOf(d); });
+  const weekLabel = `${weekDays[0].label}（月）〜 ${weekDays[6].label}（日）`;
+  const todayDk = dkOf(now);
+  const todayInWeek = weekDays.some(wd=>wd.dk===todayDk);
+
+  const assignableClients = (did) => clients.filter(c=>c.drivers.includes(did));
+  const vehByDriver = {}; vehicleMaster.forEach(v=>{ if(v.driverId) vehByDriver[v.driverId]=v; });
+  const selfDrivers = drivers.filter(d=>d.type==="自社");
+  const partnerDrivers = drivers.filter(d=>d.type==="協力会社");
+
+  // ── 配車データ操作 ──
+  const getDisp = (dk,did) => (dispatch[dk]&&dispatch[dk][did]) || "";
+  const setDisp = (dk,did,cid) => setDispatch(prev=>{
+    const next={...prev}; const day={...(next[dk]||{})};
+    if(!cid) delete day[did]; else day[did]=cid;
+    if(Object.keys(day).length) next[dk]=day; else delete next[dk];
+    return next;
+  });
+  const autoFillWeek = () => {
+    if(!confirm("空いている平日（月〜金）に、各ドライバーの主担当荷主を自動配車します。\n（入力済みのセルは変更しません）")) return;
+    setDispatch(prev=>{
+      const next={...prev};
+      weekDays.forEach(wd=>{
+        if(wd.isWeekend) return;
+        const day={...(next[wd.dk]||{})};
+        drivers.forEach(dr=>{ if(day[dr.id]) return; const ac=assignableClients(dr.id); if(ac.length) day[dr.id]=ac[0].id; });
+        if(Object.keys(day).length) next[wd.dk]=day;
+      });
+      return next;
+    });
+  };
+  const copyPrevWeek = () => {
+    if(!confirm("先週の配車を今週にコピーします。今週の既存入力は上書きされます。よろしいですか？")) return;
+    setDispatch(prev=>{
+      const next={...prev};
+      weekDays.forEach((wd,i)=>{ const src=prev[prevWeekDk[i]]; if(src&&Object.keys(src).length) next[wd.dk]={...src}; else delete next[wd.dk]; });
+      return next;
+    });
+  };
+  const clearWeekDisp = () => {
+    if(!confirm("今週の配車をすべてクリアします。よろしいですか？")) return;
+    setDispatch(prev=>{ const next={...prev}; weekDays.forEach(wd=>delete next[wd.dk]); return next; });
+  };
+
+  // ── シフトデータ操作 ──
+  const getShift = (dk,did) => (shifts[dk]&&shifts[dk][did]) || "";
+  const cycleShift = (dk,did) => {
+    const cur=getShift(dk,did); const idx=SHIFT_STATES.indexOf(cur);
+    const nx = idx<0 ? SHIFT_STATES[0] : (idx===SHIFT_STATES.length-1 ? "" : SHIFT_STATES[idx+1]);
+    setShifts(prev=>{
+      const next={...prev}; const day={...(next[dk]||{})};
+      if(!nx) delete day[did]; else day[did]=nx;
+      if(Object.keys(day).length) next[dk]=day; else delete next[dk];
+      return next;
+    });
+  };
+  const fillShiftWeek = () => {
+    if(!confirm("平日（月〜金）を全ドライバー「日勤」、土日を「休」に一括設定します。\n（入力済みも上書きされます）")) return;
+    setShifts(prev=>{
+      const next={...prev};
+      weekDays.forEach(wd=>{ const day={}; drivers.forEach(dr=>{ day[dr.id]=wd.isWeekend?"休":"日勤"; }); next[wd.dk]=day; });
+      return next;
+    });
+  };
+  const clearShiftWeek = () => {
+    if(!confirm("今週のシフトをすべてクリアします。よろしいですか？")) return;
+    setShifts(prev=>{ const next={...prev}; weekDays.forEach(wd=>delete next[wd.dk]); return next; });
+  };
+
+  // ── 集計 ──
+  const dispCountFor = (dk) => { const day=dispatch[dk]||{}; return Object.values(day).filter(v=>v).length; };
+  const weekDispTotal = weekDays.reduce((s,wd)=>s+dispCountFor(wd.dk),0);
+  const weekdayDispTotal = weekDays.filter(wd=>!wd.isWeekend).reduce((s,wd)=>s+dispCountFor(wd.dk),0);
+  const activeDriverIds = new Set();
+  weekDays.forEach(wd=>{ const day=dispatch[wd.dk]||{}; Object.keys(day).forEach(did=>{ if(day[did]) activeDriverIds.add(did); }); });
+  const openSlots = weekDays.filter(wd=>!wd.isWeekend).reduce((s,wd)=>{
+    return s + drivers.filter(dr=>assignableClients(dr.id).length>0 && !getDisp(wd.dk,dr.id)).length;
+  },0);
+  const driverWeekDays = (did) => weekDays.filter(wd=>getDisp(wd.dk,did)).length;
+
+  const shiftCount = (dk,states) => { const day=shifts[dk]||{}; return Object.values(day).filter(v=>states.includes(v)).length; };
+  const weekWork = weekDays.reduce((s,wd)=>s+shiftCount(wd.dk,["日勤","早番","遅番"]),0);
+  const weekPaid = weekDays.reduce((s,wd)=>s+shiftCount(wd.dk,["有休"]),0);
+  const weekOff  = weekDays.reduce((s,wd)=>s+shiftCount(wd.dk,["休"]),0);
+  const driverShiftWorkDays = (did) => weekDays.filter(wd=>["日勤","早番","遅番"].includes(getShift(wd.dk,did))).length;
+
+  // 荷主別の週間配車件数（凡例兼サマリ）
+  const clientWeekCount = {};
+  weekDays.forEach(wd=>{ const day=dispatch[wd.dk]||{}; Object.values(day).forEach(cid=>{ if(cid) clientWeekCount[cid]=(clientWeekCount[cid]||0)+1; }); });
+
+  const navBtn = { padding:"5px 12px", border:"1.5px solid #e5e7eb", borderRadius:4, background:"#fff", cursor:"pointer", fontSize:13 };
+  const actBtn = (primary)=>({ padding:"6px 12px", borderRadius:6, border:`1.5px solid ${primary?accent:"#e5e7eb"}`, background:primary?accent:"#fff", color:primary?"#fff":"#374151", fontSize:12, fontWeight:600, cursor:"pointer" });
+
+  const DriverCell = ({ dr }) => {
+    const v = vehByDriver[dr.id];
+    return (
+      <td style={{ padding:"8px 12px", borderRight:"1px solid #94a3b8", position:"sticky", left:0, background:"#fff", zIndex:1 }}>
+        <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+          <Avatar name={dr.name} size={26} bg={dr.type==="自社"?"#dbeafe":"#ede9fe"} color={dr.type==="自社"?"#1e40af":"#5b21b6"}/>
+          <div style={{ minWidth:0 }}>
+            <div style={{ fontWeight:600, fontSize:12, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", maxWidth:130 }}>{dr.name}</div>
+            <div style={{ fontSize:10, color:"#9ca3af" }}>{v ? `${v.id}・${v.type}` : dr.type}</div>
+          </div>
+        </div>
+      </td>
+    );
+  };
+
+  return (
+    <div>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-end", marginBottom:14 }}>
+        <div>
+          <div style={{ fontSize:20, fontWeight:700 }}>配車管理</div>
+          <div style={{ fontSize:12, color:"#9ca3af", marginTop:2 }}>ドライバー {drivers.length}名・荷主 {clients.length}社／週単位で配車とシフトを編集・保存できます</div>
+        </div>
+      </div>
+
+      {/* タブ */}
+      <div style={{ display:"flex", gap:4, marginBottom:16, borderBottom:"2px solid #475569" }}>
+        {[["dispatch","週間配車表"],["shift","シフト管理"]].map(([v,l])=>(
+          <button key={v} onClick={()=>setTab(v)}
+            style={{ padding:"8px 20px", border:"none", background:"transparent", fontWeight:tab===v?700:400,
+              color:tab===v?accent:"#6b7280", fontSize:14, cursor:"pointer",
+              borderBottom:tab===v?`2px solid ${accent}`:"2px solid transparent", marginBottom:-2 }}>{l}</button>
+        ))}
+      </div>
+
+      {/* 週ナビ + 操作 */}
+      <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:14, flexWrap:"wrap" }}>
+        <button onClick={()=>setWeekOffset(w=>w-1)} style={navBtn}>＜ 前週</button>
+        <span style={{ fontWeight:700, fontSize:14, minWidth:170, textAlign:"center" }}>{weekLabel}</span>
+        <button onClick={()=>setWeekOffset(w=>w+1)} style={navBtn}>次週 ＞</button>
+        {weekOffset!==0 && <button onClick={()=>setWeekOffset(0)} style={{ ...navBtn, border:`1.5px solid ${accent}`, background:accent+"10", color:accent, fontWeight:600 }}>今週</button>}
+        <div style={{ flex:1 }}/>
+        {tab==="dispatch" ? (
+          <>
+            <button onClick={autoFillWeek} style={actBtn(true)}>平日を自動配車</button>
+            <button onClick={copyPrevWeek} style={actBtn(false)}>先週をコピー</button>
+            <button onClick={clearWeekDisp} style={{ ...actBtn(false), color:"#dc2626", borderColor:"#fecaca" }}>週をクリア</button>
+          </>
+        ) : (
+          <>
+            <button onClick={fillShiftWeek} style={actBtn(true)}>平日=日勤/土日=休</button>
+            <button onClick={clearShiftWeek} style={{ ...actBtn(false), color:"#dc2626", borderColor:"#fecaca" }}>週をクリア</button>
+          </>
+        )}
+      </div>
+
+      {/* KPI */}
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12, marginBottom:16 }}>
+        {(tab==="dispatch" ? [
+          { label:"今週のべ配車", value:`${weekDispTotal}件`, sub:`平日 ${weekdayDispTotal}件`, color:accent },
+          { label:"平日1日あたり", value:`${Math.round(weekdayDispTotal/5)}件`, sub:"月〜金平均", color:"#0891b2" },
+          { label:"稼働ドライバー", value:`${activeDriverIds.size}名`, sub:`全${drivers.length}名中`, color:"#16a34a" },
+          { label:"空き枠（平日）", value:`${openSlots}`, sub:"未配車セル", color:openSlots>0?"#d97706":"#9ca3af" },
+        ] : [
+          { label:"今週のべ出勤", value:`${weekWork}件`, sub:"日勤+早番+遅番", color:"#2563eb" },
+          { label:"今週のべ休", value:`${weekOff}件`, sub:"公休等", color:"#64748b" },
+          { label:"今週のべ有休", value:`${weekPaid}件`, sub:"有給取得", color:"#7c3aed" },
+          { label:todayInWeek?"本日 出勤予定":"シフト設定済み", value: todayInWeek?`${shiftCount(todayDk,["日勤","早番","遅番"])}名`:`${weekDays.filter(wd=>Object.keys(shifts[wd.dk]||{}).length).length}日`, sub: todayInWeek?`休 ${shiftCount(todayDk,["休","有休"])}名`:"今週", color:"#16a34a" },
+        ]).map(k=>(
+          <Card key={k.label} style={{ padding:"14px 18px" }}>
+            <div style={{ fontSize:11, color:"#6b7280", marginBottom:6 }}>{k.label}</div>
+            <div style={{ fontSize:22, fontWeight:700, color:k.color }}>{k.value}</div>
+            <div style={{ fontSize:11, color:"#9ca3af", marginTop:4 }}>{k.sub}</div>
+          </Card>
+        ))}
+      </div>
+
+      {/* 凡例 */}
+      <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:12, alignItems:"center" }}>
+        <span style={{ fontSize:11, color:"#9ca3af", marginRight:2 }}>{tab==="dispatch"?"荷主:":"区分:"}</span>
+        {tab==="dispatch"
+          ? clients.map(c=>{ const col=DISPATCH_CLIENT_COLORS[c.id]||{bg:"#f1f5f9",fg:"#374151"}; const n=clientWeekCount[c.id]||0; return (
+              <span key={c.id} style={{ display:"inline-flex", alignItems:"center", gap:4, padding:"2px 8px", borderRadius:4, fontSize:11, fontWeight:600, background:col.bg, color:col.fg }}>
+                {DISPATCH_CLIENT_SHORT[c.id]||c.name}{n>0 && <span style={{ fontSize:10, opacity:.75 }}>×{n}</span>}
+              </span>
+            ); })
+          : SHIFT_STATES.map(s=>{ const st=SHIFT_STYLE[s]; return (
+              <span key={s} style={{ padding:"2px 10px", borderRadius:4, fontSize:11, fontWeight:600, background:st.bg, color:st.fg }}>{s}</span>
+            ); })}
+        <span style={{ fontSize:11, color:"#cbd5e1" }}>
+          {tab==="dispatch" ? "｜セルのプルダウンで配車先を選択" : "｜セルをクリックで状態を切替（日勤→早番→遅番→有休→休→空）"}
+        </span>
+      </div>
+
+      <Card style={{ overflowX:"auto", padding:0 }}>
+        <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
+          <thead>
+            <tr style={{ background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
+              <th style={{ padding:"10px 12px", textAlign:"left", color:"#6b7280", fontWeight:600, fontSize:11, minWidth:170, borderRight:"1px solid #94a3b8", position:"sticky", left:0, background:"#f9fafb", zIndex:2 }}>ドライバー</th>
+              {weekDays.map((d,i)=>(
+                <th key={i} style={{ padding:"8px 6px", textAlign:"center", minWidth:96,
+                  color:d.isSun?"#dc2626":d.isSat?"#2563eb":d.isToday?accent:"#6b7280", fontWeight:d.isToday?700:600, fontSize:12,
+                  background:d.isToday?accent+"0a":"transparent", borderRight:"1px solid #94a3b8" }}>
+                  <div>{d.label}</div>
+                  <div style={{ fontSize:10 }}>（{d.dayName}）</div>
+                  {d.isToday && <div style={{ fontSize:9, background:accent, color:"#fff", borderRadius:2, padding:"1px 4px", marginTop:2, display:"inline-block" }}>TODAY</div>}
+                </th>
+              ))}
+              <th style={{ padding:"8px 8px", textAlign:"center", color:"#6b7280", fontWeight:600, fontSize:11, minWidth:56 }}>{tab==="dispatch"?"配車":"出勤"}<br/>日数</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[["自社",selfDrivers],["協力会社",partnerDrivers]].map(([grpLabel,grpDrivers])=>(
+              <React.Fragment key={grpLabel}>
+                <tr>
+                  <td colSpan={9} style={{ padding:"5px 12px", background:"#f1f5f9", fontSize:11, fontWeight:700, color:"#64748b", borderBottom:"1px solid #cbd5e1", position:"sticky", left:0 }}>
+                    {grpLabel}（{grpDrivers.length}名）
+                  </td>
+                </tr>
+                {grpDrivers.map(dr=>{
+                  const ac = assignableClients(dr.id);
+                  return (
+                    <tr key={dr.id} style={{ borderBottom:"1px solid #e5e7eb" }}>
+                      <DriverCell dr={dr}/>
+                      {weekDays.map((wd,i)=>{
+                        const cellBg = wd.isToday?accent+"06":wd.isWeekend?"#fafafa":"transparent";
+                        if(tab==="dispatch"){
+                          const cur = getDisp(wd.dk,dr.id);
+                          const col = cur ? (DISPATCH_CLIENT_COLORS[cur]||{bg:"#f1f5f9",fg:"#374151"}) : null;
+                          return (
+                            <td key={i} style={{ padding:"4px 5px", textAlign:"center", background:cellBg, borderRight:"1px solid #e5e7eb" }}>
+                              <select value={cur} onChange={e=>setDisp(wd.dk,dr.id,e.target.value)}
+                                style={{ width:"100%", maxWidth:88, padding:"4px 4px", borderRadius:4, fontSize:11, fontWeight:cur?600:400, fontFamily:"inherit", cursor:"pointer",
+                                  border:cur?`1px solid ${col.fg}33`:"1px dashed #d1d5db",
+                                  background:cur?col.bg:"#fff", color:cur?col.fg:"#9ca3af", textAlignLast:"center", appearance:"none", outline:"none" }}>
+                                <option value="">－ 空き</option>
+                                {ac.map(c=><option key={c.id} value={c.id}>{DISPATCH_CLIENT_SHORT[c.id]||c.name}</option>)}
+                              </select>
+                            </td>
+                          );
+                        } else {
+                          const cur = getShift(wd.dk,dr.id);
+                          const st = cur ? SHIFT_STYLE[cur] : null;
+                          return (
+                            <td key={i} style={{ padding:"4px 5px", textAlign:"center", background:cellBg, borderRight:"1px solid #e5e7eb" }}>
+                              <button onClick={()=>cycleShift(wd.dk,dr.id)} title="クリックで切替"
+                                style={{ width:"100%", maxWidth:84, padding:"5px 4px", borderRadius:4, fontSize:11.5, fontWeight:cur?700:400, fontFamily:"inherit", cursor:"pointer",
+                                  border:cur?`1px solid ${st.fg}33`:"1px dashed #d1d5db", background:cur?st.bg:"#fff", color:cur?st.fg:"#cbd5e1" }}>
+                                {cur || "－"}
+                              </button>
+                            </td>
+                          );
+                        }
+                      })}
+                      <td style={{ padding:"6px 8px", textAlign:"center", fontWeight:700, fontSize:13, color: (tab==="dispatch"?driverWeekDays(dr.id):driverShiftWorkDays(dr.id))>0?"#111827":"#cbd5e1" }}>
+                        {tab==="dispatch" ? driverWeekDays(dr.id) : driverShiftWorkDays(dr.id)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </React.Fragment>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr style={{ borderTop:"2px solid #94a3b8", background:"#f9fafb" }}>
+              <td style={{ padding:"8px 12px", fontWeight:700, fontSize:11, color:"#6b7280", borderRight:"1px solid #94a3b8", position:"sticky", left:0, background:"#f9fafb" }}>
+                {tab==="dispatch" ? "配車数 / 日" : "出勤 / 日"}
+              </td>
+              {weekDays.map((wd,i)=>{
+                const n = tab==="dispatch" ? dispCountFor(wd.dk) : shiftCount(wd.dk,["日勤","早番","遅番"]);
+                return (
+                  <td key={i} style={{ padding:"8px 6px", textAlign:"center", fontWeight:700, fontSize:13, borderRight:"1px solid #94a3b8",
+                    color:n>0?accent:"#cbd5e1", background:wd.isToday?accent+"0a":"transparent" }}>{n}</td>
+                );
+              })}
+              <td style={{ padding:"8px 8px", textAlign:"center", fontWeight:700, fontSize:13, color:accent }}>
+                {tab==="dispatch" ? weekDispTotal : weekWork}
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </Card>
+
+      <div style={{ fontSize:11, color:"#9ca3af", marginTop:10, lineHeight:1.7 }}>
+        ※ 配車・シフトの変更はブラウザに自動保存され、ページ移動・リロード後も保持されます。<br/>
+        ※ 配車先の選択肢は、各ドライバーが担当する荷主（荷主マスタの担当ドライバー設定）に基づいて表示されます。
+      </div>
+    </div>
+  );
+};
+
 const AttendancePage = ({ accent }) => {
   const [tab, setTab] = React.useState("attendance"); // "attendance" | "schedule"
   const [expandedDriver, setExpandedDriver] = React.useState(null);
