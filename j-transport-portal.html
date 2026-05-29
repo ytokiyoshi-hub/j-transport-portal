@@ -877,12 +877,71 @@ const prevMonthKey = (mk) => {
   return m===1 ? `${y-1}-12` : `${y}-${String(m-1).padStart(2,'0')}`;
 };
 
-// クライアント×月の値取得
-const cm = (cid, mk) => (monthlyHistory[cid] && monthlyHistory[cid][mk]) || {s:0,p:0};
+// 請求期間を計算（締日アウェア）
+const billingPeriodFor = (mk, cycle) => {
+  const [y, m] = mk.split('-').map(Number);
+  const last = new Date(y, m, 0).getDate();
+  const pad = (n) => String(n).padStart(2,'0');
+  if (!cycle || cycle === '案件都度' || cycle.indexOf('末締め') >= 0) {
+    return { start: `${mk}-01`, end: `${mk}-${pad(last)}` };
+  }
+  const m20 = cycle.match(/^翌月(\d+)日締め/);
+  if (m20) {
+    const cd = parseInt(m20[1]);
+    const prev = new Date(y, m-2, cd+1);
+    return {
+      start: `${prev.getFullYear()}-${pad(prev.getMonth()+1)}-${pad(prev.getDate())}`,
+      end: `${mk}-${pad(cd)}`,
+    };
+  }
+  return { start: `${mk}-01`, end: `${mk}-${pad(last)}` };
+};
+
+// dailyActuals + dailyEdits の merge から、cid×monthKey の billing-period 合計を計算
+const computeLiveSum = (cid, mk, dailyEdits) => {
+  const c = clients.find(x => x.id === cid);
+  if (!c) return null;
+  const bp = billingPeriodFor(mk, c.billingCycle);
+  const baseDA = (typeof dailyActuals !== 'undefined' && dailyActuals[cid]) || {};
+  const editsDA = (dailyEdits && dailyEdits[cid]) || {};
+  const dateSet = new Set([...Object.keys(baseDA), ...Object.keys(editsDA)]);
+  let sell=0, pay=0, hasAny=false;
+  for (const date of dateSet) {
+    if (date < bp.start || date > bp.end) continue;
+    const baseDay = baseDA[date] || {};
+    const editDay = editsDA[date] || {};
+    const drivers = new Set([...Object.keys(baseDay), ...Object.keys(editDay)]);
+    for (const did of drivers) {
+      const baseDrv = baseDay[did] || {};
+      const editDrv = editDay[did] || {};
+      const labels = new Set([...Object.keys(baseDrv), ...Object.keys(editDrv)]);
+      for (const lbl of labels) {
+        // edits の値が優先（"" も「ユーザーが0にした」として尊重）
+        const editV = editDrv[lbl];
+        const baseV = baseDrv[lbl];
+        const v = editV !== undefined ? editV : baseV;
+        const cnt = Number(v) || 0;
+        const r = c.rates.find(rr => rr.label === lbl);
+        if (!r || cnt === 0) continue;
+        sell += cnt * r.sell;
+        pay += cnt * r.pay;
+        hasAny = true;
+      }
+    }
+  }
+  return hasAny ? { s: sell, p: pay } : null;
+};
+
+// クライアント×月の値取得（live edits を優先、なければ monthlyHistory フォールバック）
+const cm = (cid, mk, dailyEdits) => {
+  const live = computeLiveSum(cid, mk, dailyEdits);
+  if (live) return live;
+  return (monthlyHistory[cid] && monthlyHistory[cid][mk]) || {s:0,p:0};
+};
 // 全社合算
-const monthAgg = (mk) => {
+const monthAgg = (mk, dailyEdits) => {
   let sell=0, pay=0;
-  clients.forEach(c => { const h = cm(c.id, mk); sell += h.s; pay += h.p; });
+  clients.forEach(c => { const h = cm(c.id, mk, dailyEdits); sell += h.s; pay += h.p; });
   return { sell, pay, profit: sell-pay };
 };
 // 月ラベル整形
