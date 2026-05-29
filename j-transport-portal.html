@@ -2014,9 +2014,47 @@ const InvoicePage = ({ accent }) => {
           </table>
         </Card>
 
-        {sel && (
-          <Card style={{ padding:20 }}>
-            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:16 }}>
+        {sel && (() => {
+          const _clientObj = clients.find(c => c.name === sel.client) || {};
+          const _today = new Date();
+          const _issueDate = sel.issued || `${_today.getFullYear()}年${_today.getMonth()+1}月${_today.getDate()}日`;
+          const _subtotal = sel.amount;
+          const _tax = Math.round(_subtotal * 0.1);
+          const _total = _subtotal + _tax;
+          return (
+          <Card style={{ padding:20 }} className="invoice-print">
+            {/* 印刷時のみ表示する正式な請求書ヘッダ */}
+            <div className="invoice-print-header" style={{ display:"none" }}>
+              <div style={{ textAlign:"center", marginBottom:24 }}>
+                <div style={{ fontSize:24, fontWeight:700, letterSpacing:8, borderBottom:"3px double #111827", display:"inline-block", padding:"4px 32px 8px" }}>請　求　書</div>
+              </div>
+              <div style={{ display:"flex", justifyContent:"space-between", marginBottom:18 }}>
+                <div>
+                  <div style={{ fontSize:14, marginBottom:8 }}>{_clientObj.name||sel.client} <span style={{ fontSize:12 }}>御中</span></div>
+                  {_clientObj.address && <div style={{ fontSize:11, color:"#374151" }}>{_clientObj.address}</div>}
+                  {_clientObj.person && <div style={{ fontSize:11, color:"#374151", marginTop:2 }}>ご担当: {_clientObj.person} 様</div>}
+                  <div style={{ marginTop:12, fontSize:11 }}>下記の通りご請求申し上げます。</div>
+                  <div style={{ marginTop:14, padding:"8px 14px", background:"#f1f5f9", display:"inline-block" }}>
+                    <span style={{ fontSize:11, color:"#6b7280" }}>合計金額（税込）</span><br/>
+                    <span style={{ fontSize:22, fontWeight:700 }}>¥{Number(_total).toLocaleString()}</span>
+                  </div>
+                </div>
+                <div style={{ textAlign:"right", fontSize:11 }}>
+                  <div>請求書番号: <b>{sel.id}</b></div>
+                  <div>発行日: {_issueDate}</div>
+                  <div>支払期限: {sel.due}</div>
+                  <div>対象月: {sel.period}</div>
+                  <div style={{ marginTop:14, border:"1px solid #94a3b8", padding:10, textAlign:"left" }}>
+                    <div style={{ fontWeight:700, fontSize:13, marginBottom:4 }}>J transport株式会社</div>
+                    <div>〒XXX-XXXX 東京都〇〇区〇〇 1-2-3</div>
+                    <div>TEL: 03-XXXX-XXXX</div>
+                    <div>登録番号: T1234567890123</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* 通常画面用ヘッダ（印刷時非表示） */}
+            <div className="no-print" style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:16 }}>
               <div>
                 <div style={{ fontSize:11, color:"#9ca3af", marginBottom:3 }}>{sel.id}</div>
                 <div style={{ fontSize:16, fontWeight:700 }}>{sel.client}</div>
@@ -2025,7 +2063,7 @@ const InvoicePage = ({ accent }) => {
               <button onClick={()=>setSel(null)} style={{ background:"none", border:"none", fontSize:18, color:"#9ca3af", cursor:"pointer", lineHeight:1 }}>×</button>
             </div>
 
-            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8, marginBottom:16 }}>
+            <div className="no-print" style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8, marginBottom:16 }}>
               {[
                 { l:"請求金額", v:fmt(sel.amount), c:accent },
                 { l:"状態", v:<StatusBadge label={issuedSet.has(sel.id)?"請求済":sel.status}/>, c:null },
@@ -2039,12 +2077,12 @@ const InvoicePage = ({ accent }) => {
               ))}
             </div>
 
-            <div style={{ fontSize:12, fontWeight:700, color:"#9ca3af", marginBottom:10 }}>請求明細（概算）</div>
+            <div style={{ fontSize:12, fontWeight:700, color:"#374151", marginBottom:10 }}>請求明細</div>
             <table style={{ width:"100%", borderCollapse:"collapse", fontSize:12, marginBottom:14 }}>
               <thead>
                 <tr style={{ background:"#f9fafb" }}>
                   {["区分","数量","単価","小計"].map(h=>(
-                    <th key={h} style={{ padding:"6px 10px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:11, borderBottom:"1px solid #94a3b8" }}>{h}</th>
+                    <th key={h} style={{ padding:"6px 10px", textAlign:"left", color:"#374151", fontWeight:600, fontSize:11, borderTop:"1px solid #111827", borderBottom:"1px solid #94a3b8" }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -2052,19 +2090,28 @@ const InvoicePage = ({ accent }) => {
                 {buildLineItems(sel).map((item,ii)=>(
                   <tr key={ii} style={{ borderBottom:"1px solid #94a3b8" }}>
                     <td style={{ padding:"7px 10px", fontWeight:500 }}>{item.label}</td>
-                    <td style={{ padding:"7px 10px", color:"#6b7280" }}>{typeof item.qty==="number"?item.qty.toLocaleString():item.qty}{item.unit}</td>
-                    <td style={{ padding:"7px 10px", color:"#6b7280" }}>{item.unitPrice>0?fmt(item.unitPrice):"—"}</td>
-                    <td style={{ padding:"7px 10px", fontWeight:600 }}>{typeof item.amount==="number"?fmt(item.amount):"—"}</td>
+                    <td style={{ padding:"7px 10px", color:"#374151", textAlign:"right" }}>{typeof item.qty==="number"?item.qty.toLocaleString():item.qty}{item.unit}</td>
+                    <td style={{ padding:"7px 10px", color:"#374151", textAlign:"right" }}>{item.unitPrice>0?fmt(item.unitPrice):"—"}</td>
+                    <td style={{ padding:"7px 10px", fontWeight:600, textAlign:"right" }}>{typeof item.amount==="number"?fmt(item.amount):"—"}</td>
                   </tr>
                 ))}
               </tbody>
               <tfoot>
-                <tr style={{ borderTop:"2px solid #475569", background:"#f9fafb" }}>
-                  <td colSpan={3} style={{ padding:"8px 10px", fontWeight:700 }}>合計</td>
-                  <td style={{ padding:"8px 10px", fontWeight:700, color:accent }}>{fmt(sel.amount)}</td>
+                <tr><td colSpan={3} style={{ padding:"6px 10px", textAlign:"right", fontWeight:500, fontSize:11 }}>小計</td><td style={{ padding:"6px 10px", textAlign:"right", fontWeight:600 }}>{fmt(_subtotal)}</td></tr>
+                <tr><td colSpan={3} style={{ padding:"6px 10px", textAlign:"right", fontWeight:500, fontSize:11 }}>消費税（10%）</td><td style={{ padding:"6px 10px", textAlign:"right", fontWeight:600 }}>{fmt(_tax)}</td></tr>
+                <tr style={{ borderTop:"2px solid #111827", background:"#f9fafb" }}>
+                  <td colSpan={3} style={{ padding:"10px", textAlign:"right", fontWeight:700, fontSize:13 }}>合計（税込）</td>
+                  <td style={{ padding:"10px", fontWeight:700, color:"#111827", textAlign:"right", fontSize:14 }}>{fmt(_total)}</td>
                 </tr>
               </tfoot>
             </table>
+
+            {/* 印刷時のみ: 振込先・備考 */}
+            <div className="invoice-print-footer" style={{ display:"none", marginTop:18, paddingTop:12, borderTop:"1px solid #94a3b8", fontSize:11 }}>
+              <div style={{ fontWeight:700, marginBottom:4 }}>お振込先</div>
+              <div>〇〇銀行 〇〇支店 普通 1234567 J transport株式会社</div>
+              <div style={{ marginTop:10, fontSize:10, color:"#6b7280" }}>※ 恐れ入りますが、振込手数料は貴社にてご負担くださいますようお願い申し上げます。</div>
+            </div>
 
             <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
               {sel.status==="未請求" && !issuedSet.has(sel.id) && (
