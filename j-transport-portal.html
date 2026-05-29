@@ -2499,10 +2499,8 @@ const DailyInputPage = ({ accent }) => {
   const handleKeyDown = (e, di, ci) => {
     if(e.key==='Enter'||e.key==='ArrowDown'){
       e.preventDefault(); e.stopPropagation();
-      // 現セルを blur して controlled value を確定 → 次フレームで次セル focus（autofill による次セル汚染を防ぐ）
-      const cur = e.currentTarget;
-      if (cur && cur.blur) cur.blur();
-      requestAnimationFrame(()=>focusCell(di+1,ci));
+      // blur せず直接 focus 移動。focusCell 内で次セルを select() するので前の値が下のセルに残らない。
+      focusCell(di+1,ci);
     }
     else if(e.key==='ArrowUp'){e.preventDefault(); e.stopPropagation(); focusCell(di-1,ci);}
     else if(e.key==='ArrowLeft'){e.preventDefault(); e.stopPropagation(); if(ci>0)focusCell(di,ci-1);}
