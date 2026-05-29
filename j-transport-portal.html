@@ -2393,6 +2393,32 @@ const ClientPage = ({ accent, setPage }) => {
           <Card style={{ padding:20, alignSelf:"start" }}>
             <div style={{ fontWeight:700, fontSize:16, marginBottom:4 }}>{sel.name}</div>
             <div style={{ fontSize:12, color:"#9ca3af", marginBottom:16 }}>{sel.area}</div>
+
+            {/* 上位荷主 */}
+            <div style={{ background:"#f8fafc", borderRadius:6, padding:12, marginBottom:14, border:"1px solid #e5e7eb" }}>
+              <div style={{ fontSize:11, fontWeight:700, color:"#6b7280", marginBottom:6 }}>上位荷主（発注元・親会社）</div>
+              <select value={parentMap[sel.id] || ""} onChange={e=>assignParent(sel.id, e.target.value)}
+                style={{ width:"100%", padding:"7px 10px", border:`1.5px solid ${parentMap[sel.id] ? accent+"60" : "#fcd34d"}`, borderRadius:5, fontSize:13, background:"#fff", color:parentMap[sel.id]?accent:"#92400e", fontWeight:600, cursor:"pointer" }}>
+                <option value="">— 未設定 —</option>
+                {parents.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}
+              </select>
+              {parents.length === 0 && (
+                <div style={{ fontSize:11, color:"#92400e", marginTop:6 }}>
+                  ⚠ 上位荷主が未登録です。先に <button onClick={()=>setPage("parentclients")} style={{ background:"none", border:"none", color:accent, textDecoration:"underline", cursor:"pointer", padding:0, fontSize:11, fontWeight:600 }}>上位荷主管理</button> で登録してください。
+                </div>
+              )}
+              {parentMap[sel.id] && (() => {
+                const p = parents.find(x=>x.id===parentMap[sel.id]);
+                if (!p) return null;
+                return (
+                  <div style={{ fontSize:11, color:"#6b7280", marginTop:6 }}>
+                    {p.contact && <div>👤 {p.contact}</div>}
+                    {p.tel && <div>📞 {p.tel}</div>}
+                  </div>
+                );
+              })()}
+            </div>
+
             <div style={{ fontSize:12, fontWeight:700, color:"#9ca3af", marginBottom:8 }}>単価一覧</div>
             {sel.rates.map((r,ri)=>(
               <div key={ri} style={{ display:"flex", justifyContent:"space-between", fontSize:13, padding:"7px 0", borderBottom:"1px solid #94a3b8" }}>
