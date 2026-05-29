@@ -2113,7 +2113,7 @@ const InvoicePage = ({ accent }) => {
               <div style={{ marginTop:10, fontSize:10, color:"#6b7280" }}>※ 恐れ入りますが、振込手数料は貴社にてご負担くださいますようお願い申し上げます。</div>
             </div>
 
-            <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+            <div className="no-print" style={{ display:"flex", flexDirection:"column", gap:8 }}>
               {sel.status==="未請求" && !issuedSet.has(sel.id) && (
                 <button onClick={()=>setIssuedSet(s=>new Set([...s,sel.id]))}
                   style={{ padding:"10px", background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:600, fontSize:13, cursor:"pointer" }}>
@@ -2126,12 +2126,28 @@ const InvoicePage = ({ accent }) => {
                   督促メールを送付
                 </button>
               )}
-              <button onClick={()=>window.print()} style={{ padding:"10px", background:"#fff", color:"#374151", border:"1.5px solid #e5e7eb", borderRadius:6, fontWeight:600, fontSize:13, cursor:"pointer" }}>
-                PDFで印刷
+              <button onClick={()=>{
+                // 印刷専用ヘッダ/フッタを一時表示してから印刷
+                const card = document.querySelector('.invoice-print');
+                if (!card) { window.print(); return; }
+                const hdr = card.querySelector('.invoice-print-header');
+                const ftr = card.querySelector('.invoice-print-footer');
+                if (hdr) hdr.style.display = 'block';
+                if (ftr) ftr.style.display = 'block';
+                setTimeout(() => {
+                  window.print();
+                  setTimeout(() => {
+                    if (hdr) hdr.style.display = 'none';
+                    if (ftr) ftr.style.display = 'none';
+                  }, 500);
+                }, 80);
+              }} style={{ padding:"10px", background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:600, fontSize:13, cursor:"pointer" }}>
+                請求書を印刷 / PDF保存
               </button>
             </div>
           </Card>
-        )}
+          );
+        })()}
       </div>
     </div>
   );
