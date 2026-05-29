@@ -5220,6 +5220,19 @@ const DispatchPage = ({ accent, setPage }) => {
                         if(tab==="dispatch"){
                           const cur = getDisp(wd.dk,dr.id);
                           const col = cur ? (DISPATCH_CLIENT_COLORS[cur]||{bg:"#f1f5f9",fg:"#374151"}) : null;
+                          if(isConfirmed(wd.dk)){
+                            if(!cur) return <td key={i} style={{ padding:"4px 5px", textAlign:"center", background:cellBg, borderRight:"1px solid #e5e7eb", color:"#d1d5db", fontSize:11 }}>－</td>;
+                            const cb = cellBilling(cur,wd.dk,dr.id);
+                            return (
+                              <td key={i} style={{ padding:"4px 5px", textAlign:"center", background:cellBg, borderRight:"1px solid #e5e7eb" }}>
+                                <div title="確定済（編集ロック中）／実績と連動" style={{ maxWidth:88, margin:"0 auto", padding:"3px 4px", borderRadius:4,
+                                  border:`1px solid ${col.fg}55`, background:col.bg, color:col.fg }}>
+                                  <div style={{ fontSize:11, fontWeight:600, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>🔒{DISPATCH_CLIENT_SHORT[cur]||cur}</div>
+                                  <div style={{ fontSize:9, fontWeight:700, marginTop:1, opacity:.85 }}>{cb.has?fmt(cb.sell):"実績待ち"}</div>
+                                </div>
+                              </td>
+                            );
+                          }
                           return (
                             <td key={i} style={{ padding:"4px 5px", textAlign:"center", background:cellBg, borderRight:"1px solid #e5e7eb" }}>
                               <select value={cur} onChange={e=>setDisp(wd.dk,dr.id,e.target.value)}
