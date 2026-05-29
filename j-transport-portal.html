@@ -4160,6 +4160,249 @@ const TodoPage = ({ accent }) => {
   );
 };
 
+// ── ParentClientsPage（上位荷主管理）─────────────────────────────────────
+// 上位荷主 = ASKUL等の上にいる発注元/元請け/親会社。下位荷主(現clients)を束ねて管理する。
+// データ: jt_parent_clients = [{id, name, contact, tel, address, email, note, createdAt}]
+// 紐付け: jt_client_parent_map = {clientId: parentId}
+const ParentClientsPage = ({ accent }) => {
+  const [parents, setParents] = useLocalStorage("jt_parent_clients", []);
+  const [parentMap, setParentMap] = useLocalStorage("jt_client_parent_map", {});
+  const [dailyEdits] = useLocalStorage("jt_daily_edits", {});
+  const [showForm, setShowForm] = React.useState(false);
+  const [draft, setDraft] = React.useState({ name:"", contact:"", tel:"", address:"", email:"", note:"" });
+  const [editingId, setEditingId] = React.useState(null);
+  const [sel, setSel] = React.useState(null);
+
+  // 各上位荷主に紐付く下位荷主の一覧と当月集計
+  const refMonth = REF_MONTH;
+  const parentSummaries = parents.map(p => {
+    const childIds = Object.keys(parentMap).filter(cid => parentMap[cid] === p.id);
+    let sell=0, pay=0;
+    const children = childIds.map(cid => {
+      const c = clients.find(x => x.id === cid);
+      if (!c) return null;
+      const v = cm(cid, refMonth, dailyEdits);
+      sell += v.s; pay += v.p;
+      return { id: cid, name: c.name, sell: v.s, pay: v.p };
+    }).filter(Boolean);
+    return { ...p, children, totalSell: sell, totalPay: pay, totalProfit: sell-pay };
+  });
+
+  const submit = () => {
+    if (!draft.name.trim()) return;
+    if (editingId) {
+      setParents(prev => prev.map(p => p.id===editingId ? { ...p, ...draft, name: draft.name.trim() } : p));
+    } else {
+      const id = "PC-" + String(Date.now()).slice(-8);
+      setParents(prev => [...prev, { id, ...draft, name: draft.name.trim(), createdAt: Date.now() }]);
+    }
+    setDraft({ name:"", contact:"", tel:"", address:"", email:"", note:"" });
+    setShowForm(false); setEditingId(null);
+  };
+  const startEdit = (p) => {
+    setEditingId(p.id);
+    setDraft({ name:p.name, contact:p.contact||"", tel:p.tel||"", address:p.address||"", email:p.email||"", note:p.note||"" });
+    setShowForm(true);
+  };
+  const remove = (id) => {
+    if (!confirm("この上位荷主を削除しますか？\n紐付いている荷主は「未設定」に戻ります。")) return;
+    setParents(prev => prev.filter(p => p.id !== id));
+    const nextMap = { ...parentMap };
+    Object.keys(nextMap).forEach(cid => { if (nextMap[cid] === id) delete nextMap[cid]; });
+    setParentMap(nextMap);
+    if (sel?.id === id) setSel(null);
+  };
+  const assignChild = (clientId, parentId) => {
+    const next = { ...parentMap };
+    if (parentId === "") delete next[clientId];
+    else next[clientId] = parentId;
+    setParentMap(next);
+  };
+
+  const unassignedClients = clients.filter(c => !parentMap[c.id]);
+
+  return (
+    <div>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
+        <div>
+          <div style={{ fontSize:20, fontWeight:700 }}>上位荷主管理</div>
+          <div style={{ fontSize:12, color:"#9ca3af", marginTop:2 }}>発注元・元請け・親会社など、現在の荷主の上位にあたる取引先を登録</div>
+        </div>
+        <button onClick={()=>{ setShowForm(!showForm); setEditingId(null); setDraft({ name:"", contact:"", tel:"", address:"", email:"", note:"" }); }}
+          style={{ padding:"7px 16px", background:showForm?"#f3f4f6":accent, color:showForm?"#374151":"#fff", border:"none", borderRadius:6, fontSize:13, fontWeight:600, cursor:"pointer" }}>
+          {showForm?"キャンセル":"+ 新規上位荷主を登録"}
+        </button>
+      </div>
+
+      {showForm && (
+        <Card style={{ padding:20, marginBottom:20, border:`1.5px solid ${accent}30` }}>
+          <div style={{ fontSize:13, fontWeight:700, marginBottom:14 }}>{editingId?"上位荷主を編集":"新規上位荷主登録"}</div>
+          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, marginBottom:10 }}>
+            <div>
+              <div style={{ fontSize:11, color:"#6b7280", marginBottom:4, fontWeight:600 }}>会社名・組織名（必須）</div>
+              <input value={draft.name} onChange={e=>setDraft(p=>({...p,name:e.target.value}))} placeholder="例：○○ロジスティクス株式会社"
+                style={{ width:"100%", padding:"8px 12px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, boxSizing:"border-box" }}/>
+            </div>
+            <div>
+              <div style={{ fontSize:11, color:"#6b7280", marginBottom:4, fontWeight:600 }}>担当者</div>
+              <input value={draft.contact} onChange={e=>setDraft(p=>({...p,contact:e.target.value}))} placeholder="例：田中 太郎"
+                style={{ width:"100%", padding:"8px 12px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, boxSizing:"border-box" }}/>
+            </div>
+            <div>
+              <div style={{ fontSize:11, color:"#6b7280", marginBottom:4, fontWeight:600 }}>電話番号</div>
+              <input value={draft.tel} onChange={e=>setDraft(p=>({...p,tel:e.target.value}))} placeholder="例：03-1234-5678"
+                style={{ width:"100%", padding:"8px 12px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, boxSizing:"border-box" }}/>
+            </div>
+            <div>
+              <div style={{ fontSize:11, color:"#6b7280", marginBottom:4, fontWeight:600 }}>メールアドレス</div>
+              <input value={draft.email} onChange={e=>setDraft(p=>({...p,email:e.target.value}))} placeholder="例：contact@example.com"
+                style={{ width:"100%", padding:"8px 12px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, boxSizing:"border-box" }}/>
+            </div>
+            <div style={{ gridColumn:"1 / 3" }}>
+              <div style={{ fontSize:11, color:"#6b7280", marginBottom:4, fontWeight:600 }}>住所</div>
+              <input value={draft.address} onChange={e=>setDraft(p=>({...p,address:e.target.value}))} placeholder="例：東京都港区..."
+                style={{ width:"100%", padding:"8px 12px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, boxSizing:"border-box" }}/>
+            </div>
+            <div style={{ gridColumn:"1 / 3" }}>
+              <div style={{ fontSize:11, color:"#6b7280", marginBottom:4, fontWeight:600 }}>メモ</div>
+              <textarea value={draft.note} onChange={e=>setDraft(p=>({...p,note:e.target.value}))} placeholder="契約条件・特記事項など"
+                style={{ width:"100%", padding:"8px 12px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, resize:"vertical", minHeight:60, fontFamily:"inherit", boxSizing:"border-box", outline:"none" }}/>
+            </div>
+          </div>
+          <button onClick={submit} disabled={!draft.name.trim()}
+            style={{ padding:"8px 20px", background:draft.name.trim()?accent:"#cbd5e1", color:"#fff", border:"none", borderRadius:6, fontSize:13, fontWeight:600, cursor:draft.name.trim()?"pointer":"not-allowed" }}>
+            {editingId?"保存":"登録"}
+          </button>
+        </Card>
+      )}
+
+      {/* サマリ */}
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:12, marginBottom:16 }}>
+        <Card style={{ padding:"16px 20px" }}>
+          <div style={{ fontSize:11, color:"#9ca3af", marginBottom:6 }}>登録上位荷主</div>
+          <div style={{ fontSize:20, fontWeight:700, color:accent }}>{parents.length}社</div>
+        </Card>
+        <Card style={{ padding:"16px 20px" }}>
+          <div style={{ fontSize:11, color:"#9ca3af", marginBottom:6 }}>紐付け済 荷主</div>
+          <div style={{ fontSize:20, fontWeight:700, color:"#16a34a" }}>{Object.keys(parentMap).length} / {clients.length}件</div>
+        </Card>
+        <Card style={{ padding:"16px 20px" }}>
+          <div style={{ fontSize:11, color:"#9ca3af", marginBottom:6 }}>未紐付け 荷主</div>
+          <div style={{ fontSize:20, fontWeight:700, color:unassignedClients.length>0?"#d97706":"#9ca3af" }}>{unassignedClients.length}件</div>
+        </Card>
+      </div>
+
+      <div style={{ display:"grid", gridTemplateColumns: sel?"1fr 400px":"1fr", gap:16, alignItems:"start" }}>
+        <Card>
+          {parents.length === 0 ? (
+            <div style={{ padding:40, textAlign:"center", color:"#9ca3af", fontSize:13 }}>
+              上位荷主が未登録です。「+ 新規上位荷主を登録」から追加してください。
+            </div>
+          ) : (
+            <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
+              <thead>
+                <tr style={{ background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
+                  {["上位荷主","担当者","紐付け荷主","当月売上","当月粗利","操作"].map(h=>(
+                    <th key={h} style={{ padding:"9px 14px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:12, whiteSpace:"nowrap" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {parentSummaries.map((p,i)=>(
+                  <tr key={p.id} onClick={()=>setSel(sel?.id===p.id?null:p)}
+                    style={{ borderBottom:"1px solid #e5e7eb", cursor:"pointer", background:sel?.id===p.id?"#f0f9ff":"transparent" }}>
+                    <td style={{ padding:"12px 14px", fontWeight:600 }}>
+                      <div>{p.name}</div>
+                      <div style={{ fontSize:11, color:"#9ca3af", fontWeight:400 }}>{p.id}</div>
+                    </td>
+                    <td style={{ padding:"12px 14px", color:"#374151" }}>{p.contact||"—"}</td>
+                    <td style={{ padding:"12px 14px" }}>
+                      {p.children.length===0 ? <span style={{ color:"#9ca3af", fontSize:12 }}>未紐付け</span> : (
+                        <div style={{ display:"flex", flexWrap:"wrap", gap:4 }}>
+                          {p.children.map(c=>(
+                            <span key={c.id} style={{ fontSize:11, background:accent+"15", color:accent, padding:"2px 8px", borderRadius:3 }}>{c.name}</span>
+                          ))}
+                        </div>
+                      )}
+                    </td>
+                    <td style={{ padding:"12px 14px", fontWeight:700, color:accent }}>{p.totalSell>0?fmt(p.totalSell):"—"}</td>
+                    <td style={{ padding:"12px 14px", fontWeight:700, color:"#16a34a" }}>{p.totalProfit>0?fmt(p.totalProfit):"—"}</td>
+                    <td style={{ padding:"12px 14px" }}>
+                      <div style={{ display:"flex", gap:4 }} onClick={e=>e.stopPropagation()}>
+                        <button onClick={()=>startEdit(p)} style={{ padding:"4px 10px", background:"#fff", color:"#6b7280", border:"1px solid #e5e7eb", borderRadius:4, fontSize:11, cursor:"pointer" }}>編集</button>
+                        <button onClick={()=>remove(p.id)} style={{ padding:"4px 10px", background:"#fff", color:"#dc2626", border:"1px solid #fecaca", borderRadius:4, fontSize:11, cursor:"pointer" }}>削除</button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </Card>
+
+        {sel && (
+          <Card style={{ padding:20 }}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:12 }}>
+              <div>
+                <div style={{ fontSize:16, fontWeight:700 }}>{sel.name}</div>
+                <div style={{ fontSize:11, color:"#9ca3af" }}>{sel.id}</div>
+              </div>
+              <button onClick={()=>setSel(null)} style={{ background:"none", border:"none", fontSize:18, cursor:"pointer", color:"#9ca3af" }}>×</button>
+            </div>
+            {sel.contact && <div style={{ fontSize:12, color:"#374151", marginBottom:4 }}>👤 {sel.contact}</div>}
+            {sel.tel && <div style={{ fontSize:12, color:"#374151", marginBottom:4 }}>📞 {sel.tel}</div>}
+            {sel.email && <div style={{ fontSize:12, color:"#374151", marginBottom:4 }}>✉ {sel.email}</div>}
+            {sel.address && <div style={{ fontSize:12, color:"#374151", marginBottom:8 }}>📍 {sel.address}</div>}
+            {sel.note && <div style={{ fontSize:12, color:"#6b7280", background:"#f9fafb", padding:8, borderRadius:4, whiteSpace:"pre-wrap", marginBottom:12 }}>{sel.note}</div>}
+
+            <div style={{ borderTop:"1px solid #e5e7eb", paddingTop:14, marginTop:8 }}>
+              <div style={{ fontSize:12, fontWeight:700, color:"#6b7280", marginBottom:8 }}>紐付け荷主の管理</div>
+              <div style={{ marginBottom:10 }}>
+                {sel.children.length>0 ? sel.children.map(c=>(
+                  <div key={c.id} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"6px 8px", background:"#f9fafb", borderRadius:4, marginBottom:4 }}>
+                    <div>
+                      <span style={{ fontSize:12, fontWeight:600 }}>{c.name}</span>
+                      <span style={{ fontSize:10, color:"#9ca3af", marginLeft:6 }}>{fmt(c.sell)}</span>
+                    </div>
+                    <button onClick={()=>assignChild(c.id, "")} style={{ padding:"2px 8px", background:"#fff", color:"#dc2626", border:"1px solid #fecaca", borderRadius:3, fontSize:10, cursor:"pointer" }}>解除</button>
+                  </div>
+                )) : <div style={{ fontSize:11, color:"#9ca3af", padding:6 }}>紐付けされた荷主はまだありません</div>}
+              </div>
+              <div style={{ fontSize:11, fontWeight:600, color:"#6b7280", marginBottom:4 }}>＋ 荷主を紐付ける</div>
+              <select onChange={e=>{ if (e.target.value) { assignChild(e.target.value, sel.id); e.target.value=""; } }}
+                style={{ width:"100%", padding:"6px 10px", border:"1.5px solid #e5e7eb", borderRadius:4, fontSize:12, background:"#fff", cursor:"pointer" }}>
+                <option value="">— 荷主を選択 —</option>
+                {clients.filter(c => !parentMap[c.id] || parentMap[c.id]===sel.id).filter(c => !sel.children.some(ch=>ch.id===c.id)).map(c=>(
+                  <option key={c.id} value={c.id}>{c.name}（{c.id}）</option>
+                ))}
+              </select>
+            </div>
+          </Card>
+        )}
+      </div>
+
+      {/* 未紐付けリスト */}
+      {unassignedClients.length>0 && (
+        <Card style={{ padding:16, marginTop:16 }}>
+          <div style={{ fontSize:12, fontWeight:700, color:"#d97706", marginBottom:10 }}>⚠ 上位荷主が未設定の荷主 ({unassignedClients.length}件)</div>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(220px, 1fr))", gap:8 }}>
+            {unassignedClients.map(c=>(
+              <div key={c.id} style={{ display:"flex", gap:6, alignItems:"center", padding:"6px 8px", background:"#fef3c7", borderRadius:4 }}>
+                <span style={{ fontSize:12, fontWeight:600, flexShrink:0 }}>{c.name}</span>
+                <select onChange={e=>assignChild(c.id, e.target.value)} defaultValue=""
+                  style={{ flex:1, padding:"4px 6px", border:"1px solid #fcd34d", borderRadius:3, fontSize:11, background:"#fff" }}>
+                  <option value="">— 上位荷主に紐付け —</option>
+                  {parents.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}
+                </select>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+    </div>
+  );
+};
+
 // ── AppearanceSettings（配色テーマ設定画面） ─────────────────────────────
 function AppearanceSettings() {
   const { theme, setTheme, previewTheme, resetTheme, presets } = useTheme();
