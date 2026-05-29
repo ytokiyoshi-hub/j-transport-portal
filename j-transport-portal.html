@@ -2481,7 +2481,7 @@ const DailyInputPage = ({ accent }) => {
     }, 400);
   };
 
-  // 月・荷主切替時に実績をロード（埋め込みdailyActuals → Supabaseで上書き）
+  // 月・荷主切替時に実績をロード（埋め込みdailyActuals → localStorage edits で上書き → Supabaseで上書き）
   React.useEffect(() => {
     const start = bStartStr;
     const end = bEndStr;
@@ -2493,6 +2493,18 @@ const DailyInputPage = ({ accent }) => {
       Object.keys(da[ds]).forEach(did => {
         next[ds][did] = {};
         Object.keys(da[ds][did]).forEach(lbl => { next[ds][did][lbl] = String(da[ds][did][lbl]); });
+      });
+    });
+    // 同 client の localStorage edits を重ねる（ユーザー手入力が消えないように）
+    const editsForClient = (dailyEdits && dailyEdits[selClient?.id]) || {};
+    Object.keys(editsForClient).forEach(ds => {
+      if (ds < start || ds > end) return;
+      if (!next[ds]) next[ds] = {};
+      Object.keys(editsForClient[ds]).forEach(did => {
+        if (!next[ds][did]) next[ds][did] = {};
+        Object.keys(editsForClient[ds][did]).forEach(lbl => {
+          next[ds][did][lbl] = String(editsForClient[ds][did][lbl]);
+        });
       });
     });
     setEntries(next);
