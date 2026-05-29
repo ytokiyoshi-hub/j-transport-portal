@@ -1232,6 +1232,9 @@ const PLPage = ({ accent, setPage }) => {
         </Card>
       </div>
 
+      {/* ── 上位荷主別サマリ ── */}
+      <ParentClientSummaryBlock accent={accent} selectedMonth={selectedMonth} dailyEdits={dailyEdits}/>
+
       {/* ── 荷主別 詳細表（拡張） ── */}
       <Card style={{ marginBottom:14 }}>
         <SH title={`荷主別 月次収支詳細（${mkLabel(selectedMonth)}）`}/>
