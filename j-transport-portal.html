@@ -2348,6 +2348,8 @@ const DailyInputPage = ({ accent }) => {
   const [entries, setEntries] = React.useState({});
   const [saved, setSaved] = React.useState(false);
   const [cycleOverrides] = useLocalStorage("jt_cycle_overrides", {});
+  // 日次編集を localStorage に保持 → 収支管理など他ページに反映する
+  const [dailyEdits, setDailyEdits] = useLocalStorage("jt_daily_edits", {});
   const [focusedCell, setFocusedCell] = React.useState(null);
   const [confirmClear, setConfirmClear] = React.useState(false);
   const inputRefs = React.useRef({});
