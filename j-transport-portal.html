@@ -5190,6 +5190,13 @@ const DispatchPage = ({ accent, setPage }) => {
                   <div>{d.label}</div>
                   <div style={{ fontSize:10 }}>（{d.dayName}）</div>
                   {d.isToday && <div style={{ fontSize:9, background:accent, color:"#fff", borderRadius:2, padding:"1px 4px", marginTop:2, display:"inline-block" }}>TODAY</div>}
+                  {tab==="dispatch" && dispCountFor(d.dk)>0 && (
+                    <div onClick={()=>toggleConfirmDay(d.dk)} title={isConfirmed(d.dk)?"クリックで確定解除":"クリックでこの日を確定"}
+                      style={{ marginTop:3, fontSize:9, fontWeight:700, borderRadius:3, padding:"1px 5px", cursor:"pointer", display:"block", marginLeft:"auto", marginRight:"auto", width:"fit-content",
+                        background:isConfirmed(d.dk)?"#dcfce7":"#fef3c7", color:isConfirmed(d.dk)?"#15803d":"#b45309", border:`1px solid ${isConfirmed(d.dk)?"#86efac":"#fde68a"}` }}>
+                      {isConfirmed(d.dk)?"確定済":"未確定"}
+                    </div>
+                  )}
                 </th>
               ))}
               <th style={{ padding:"8px 8px", textAlign:"center", color:"#6b7280", fontWeight:600, fontSize:11, minWidth:56 }}>{tab==="dispatch"?"配車":"出勤"}<br/>日数</th>
