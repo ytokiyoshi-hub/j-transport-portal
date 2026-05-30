@@ -1948,7 +1948,7 @@ const printDriverSlip = (d, monthLabel) => {
   @page { size:A4 portrait; margin:14mm; }
 </style></head><body>${clone.outerHTML}</body></html>`);
   doc.close();
-  setTimeout(() => { try { iframe.contentWindow.focus(); iframe.contentWindow.print(); } catch(e) { alert("印刷に失敗: "+e.message); } setTimeout(()=>iframe.remove(),1500); }, 250);
+  setTimeout(() => { try { iframe.contentWindow.focus(); iframe.contentWindow.print(); } catch(e) { showToast("印刷に失敗: "+e.message, "error"); } setTimeout(()=>iframe.remove(),1500); }, 250);
 };
 
 // 支払明細書モーダル（A4印刷対応・ドライバー向け＝粗利は非表示）。driver は buildDriverStatement の戻り値
