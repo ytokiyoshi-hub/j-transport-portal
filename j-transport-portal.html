@@ -5365,7 +5365,7 @@ const DispatchPage = ({ accent, setPage }) => {
 
   // 荷主×締め期間内の「配車のべ件数 / 確定日数」（読み取り専用）
   const dispatchPeriodInfo = (cid, mk) => {
-    const c = clients.find(x=>x.id===cid) || {};
+    const c = resolveClientById(cid) || {};
     const bp = billingPeriodFor(mk, c.billingCycle);
     let count=0, confirmedCount=0; const days=new Set(); const cfDays=new Set();
     Object.keys(dispatch).forEach(dk=>{
