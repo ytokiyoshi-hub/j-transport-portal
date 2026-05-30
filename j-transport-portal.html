@@ -913,6 +913,9 @@ const billingPeriodFor = (mk, cycle) => {
   return { start: `${mk}-01`, end: `${mk}-${pad(last)}` };
 };
 
+// 締め日の選択肢（billingPeriodFor がパースできる値と揃える）。単価マスタ・荷主管理で共用
+const CYCLE_OPTIONS = ["—","当月末締め","翌月5日締め","翌月10日締め","翌月15日締め","翌月20日締め","翌月25日締め","翌月末締め"];
+
 // dailyActuals + dailyEdits の merge から、cid×monthKey の billing-period 合計を計算
 const computeLiveSum = (cid, mk, dailyEdits) => {
   const c = resolveClientById(cid);
