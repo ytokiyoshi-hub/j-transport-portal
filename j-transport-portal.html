@@ -2362,7 +2362,7 @@ const InvoicePage = ({ accent }) => {
   // 画面に表示中の正式請求書(.invoice-paper)を iframe 経由で印刷／PDF保存
   const printPaper = (inv) => {
     const paper = document.querySelector(".invoice-paper");
-    if (!paper) { alert("請求書が見つかりません"); return; }
+    if (!paper) { showToast("請求書が見つかりません", "error"); return; }
     const clone = paper.cloneNode(true);
     const old = document.getElementById("jt-print-iframe");
     if (old) old.remove();
