@@ -2813,7 +2813,7 @@ const DailyInputPage = ({ accent }) => {
   const assignedDrivers = _activeIds.size > 0
     ? _allCandidates.filter(d => _activeIds.has(d.id))
     : _allCandidates;
-  const rates = selClient.rates.filter(r => r.sell > 0 || r.pay > 0);
+  const rates = effectiveClient(selClient).rates.filter(r => r.sell > 0 || r.pay > 0);
   const nD = assignedDrivers.length;
   const nR = rates.length;
   const nCols = nD * nR;
