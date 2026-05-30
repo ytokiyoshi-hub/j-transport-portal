@@ -2151,8 +2151,39 @@ const InvoicePage = ({ accent }) => {
     const bp = periodOf(inv).bp;
     const fmtDate = (d) => { const [y,m,dd] = d.split("-"); return `${y}年${parseInt(m)}月${parseInt(dd)}日`; };
     const today = new Date();
+
+    // 日別明細（請求期間内の各稼働日 × 区分別 数量・金額）
+    const baseDA = (typeof dailyActuals !== "undefined" && dailyActuals[baseClient.id]) || {};
+    const editsDA = (dailyEdits && dailyEdits[baseClient.id]) || {};
+    const dates = [...new Set([...Object.keys(baseDA), ...Object.keys(editsDA)])]
+      .filter(d => d >= bp.start && d <= bp.end).sort();
+    const labelSet = new Set();
+    const dailyRows = dates.map(date => {
+      const bDay = baseDA[date] || {}, eDay = editsDA[date] || {};
+      const per = {};
+      let amount = 0;
+      for (const did of new Set([...Object.keys(bDay), ...Object.keys(eDay)])) {
+        const bd = bDay[did] || {}, ed = eDay[did] || {};
+        for (const lbl of new Set([...Object.keys(bd), ...Object.keys(ed)])) {
+          const v = ed[lbl] !== undefined ? ed[lbl] : bd[lbl];
+          const cnt = Number(v) || 0;
+          if (!cnt) continue;
+          per[lbl] = (per[lbl] || 0) + cnt;
+          labelSet.add(lbl);
+          const r = (baseClient.rates || []).find(rr => rr.label === lbl);
+          if (r) amount += cnt * r.sell;
+        }
+      }
+      const wd = ["日","月","火","水","木","金","土"][new Date(date).getDay()];
+      return { date, dow: wd, per, amount };
+    }).filter(r => Object.keys(r.per).length);
+    const dailyLabels = [
+      ...(baseClient.rates || []).filter(r => labelSet.has(r.label)).map(r => r.label),
+      ...[...labelSet].filter(l => !(baseClient.rates || []).some(r => r.label === l)),
+    ];
+
     return {
-      clientObj, items, subtotal, tax, total,
+      clientObj, items, subtotal, tax, total, dailyRows, dailyLabels,
       period: `${fmtDate(bp.start)} 〜 ${fmtDate(bp.end)}`,
       issueDate: inv.issued || `${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日`,
     };
