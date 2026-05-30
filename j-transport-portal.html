@@ -4758,20 +4758,27 @@ const ParentClientsPage = ({ accent }) => {
     return { ...p, children, totalSell: sell, totalPay: pay, totalProfit: sell-pay };
   });
 
-  const submit = () => {
-    if (!draft.name.trim()) return;
-    const wasEdit = !!editingId;
+  // 自動保存: フィールドからフォーカスが外れた時点で反映。名称が入った最初の1回だけ新規作成（ref で二重作成を防止）
+  const committedIdRef = React.useRef(null);
+  const commitParent = () => {
+    const name = draft.name.trim();
+    if (!name) return;
     if (editingId) {
-      setParents(prev => prev.map(p => p.id===editingId ? { ...p, ...draft, name: draft.name.trim() } : p));
+      setParents(prev => prev.map(p => p.id===editingId ? { ...p, ...draft, name } : p));
+      showToast("保存しました");
+    } else if (committedIdRef.current) {
+      const id = committedIdRef.current;
+      setParents(prev => prev.map(p => p.id===id ? { ...p, ...draft, name } : p));
+      showToast("保存しました");
     } else {
       const id = "PC-" + String(Date.now()).slice(-8);
-      setParents(prev => [...prev, { id, ...draft, name: draft.name.trim(), createdAt: Date.now() }]);
+      committedIdRef.current = id;
+      setParents(prev => [...prev, { id, ...draft, name, createdAt: Date.now() }]);
+      showToast("上位荷主を登録しました");
     }
-    setDraft({ name:"", contact:"", tel:"", address:"", email:"", note:"" });
-    setShowForm(false); setEditingId(null);
-    showToast(wasEdit ? "上位荷主を更新しました" : "上位荷主を登録しました");
   };
   const startEdit = (p) => {
+    committedIdRef.current = null;
     setEditingId(p.id);
     setDraft({ name:p.name, contact:p.contact||"", tel:p.tel||"", address:p.address||"", email:p.email||"", note:p.note||"" });
     setShowForm(true);
