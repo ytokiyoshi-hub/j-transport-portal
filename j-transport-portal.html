@@ -4597,6 +4597,7 @@ const TodoPage = ({ accent }) => {
       note: draft.note.trim() || "", done: false, createdAt: now,
     }, ...prev]);
     setDraft({ title:"", priority:"中", due:"", assignee:"", note:"" });
+    showToast("タスクを追加しました");
   };
 
   const toggle = (id) => setTodos(prev => prev.map(t => t.id===id ? { ...t, done: !t.done, doneAt: t.done?null:Date.now() } : t));
