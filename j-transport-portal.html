@@ -2794,6 +2794,7 @@ const ClientPage = ({ accent, setPage }) => {
     if (!parentId) delete next[clientId];
     else next[clientId] = parentId;
     setParentMap(next);
+    showToast(parentId ? "上位荷主を設定しました" : "上位荷主を解除しました");
   };
   const list = [...clients, ...extraClients].filter(c=>c.name.includes(search)||c.area.includes(search));
 
