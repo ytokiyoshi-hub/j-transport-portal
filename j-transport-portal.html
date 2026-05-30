@@ -3915,24 +3915,12 @@ const DriversPage = ({ accent, setPage }) => {
   const [sel, setSel] = React.useState(null);
   const [search, setSearch] = React.useState("");
   const [typeFilter, setTypeFilter] = React.useState("すべて");
+  const [slipDriver, setSlipDriver] = React.useState(null);
+  const [dailyEdits] = useLocalStorage("jt_daily_edits", {});
 
-  // ドライバー別の今月財務サマリーを計算
-  const driverSummary = drivers.map(d => {
-    let totalSellD = 0, totalPayD = 0;
-    const breakdown = [];
-    clients.forEach(c => {
-      if (!c.drivers.includes(d.id)) return;
-      const act = monthlyDisplay.find(r => r.name === c.name) || {};
-      if (!act) return;
-      const share = 1 / c.drivers.length;
-      const s = Math.round(act.sell * share);
-      const p = Math.round(act.pay  * share);
-      totalSellD += s;
-      totalPayD  += p;
-      breakdown.push({ client: c.name, sell: s, pay: p });
-    });
-    return { ...d, totalSell: totalSellD, totalPay: totalPayD, totalProfit: totalSellD - totalPayD, breakdown };
-  });
+  // ドライバー別の今月財務サマリー（日次実績にもとづく実数。按分ではない）
+  const _displayMonth = displayMonthForPay(dailyEdits);
+  const driverSummary = drivers.map(d => buildDriverStatement(d, dailyEdits, _displayMonth));
 
   const list = driverSummary.filter(d => {
     const matchSearch = d.name.includes(search) || d.area.includes(search);
