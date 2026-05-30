@@ -1164,7 +1164,6 @@ const PLPage = ({ accent, setPage }) => {
     const m = monthAgg(mk, dailyEdits); acc.sell+=m.sell; acc.pay+=m.pay; return acc;
   }, {sell:0,pay:0});
   const ytdProfit = ytdData.sell - ytdData.pay;
-  const ytdMargin = ytdData.sell>0 ? ytdData.profit/ytdData.sell*100 : 0;
   const ytdMonthCount = ytdMonths.length;
   const monthAvg = ytdMonthCount>0 ? ytdData.sell/ytdMonthCount : 0;
   // 年間着地予測 (月平均 × 12)
