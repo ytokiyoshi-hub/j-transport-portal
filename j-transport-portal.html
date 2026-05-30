@@ -1515,6 +1515,34 @@ const RateMasterPage = ({ accent, setPage }) => {
   const [form, setForm] = React.useState(blankForm);
   const allClients = [...clients, ...extraClients];
   const billingOptions = ["個建て","個建て（2区分）","個建て（3区分）","スポット","固定（日額）","固定＋変動"];
+  // 荷主追加: 閉じる/背景クリック/Esc で確定（コード＋荷主名が揃っていれば作成。ref で二重作成を防止）
+  const addCommittedRef = React.useRef(false);
+  const commitClient = () => {
+    if (addCommittedRef.current) return true;
+    const code = form.code.trim();
+    const name = form.name.trim();
+    if (!code || !name) return true; // 未入力 → キャンセル扱いでそのまま閉じる
+    if (allClients.some(c => c.id === code)) { showToast("荷主コード「" + code + "」は既に使われています", "error"); return false; }
+    addCommittedRef.current = true;
+    const newClient = {
+      id: code, name,
+      area: form.area.trim() || "—",
+      billing: form.billing,
+      billingCycle: form.billingCycle.trim() || "—",
+      rates: [{ label: form.rateLabel.trim() || "配完", sell: Number(form.sell)||0, pay: Number(form.pay)||0 }],
+      drivers: [], monthlyVol: {},
+      person: form.person.trim() || "—",
+      tel: form.tel.trim() || "—",
+      address: form.address.trim() || "—",
+      contact: form.person.trim() || "—",
+      status: "稼働中",
+    };
+    setExtraClients([...extraClients, newClient]);
+    setSel(newClient);
+    showToast("荷主「" + name + "」を追加しました");
+    return true;
+  };
+  const closeAdd = () => { if (commitClient()) setShowAdd(false); };
 
   // 荷主管理ページからの「新規荷主追加」遷移時にモーダルを自動オープン
   React.useEffect(() => {
