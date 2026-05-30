@@ -1714,7 +1714,7 @@ const RateMasterPage = ({ accent, setPage }) => {
               <div style={{ fontSize:13, fontWeight:700, marginBottom:14 }}>今月実績（速報）</div>
               {(() => {
                 const act = monthlyDisplay.find(r=>r.name===sel.name) || {};
-                if (!act) return <div style={{ color:"#9ca3af", fontSize:13 }}>実績なし</div>;
+                if (!(act.sell>0)) return <div style={{ color:"#9ca3af", fontSize:13 }}>実績なし</div>;
                 return (
                   <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:16 }}>
                     {[["売上",fmt(act.sell),accent],["支払",fmt(act.pay),"#d97706"],["粗利",fmt(act.profit),"#16a34a"]].map(([l,v,c])=>(
