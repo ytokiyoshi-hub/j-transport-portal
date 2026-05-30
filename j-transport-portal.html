@@ -5104,7 +5104,7 @@ function AppearanceSettings() {
         <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
           <button style={S.btnPrimary}>主アクション</button>
           <button style={S.btn}>標準</button>
-          <button style={{ ...S.btnPrimary, background: draft.alert, borderColor: draft.alert }}>削除</button>
+          <button style={{ ...S.btnPrimary, background: draft.alert, border: `1px solid ${draft.alert}` }}>削除</button>
         </div>
         <table style={{ borderCollapse: 'collapse', width: '100%', border: `1px solid ${draft.line}` }}>
           <thead>
