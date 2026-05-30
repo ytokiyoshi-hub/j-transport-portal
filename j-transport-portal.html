@@ -915,7 +915,7 @@ const billingPeriodFor = (mk, cycle) => {
 
 // dailyActuals + dailyEdits の merge から、cid×monthKey の billing-period 合計を計算
 const computeLiveSum = (cid, mk, dailyEdits) => {
-  const c = clients.find(x => x.id === cid);
+  const c = resolveClientById(cid);
   if (!c) return null;
   const bp = billingPeriodFor(mk, c.billingCycle);
   const baseDA = (typeof dailyActuals !== 'undefined' && dailyActuals[cid]) || {};
