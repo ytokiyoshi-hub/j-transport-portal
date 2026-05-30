@@ -2055,6 +2055,8 @@ const InvoicePage = ({ accent }) => {
   const [remindedArr, setRemindedArr] = useLocalStorage("jt_reminded", []);
   // 日次入力の編集を請求金額・明細に反映
   const [dailyEdits] = useLocalStorage("jt_daily_edits", {});
+  // 単価マスタで編集した請求先情報（担当者・住所）を請求書に反映
+  const [contactOverrides] = useLocalStorage("jt_contact_overrides", {});
   const issuedSet = new Set(issuedArr);
   const remindedSet = new Set(remindedArr);
   const setIssuedSet = (fn) => setIssuedArr(prev => Array.from(fn(new Set(prev))));
