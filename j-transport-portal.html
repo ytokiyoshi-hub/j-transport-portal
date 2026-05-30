@@ -2458,7 +2458,7 @@ const InvoicePage = ({ accent }) => {
                       )}
                       {issuedSet.has(inv.id) && <span style={{ fontSize:11, color:"#16a34a", fontWeight:600 }}>発行済</span>}
                       {inv.status==="遅延" && !remindedSet.has(inv.id) && (
-                        <button onClick={()=>setRemindedSet(s=>new Set([...s,inv.id]))}
+                        <button onClick={()=>{ setRemindedSet(s=>new Set([...s,inv.id])); showToast("督促を送信しました"); }}
                           style={{ padding:"4px 10px", border:"1px solid #dc2626", borderRadius:4, background:"#fff", color:"#dc2626", fontSize:11, fontWeight:600, cursor:"pointer" }}>督促</button>
                       )}
                       {remindedSet.has(inv.id) && <span style={{ fontSize:11, color:"#dc2626", fontWeight:600 }}>督促送信済</span>}
