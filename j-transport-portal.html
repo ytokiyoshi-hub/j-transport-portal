@@ -1831,9 +1831,9 @@ const RateMasterPage = ({ accent, setPage }) => {
               <button onClick={()=>{
                   const code = form.code.trim();
                   const name = form.name.trim();
-                  if (!code) { alert("荷主コードを入力してください"); return; }
-                  if (!name) { alert("荷主名を入力してください"); return; }
-                  if (allClients.some(c => c.id === code)) { alert("荷主コード「" + code + "」は既に使われています"); return; }
+                  if (!code) { showToast("荷主コードを入力してください", "error"); return; }
+                  if (!name) { showToast("荷主名を入力してください", "error"); return; }
+                  if (allClients.some(c => c.id === code)) { showToast("荷主コード「" + code + "」は既に使われています", "error"); return; }
                   const newClient = {
                     id: code,
                     name,
