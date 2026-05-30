@@ -5368,23 +5368,18 @@ const VehiclesPage = ({ accent }) => {
               )}
 
               {showMaintForm && (
-                <div style={{ marginTop:10, padding:12, background:"#f8fafc", borderRadius:6, border:"1px solid #94a3b8" }}>
+                <div onBlur={e=>{ if(!e.currentTarget.contains(e.relatedTarget)) commitMaint(); }} style={{ marginTop:10, padding:12, background:"#f8fafc", borderRadius:6, border:"1px solid #94a3b8" }}>
                   <div style={{ fontSize:11, color:"#6b7280", marginBottom:4 }}>整備日</div>
                   <input type="date" value={maintDraft.date} onChange={e=>setMaintDraft({...maintDraft, date:e.target.value})}
                     style={{ width:"100%", padding:"6px 10px", border:"1px solid #94a3b8", borderRadius:4, fontSize:13, marginBottom:6 }}/>
                   <div style={{ fontSize:11, color:"#6b7280", marginBottom:4 }}>整備内容</div>
                   <input type="text" placeholder="例: オイル交換" value={maintDraft.item} onChange={e=>setMaintDraft({...maintDraft, item:e.target.value})}
                     style={{ width:"100%", padding:"6px 10px", border:"1px solid #94a3b8", borderRadius:4, fontSize:13, marginBottom:8 }}/>
-                  <div style={{ display:"flex", gap:6 }}>
-                    <button onClick={()=>{
-                      if (!maintDraft.date || !maintDraft.item) { showToast("日付と内容を入力してください", "error"); return; }
-                      const cur = maintExtras[sel.id] || [];
-                      setMaintExtras({ ...maintExtras, [sel.id]: [{...maintDraft}, ...cur] });
-                      setMaintDraft({date:"", item:""});
-                      setShowMaintForm(false);
-                      showToast("整備記録を追加しました");
-                    }} style={{ flex:1, padding:"6px", background:accent, color:"#fff", border:"none", borderRadius:4, fontSize:12, fontWeight:600, cursor:"pointer" }}>追加</button>
-                    <button onClick={()=>setShowMaintForm(false)} style={{ padding:"6px 12px", background:"#fff", border:"1px solid #94a3b8", borderRadius:4, fontSize:12, cursor:"pointer" }}>キャンセル</button>
+                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                    <span style={{ display:"inline-flex", alignItems:"center", gap:5, fontSize:11, color:"#16a34a", fontWeight:600 }}>
+                      <Ic name="check" size={11} color="#16a34a" strokeWidth={2.5}/>整備日・内容を入れると自動保存
+                    </span>
+                    <button onClick={()=>{ commitMaint(); setShowMaintForm(false); }} style={{ padding:"6px 14px", background:"#fff", border:"1px solid #94a3b8", borderRadius:4, fontSize:12, cursor:"pointer" }}>閉じる</button>
                   </div>
                 </div>
               )}
