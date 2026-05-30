@@ -6022,7 +6022,7 @@ const AttendancePage = ({ accent }) => {
                         borderRight:i<6?"1px solid #94a3b8":"none" }}>
                         {c!=="—"
                           ? <span style={{ display:"inline-block", padding:"3px 8px", borderRadius:4, fontSize:11, fontWeight:600,
-                              background:clientColor[c]||"#f1f5f9", color:clientTextColor[c]||"#374151" }}>{c}</span>
+                              background:_colorFor(c).bg, color:_colorFor(c).fg }}>{c}</span>
                           : <span style={{ color:"#e5e7eb", fontSize:12 }}>—</span>
                         }
                       </td>
