@@ -6425,6 +6425,38 @@ const ApplyPage = ({ accent }) => {
   );
 };
 
+// ── 共有トースト（保存フィードバックを全画面で統一）──────────────────────────
+// どこからでも showToast("保存しました") で通知。<ToastHost/> を App 直下に1つ置く。
+function showToast(message, type = "success") {
+  window.dispatchEvent(new CustomEvent("jt-toast", { detail: { message, type } }));
+}
+const ToastHost = () => {
+  const [toasts, setToasts] = React.useState([]);
+  React.useEffect(() => {
+    const onToast = (e) => {
+      const { message, type } = e.detail || {};
+      if (!message) return;
+      const id = Date.now() + Math.random();
+      setToasts(prev => [...prev, { id, message, type: type || "success" }]);
+      setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 2400);
+    };
+    window.addEventListener("jt-toast", onToast);
+    return () => window.removeEventListener("jt-toast", onToast);
+  }, []);
+  if (!toasts.length) return null;
+  return (
+    <div style={{ position:"fixed", bottom:24, right:24, zIndex:99999, display:"flex", flexDirection:"column", gap:8, alignItems:"flex-end", pointerEvents:"none" }}>
+      <style>{`@keyframes jtToastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}`}</style>
+      {toasts.map(t => (
+        <div key={t.id} style={{ display:"flex", alignItems:"center", gap:8, background: t.type==="error" ? "#fef2f2" : "#0f172a", color: t.type==="error" ? "#b91c1c" : "#fff", padding:"10px 16px", borderRadius:8, fontSize:13, fontWeight:600, boxShadow:"0 6px 20px rgba(0,0,0,.18)", animation:"jtToastIn .18s ease-out" }}>
+          <Ic name={t.type==="error"?"alert":"check"} size={15} color={t.type==="error"?"#dc2626":"#34d399"} strokeWidth={2.5}/>
+          {t.message}
+        </div>
+      ))}
+    </div>
+  );
+};
+
 // ── App ────────────────────────────────────────────────────────────────────
 const App = () => {
   const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
