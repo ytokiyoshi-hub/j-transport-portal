@@ -2997,10 +2997,12 @@ const DailyInputPage = ({ accent }) => {
       });
     });
   }
-  const _allCandidates = driverSrc.filter(d => selClient.drivers.includes(d.id) || (typeof dailyActuals!=="undefined" && dailyActuals[selClient.id] && Object.values(dailyActuals[selClient.id]).some(day=>day[d.id])));
+  const _selDrivers = (clientDriverOverrides && clientDriverOverrides[selClient?.id]) || selClient.drivers || [];
+  const _allCandidates = driverSrc.filter(d => _selDrivers.includes(d.id) || (typeof dailyActuals!=="undefined" && dailyActuals[selClient.id] && Object.values(dailyActuals[selClient.id]).some(day=>day[d.id])));
+  // 担当ドライバー未設定の荷主（追加直後の新規荷主など）は全ドライバーを入力対象にフォールバック
   const assignedDrivers = _activeIds.size > 0
     ? _allCandidates.filter(d => _activeIds.has(d.id))
-    : _allCandidates;
+    : (_allCandidates.length ? _allCandidates : driverSrc);
   const rates = effectiveClient(selClient).rates.filter(r => r.sell > 0 || r.pay > 0);
   const nD = assignedDrivers.length;
   const nR = rates.length;
