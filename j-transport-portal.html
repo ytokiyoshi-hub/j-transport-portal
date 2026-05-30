@@ -2403,7 +2403,7 @@ const InvoicePage = ({ accent }) => {
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
         <div style={{ fontSize:20, fontWeight:700 }}>請求管理</div>
-        <button onClick={()=>{ const ids=invoices.filter(i=>i.status==="未請求").map(i=>i.id); setIssuedSet(s=>new Set([...s,...ids])); alert(ids.length+"件の請求書を発行しました"); }} style={{ padding:"7px 16px", background:accent, color:"#fff", border:"none", borderRadius:6, fontSize:13, fontWeight:600, cursor:"pointer" }}>+ 請求書を一括作成</button>
+        <button onClick={()=>{ const ids=invoices.filter(i=>i.status==="未請求").map(i=>i.id); setIssuedSet(s=>new Set([...s,...ids])); showToast(ids.length+"件の請求書を発行しました"); }} style={{ padding:"7px 16px", background:accent, color:"#fff", border:"none", borderRadius:6, fontSize:13, fontWeight:600, cursor:"pointer" }}>+ 請求書を一括作成</button>
       </div>
       <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12, marginBottom:16 }}>
         {[
