@@ -2156,7 +2156,7 @@ const InvoicePage = ({ accent }) => {
 
   // 請求書1枚分の表示モデル（請求先・明細・金額・期間）を生成
   const invoiceModel = (inv) => {
-    const baseClient = clients.find(c => c.name === inv.client) || {};
+    const baseClient = resolveClientByName(inv.client) || {};
     const cov = contactOverrides[baseClient.id] || {};
     const nd = (v) => (v && v !== "—") ? v : undefined;
     const clientObj = { ...baseClient,
