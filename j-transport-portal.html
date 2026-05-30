@@ -1554,10 +1554,12 @@ const RateMasterPage = ({ accent, setPage }) => {
                     if (editMode) {
                       setRateOverrides({ ...rateOverrides, [sel.id]: draft });
                       setCycleOverrides({ ...cycleOverrides, [sel.id]: cycleDraft });
+                      setContactOverrides({ ...contactOverrides, [sel.id]: { ...contactDraft } });
                       setEditMode(false); setDraft(null);
                     } else {
                       setDraft(ratesFor(sel).map(r=>({ ...r })));
                       setCycleDraft(cycleFor(sel));
+                      setContactDraft(contactFor(sel));
                       setEditMode(true);
                     }
                   }}
