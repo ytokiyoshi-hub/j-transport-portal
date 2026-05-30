@@ -1686,7 +1686,7 @@ const RateMasterPage = ({ accent, setPage }) => {
                         <div style={{ width:88, color:"#6b7280", flexShrink:0 }}>{label}</div>
                         <input value={cinfo[key]||""} onChange={e=>updateContact(key, e.target.value)} onBlur={flushContact} placeholder={ph}
                           style={{ flex:1, padding:"6px 10px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}
-                          onFocus={e=>e.target.style.border=`1.5px solid ${accent}`}/>
+                          onFocus={e=>e.target.style.borderColor=accent} onMouseOut={e=>{ if(document.activeElement!==e.target) e.target.style.borderColor="#e5e7eb"; }}/>
                       </div>
                     ));
                   })()}
