@@ -2132,6 +2132,61 @@ const InvoicePage = ({ accent }) => {
     入金済: invoices.filter(i=>i.status==="入金済").reduce((s,i)=>s+subtotalFor(i),0),
   };
 
+  // 画面上で正式な請求書を表示するプレビュー
+  const [preview, setPreview] = React.useState(null);
+
+  // 請求書1枚分の表示モデル（請求先・明細・金額・期間）を生成
+  const invoiceModel = (inv) => {
+    const baseClient = clients.find(c => c.name === inv.client) || {};
+    const cov = contactOverrides[baseClient.id] || {};
+    const nd = (v) => (v && v !== "—") ? v : undefined;
+    const clientObj = { ...baseClient,
+      address: cov.address!==undefined ? nd(cov.address) : nd(baseClient.address),
+      person:  cov.person!==undefined  ? nd(cov.person)  : nd(baseClient.person||baseClient.contact),
+      tel:     cov.tel!==undefined     ? nd(cov.tel)     : nd(baseClient.tel) };
+    const items = lineItemsFor(inv);
+    const subtotal = subtotalFor(inv);
+    const tax = Math.round(subtotal * 0.1);
+    const total = subtotal + tax;
+    const bp = periodOf(inv).bp;
+    const fmtDate = (d) => { const [y,m,dd] = d.split("-"); return `${y}年${parseInt(m)}月${parseInt(dd)}日`; };
+    const today = new Date();
+    return {
+      clientObj, items, subtotal, tax, total,
+      period: `${fmtDate(bp.start)} 〜 ${fmtDate(bp.end)}`,
+      issueDate: inv.issued || `${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日`,
+    };
+  };
+
+  // 画面に表示中の正式請求書(.invoice-paper)を iframe 経由で印刷／PDF保存
+  const printPaper = (inv) => {
+    const paper = document.querySelector(".invoice-paper");
+    if (!paper) { alert("請求書が見つかりません"); return; }
+    const clone = paper.cloneNode(true);
+    const old = document.getElementById("jt-print-iframe");
+    if (old) old.remove();
+    const iframe = document.createElement("iframe");
+    iframe.id = "jt-print-iframe";
+    iframe.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden;";
+    document.body.appendChild(iframe);
+    const doc = iframe.contentWindow.document;
+    doc.open();
+    doc.write(`<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>請求書 ${inv.id} - ${inv.client}</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Noto Sans JP', 'Hiragino Sans', sans-serif; color: #111827; background: #fff; font-size: 12px; line-height: 1.6; }
+  table { border-collapse: collapse; width: 100%; }
+  td, th { vertical-align: middle; }
+  .invoice-paper { padding: 14mm !important; }
+  @page { size: A4 portrait; margin: 0; }
+</style></head><body>${clone.outerHTML}</body></html>`);
+    doc.close();
+    setTimeout(() => {
+      try { iframe.contentWindow.focus(); iframe.contentWindow.print(); } catch(e) { alert("印刷に失敗: " + e.message); }
+      setTimeout(() => iframe.remove(), 1500);
+    }, 250);
+  };
+
   return (
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
