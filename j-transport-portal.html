@@ -1593,7 +1593,7 @@ const RateMasterPage = ({ accent, setPage }) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {(editMode && draft ? draft : ratesFor(sel)).map((r,ri)=>{
+                    {ratesFor(sel).map((r,ri)=>{
                       const gp = r.sell - r.pay;
                       const rate = r.sell > 0 ? (gp/r.sell*100).toFixed(0) : "—";
                       return (
