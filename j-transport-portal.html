@@ -5544,7 +5544,7 @@ const DispatchPage = ({ accent, setPage }) => {
   };
   const confirmWeek = () => {
     const target = weekDays.filter(wd=>dispCountFor(wd.dk)>0 && !confirmed[wd.dk]);
-    if(!target.length){ alert("確定できる配車（入力済みで未確定の日）がありません。"); return; }
+    if(!target.length){ showToast("確定できる配車（入力済みで未確定の日）がありません。", "error"); return; }
     if(!confirm(`今週の配車 ${target.length}日分を確定します。\n確定後は自動配車・先週コピー・週クリアの対象外になり、請求連動の集計対象になります。\nよろしいですか？`)) return;
     setConfirmed(prev=>{ const next={...prev}; const ts=new Date().toISOString(); target.forEach(wd=>{ next[wd.dk]=ts; }); return next; });
   };
