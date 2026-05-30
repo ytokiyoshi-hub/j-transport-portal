@@ -1684,12 +1684,9 @@ const RateMasterPage = ({ accent, setPage }) => {
                     return [["担当者","person","例）物流管理部 田中様"],["電話","tel","例）03-1234-5678"],["請求先住所","address","例）東京都〇〇区〇〇 1-2-3"]].map(([label,key,ph])=>(
                       <div key={label} style={{ display:"flex", gap:12, alignItems:"center" }}>
                         <div style={{ width:88, color:"#6b7280", flexShrink:0 }}>{label}</div>
-                        {editMode ? (
-                          <input value={contactDraft[key]||""} onChange={e=>setContactDraft({ ...contactDraft, [key]:e.target.value })} placeholder={ph}
-                            style={{ flex:1, padding:"6px 10px", border:`1.5px solid ${accent}`, borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
-                        ) : (
-                          <div style={{ color: cinfo[key] ? "#374151" : "#cbd5e1" }}>{cinfo[key] || "未登録"}</div>
-                        )}
+                        <input value={cinfo[key]||""} onChange={e=>updateContact(key, e.target.value)} onBlur={flushContact} placeholder={ph}
+                          style={{ flex:1, padding:"6px 10px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}
+                          onFocus={e=>e.target.style.border=`1.5px solid ${accent}`}/>
                       </div>
                     ));
                   })()}
