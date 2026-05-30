@@ -4408,7 +4408,7 @@ const ManualPage = ({ accent }) => {
         <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
           {cats.map(c=>(
             <button key={c} onClick={()=>setCatFilter(c)}
-              style={{ padding:"6px 12px", borderRadius:20, border:"1.5px solid", borderColor:catFilter===c?accent:"#e5e7eb", background:catFilter===c?accent+"14":"#fff", color:catFilter===c?accent:"#6b7280", fontSize:12, fontWeight:catFilter===c?700:400, cursor:"pointer" }}>
+              style={{ padding:"6px 12px", borderRadius:20, border:`1.5px solid ${catFilter===c?accent:"#e5e7eb"}`, background:catFilter===c?accent+"14":"#fff", color:catFilter===c?accent:"#6b7280", fontSize:12, fontWeight:catFilter===c?700:400, cursor:"pointer" }}>
               {c}
             </button>
           ))}
