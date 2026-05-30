@@ -2403,10 +2403,10 @@ const InvoicePage = ({ accent }) => {
       </div>
       <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12, marginBottom:16 }}>
         {[
-          { l:"未請求（発行前）",  v:fmt(summary.未請求), n:invoices.filter(i=>i.status==="未請求").length, c:"#64748b" },
-          { l:"請求済（入金待ち）",v:fmt(summary.請求済), n:invoices.filter(i=>i.status==="請求済").length, c:accent },
-          { l:"入金遅延",          v:fmt(summary.遅延),   n:invoices.filter(i=>i.status==="遅延").length,   c:"#dc2626" },
-          { l:"入金済（今月）",    v:fmt(summary.入金済), n:invoices.filter(i=>i.status==="入金済").length,  c:"#16a34a" },
+          { l:"未請求（発行前）",  v:fmt(summary.未請求), n:invoices.filter(i=>effStatus(i)==="未請求").length, c:"#64748b" },
+          { l:"請求済（入金待ち）",v:fmt(summary.請求済), n:invoices.filter(i=>effStatus(i)==="請求済").length, c:accent },
+          { l:"入金遅延",          v:fmt(summary.遅延),   n:invoices.filter(i=>effStatus(i)==="遅延").length,   c:"#dc2626" },
+          { l:"入金済（今月）",    v:fmt(summary.入金済), n:invoices.filter(i=>effStatus(i)==="入金済").length,  c:"#16a34a" },
         ].map(({ l,v,n,c })=>(
           <Card key={l} style={{ padding:"16px 20px" }}>
             <div style={{ fontSize:11, color:"#9ca3af", marginBottom:6 }}>{l}</div>
