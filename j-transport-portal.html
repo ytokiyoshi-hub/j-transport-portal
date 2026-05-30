@@ -5643,7 +5643,7 @@ const DispatchPage = ({ accent, setPage }) => {
       )}
 
       {tab === "bill" && (() => {
-        const rows = clients.map(c=>{
+        const rows = allClientsLive().map(c=>{
           const v = cm(c.id, billMonth, dailyEdits);
           const di = dispatchPeriodInfo(c.id, billMonth);
           const profit = v.s - v.p;
