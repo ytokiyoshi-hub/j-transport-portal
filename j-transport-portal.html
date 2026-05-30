@@ -2780,6 +2780,9 @@ const ClientPage = ({ accent, setPage }) => {
   const [sel, setSel] = React.useState(null);
   const [search, setSearch] = React.useState("");
   const [extraClients] = useLocalStorage("jt_extra_clients", []);
+  // 締め日（請求サイクル）編集。単価マスタと同じ jt_cycle_overrides を共用
+  const [cycleOverrides, setCycleOverrides] = useLocalStorage("jt_cycle_overrides", {});
+  const cycleFor = (c) => (c && cycleOverrides[c.id]) || (c && c.billingCycle) || "—";
   // 上位荷主マスタ & 紐付けマップ
   const [parents] = useLocalStorage("jt_parent_clients", []);
   const [parentMap, setParentMap] = useLocalStorage("jt_client_parent_map", {});
