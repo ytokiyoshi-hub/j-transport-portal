@@ -1550,6 +1550,7 @@ const RateMasterPage = ({ accent, setPage }) => {
       if (sessionStorage.getItem("jt_open_add_client") === "1") {
         sessionStorage.removeItem("jt_open_add_client");
         setForm({ ...blankForm, code: nextCode() });
+        addCommittedRef.current = false;
         setShowAdd(true);
       }
     } catch (e) {}
