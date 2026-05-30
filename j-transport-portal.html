@@ -2925,7 +2925,9 @@ const ClientPage = ({ accent, setPage }) => {
 const DailyInputPage = ({ accent }) => {
   const [scClients, setScClients] = React.useState(null);
   const [scDrivers, setScDrivers] = React.useState(null);
-  const clientSrc = scClients ?? clients;
+  const [extraClients] = useLocalStorage("jt_extra_clients", []);
+  const [clientDriverOverrides] = useLocalStorage("jt_client_driver_overrides", {});
+  const clientSrc = scClients ?? (extraClients.length ? [...clients, ...extraClients] : clients);
   const driverSrc = scDrivers ?? drivers;
 
   const [selClient, setSelClient] = React.useState(clientSrc[0]);
