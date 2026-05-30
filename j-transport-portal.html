@@ -1574,6 +1574,7 @@ const RateMasterPage = ({ accent, setPage }) => {
                       setContactOverrides({ ...contactOverrides, [sel.id]: { ...contactDraft } });
                       if (window.sb) window.sb.from("jt_contact_overrides").upsert({ client_id: sel.id, person: contactDraft.person||null, tel: contactDraft.tel||null, address: contactDraft.address||null }, { onConflict:"client_id" }).then(({error})=>{ if(error) console.warn("[Supabase] contact upsert failed:", error); else console.log("[Supabase] contact saved:", sel.id); });
                       setEditMode(false); setDraft(null);
+                      showToast(sel.name+" の単価を保存しました");
                     } else {
                       setDraft(ratesFor(sel).map(r=>({ ...r })));
                       setCycleDraft(cycleFor(sel));
