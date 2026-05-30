@@ -1472,6 +1472,10 @@ const RateMasterPage = ({ accent, setPage }) => {
   const [cycleOverrides, setCycleOverrides] = useLocalStorage("jt_cycle_overrides", {});
   const [driverOverrides, setDriverOverrides] = useLocalStorage("jt_client_driver_overrides", {});
   const driversFor = (c) => (c && driverOverrides[c.id]) ? driverOverrides[c.id] : (c ? c.drivers : []);
+  const [contactOverrides, setContactOverrides] = useLocalStorage("jt_contact_overrides", {});
+  const cv = (v) => (v && v !== "—") ? v : "";
+  const contactFor = (c) => { const o = (c && contactOverrides[c.id]) || {}; return { person: o.person!==undefined?o.person:cv(c?.person||c?.contact), tel: o.tel!==undefined?o.tel:cv(c?.tel), address: o.address!==undefined?o.address:cv(c?.address) }; };
+  const [contactDraft, setContactDraft] = React.useState({ person:"", tel:"", address:"" });
   const [cycleDraft, setCycleDraft] = React.useState("");
   const [showDrvPicker, setShowDrvPicker] = React.useState(false);
   const cycleFor = (c) => (c && cycleOverrides[c.id]) || (c && c.billingCycle) || "—";
