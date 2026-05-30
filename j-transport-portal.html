@@ -1491,8 +1491,21 @@ const RateMasterPage = ({ accent, setPage }) => {
   const [contactOverrides, setContactOverrides] = useLocalStorage("jt_contact_overrides", {});
   const cv = (v) => (v && v !== "—") ? v : "";
   const contactFor = (c) => { const o = (c && contactOverrides[c.id]) || {}; return { person: o.person!==undefined?o.person:cv(c?.person||c?.contact), tel: o.tel!==undefined?o.tel:cv(c?.tel), address: o.address!==undefined?o.address:cv(c?.address) }; };
-  const [contactDraft, setContactDraft] = React.useState({ person:"", tel:"", address:"" });
-  const [cycleDraft, setCycleDraft] = React.useState("");
+  // ── 自動保存ヘルパー（保存ボタン廃止：変更で即保存）──
+  const updateRate = (ri, field, value) => {
+    const cur = ratesFor(sel).map(r=>({ ...r }));
+    cur[ri] = { ...cur[ri], [field]: Number(value)||0 };
+    setRateOverrides({ ...rateOverrides, [sel.id]: cur });
+  };
+  const updateContact = (key, value) => {
+    const cur = contactFor(sel);
+    setContactOverrides({ ...contactOverrides, [sel.id]: { ...cur, [key]: value } });
+  };
+  const flushContact = () => {
+    const c = contactFor(sel);
+    if (window.sb) window.sb.from("jt_contact_overrides").upsert({ client_id: sel.id, person: c.person||null, tel: c.tel||null, address: c.address||null }, { onConflict:"client_id" }).then(({error})=>{ if(error) console.warn("[Supabase] contact upsert failed:", error); else console.log("[Supabase] contact saved:", sel.id); });
+    showToast("請求先情報を保存しました");
+  };
   const [showDrvPicker, setShowDrvPicker] = React.useState(false);
   const cycleFor = (c) => (c && cycleOverrides[c.id]) || (c && c.billingCycle) || "—";
   const [showAdd, setShowAdd] = React.useState(false);
