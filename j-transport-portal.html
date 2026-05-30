@@ -2395,7 +2395,7 @@ const InvoicePage = ({ accent }) => {
 </style></head><body>${clone.outerHTML}</body></html>`);
     doc.close();
     setTimeout(() => {
-      try { iframe.contentWindow.focus(); iframe.contentWindow.print(); } catch(e) { alert("印刷に失敗: " + e.message); }
+      try { iframe.contentWindow.focus(); iframe.contentWindow.print(); } catch(e) { showToast("印刷に失敗: " + e.message, "error"); }
       setTimeout(() => iframe.remove(), 1500);
     }, 250);
   };
