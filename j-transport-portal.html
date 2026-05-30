@@ -1509,7 +1509,7 @@ const RateMasterPage = ({ accent, setPage }) => {
   const [showDrvPicker, setShowDrvPicker] = React.useState(false);
   const cycleFor = (c) => (c && cycleOverrides[c.id]) || (c && c.billingCycle) || "—";
   const [showAdd, setShowAdd] = React.useState(false);
-  useEscapeToClose(showAdd, ()=>setShowAdd(false));
+  useEscapeToClose(showAdd, ()=>closeAdd());
   const blankForm = { code:"", name:"", area:"", billing:"個建て", billingCycle:"翌月末締め", person:"", tel:"", address:"", rateLabel:"配完", sell:"", pay:"" };
   const nextCode = () => "C-" + String(clients.length + extraClients.length + 1).padStart(2,"0");
   const [form, setForm] = React.useState(blankForm);
