@@ -2560,6 +2560,40 @@ const InvoicePage = ({ accent }) => {
               </tfoot>
             </table>
 
+            {/* 日別明細（オンライン確認用・実績の内訳） */}
+            {_dm.dailyRows.length > 0 && (
+              <div className="no-print" style={{ marginBottom:14 }}>
+                <div style={{ fontSize:12, fontWeight:700, color:"#374151", marginBottom:8 }}>日別明細（{_dm.dailyRows.length}日）</div>
+                <div style={{ maxHeight:240, overflowY:"auto", border:"1px solid #e5e7eb", borderRadius:6 }}>
+                  <table style={{ width:"100%", borderCollapse:"collapse", fontSize:11 }}>
+                    <thead>
+                      <tr style={{ background:"#f9fafb" }}>
+                        {["日付","曜","内訳","金額"].map((h,hi)=>(
+                          <th key={h} style={{ padding:"6px 8px", textAlign:hi===3?"right":"left", color:"#6b7280", fontWeight:600, fontSize:10.5, borderBottom:"1px solid #e5e7eb", position:"sticky", top:0, background:"#f9fafb", whiteSpace:"nowrap" }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {_dm.dailyRows.map((r,ri)=>(
+                        <tr key={ri} style={{ borderBottom:"1px solid #f1f5f9" }}>
+                          <td style={{ padding:"5px 8px", whiteSpace:"nowrap" }}>{r.date.slice(5).replace("-","/")}</td>
+                          <td style={{ padding:"5px 8px", color: r.dow==="日"?"#dc2626":r.dow==="土"?"#2563eb":"#6b7280" }}>{r.dow}</td>
+                          <td style={{ padding:"5px 8px", color:"#374151" }}>{_dm.dailyLabels.filter(l=>r.per[l]).map(l=>`${l}×${r.per[l]}`).join("、")}</td>
+                          <td style={{ padding:"5px 8px", textAlign:"right", fontWeight:500 }}>{fmt(r.amount)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    <tfoot>
+                      <tr style={{ background:"#f9fafb", borderTop:"1px solid #94a3b8" }}>
+                        <td colSpan={3} style={{ padding:"6px 8px", fontWeight:700 }}>合計</td>
+                        <td style={{ padding:"6px 8px", textAlign:"right", fontWeight:700 }}>{fmt(_dm.dailyRows.reduce((s,r)=>s+r.amount,0))}</td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
+            )}
+
             {/* 印刷時のみ: 振込先・備考 */}
             <div className="invoice-print-footer" style={{ display:"none", marginTop:18, paddingTop:12, borderTop:"1px solid #94a3b8", fontSize:11 }}>
               <div style={{ fontWeight:700, marginBottom:4 }}>お振込先</div>
