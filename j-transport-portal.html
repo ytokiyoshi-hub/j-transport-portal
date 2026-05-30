@@ -4583,14 +4583,9 @@ const TodoPage = ({ accent }) => {
 
   const toggle = (id) => setTodos(prev => prev.map(t => t.id===id ? { ...t, done: !t.done, doneAt: t.done?null:Date.now() } : t));
   const remove = (id) => { if (confirm("このタスクを削除しますか？")) setTodos(prev => prev.filter(t => t.id!==id)); };
-  const startEdit = (t) => { setEditingId(t.id); setEditDraft({...t}); };
-  const saveEdit = () => {
-    if (!editDraft.title?.trim()) return;
-    setTodos(prev => prev.map(t => t.id===editingId ? { ...editDraft, title: editDraft.title.trim() } : t));
-    setEditingId(null); setEditDraft(null);
-    showToast("タスクを更新しました");
-  };
-  const cancelEdit = () => { setEditingId(null); setEditDraft(null); };
+  const startEdit = (t) => setEditingId(t.id);
+  const updateTodo = (id, patch) => setTodos(prev => prev.map(t => t.id===id ? { ...t, ...patch } : t));
+  const closeEdit = () => setEditingId(null);
 
   const list = todos.filter(t => filter==="all" ? true : filter==="done" ? t.done : !t.done);
   // 優先度→期日順にソート
