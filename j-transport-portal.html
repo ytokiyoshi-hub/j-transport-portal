@@ -1877,8 +1877,8 @@ const DriverFinancePage = ({ accent }) => {
   const driverSummary = drivers.map(d => {
     let totalSellD = 0, totalPayD = 0;
     const breakdown = [];
-    clients.forEach(c => {
-      if (!c.drivers.includes(d.id)) return;
+    allClientsLive().forEach(c => {
+      if (!c.drivers || !c.drivers.includes(d.id)) return;
       const act = cm(c.id, _displayMonth, dailyEdits);
       if (!act) return;
       // 担当ドライバー数で按分
