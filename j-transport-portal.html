@@ -4931,6 +4931,69 @@ const DispatchPage = ({ accent, setPage }) => {
   const [billMonth, setBillMonth] = React.useState(REF_MONTH);
   const shiftMonth = (delta) => { const [y,m]=billMonth.split("-").map(Number); const d=new Date(y,m-1+delta,1); setBillMonth(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`); };
 
+  // ── Supabase 永続化（jt_dispatch / jt_shifts / jt_dispatch_confirmed）─────────
+  // jt_daily_entries と同じ方針: localStorage を即時キャッシュにしつつ、
+  // マウント時にロード（SB優先・空なら既存localStorageを温存して初回移行）、
+  // 変更時はデバウンスで差分 upsert/delete（バッチ操作も state 監視で捕捉される）。
+  const sbReady = React.useRef(false);
+  const sbSnap = React.useRef({ dispatch:{}, shifts:{}, confirmed:{} });
+  const sbTimer = React.useRef({});
+  // {dk:{did:val}} を "dk|did"→val のフラットMapに展開（空値は除外）
+  const flat2 = (obj) => { const m={}; Object.keys(obj||{}).forEach(dk=>{ const day=obj[dk]||{}; Object.keys(day).forEach(did=>{ if(day[did]) m[`${dk}|${did}`]=day[did]; }); }); return m; };
+  const syncFlat = async (table, dateCol, valCol, curr, snapKey) => {
+    if(!window.sb) return;
+    const want = flat2(curr), have = flat2(sbSnap.current[snapKey]);
+    const ups=[], dels=[];
+    Object.keys(want).forEach(k=>{ if(have[k]!==want[k]){ const [dk,did]=k.split("|"); ups.push({ [dateCol]:dk, driver_id:did, [valCol]:want[k] }); } });
+    Object.keys(have).forEach(k=>{ if(!(k in want)){ const [dk,did]=k.split("|"); dels.push({dk,did}); } });
+    try {
+      if(ups.length) await window.sb.from(table).upsert(ups, { onConflict:`${dateCol},driver_id` });
+      for(const d of dels) await window.sb.from(table).delete().eq(dateCol,d.dk).eq("driver_id",d.did);
+      sbSnap.current[snapKey] = JSON.parse(JSON.stringify(curr));
+    } catch(e){ console.warn(`[Supabase] ${table} sync failed:`, e); }
+  };
+  const syncConfirmed = async (curr) => {
+    if(!window.sb) return;
+    const want=curr||{}, have=sbSnap.current.confirmed||{};
+    const ups=[], dels=[];
+    Object.keys(want).forEach(dk=>{ if(have[dk]!==want[dk]) ups.push({ confirm_date:dk, confirmed_at:want[dk] }); });
+    Object.keys(have).forEach(dk=>{ if(!(dk in want)) dels.push(dk); });
+    try {
+      if(ups.length) await window.sb.from("jt_dispatch_confirmed").upsert(ups, { onConflict:"confirm_date" });
+      for(const dk of dels) await window.sb.from("jt_dispatch_confirmed").delete().eq("confirm_date",dk);
+      sbSnap.current.confirmed = JSON.parse(JSON.stringify(curr));
+    } catch(e){ console.warn("[Supabase] jt_dispatch_confirmed sync failed:", e); }
+  };
+  React.useEffect(() => {
+    if(!window.sb){ sbReady.current = true; return; }
+    (async () => {
+      try {
+        const [d,s,c] = await Promise.all([
+          window.sb.from("jt_dispatch").select("*"),
+          window.sb.from("jt_shifts").select("*"),
+          window.sb.from("jt_dispatch_confirmed").select("*"),
+        ]);
+        if(!d.error && d.data && d.data.length){
+          const o={}; d.data.forEach(r=>{ (o[r.dispatch_date]=o[r.dispatch_date]||{})[r.driver_id]=r.client_id; });
+          sbSnap.current.dispatch = JSON.parse(JSON.stringify(o)); setDispatch(o);
+        } else { sbSnap.current.dispatch = {}; } // SB空: 既存localStorageを保存処理で移行
+        if(!s.error && s.data && s.data.length){
+          const o={}; s.data.forEach(r=>{ (o[r.shift_date]=o[r.shift_date]||{})[r.driver_id]=r.state; });
+          sbSnap.current.shifts = JSON.parse(JSON.stringify(o)); setShifts(o);
+        } else { sbSnap.current.shifts = {}; }
+        if(!c.error && c.data && c.data.length){
+          const o={}; c.data.forEach(r=>{ o[r.confirm_date]=r.confirmed_at; });
+          sbSnap.current.confirmed = JSON.parse(JSON.stringify(o)); setConfirmed(o);
+        } else { sbSnap.current.confirmed = {}; }
+        console.log("[Supabase] dispatch loaded:", d.data?.length||0, s.data?.length||0, c.data?.length||0);
+      } catch(e){ console.warn("[Supabase] dispatch load failed:", e); }
+      finally { sbReady.current = true; }
+    })();
+  }, []);
+  React.useEffect(() => { if(!sbReady.current) return; clearTimeout(sbTimer.current.d); sbTimer.current.d = setTimeout(()=>syncFlat("jt_dispatch","dispatch_date","client_id",dispatch,"dispatch"), 500); }, [dispatch]);
+  React.useEffect(() => { if(!sbReady.current) return; clearTimeout(sbTimer.current.s); sbTimer.current.s = setTimeout(()=>syncFlat("jt_shifts","shift_date","state",shifts,"shifts"), 500); }, [shifts]);
+  React.useEffect(() => { if(!sbReady.current) return; clearTimeout(sbTimer.current.c); sbTimer.current.c = setTimeout(()=>syncConfirmed(confirmed), 500); }, [confirmed]);
+
   const now = new Date();
   const dkOf = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
   const dow0 = now.getDay()===0?6:now.getDay()-1;
