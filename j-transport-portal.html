@@ -5561,6 +5561,7 @@ const DispatchPage = ({ accent, setPage }) => {
     if(!target.length) return;
     if(!confirm(`今週の確定済み ${target.length}日分を解除します。よろしいですか？`)) return;
     setConfirmed(prev=>{ const next={...prev}; target.forEach(wd=>delete next[wd.dk]); return next; });
+    showToast(`今週の確定 ${target.length}日分を解除しました`);
   };
 
   // 確定セル → 実績(dailyActuals + jt_daily_edits)の読み取り専用ジョイン（computeLiveSum と同じセル単位マージ）
