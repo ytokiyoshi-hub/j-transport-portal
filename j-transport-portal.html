@@ -877,6 +877,22 @@ const prevMonthKey = (mk) => {
   return m===1 ? `${y-1}-12` : `${y}-${String(m-1).padStart(2,'0')}`;
 };
 
+// localStorage 直読みヘルパー（モジュールレベル: 編集オーバーライドを集計関数に反映するため）
+const _lsGet = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
+// 追加荷主(jt_extra_clients)込みの全クライアント
+const allClientsLive = () => { const ex = _lsGet('jt_extra_clients', []); return Array.isArray(ex) && ex.length ? [...clients, ...ex] : clients; };
+// 単価編集(jt_rate_overrides) / 締日編集(jt_cycle_overrides) を適用した実効クライアント
+const effectiveClient = (c) => {
+  if (!c) return c;
+  const ro = _lsGet('jt_rate_overrides', {});
+  const co = _lsGet('jt_cycle_overrides', {});
+  const rates = ro[c.id] || c.rates;
+  const billingCycle = (co[c.id] !== undefined && co[c.id] !== null) ? co[c.id] : c.billingCycle;
+  return (rates === c.rates && billingCycle === c.billingCycle) ? c : { ...c, rates, billingCycle };
+};
+// id から実効クライアントを解決（追加荷主・編集オーバーライド込み）
+const resolveClientById = (cid) => effectiveClient(allClientsLive().find(c => c.id === cid));
+
 // 請求期間を計算（締日アウェア）
 const billingPeriodFor = (mk, cycle) => {
   const [y, m] = mk.split('-').map(Number);
