@@ -5996,6 +5996,24 @@ const App = () => {
       } catch (e) { console.warn("[Supabase] sync failed:", e); }
     })();
   }, []);
+  // 起動時に Supabase の jt_contact_overrides（請求先情報）を localStorage へ同期
+  // → 単価マスタで編集した請求先が他端末・請求管理ページにも反映される
+  React.useEffect(() => {
+    if (!window.sb) return;
+    (async () => {
+      try {
+        const { data, error } = await window.sb.from("jt_contact_overrides").select("*");
+        if (error || !data || !data.length) return;
+        const o = {};
+        data.forEach(r => { o[r.client_id] = { person:r.person||"", tel:r.tel||"", address:r.address||"" }; });
+        const existing = (()=>{ try { return JSON.parse(localStorage.getItem("jt_contact_overrides")||"{}"); } catch { return {}; } })();
+        const merged = { ...o, ...existing }; // local 優先（未同期のローカル編集を保持）
+        localStorage.setItem("jt_contact_overrides", JSON.stringify(merged));
+        window.dispatchEvent(new CustomEvent("jt-ls-change", { detail: { key: "jt_contact_overrides", val: merged } }));
+        console.log("[Supabase] jt_contact_overrides synced:", data.length);
+      } catch (e) { console.warn("[Supabase] contact sync failed:", e); }
+    })();
+  }, []);
   const pp = { accent, setPage };
 
   const pageMap = {
