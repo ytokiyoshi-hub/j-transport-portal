@@ -4815,6 +4815,7 @@ const ParentClientsPage = ({ accent }) => {
     if (parentId === "") delete next[clientId];
     else next[clientId] = parentId;
     setParentMap(next);
+    showToast(parentId ? "紐付けを保存しました" : "紐付けを解除しました");
   };
 
   const unassignedClients = clients.filter(c => !parentMap[c.id]);
