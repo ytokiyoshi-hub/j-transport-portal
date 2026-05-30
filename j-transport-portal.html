@@ -5005,8 +5005,8 @@ function AppearanceSettings() {
     setDraft(next); previewTheme(next);
   };
   const applyPreset = (preset) => { setDraft(preset); previewTheme(preset); };
-  const onSave = () => { setTheme(draft); alert('保存しました'); };
-  const onReset = () => { resetTheme(); setDraft(presets.default); alert('既定値に戻しました'); };
+  const onSave = () => { setTheme(draft); showToast('保存しました'); };
+  const onReset = () => { resetTheme(); setDraft(presets.default); showToast('既定値に戻しました'); };
 
   const fields = [
     { group: '罫線', items: [
