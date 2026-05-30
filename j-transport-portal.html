@@ -3969,9 +3969,9 @@ const DriversPage = ({ accent, setPage }) => {
                   </td>
                   <td style={{ padding:"12px 16px" }}><StatusBadge label={d.type}/></td>
                   <td style={{ padding:"12px 16px", color:"#374151", fontSize:12 }}>{d.area}</td>
-                  <td style={{ padding:"12px 16px", textAlign:"center" }}>{d.clients.length}社</td>
+                  <td style={{ padding:"12px 16px", textAlign:"center" }}>{d.clientRows.length>0?`${d.clientRows.length}社`:"—"}</td>
                   <td style={{ padding:"12px 16px", fontWeight:700, color:accent }}>{d.totalSell>0?fmt(d.totalSell):"—"}</td>
-                  <td style={{ padding:"12px 16px", fontWeight:600 }}>{d.totalPay>0?fmt(d.totalPay):"—"}</td>
+                  <td style={{ padding:"12px 16px", fontWeight:600 }}>{d.grandTotal>0?fmt(d.grandTotal):"—"}</td>
                   <td style={{ padding:"12px 16px", fontWeight:600, color:"#16a34a" }}>{d.totalProfit>0?fmt(d.totalProfit):"—"}</td>
                 </tr>
               ))}
@@ -3980,7 +3980,7 @@ const DriversPage = ({ accent, setPage }) => {
               <tr style={{ background:"#f9fafb", borderTop:"2px solid #475569" }}>
                 <td colSpan={4} style={{ padding:"10px 16px", fontWeight:700 }}>合計（{list.length}名）</td>
                 <td style={{ padding:"10px 16px", fontWeight:700, color:accent }}>{fmt(list.reduce((s,d)=>s+d.totalSell,0))}</td>
-                <td style={{ padding:"10px 16px", fontWeight:700 }}>{fmt(list.reduce((s,d)=>s+d.totalPay,0))}</td>
+                <td style={{ padding:"10px 16px", fontWeight:700 }}>{fmt(list.reduce((s,d)=>s+d.grandTotal,0))}</td>
                 <td style={{ padding:"10px 16px", fontWeight:700, color:"#16a34a" }}>{fmt(list.reduce((s,d)=>s+d.totalProfit,0))}</td>
               </tr>
             </tfoot>
