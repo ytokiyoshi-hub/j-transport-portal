@@ -2393,6 +2393,107 @@ const InvoicePage = ({ accent }) => {
           );
         })()}
       </div>
+
+      {preview && (() => {
+        const m = invoiceModel(preview);
+        const C = m.clientObj;
+        const yen = (n) => "¥" + Number(n).toLocaleString();
+        return (
+          <div onClick={()=>setPreview(null)}
+            style={{ position:"fixed", inset:0, background:"rgba(15,23,42,0.55)", zIndex:1000, display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"32px 16px", overflowY:"auto" }}>
+            <div onClick={e=>e.stopPropagation()}
+              style={{ width:"min(794px,100%)", background:"#fff", borderRadius:8, boxShadow:"0 20px 60px rgba(0,0,0,0.35)", marginBottom:32 }}>
+              {/* ツールバー（印刷対象外） */}
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"12px 16px", borderBottom:"1px solid #e5e7eb", background:"#f8fafc", borderRadius:"8px 8px 0 0", position:"sticky", top:0 }}>
+                <div style={{ fontWeight:700, fontSize:13, color:"#111827" }}>請求書プレビュー — {preview.id}</div>
+                <div style={{ display:"flex", gap:8 }}>
+                  <button onClick={()=>printPaper(preview)}
+                    style={{ padding:"7px 16px", background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:600, fontSize:12.5, cursor:"pointer" }}>印刷 / PDF保存</button>
+                  <button onClick={()=>setPreview(null)}
+                    style={{ padding:"7px 14px", background:"#fff", color:"#374151", border:"1px solid #d1d5db", borderRadius:6, fontWeight:600, fontSize:12.5, cursor:"pointer" }}>閉じる</button>
+                </div>
+              </div>
+
+              {/* 正式な請求書（印刷対象） */}
+              <div className="invoice-paper" style={{ padding:"40px 44px", color:"#111827", fontSize:12.5, lineHeight:1.6 }}>
+                <div style={{ textAlign:"center", marginBottom:28 }}>
+                  <span style={{ fontSize:26, fontWeight:700, letterSpacing:10, borderBottom:"3px double #111827", padding:"2px 36px 8px" }}>請　求　書</span>
+                </div>
+
+                <div style={{ display:"flex", justifyContent:"space-between", gap:24, marginBottom:24 }}>
+                  <div style={{ flex:1 }}>
+                    <div style={{ fontSize:16, fontWeight:700, borderBottom:"2px solid #111827", paddingBottom:4, display:"inline-block" }}>
+                      {C.name||preview.client} <span style={{ fontSize:13, fontWeight:400 }}>御中</span>
+                    </div>
+                    {C.address && <div style={{ fontSize:11.5, color:"#374151", marginTop:8 }}>{C.address}</div>}
+                    {C.tel && <div style={{ fontSize:11.5, color:"#374151", marginTop:2 }}>TEL: {C.tel}</div>}
+                    {C.person && <div style={{ fontSize:11.5, color:"#374151", marginTop:2 }}>ご担当: {C.person} 様</div>}
+                    <div style={{ marginTop:16, fontSize:12 }}>下記の通りご請求申し上げます。</div>
+                    <div style={{ marginTop:12, border:"1px solid #111827", display:"inline-block" }}>
+                      <div style={{ display:"flex", alignItems:"stretch" }}>
+                        <div style={{ background:"#111827", color:"#fff", padding:"10px 16px", fontSize:13, fontWeight:600, display:"flex", alignItems:"center" }}>ご請求金額</div>
+                        <div style={{ padding:"10px 20px", fontSize:22, fontWeight:700 }}>{yen(m.total)}<span style={{ fontSize:11, fontWeight:400, marginLeft:6 }}>（税込）</span></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ width:240, fontSize:11.5 }}>
+                    <div style={{ display:"flex", justifyContent:"space-between", marginBottom:3 }}><span style={{ color:"#6b7280" }}>請求書番号</span><b>{preview.id}</b></div>
+                    <div style={{ display:"flex", justifyContent:"space-between", marginBottom:3 }}><span style={{ color:"#6b7280" }}>発行日</span><span>{m.issueDate}</span></div>
+                    <div style={{ display:"flex", justifyContent:"space-between", marginBottom:3 }}><span style={{ color:"#6b7280" }}>支払期限</span><span>{preview.due}</span></div>
+                    <div style={{ marginTop:14, border:"1px solid #94a3b8", borderRadius:4, padding:"10px 12px" }}>
+                      <div style={{ fontWeight:700, fontSize:13, marginBottom:4 }}>J transport株式会社</div>
+                      <div>〒XXX-XXXX 東京都〇〇区〇〇 1-2-3</div>
+                      <div>TEL: 03-XXXX-XXXX</div>
+                      <div style={{ marginTop:4 }}>登録番号: T1234567890123</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ fontSize:11.5, color:"#374151", marginBottom:6 }}>対象期間: {m.period}</div>
+                <table style={{ width:"100%", borderCollapse:"collapse", fontSize:12 }}>
+                  <thead>
+                    <tr style={{ background:"#f1f5f9" }}>
+                      {["区分","数量","単価","金額"].map((h,hi)=>(
+                        <th key={h} style={{ padding:"8px 12px", textAlign:hi===0?"left":"right", fontWeight:700, fontSize:11.5, borderTop:"2px solid #111827", borderBottom:"1px solid #94a3b8" }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {m.items.map((it,ii)=>(
+                      <tr key={ii} style={{ borderBottom:"1px solid #d1d5db" }}>
+                        <td style={{ padding:"8px 12px", fontWeight:500 }}>
+                          {it.label}
+                          {it.days>0 && <span style={{ fontSize:10, color:"#9ca3af", marginLeft:6 }}>（{it.days}日稼働）</span>}
+                        </td>
+                        <td style={{ padding:"8px 12px", textAlign:"right" }}>{typeof it.qty==="number"?it.qty.toLocaleString():it.qty}{it.unit}</td>
+                        <td style={{ padding:"8px 12px", textAlign:"right" }}>{it.unitPrice>0?yen(it.unitPrice):"—"}</td>
+                        <td style={{ padding:"8px 12px", textAlign:"right", fontWeight:600 }}>{typeof it.amount==="number"?yen(it.amount):"—"}</td>
+                      </tr>
+                    ))}
+                    {Array.from({ length: Math.max(0, 5 - m.items.length) }).map((_,ii)=>(
+                      <tr key={"e"+ii} style={{ borderBottom:"1px solid #e5e7eb" }}><td style={{ padding:"8px 12px", height:18 }}>&nbsp;</td><td/><td/><td/></tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr><td colSpan={3} style={{ padding:"7px 12px", textAlign:"right", fontSize:11.5 }}>小計</td><td style={{ padding:"7px 12px", textAlign:"right", fontWeight:600 }}>{yen(m.subtotal)}</td></tr>
+                    <tr><td colSpan={3} style={{ padding:"7px 12px", textAlign:"right", fontSize:11.5 }}>消費税（10%）</td><td style={{ padding:"7px 12px", textAlign:"right", fontWeight:600 }}>{yen(m.tax)}</td></tr>
+                    <tr style={{ background:"#f1f5f9", borderTop:"2px solid #111827" }}>
+                      <td colSpan={3} style={{ padding:"10px 12px", textAlign:"right", fontWeight:700, fontSize:13 }}>合計（税込）</td>
+                      <td style={{ padding:"10px 12px", textAlign:"right", fontWeight:700, fontSize:14 }}>{yen(m.total)}</td>
+                    </tr>
+                  </tfoot>
+                </table>
+
+                <div style={{ marginTop:24, paddingTop:14, borderTop:"1px solid #94a3b8", fontSize:11.5 }}>
+                  <div style={{ fontWeight:700, marginBottom:4 }}>お振込先</div>
+                  <div>〇〇銀行 〇〇支店 普通 1234567 J transport株式会社（ジェイトランスポート（カ）</div>
+                  <div style={{ marginTop:10, fontSize:10.5, color:"#6b7280" }}>※ 恐れ入りますが、振込手数料は貴社にてご負担くださいますようお願い申し上げます。</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 };
