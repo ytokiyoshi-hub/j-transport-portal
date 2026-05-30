@@ -5758,81 +5758,105 @@ const AttendancePage = ({ accent }) => {
   const [tab, setTab] = React.useState("attendance"); // "attendance" | "schedule"
   const [expandedDriver, setExpandedDriver] = React.useState(null);
   const [weekOffset, setWeekOffset] = React.useState(0);
+  // 配車・シフトの実データを購読（配車ページの入力と連動）
+  const [dispatch] = useLocalStorage("jt_dispatch", {});
+  const [shifts] = useLocalStorage("jt_shifts", {});
 
-  const stColor = { "出勤":"#16a34a","出勤中":"#2563eb","有給":"#7c3aed","休日":"#9ca3af","欠勤":"#dc2626","公休":"#6b7280" };
-  const stBg    = { "出勤":"#f0fdf4","出勤中":"#eff6ff","有給":"#f5f3ff","休日":"#f8fafc","欠勤":"#fef2f2","公休":"#f9fafb" };
+  const stColor = { "出勤":"#16a34a","出勤中":"#2563eb","有給":"#7c3aed","休日":"#9ca3af","欠勤":"#dc2626","公休":"#6b7280","早番":"#0891b2","遅番":"#7c3aed" };
+  const stBg    = { "出勤":"#f0fdf4","出勤中":"#eff6ff","有給":"#f5f3ff","休日":"#f8fafc","欠勤":"#fef2f2","公休":"#f9fafb","早番":"#ecfeff","遅番":"#f5f3ff" };
 
-  // 全ドライバー月次サマリー
-  const driverSummary = [
-    { id:"DR-01", name:"田中 一郎", type:"自社",    workDays:20, ot:"31h50m", otMin:1910, paidLeft:8,  absent:0, todaySt:"出勤中", in:"08:00" },
-    { id:"DR-02", name:"佐藤 次郎", type:"自社",    workDays:19, ot:"24h20m", otMin:1460, paidLeft:10, absent:0, todaySt:"出勤",   in:"08:15" },
-    { id:"DR-03", name:"鈴木 三郎", type:"協力会社", workDays:21, ot:"28h00m", otMin:1680, paidLeft:5,  absent:0, todaySt:"出勤中", in:"07:50" },
-    { id:"DR-04", name:"高橋 四郎", type:"自社",    workDays:18, ot:"19h30m", otMin:1170, paidLeft:12, absent:1, todaySt:"出勤",   in:"08:05" },
-    { id:"DR-05", name:"伊藤 五郎", type:"自社",    workDays:20, ot:"22h10m", otMin:1330, paidLeft:7,  absent:0, todaySt:"出勤中", in:"08:00" },
-    { id:"DR-06", name:"渡辺 六郎", type:"協力会社", workDays:20, ot:"25h45m", otMin:1545, paidLeft:3,  absent:0, todaySt:"出勤",   in:"08:20" },
-    { id:"DR-07", name:"中村 七郎", type:"自社",    workDays:19, ot:"21h00m", otMin:1260, paidLeft:9,  absent:0, todaySt:"出勤中", in:"07:55" },
-    { id:"DR-08", name:"小林 八郎", type:"協力会社", workDays:17, ot:"15h30m", otMin:930,  paidLeft:8,  absent:2, todaySt:"有給",   in:"—" },
-    { id:"DR-09", name:"加藤 九郎", type:"協力会社", workDays:20, ot:"20h15m", otMin:1215, paidLeft:6,  absent:0, todaySt:"出勤",   in:"08:10" },
-    { id:"DR-10", name:"吉田 十郎", type:"自社",    workDays:21, ot:"33h20m", otMin:2000, paidLeft:11, absent:0, todaySt:"出勤中", in:"07:45" },
-  ];
+  const _pad = n => String(n).padStart(2,"0");
+  const _now = new Date();
+  const _todayDk = `${_now.getFullYear()}-${_pad(_now.getMonth()+1)}-${_pad(_now.getDate())}`;
+  const _monthPrefix = REF_MONTH;            // 集計対象月（実データ基準月）
+  const _monthLabel = mkLabel(REF_MONTH);
+  const [_y, _mo] = REF_MONTH.split("-").map(Number);
+  const _daysInMonth = new Date(_y, _mo, 0).getDate();
+  const _dowName = ["日","月","火","水","木","金","土"];
+  // id→荷主名（追加荷主込み）
+  const _clientName = {}; allClientsLive().forEach(c => { _clientName[c.id] = c.name; });
+  const _shiftToSt = { "有休":"有給", "休":"休日", "日勤":"出勤", "早番":"早番", "遅番":"遅番" };
 
-  // ドライバー詳細日次記録（DR-01のサンプルを各ドライバーに生成）
-  const genRecords = (seed) => {
-    const days = ["月","火","水","木","金","土","日"];
-    return Array.from({length:30},(_,i)=>{
-      const d=i+1;
-      const dow=(d+1+seed)%7;
-      const isWe=dow>=5;
-      const isHol=d===29;
-      if(isWe||isHol) return {d,day:days[dow],in:"—",out:"—",work:"—",ot:"—",st:isHol?"公休":"休日"};
-      const inH=7+((d*seed)%2), inM=((d*3)%6)*5;
-      const outH=18+((d+seed)%3), outM=((d*7)%6)*5;
-      const workMin=(outH-inH)*60+(outM-inM);
-      const otMin=Math.max(0,workMin-480);
-      return {d,day:days[dow],
-        in:`${String(inH).padStart(2,"0")}:${String(inM).padStart(2,"0")}`,
-        out:`${String(outH).padStart(2,"0")}:${String(outM).padStart(2,"0")}`,
-        work:`${Math.floor(workMin/60)}h${workMin%60>0?workMin%60+"m":""}`,
-        ot:otMin>0?`${Math.floor(otMin/60)}h${otMin%60>0?otMin%60+"m":""}` :"—",
-        st: d===1&&seed===0?"出勤中":"出勤"};
-    });
-  };
-  const detailRecords = Object.fromEntries(driverSummary.map((d,i)=>[d.id,genRecords(i+1)]));
+  // 実ドライバー（drivers）＋実配車（dispatch）／シフト（shifts）から月次サマリーを生成
+  const driverSummary = drivers.map(d => {
+    let workDays = 0, restDays = 0;
+    for (let dd = 1; dd <= _daysInMonth; dd++) {
+      const dk = `${_monthPrefix}-${_pad(dd)}`;
+      const assigned = dispatch[dk] && dispatch[dk][d.id];
+      const sh = shifts[dk] && shifts[dk][d.id];
+      if (assigned) workDays++;
+      else if (sh === "有休" || sh === "休") restDays++;
+    }
+    const tAssigned = dispatch[_todayDk] && dispatch[_todayDk][d.id];
+    const tShift = shifts[_todayDk] && shifts[_todayDk][d.id];
+    let todaySt = "—";
+    if (tShift && _shiftToSt[tShift]) todaySt = _shiftToSt[tShift];
+    else if (tAssigned) todaySt = "出勤";
+    return { id:d.id, name:d.name, type:d.type, workDays, restDays,
+      todaySt, in:"—", ot:"—", otMin:0, paidLeft:"—", absent:0,
+      todayClient: tAssigned ? (_clientName[tAssigned] || tAssigned) : null };
+  });
 
-  // 運行予定データ（今週）
-  const scheduleData = {
-    "DR-01": ["ASKUL","ASKUL","ASKUL","ASKUL","ASKUL","—","—"],
-    "DR-02": ["Bloomee","Bloomee","Bloomee","Bloomee","Bloomee","—","—"],
-    "DR-03": ["アクアクララ","アクアクララ","ASKUL","ASKUL","アクアクララ","—","—"],
-    "DR-04": ["カウネット","カウネット","ファミマ","ファミマ","カウネット","—","—"],
-    "DR-05": ["サーガ","Bloomee","サーガ","Bloomee","サーガ","—","—"],
-    "DR-06": ["日本トムソン","日本トムソン","タイヤ","タイヤ","日本トムソン","—","—"],
-    "DR-07": ["ASKUL","ASKUL","ASKUL","ASKUL","ASKUL","—","—"],
-    "DR-08": ["RICOH","RICOH","有給","RICOH","RICOH","—","—"],
-    "DR-09": ["旭食品","旭食品","旭食品","サーガ","旭食品","—","—"],
-    "DR-10": ["ファミマ","ファミマ","ファミマ","ファミマ","ファミマ","—","—"],
-  };
+  // ドライバー詳細日次記録（当月・実配車/シフトから生成）
+  const detailRecords = Object.fromEntries(drivers.map(d => {
+    const rows = [];
+    for (let dd = 1; dd <= _daysInMonth; dd++) {
+      const dk = `${_monthPrefix}-${_pad(dd)}`;
+      const dow = _dowName[new Date(_y, _mo-1, dd).getDay()];
+      const assigned = dispatch[dk] && dispatch[dk][d.id];
+      const sh = shifts[dk] && shifts[dk][d.id];
+      let st;
+      if (assigned) st = "出勤";
+      else if (sh && _shiftToSt[sh]) st = _shiftToSt[sh];
+      else continue; // 配車もシフトも無い日は表示しない
+      rows.push({ d:dd, day:dow, in:"—", out:"—",
+        work: assigned ? (_clientName[assigned] || assigned) : "—",
+        ot:"—", st });
+    }
+    return [d.id, rows];
+  }));
+
   const clientColor = {
-    "ASKUL":"#dbeafe","Bloomee":"#fce7f3","アクアクララ":"#d1fae5","カウネット":"#fef9c3",
-    "サーガ":"#ede9fe","ファミマ":"#dcfce7","日本トムソン":"#fee2e2","タイヤ":"#ffedd5",
-    "RICOH":"#e0e7ff","旭食品":"#fef3c7","有給":"#f5f3ff","—":"transparent"
+    "ASKUL":"#dbeafe","Bloomee":"#fce7f3","アクアクララ":"#d1fae5","カウネット・NBC":"#fef9c3",
+    "サーガ":"#ede9fe","ファミリーマート":"#dcfce7","日本トムソン":"#fee2e2","タイヤ配送":"#ffedd5",
+    "RICOH":"#e0e7ff","旭食品（ダイコク便）":"#fef3c7","有給":"#f5f3ff","—":"transparent"
   };
   const clientTextColor = {
-    "ASKUL":"#1e40af","Bloomee":"#9d174d","アクアクララ":"#065f46","カウネット":"#854d0e",
-    "サーガ":"#5b21b6","ファミマ":"#14532d","日本トムソン":"#991b1b","タイヤ":"#9a3412",
-    "RICOH":"#3730a3","旭食品":"#92400e","有給":"#7c3aed","—":"#d1d5db"
+    "ASKUL":"#1e40af","Bloomee":"#9d174d","アクアクララ":"#065f46","カウネット・NBC":"#854d0e",
+    "サーガ":"#5b21b6","ファミリーマート":"#14532d","日本トムソン":"#991b1b","タイヤ配送":"#9a3412",
+    "RICOH":"#3730a3","旭食品（ダイコク便）":"#92400e","有給":"#7c3aed","—":"#d1d5db"
   };
+  const _palette = ["#dbeafe","#fce7f3","#d1fae5","#fef9c3","#ede9fe","#dcfce7","#fee2e2","#ffedd5","#e0e7ff","#fef3c7"];
 
   // 今週の日付生成
-  const now = new Date();
+  const now = _now;
   const dow0 = now.getDay()===0?6:now.getDay()-1;
   const mon = new Date(now); mon.setDate(now.getDate()-dow0+weekOffset*7);
   const weekDays = Array.from({length:7},(_,i)=>{
     const d=new Date(mon); d.setDate(mon.getDate()+i);
+    const dk = `${d.getFullYear()}-${_pad(d.getMonth()+1)}-${_pad(d.getDate())}`;
     const isToday = d.toDateString()===now.toDateString();
-    return { label:`${d.getMonth()+1}/${d.getDate()}`, dayName:["月","火","水","木","金","土","日"][i], isToday, isSun:i===6, isSat:i===5 };
+    return { dk, label:`${d.getMonth()+1}/${d.getDate()}`, dayName:["月","火","水","木","金","土","日"][i], isToday, isSun:i===6, isSat:i===5 };
   });
   const weekLabel = `${weekDays[0].label}（月）〜 ${weekDays[4].label}（金）`;
+
+  // 運行予定（実配車から週次で生成）：scheduleData[did] = 7日分の荷主名 or "—"
+  const scheduleData = {};
+  drivers.forEach(d => {
+    scheduleData[d.id] = weekDays.map(wd => {
+      const cid = dispatch[wd.dk] && dispatch[wd.dk][d.id];
+      if (cid) return _clientName[cid] || cid;
+      const sh = shifts[wd.dk] && shifts[wd.dk][d.id];
+      if (sh === "有休") return "有給";
+      return "—";
+    });
+  });
+  // 未知の荷主名にも安定した色を割り当てる
+  const _colorFor = (name) => {
+    if (clientColor[name] !== undefined) return { bg:clientColor[name], fg:clientTextColor[name]||"#374151" };
+    let h=0; for (let i=0;i<name.length;i++) h=(h*31+name.charCodeAt(i))>>>0;
+    return { bg:_palette[h % _palette.length], fg:"#374151" };
+  };
 
   const otLimit = 45*60;
 
