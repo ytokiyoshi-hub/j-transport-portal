@@ -1873,25 +1873,92 @@ const DriverFinancePage = ({ accent }) => {
   // 表示月: 今月実績があれば今月、なければ最新確定月
   const _refAgg = monthAgg(REF_MONTH, dailyEdits);
   const _displayMonth = _refAgg.sell > 0 ? REF_MONTH : LATEST_DATA_MONTH;
-  // ドライバー別に荷主から収支計算
-  const driverSummary = drivers.map(d => {
-    let totalSellD = 0, totalPayD = 0;
-    const breakdown = [];
+  const _monthLabel = mkLabel(_displayMonth);
+  const _dow = (ds) => { const [y,mm,dd] = ds.split("-").map(Number); return ["日","月","火","水","木","金","土"][new Date(y, mm-1, dd).getDay()]; };
+  // 支払予定日: 当月分を翌月15日払いと仮定
+  const _payDue = (() => { const [y,m] = _displayMonth.split("-").map(Number); const ny = m===12?y+1:y, nm = m===12?1:m+1; return `${ny}年${nm}月15日`; })();
+
+  // 実際の日次実績(dailyActuals + 編集)から、ドライバー本人が運んだ実数で支払を集計（按分ではない）
+  const driverStatement = (d) => {
+    const mk = _displayMonth, clientMap = {}, dayMap = {};
+    let totalSell = 0, totalPay = 0;
     allClientsLive().forEach(c => {
-      if (!c.drivers || !c.drivers.includes(d.id)) return;
-      const act = cm(c.id, _displayMonth, dailyEdits);
-      if (!act) return;
-      // 担当ドライバー数で按分
-      const driverCount = c.drivers.length;
-      const share = 1 / driverCount;
-      const s = Math.round(act.s * share);
-      const p = Math.round(act.p * share);
-      totalSellD += s;
-      totalPayD  += p;
-      breakdown.push({ client: c.name, billing: c.billing, sell: s, pay: p, profit: s - p });
+      const ec = effectiveClient(c); // 単価編集を反映
+      const baseDA = (typeof dailyActuals !== "undefined" && dailyActuals[c.id]) || {};
+      const editsDA = (dailyEdits && dailyEdits[c.id]) || {};
+      [...new Set([...Object.keys(baseDA), ...Object.keys(editsDA)])].forEach(date => {
+        if (date.slice(0,7) !== mk) return; // 給与は暦月で集計
+        const bd = (baseDA[date]||{})[d.id] || {}, ed = (editsDA[date]||{})[d.id] || {};
+        [...new Set([...Object.keys(bd), ...Object.keys(ed)])].forEach(lbl => {
+          const v = ed[lbl] !== undefined ? ed[lbl] : bd[lbl];
+          const cnt = Number(v) || 0; if (!cnt) return;
+          const r = (ec.rates||[]).find(rr => rr.label === lbl); if (!r) return;
+          const payAmt = cnt * r.pay, sellAmt = cnt * r.sell;
+          if (!clientMap[c.id]) clientMap[c.id] = { name:c.name, lines:{}, pay:0, sell:0, days:new Set() };
+          const cmp = clientMap[c.id];
+          if (!cmp.lines[lbl]) cmp.lines[lbl] = { label:lbl, qty:0, unitPay:r.pay, amount:0 };
+          cmp.lines[lbl].qty += cnt; cmp.lines[lbl].amount += payAmt;
+          cmp.pay += payAmt; cmp.sell += sellAmt; cmp.days.add(date);
+          if (!dayMap[date]) dayMap[date] = { date, items:[], pay:0 };
+          dayMap[date].items.push({ client:c.name, label:lbl, qty:cnt, amount:payAmt });
+          dayMap[date].pay += payAmt;
+          totalPay += payAmt; totalSell += sellAmt;
+        });
+      });
     });
-    return { ...d, totalSell: totalSellD, totalPay: totalPayD, totalProfit: totalSellD - totalPayD, breakdown };
-  });
+    const clientRows = Object.values(clientMap).map(cmp => ({
+      name:cmp.name, pay:cmp.pay, sell:cmp.sell, days:cmp.days.size, lines:Object.values(cmp.lines),
+    })).sort((a,b) => b.pay - a.pay);
+    const dayRows = Object.values(dayMap).sort((a,b) => a.date<b.date?-1:1).map(dr => ({ ...dr, dow:_dow(dr.date) }));
+    const tax = d.type === "協力会社" ? Math.round(totalPay * 0.1) : 0; // 外注は消費税込で支払
+    return { ...d, mk, clientRows, dayRows, totalSell, totalPay, totalProfit: totalSell-totalPay, tax, grandTotal: totalPay+tax, workDays: dayRows.length };
+  };
+
+  const driverSummary = drivers.map(driverStatement);
+  const totalSell = driverSummary.reduce((s,d) => s + d.totalSell, 0);
+  const totalPay  = driverSummary.reduce((s,d) => s + d.totalPay, 0);
+  const totalProfit = totalSell - totalPay;
+
+  // 支払明細書(.driver-slip-paper)を iframe 経由で A4 印刷／PDF保存
+  const printSlip = (d) => {
+    const paper = document.querySelector(".driver-slip-paper");
+    if (!paper) return;
+    const clone = paper.cloneNode(true);
+    const old = document.getElementById("jt-slip-iframe"); if (old) old.remove();
+    const iframe = document.createElement("iframe");
+    iframe.id = "jt-slip-iframe";
+    iframe.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden;";
+    document.body.appendChild(iframe);
+    const doc = iframe.contentWindow.document; doc.open();
+    doc.write(`<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>支払明細書 ${d.name} ${_monthLabel}</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background:#fff; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  body { font-family:'Noto Sans JP','Hiragino Sans',sans-serif; color:#111827; font-size:12px; line-height:1.6; }
+  table { border-collapse:collapse; width:100%; } td, th { vertical-align:middle; }
+  thead { display:table-header-group; } tfoot { display:table-row-group; }
+  tr { break-inside:avoid; page-break-inside:avoid; }
+  .jt-keep { break-inside:avoid; page-break-inside:avoid; }
+  .driver-slip-paper { padding:0 !important; }
+  .jt-daily-section { break-inside:auto; }
+  .jt-daily-section.jt-page2 { break-before:page; page-break-before:always; }
+  .jt-slip-footer { break-inside:avoid; page-break-inside:avoid; }
+  @page { size:A4 portrait; margin:14mm; }
+</style></head><body>${clone.outerHTML}</body></html>`);
+    doc.close();
+    setTimeout(() => { try { iframe.contentWindow.focus(); iframe.contentWindow.print(); } catch(e) { alert("印刷に失敗: "+e.message); } setTimeout(()=>iframe.remove(),1500); }, 250);
+  };
+
+  const exportCSV = (d) => {
+    const rows = ["荷主,区分,数量,支払単価,金額"];
+    d.clientRows.forEach(c => c.lines.forEach(l => rows.push(`${c.name},${l.label},${l.qty},${l.unitPay},${l.amount}`)));
+    rows.push(`,,,小計,${d.totalPay}`);
+    if (d.tax > 0) rows.push(`,,,消費税(10%),${d.tax}`);
+    rows.push(`,,,支払合計,${d.grandTotal}`);
+    const a = document.createElement("a");
+    a.href = "data:text/csv;charset=utf-8," + encodeURIComponent("﻿" + rows.join("\n"));
+    a.download = `支払明細_${d.name}_${d.mk}.csv`; a.click();
+  };
 
   return (
     <div>
