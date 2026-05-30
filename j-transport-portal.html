@@ -5899,7 +5899,7 @@ const AttendancePage = ({ accent }) => {
             <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
               <thead>
                 <tr style={{ background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
-                  {["ドライバー","種別","今日の状況","出勤日数","残業時間","有給残","欠勤",""].map(h=>(
+                  {["ドライバー","種別","今日の状況","当月配車日数","当月休日数","本日担当",""].map(h=>(
                     <th key={h} style={{ padding:"10px 14px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:11, whiteSpace:"nowrap" }}>{h}</th>
                   ))}
                 </tr>
