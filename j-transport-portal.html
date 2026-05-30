@@ -2125,6 +2125,13 @@ const InvoicePage = ({ accent }) => {
     return sum > 0 ? sum : inv.amount;
   };
 
+  const summary = {
+    未請求: invoices.filter(i=>i.status==="未請求").reduce((s,i)=>s+subtotalFor(i),0),
+    請求済: invoices.filter(i=>i.status==="請求済").reduce((s,i)=>s+subtotalFor(i),0),
+    遅延:   invoices.filter(i=>i.status==="遅延").reduce((s,i)=>s+subtotalFor(i),0),
+    入金済: invoices.filter(i=>i.status==="入金済").reduce((s,i)=>s+subtotalFor(i),0),
+  };
+
   return (
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
