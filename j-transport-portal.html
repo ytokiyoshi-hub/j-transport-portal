@@ -2547,7 +2547,7 @@ const InvoicePage = ({ accent }) => {
                 </table>
 
                 {m.dailyRows.length > 0 && (
-                  <div className={"jt-daily-section" + (m.dailyRows.length > 12 ? " jt-page2" : "")} style={{ marginTop:26 }}>
+                  <div className={"jt-daily-section" + (m.dailyRows.length > 8 ? " jt-page2" : "")} style={{ marginTop:26 }}>
                     <div style={{ fontSize:12.5, fontWeight:700, marginBottom:8, borderLeft:`3px solid ${accent}`, paddingLeft:8 }}>日別明細（内訳）</div>
                     <table style={{ width:"100%", borderCollapse:"collapse", fontSize:11 }}>
                       <thead>
