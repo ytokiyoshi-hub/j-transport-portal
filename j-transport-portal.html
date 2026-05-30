@@ -4986,6 +4986,10 @@ const DispatchPage = ({ accent, setPage }) => {
           sbSnap.current.confirmed = JSON.parse(JSON.stringify(o)); setConfirmed(o);
         } else { sbSnap.current.confirmed = {}; }
         console.log("[Supabase] dispatch loaded:", d.data?.length||0, s.data?.length||0, c.data?.length||0);
+        // 初回移行: SBが空で既存localStorageにデータがあれば push（state不変で保存effectが発火しないため明示実行）
+        if((!d.data || !d.data.length) && Object.keys(dispatch).length) syncFlat("jt_dispatch","dispatch_date","client_id",dispatch,"dispatch");
+        if((!s.data || !s.data.length) && Object.keys(shifts).length) syncFlat("jt_shifts","shift_date","state",shifts,"shifts");
+        if((!c.data || !c.data.length) && Object.keys(confirmed).length) syncConfirmed(confirmed);
       } catch(e){ console.warn("[Supabase] dispatch load failed:", e); }
       finally { sbReady.current = true; }
     })();
