@@ -1839,36 +1839,13 @@ const RateMasterPage = ({ accent, setPage }) => {
               </div>
             </div>
 
-            <div style={{ display:"flex", gap:10, marginTop:24 }}>
-              <button onClick={()=>{
-                  const code = form.code.trim();
-                  const name = form.name.trim();
-                  if (!code) { showToast("荷主コードを入力してください", "error"); return; }
-                  if (!name) { showToast("荷主名を入力してください", "error"); return; }
-                  if (allClients.some(c => c.id === code)) { showToast("荷主コード「" + code + "」は既に使われています", "error"); return; }
-                  const newClient = {
-                    id: code,
-                    name,
-                    area: form.area.trim() || "—",
-                    billing: form.billing,
-                    billingCycle: form.billingCycle.trim() || "—",
-                    rates: [{ label: form.rateLabel.trim() || "配完", sell: Number(form.sell)||0, pay: Number(form.pay)||0 }],
-                    drivers: [],
-                    monthlyVol: {},
-                    person: form.person.trim() || "—",
-                    tel: form.tel.trim() || "—",
-                    address: form.address.trim() || "—",
-                    contact: form.person.trim() || "—",
-                    status: "稼働中",
-                  };
-                  setExtraClients([...extraClients, newClient]);
-                  setSel(newClient);
-                  setShowAdd(false);
-                  showToast("荷主「" + name + "」を追加しました");
-                }}
-                style={{ flex:1, padding:"11px", background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:600, fontSize:13, cursor:"pointer" }}>追加する</button>
-              <button onClick={()=>setShowAdd(false)}
-                style={{ flex:1, padding:"11px", border:"1.5px solid #e5e7eb", background:"#fff", color:"#374151", borderRadius:6, fontSize:13, cursor:"pointer" }}>キャンセル</button>
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:10, marginTop:24 }}>
+              <span style={{ display:"inline-flex", alignItems:"center", gap:5, fontSize:12, color:"#16a34a", fontWeight:600 }}>
+                <Ic name="check" size={13} color="#16a34a" strokeWidth={2.5}/>
+                荷主コードと荷主名を入力すると自動登録
+              </span>
+              <button onClick={closeAdd}
+                style={{ padding:"11px 28px", background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:600, fontSize:13, cursor:"pointer" }}>完了</button>
             </div>
           </div>
         </div>
