@@ -1555,6 +1555,7 @@ const RateMasterPage = ({ accent, setPage }) => {
                       setRateOverrides({ ...rateOverrides, [sel.id]: draft });
                       setCycleOverrides({ ...cycleOverrides, [sel.id]: cycleDraft });
                       setContactOverrides({ ...contactOverrides, [sel.id]: { ...contactDraft } });
+                      if (window.sb) window.sb.from("jt_contact_overrides").upsert({ client_id: sel.id, person: contactDraft.person||null, tel: contactDraft.tel||null, address: contactDraft.address||null }, { onConflict:"client_id" }).then(({error})=>{ if(error) console.warn("[Supabase] contact upsert failed:", error); else console.log("[Supabase] contact saved:", sel.id); });
                       setEditMode(false); setDraft(null);
                     } else {
                       setDraft(ratesFor(sel).map(r=>({ ...r })));
