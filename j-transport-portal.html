@@ -5933,13 +5933,16 @@ const AttendancePage = ({ accent }) => {
                       </tr>
                       {isExpanded && (
                         <tr>
-                          <td colSpan={8} style={{ padding:"0 0 8px 0", background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
+                          <td colSpan={7} style={{ padding:"0 0 8px 0", background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
                             <div style={{ padding:"12px 16px" }}>
-                              <div style={{ fontSize:12, fontWeight:600, color:"#374151", marginBottom:8 }}>2026年5月 日次記録</div>
+                              <div style={{ fontSize:12, fontWeight:600, color:"#374151", marginBottom:8 }}>{_monthLabel} 日次記録（配車・シフト連動）</div>
+                              {recs.length===0 ? (
+                                <div style={{ fontSize:12, color:"#9ca3af", padding:"8px 0" }}>当月の配車・シフト記録はありません。</div>
+                              ) : (
                               <table style={{ width:"100%", borderCollapse:"collapse", fontSize:12 }}>
                                 <thead>
                                   <tr style={{ background:"#f1f3f5" }}>
-                                    {["日付","出勤","退勤","実労働","残業","状態"].map(h=>(
+                                    {["日付","状態","担当荷主"].map(h=>(
                                       <th key={h} style={{ padding:"6px 12px", textAlign:"left", color:"#6b7280", fontWeight:500 }}>{h}</th>
                                     ))}
                                   </tr>
@@ -5947,19 +5950,17 @@ const AttendancePage = ({ accent }) => {
                                 <tbody>
                                   {[...recs].reverse().map(r=>(
                                     <tr key={r.d} style={{ borderBottom:"1px solid #94a3b8" }}>
-                                      <td style={{ padding:"6px 12px", fontWeight:500 }}>5/{String(r.d).padStart(2,"0")}（{r.day}）</td>
-                                      <td style={{ padding:"6px 12px" }}>{r.in}</td>
-                                      <td style={{ padding:"6px 12px" }}>{r.out}</td>
-                                      <td style={{ padding:"6px 12px" }}>{r.work}</td>
-                                      <td style={{ padding:"6px 12px", color:r.ot!=="—"?"#d97706":"#9ca3af" }}>{r.ot}</td>
+                                      <td style={{ padding:"6px 12px", fontWeight:500 }}>{_mo}/{String(r.d).padStart(2,"0")}（{r.day}）</td>
                                       <td style={{ padding:"6px 12px" }}>
                                         <span style={{ padding:"2px 8px", borderRadius:3, fontSize:11, fontWeight:600,
                                           background:stBg[r.st]||"#f1f5f9", color:stColor[r.st]||"#6b7280" }}>{r.st}</span>
                                       </td>
+                                      <td style={{ padding:"6px 12px", color:r.work==="—"?"#9ca3af":"#374151" }}>{r.work}</td>
                                     </tr>
                                   ))}
                                 </tbody>
                               </table>
+                              )}
                             </div>
                           </td>
                         </tr>
