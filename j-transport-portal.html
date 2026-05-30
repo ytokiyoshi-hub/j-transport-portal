@@ -1482,10 +1482,8 @@ const PLPage = ({ accent, setPage }) => {
 // ── 単価マスタ管理 ─────────────────────────────────────────────────────────
 const RateMasterPage = ({ accent, setPage }) => {
   const [sel, setSel] = React.useState(null);
-  const [editMode, setEditMode] = React.useState(false);
   const [extraClients, setExtraClients] = useLocalStorage("jt_extra_clients", []);
   const [rateOverrides, setRateOverrides] = useLocalStorage("jt_rate_overrides", {});
-  const [draft, setDraft] = React.useState(null);
   const ratesFor = (c) => (c && rateOverrides[c.id]) ? rateOverrides[c.id] : (c ? c.rates : []);
   const [cycleOverrides, setCycleOverrides] = useLocalStorage("jt_cycle_overrides", {});
   const [driverOverrides, setDriverOverrides] = useLocalStorage("jt_client_driver_overrides", {});
