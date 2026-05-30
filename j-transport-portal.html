@@ -2468,6 +2468,7 @@ const InvoicePage = ({ accent }) => {
           const _bp = periodOf(sel).bp;
           const _fmtDate = (d) => { const [y,m,dd]=d.split("-"); return `${y}年${parseInt(m)}月${parseInt(dd)}日`; };
           const _periodLabel = `${_fmtDate(_bp.start)} 〜 ${_fmtDate(_bp.end)}`;
+          const _dm = invoiceModel(sel); // 日別明細(dailyRows/dailyLabels)を流用
           return (
           <Card style={{ padding:20 }} className="invoice-print">
             {/* 印刷時のみ表示する正式な請求書ヘッダ */}
