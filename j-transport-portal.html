@@ -2263,10 +2263,10 @@ const InvoicePage = ({ accent }) => {
 
             <div className="no-print" style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8, marginBottom:16 }}>
               {[
-                { l:"請求金額", v:fmt(sel.amount), c:accent },
+                { l:"請求金額（税込）", v:fmt(_total), c:accent },
                 { l:"状態", v:<StatusBadge label={issuedSet.has(sel.id)?"請求済":sel.status}/>, c:null },
+                { l:"対象期間", v:_periodLabel, c:"#374151" },
                 { l:"支払期限", v:sel.due, c:sel.status==="遅延"?"#dc2626":"#374151" },
-                { l:"発行日", v:sel.issued||"—", c:"#374151" },
               ].map(({ l,v,c })=>(
                 <div key={l} style={{ background:"#f8fafc", borderRadius:6, padding:"10px 12px" }}>
                   <div style={{ fontSize:11, color:"#9ca3af", marginBottom:4 }}>{l}</div>
