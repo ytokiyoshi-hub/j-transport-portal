@@ -4991,10 +4991,9 @@ function AppearanceSettings() {
 
   const onChange = (key, value) => {
     const next = { ...draft, [key]: value };
-    setDraft(next); previewTheme(next);
+    setDraft(next); setTheme(next);
   };
-  const applyPreset = (preset) => { setDraft(preset); previewTheme(preset); };
-  const onSave = () => { setTheme(draft); showToast('保存しました'); };
+  const applyPreset = (preset) => { setDraft(preset); setTheme(preset); showToast('テーマを適用しました'); };
   const onReset = () => { resetTheme(); setDraft(presets.default); showToast('既定値に戻しました'); };
 
   const fields = [
