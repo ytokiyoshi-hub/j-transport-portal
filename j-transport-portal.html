@@ -5346,11 +5346,11 @@ const VehiclesPage = ({ accent }) => {
                     style={{ width:"100%", padding:"6px 10px", border:"1px solid #94a3b8", borderRadius:4, fontSize:13, marginBottom:8 }}/>
                   <div style={{ display:"flex", gap:6 }}>
                     <button onClick={()=>{
-                      if (!resDraft.date) { alert("予約日を入力してください"); return; }
+                      if (!resDraft.date) { showToast("予約日を入力してください", "error"); return; }
                       setReservations({ ...reservations, [sel.id]: {...resDraft} });
                       setResDraft({date:"", note:""});
                       setShowResForm(false);
-                      alert(sel.plate+" の車検予約を保存しました");
+                      showToast(sel.plate+" の車検予約を保存しました");
                     }} style={{ flex:1, padding:"6px", background:accent, color:"#fff", border:"none", borderRadius:4, fontSize:12, fontWeight:600, cursor:"pointer" }}>保存</button>
                     <button onClick={()=>setShowResForm(false)} style={{ padding:"6px 12px", background:"#fff", border:"1px solid #94a3b8", borderRadius:4, fontSize:12, cursor:"pointer" }}>キャンセル</button>
                   </div>
