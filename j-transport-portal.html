@@ -4682,23 +4682,22 @@ const TodoPage = ({ accent }) => {
                   <div style={{ flex:1, minWidth:0 }}>
                     {isEditing ? (
                       <div>
-                        <input value={editDraft.title} onChange={e=>setEditDraft(p=>({...p,title:e.target.value}))}
+                        <input value={t.title} onChange={e=>updateTodo(t.id,{title:e.target.value})} onBlur={()=>showToast("タスクを更新しました")}
                           style={{ width:"100%", padding:"6px 10px", border:"1.5px solid "+accent, borderRadius:4, fontSize:14, fontWeight:600, marginBottom:6, boxSizing:"border-box" }}/>
                         <div style={{ display:"grid", gridTemplateColumns:"100px 140px 140px", gap:6, marginBottom:6 }}>
-                          <select value={editDraft.priority} onChange={e=>setEditDraft(p=>({...p,priority:e.target.value}))}
+                          <select value={t.priority} onChange={e=>{ updateTodo(t.id,{priority:e.target.value}); showToast("タスクを更新しました"); }}
                             style={{ padding:"4px 8px", border:"1px solid #e5e7eb", borderRadius:4, fontSize:12 }}>
                             {["高","中","低"].map(p=><option key={p} value={p}>{p}</option>)}
                           </select>
-                          <input type="date" value={editDraft.due||""} onChange={e=>setEditDraft(p=>({...p,due:e.target.value||null}))}
+                          <input type="date" value={t.due||""} onChange={e=>{ updateTodo(t.id,{due:e.target.value||null}); showToast("タスクを更新しました"); }}
                             style={{ padding:"4px 8px", border:"1px solid #e5e7eb", borderRadius:4, fontSize:12 }}/>
-                          <input value={editDraft.assignee||""} onChange={e=>setEditDraft(p=>({...p,assignee:e.target.value||null}))}
+                          <input value={t.assignee||""} onChange={e=>updateTodo(t.id,{assignee:e.target.value||null})} onBlur={()=>showToast("タスクを更新しました")}
                             placeholder="担当者" style={{ padding:"4px 8px", border:"1px solid #e5e7eb", borderRadius:4, fontSize:12 }}/>
                         </div>
-                        <textarea value={editDraft.note||""} onChange={e=>setEditDraft(p=>({...p,note:e.target.value}))}
+                        <textarea value={t.note||""} onChange={e=>updateTodo(t.id,{note:e.target.value})} onBlur={()=>showToast("タスクを更新しました")}
                           placeholder="メモ" style={{ width:"100%", padding:"6px 10px", border:"1px solid #e5e7eb", borderRadius:4, fontSize:12, resize:"vertical", minHeight:40, fontFamily:"inherit", boxSizing:"border-box", marginBottom:6 }}/>
                         <div style={{ display:"flex", gap:6 }}>
-                          <button onClick={saveEdit} style={{ padding:"5px 14px", background:accent, color:"#fff", border:"none", borderRadius:4, fontSize:12, fontWeight:600, cursor:"pointer" }}>保存</button>
-                          <button onClick={cancelEdit} style={{ padding:"5px 14px", background:"#fff", color:"#374151", border:"1px solid #e5e7eb", borderRadius:4, fontSize:12, cursor:"pointer" }}>キャンセル</button>
+                          <button onClick={closeEdit} style={{ padding:"5px 14px", background:accent, color:"#fff", border:"none", borderRadius:4, fontSize:12, fontWeight:600, cursor:"pointer" }}>閉じる</button>
                         </div>
                       </div>
                     ) : (
