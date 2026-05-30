@@ -1043,7 +1043,7 @@ const PLPage = ({ accent, setPage }) => {
   const profitDelta = prev.profit>0 ? (cur.profit-prev.profit)/prev.profit*100 : 0;
 
   // 当月の荷主別データ
-  const curByClient = clients.map(c => {
+  const curByClient = allClientsLive().map(c => {
     const h = cm(c.id, selectedMonth, dailyEdits);
     const ph = cm(c.id, prevMk, dailyEdits);
     // 直近3ヶ月平均（当月含む直近3）
