@@ -5078,7 +5078,7 @@ function AppearanceSettings() {
                   <small style={S.hint}>{it.hint}（{it.key}）</small>
                 </span>
                 <span style={S.picker}>
-                  <input type="color" style={S.color} value={draft[it.key] || '#000000'} onChange={(e) => onChange(it.key, e.target.value)} />
+                  <input type="color" style={S.color} value={draft[it.key] || '#000000'} onChange={(e) => onChange(it.key, e.target.value)} onBlur={() => showToast('配色を保存しました')} />
                   <span style={S.hex}>{draft[it.key]}</span>
                 </span>
               </div>
