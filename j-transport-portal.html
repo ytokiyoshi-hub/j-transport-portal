@@ -4007,9 +4007,9 @@ const DriversPage = ({ accent, setPage }) => {
               ))}
             </div>
 
-            <div style={{ fontSize:12, color:"#9ca3af", marginBottom:10 }}>今月財務サマリー（按分）</div>
+            <div style={{ fontSize:12, color:"#9ca3af", marginBottom:10 }}>今月財務サマリー（実績／{mkLabel(selSummary.mk)}分）</div>
             <div style={{ background:"#f8fafc", borderRadius:8, padding:14, marginBottom:16 }}>
-              {[["売上按分",fmt(selSummary.totalSell),accent],["支払按分",fmt(selSummary.totalPay),"#d97706"],["粗利貢献",fmt(selSummary.totalProfit),"#16a34a"]].map(([l,v,c])=>(
+              {[["今月売上",fmt(selSummary.totalSell),accent],["今月支払(税込)",fmt(selSummary.grandTotal),"#d97706"],["粗利",fmt(selSummary.totalProfit),"#16a34a"]].map(([l,v,c])=>(
                 <div key={l} style={{ display:"flex", justifyContent:"space-between", fontSize:13, padding:"6px 0", borderBottom:"1px solid #94a3b8" }}>
                   <span style={{ color:"#6b7280" }}>{l}</span>
                   <span style={{ fontWeight:700, color:c }}>{v}</span>
@@ -4017,23 +4017,28 @@ const DriversPage = ({ accent, setPage }) => {
               ))}
             </div>
 
-            <div style={{ fontSize:12, color:"#9ca3af", marginBottom:8 }}>荷主別 支払内訳</div>
-            {selSummary.breakdown.map((b,i)=>(
+            <div style={{ fontSize:12, color:"#9ca3af", marginBottom:8 }}>荷主別 支払内訳（実数）</div>
+            {selSummary.clientRows.length === 0 ? (
+              <div style={{ fontSize:12.5, color:"#9ca3af", padding:"6px 0" }}>当月の運行実績なし</div>
+            ) : selSummary.clientRows.map((c,i)=>(
               <div key={i} style={{ display:"flex", justifyContent:"space-between", fontSize:12.5, padding:"6px 0", borderBottom:"1px solid #94a3b8" }}>
-                <span style={{ color:"#374151" }}>{b.client}</span>
-                <span style={{ fontWeight:600 }}>{fmt(b.pay)}</span>
+                <span style={{ color:"#374151" }}>{c.name}<span style={{ fontSize:11, color:"#9ca3af", marginLeft:6 }}>{c.days}日</span></span>
+                <span style={{ fontWeight:600 }}>{fmt(c.pay)}</span>
               </div>
             ))}
 
             <div style={{ display:"flex", gap:8, marginTop:20 }}>
-              <button onClick={()=>setPage("driverfinance")}
-                style={{ flex:1, padding:"9px", background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:600, fontSize:13 }}>支払明細を発行</button>
+              <button onClick={()=>setSlipDriver(selSummary)} disabled={selSummary.grandTotal<=0}
+                style={{ flex:1, padding:"9px", background:selSummary.grandTotal>0?accent:"#e5e7eb", color:selSummary.grandTotal>0?"#fff":"#9ca3af", border:"none", borderRadius:6, fontWeight:600, fontSize:13, cursor:selSummary.grandTotal>0?"pointer":"default" }}>支払明細書を発行</button>
               <button onClick={()=>setSel(null)}
                 style={{ padding:"9px 14px", border:"1px solid #94a3b8", background:"#fff", color:"#374151", borderRadius:6, fontSize:13 }}>閉じる</button>
             </div>
           </Card>
         )}
       </div>
+
+      {/* 支払明細書モーダル（その場で発行・ドライバー別収支と同一） */}
+      <DriverSlipModal driver={slipDriver} accent={accent} onClose={()=>setSlipDriver(null)} />
     </div>
   );
 };
