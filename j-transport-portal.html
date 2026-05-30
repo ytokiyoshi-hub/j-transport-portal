@@ -5201,6 +5201,29 @@ const VehiclesPage = ({ accent }) => {
   const [showResForm, setShowResForm] = React.useState(false);
   const [maintDraft, setMaintDraft] = React.useState({date:"", item:""});
   const [resDraft, setResDraft] = React.useState({date:"", note:""});
+  const maintCommittedRef = React.useRef(false);
+  // 車検予約: 予約日が入った時点で即保存（1台1予約の upsert）
+  const onResDate = (val) => {
+    const next = { ...resDraft, date: val };
+    setResDraft(next);
+    if (next.date && sel) { setReservations({ ...reservations, [sel.id]: next }); showToast(sel.plate + " の車検予約を保存しました"); }
+  };
+  const onResNote = (val) => {
+    const next = { ...resDraft, note: val };
+    setResDraft(next);
+    if (next.date && sel) setReservations({ ...reservations, [sel.id]: next });
+  };
+  // 整備記録: 整備日・内容が揃ってフォームから離れた時点で1回だけ追記（ref で二重追記を防止）
+  const commitMaint = () => {
+    if (maintCommittedRef.current || !sel) return;
+    if (!maintDraft.date || !maintDraft.item) return;
+    maintCommittedRef.current = true;
+    const cur = maintExtras[sel.id] || [];
+    setMaintExtras({ ...maintExtras, [sel.id]: [{ ...maintDraft }, ...cur] });
+    setMaintDraft({ date:"", item:"" });
+    setShowMaintForm(false);
+    showToast("整備記録を追加しました");
+  };
 
   const list = vehicleMaster.filter(v => statusFilter==="すべて" || v.status===statusFilter);
 
