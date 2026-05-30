@@ -2627,7 +2627,7 @@ const InvoicePage = ({ accent }) => {
                 </button>
               )}
               {sel.status==="遅延" && !remindedSet.has(sel.id) && (
-                <button onClick={()=>setRemindedSet(s=>new Set([...s,sel.id]))}
+                <button onClick={()=>{ setRemindedSet(s=>new Set([...s,sel.id])); showToast("督促メールを送付しました"); }}
                   style={{ padding:"10px", background:"#fee2e2", color:"#dc2626", border:"1.5px solid #dc2626", borderRadius:6, fontWeight:600, fontSize:13, cursor:"pointer" }}>
                   督促メールを送付
                 </button>
