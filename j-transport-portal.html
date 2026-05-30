@@ -5690,9 +5690,9 @@ const DispatchPage = ({ accent, setPage }) => {
           <>
             <button onClick={autoFillWeek} style={actBtn(true)}>平日を自動配車</button>
             <button onClick={copyPrevWeek} style={actBtn(false)}>先週をコピー</button>
-            <button onClick={confirmWeek} style={{ ...actBtn(false), color:"#15803d", borderColor:"#86efac", background:"#f0fdf4" }}>週を確定</button>
-            {weekConfirmedDays>0 && <button onClick={unconfirmWeek} style={{ ...actBtn(false), color:"#b45309", borderColor:"#fed7aa" }}>確定解除</button>}
-            <button onClick={clearWeekDisp} style={{ ...actBtn(false), color:"#dc2626", borderColor:"#fecaca" }}>週をクリア</button>
+            <button onClick={confirmWeek} style={{ ...actBtn(false), color:"#15803d", border:"1.5px solid #86efac", background:"#f0fdf4" }}>週を確定</button>
+            {weekConfirmedDays>0 && <button onClick={unconfirmWeek} style={{ ...actBtn(false), color:"#b45309", border:"1.5px solid #fed7aa" }}>確定解除</button>}
+            <button onClick={clearWeekDisp} style={{ ...actBtn(false), color:"#dc2626", border:"1.5px solid #fecaca" }}>週をクリア</button>
           </>
         ) : (
           <>
