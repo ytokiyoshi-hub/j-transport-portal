@@ -2082,16 +2082,19 @@ const InvoicePage = ({ accent }) => {
   const statuses = ["すべて","未請求","請求済","入金済","遅延"];
   const list = filter==="すべて"?invoices:invoices.filter(i=>i.status===filter);
 
+  // 名前から実効クライアント（追加荷主・単価/締日編集込み）を解決
+  const resolveClientByName = (name) => effectiveClient(allClientsLive().find(c => c.name === name));
+
   // 請求対象月キー（"2025-04"）と締日アウェアの請求期間を取得
   const periodOf = (inv) => {
-    const c = clients.find(c=>c.name===inv.client);
+    const c = resolveClientByName(inv.client);
     const mk = (inv.period && /^\d{4}-\d{2}/.test(inv.period)) ? inv.period.slice(0,7) : LATEST_DATA_MONTH;
     return { mk, bp: billingPeriodFor(mk, c ? c.billingCycle : null) };
   };
 
   // 日次実績(dailyActuals) + 日次編集(dailyEdits) から、請求期間内の区分別 実数明細を生成
   const lineItemsFor = (inv) => {
-    const c = clients.find(c=>c.name===inv.client);
+    const c = resolveClientByName(inv.client);
     if (!c) return [];
     const { bp } = periodOf(inv);
     const baseDA = (typeof dailyActuals !== "undefined" && dailyActuals[c.id]) || {};
