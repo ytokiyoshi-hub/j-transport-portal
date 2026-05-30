@@ -4854,10 +4854,6 @@ const ParentClientsPage = ({ accent }) => {
                 style={{ width:"100%", padding:"8px 12px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, resize:"vertical", minHeight:60, fontFamily:"inherit", boxSizing:"border-box", outline:"none" }}/>
             </div>
           </div>
-          <button onClick={submit} disabled={!draft.name.trim()}
-            style={{ padding:"8px 20px", background:draft.name.trim()?accent:"#cbd5e1", color:"#fff", border:"none", borderRadius:6, fontSize:13, fontWeight:600, cursor:draft.name.trim()?"pointer":"not-allowed" }}>
-            {editingId?"保存":"登録"}
-          </button>
         </Card>
       )}
 
