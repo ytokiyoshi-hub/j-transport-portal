@@ -2168,9 +2168,10 @@ const InvoicePage = ({ accent }) => {
         {sel && (() => {
           const _baseClient = clients.find(c => c.name === sel.client) || {};
           const _cov = contactOverrides[_baseClient.id] || {};
+          const _nd = (v) => (v && v !== "—") ? v : undefined;
           const _clientObj = { ..._baseClient,
-            address: _cov.address!==undefined ? _cov.address : _baseClient.address,
-            person:  _cov.person!==undefined  ? _cov.person  : (_baseClient.person||_baseClient.contact) };
+            address: _cov.address!==undefined ? _nd(_cov.address) : _nd(_baseClient.address),
+            person:  _cov.person!==undefined  ? _nd(_cov.person)  : _nd(_baseClient.person||_baseClient.contact) };
           const _today = new Date();
           const _issueDate = sel.issued || `${_today.getFullYear()}年${_today.getMonth()+1}月${_today.getDate()}日`;
           const _subtotal = sel.amount;
