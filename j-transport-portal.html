@@ -2072,28 +2072,63 @@ const InvoicePage = ({ accent }) => {
     入金済: invoices.filter(i=>i.status==="入金済").reduce((s,i)=>s+i.amount,0),
   };
 
-  const buildLineItems = (inv) => {
-    const c = clients.find(c=>c.name===inv.client) || {};
+  // 請求対象月キー（"2025-04"）と締日アウェアの請求期間を取得
+  const periodOf = (inv) => {
+    const c = clients.find(c=>c.name===inv.client);
+    const mk = (inv.period && /^\d{4}-\d{2}/.test(inv.period)) ? inv.period.slice(0,7) : LATEST_DATA_MONTH;
+    return { mk, bp: billingPeriodFor(mk, c ? c.billingCycle : null) };
+  };
+
+  // 日次実績(dailyActuals) + 日次編集(dailyEdits) から、請求期間内の区分別 実数明細を生成
+  const lineItemsFor = (inv) => {
+    const c = clients.find(c=>c.name===inv.client);
     if (!c) return [];
-    if (c.billing.includes("固定")) {
-      const wdays = 22;
-      return [
-        { label:c.rates[0]?.label||"固定日額", qty:wdays, unit:"日", unitPrice:c.rates[0]?.sell||0, amount:c.rates[0]?.sell*wdays||0 },
-        ...(c.rates[1]?[{ label:c.rates[1].label, qty:Math.round(inv.amount*0.1/c.rates[1].sell)||1, unit:"個", unitPrice:c.rates[1].sell, amount:Math.round(inv.amount*0.1) }]:[]),
-      ];
+    const { bp } = periodOf(inv);
+    const baseDA = (typeof dailyActuals !== "undefined" && dailyActuals[c.id]) || {};
+    const editsDA = (dailyEdits && dailyEdits[c.id]) || {};
+    const dateSet = new Set([...Object.keys(baseDA), ...Object.keys(editsDA)]);
+    const agg = {}; // label -> { qty, days:Set }
+    for (const date of dateSet) {
+      if (date < bp.start || date > bp.end) continue;
+      const bDay = baseDA[date] || {}, eDay = editsDA[date] || {};
+      for (const did of new Set([...Object.keys(bDay), ...Object.keys(eDay)])) {
+        const bd = bDay[did] || {}, ed = eDay[did] || {};
+        for (const lbl of new Set([...Object.keys(bd), ...Object.keys(ed)])) {
+          const v = ed[lbl] !== undefined ? ed[lbl] : bd[lbl];
+          const cnt = Number(v) || 0;
+          if (!cnt) continue;
+          if (!agg[lbl]) agg[lbl] = { qty:0, days:new Set() };
+          agg[lbl].qty += cnt;
+          agg[lbl].days.add(date);
+        }
+      }
     }
-    // 請求対象月を invoice.month から抽出（"2026-05" 形式）。なければ最新確定月。
-    const invMonthKey = inv.month && /^\d{4}-\d{2}/.test(inv.month) ? inv.month.slice(0,7) : LATEST_DATA_MONTH;
-    const actLive = cm(c.id, invMonthKey, dailyEdits);
-    const actSell = actLive.s;
-    if (!actSell) return c.rates.filter(r=>r.sell>0).map(r=>({ label:r.label, qty:"—", unit:"個", unitPrice:r.sell, amount:"—" }));
-    const totalRateSell = c.rates.filter(r=>r.sell>0).reduce((s,r)=>s+r.sell,0)||1;
-    return c.rates.filter(r=>r.sell>0).map(r=>{
-      const share = r.sell/totalRateSell;
-      const est = Math.round(actSell*share);
-      const qty = r.sell>0?Math.round(est/r.sell):0;
-      return { label:r.label, qty, unit:"個", unitPrice:r.sell, amount:est };
-    });
+    const realLabels = Object.keys(agg);
+    if (realLabels.length) {
+      // rates の定義順を尊重し、未定義ラベルは末尾に
+      const ordered = [
+        ...c.rates.filter(r => agg[r.label]),
+        ...realLabels.filter(l => !c.rates.some(r => r.label === l)).map(l => ({ label:l, sell:0 })),
+      ];
+      return ordered.map(r => {
+        const a = agg[r.label];
+        const unit = /日額|日数|日$/.test(r.label) ? "日" : "個";
+        return { label:r.label, qty:a.qty, unit, unitPrice:r.sell, amount:a.qty * r.sell, days:a.days.size };
+      });
+    }
+    // 実績データが無い場合のフォールバック（固定系 / 未登録月）
+    if (c.billing.includes("固定")) {
+      const r0 = c.rates[0] || { label:"固定日額", sell:0 };
+      const days = r0.sell > 0 ? Math.round(inv.amount / r0.sell) : 0;
+      return [{ label:r0.label, qty:days || "—", unit:"日", unitPrice:r0.sell, amount:r0.sell * days || inv.amount, days }];
+    }
+    return c.rates.filter(r => r.sell > 0).map(r => ({ label:r.label, qty:"—", unit:"個", unitPrice:r.sell, amount:"—" }));
+  };
+
+  // 明細から算出した実数小計（実績が無ければ invoice.amount をフォールバック）
+  const subtotalFor = (inv) => {
+    const sum = lineItemsFor(inv).reduce((s,it) => s + (typeof it.amount === "number" ? it.amount : 0), 0);
+    return sum > 0 ? sum : inv.amount;
   };
 
   return (
