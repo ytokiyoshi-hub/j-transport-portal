@@ -5881,10 +5881,10 @@ const AttendancePage = ({ accent }) => {
           {/* サマリーKPI */}
           <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12, marginBottom:16 }}>
             {[
-              { label:"本日出勤", value:`${driverSummary.filter(d=>d.todaySt==="出勤"||d.todaySt==="出勤中").length}名`, sub:`全${driverSummary.length}名中`, color:"#16a34a" },
-              { label:"残業45h超過", value:`${driverSummary.filter(d=>d.otMin>=otLimit).length}名`, sub:"要注意", color:"#dc2626" },
+              { label:"本日出勤", value:`${driverSummary.filter(d=>["出勤","出勤中","早番","遅番"].includes(d.todaySt)).length}名`, sub:`全${driverSummary.length}名中`, color:"#16a34a" },
+              { label:`${_monthLabel} 配車のべ日数`, value:`${driverSummary.reduce((s,d)=>s+d.workDays,0)}日`, sub:"確定・実績ベース", color:accent },
               { label:"本日有給", value:`${driverSummary.filter(d=>d.todaySt==="有給").length}名`, sub:"取得中", color:"#7c3aed" },
-              { label:"今月欠勤あり", value:`${driverSummary.filter(d=>d.absent>0).length}名`, sub:"要確認", color:"#d97706" },
+              { label:"本日休日", value:`${driverSummary.filter(d=>d.todaySt==="休日").length}名`, sub:"シフト", color:"#6b7280" },
             ].map(k=>(
               <Card key={k.label} style={{ padding:"14px 18px" }}>
                 <div style={{ fontSize:11, color:"#6b7280", marginBottom:6 }}>{k.label}</div>
