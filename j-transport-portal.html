@@ -1574,7 +1574,7 @@ const RateMasterPage = ({ accent, setPage }) => {
             }} style={{ padding:"7px 16px", border:"1.5px solid #e5e7eb", background:"#fff", color:"#374151", borderRadius:6, fontSize:13, fontWeight:600, cursor:"pointer" }}>
             CSVエクスポート
           </button>
-          <button onClick={()=>{ setForm({ ...blankForm, code: nextCode() }); setShowAdd(true); }} style={{ padding:"7px 16px", background:accent, color:"#fff", border:"none", borderRadius:6, fontSize:13, fontWeight:600, cursor:"pointer" }}>
+          <button onClick={()=>{ setForm({ ...blankForm, code: nextCode() }); addCommittedRef.current = false; setShowAdd(true); }} style={{ padding:"7px 16px", background:accent, color:"#fff", border:"none", borderRadius:6, fontSize:13, fontWeight:600, cursor:"pointer" }}>
             + 荷主追加
           </button>
         </div>
