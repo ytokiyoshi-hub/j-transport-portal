@@ -4816,8 +4816,13 @@ const ParentClientsPage = ({ accent }) => {
 
       {showForm && (
         <Card style={{ padding:20, marginBottom:20, border:`1.5px solid ${accent}30` }}>
-          <div style={{ fontSize:13, fontWeight:700, marginBottom:14 }}>{editingId?"上位荷主を編集":"新規上位荷主登録"}</div>
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, marginBottom:10 }}>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:14 }}>
+            <div style={{ fontSize:13, fontWeight:700 }}>{editingId?"上位荷主を編集":"新規上位荷主登録"}</div>
+            <span style={{ display:"inline-flex", alignItems:"center", gap:6, fontSize:11, color:"#16a34a", fontWeight:600 }}>
+              <Ic name="check" size={11} color="#16a34a" strokeWidth={2.5}/>入力すると自動保存
+            </span>
+          </div>
+          <div onBlur={commitParent} style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, marginBottom:10 }}>
             <div>
               <div style={{ fontSize:11, color:"#6b7280", marginBottom:4, fontWeight:600 }}>会社名・組織名（必須）</div>
               <input value={draft.name} onChange={e=>setDraft(p=>({...p,name:e.target.value}))} placeholder="例：○○ロジスティクス株式会社"
