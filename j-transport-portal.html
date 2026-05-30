@@ -2897,7 +2897,7 @@ const ClientPage = ({ accent, setPage }) => {
             ))}
             {(() => {
               const act = monthlyDisplay.find(r=>r.name===sel.name) || {};
-              if (!act||act.sell===0) return null;
+              if (!(act.sell>0)) return null;
               return (
                 <div style={{ marginTop:16, background:"#f8fafc", borderRadius:6, padding:14 }}>
                   <div style={{ fontSize:11, color:"#9ca3af", marginBottom:8 }}>今月実績</div>
