@@ -4786,6 +4786,7 @@ const ParentClientsPage = ({ accent }) => {
 
   const submit = () => {
     if (!draft.name.trim()) return;
+    const wasEdit = !!editingId;
     if (editingId) {
       setParents(prev => prev.map(p => p.id===editingId ? { ...p, ...draft, name: draft.name.trim() } : p));
     } else {
@@ -4794,6 +4795,7 @@ const ParentClientsPage = ({ accent }) => {
     }
     setDraft({ name:"", contact:"", tel:"", address:"", email:"", note:"" });
     setShowForm(false); setEditingId(null);
+    showToast(wasEdit ? "上位荷主を更新しました" : "上位荷主を登録しました");
   };
   const startEdit = (p) => {
     setEditingId(p.id);
