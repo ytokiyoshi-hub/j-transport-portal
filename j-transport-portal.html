@@ -1640,13 +1640,12 @@ const RateMasterPage = ({ accent, setPage }) => {
                           <div style={{ fontSize:13, fontWeight:500 }}>{d.name}</div>
                           <div style={{ fontSize:10, color:"#9ca3af" }}><StatusBadge label={d.type}/></div>
                         </div>
-                        {editMode && (
-                          <button onClick={()=>{
-                            const cur = driversFor(sel);
-                            const next = cur.filter(x => x !== did);
-                            setDriverOverrides({ ...driverOverrides, [sel.id]: next });
-                          }} title="解除" style={{ marginLeft:4, padding:"2px 6px", border:"none", background:"transparent", color:"#9ca3af", cursor:"pointer", fontSize:14, lineHeight:1 }}>×</button>
-                        )}
+                        <button onClick={()=>{
+                          const cur = driversFor(sel);
+                          const next = cur.filter(x => x !== did);
+                          setDriverOverrides({ ...driverOverrides, [sel.id]: next });
+                          showToast("担当ドライバーを更新しました");
+                        }} title="解除" style={{ marginLeft:4, padding:"2px 6px", border:"none", background:"transparent", color:"#9ca3af", cursor:"pointer", fontSize:14, lineHeight:1 }}>×</button>
                       </div>
                     ) : null;
                   })}
