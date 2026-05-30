@@ -4607,6 +4607,7 @@ const TodoPage = ({ accent }) => {
     if (!editDraft.title?.trim()) return;
     setTodos(prev => prev.map(t => t.id===editingId ? { ...editDraft, title: editDraft.title.trim() } : t));
     setEditingId(null); setEditDraft(null);
+    showToast("タスクを更新しました");
   };
   const cancelEdit = () => { setEditingId(null); setEditDraft(null); };
 
