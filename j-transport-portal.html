@@ -2065,12 +2065,6 @@ const InvoicePage = ({ accent }) => {
 
   const statuses = ["すべて","未請求","請求済","入金済","遅延"];
   const list = filter==="すべて"?invoices:invoices.filter(i=>i.status===filter);
-  const summary = {
-    未請求: invoices.filter(i=>i.status==="未請求").reduce((s,i)=>s+i.amount,0),
-    請求済: invoices.filter(i=>i.status==="請求済").reduce((s,i)=>s+i.amount,0),
-    遅延:   invoices.filter(i=>i.status==="遅延").reduce((s,i)=>s+i.amount,0),
-    入金済: invoices.filter(i=>i.status==="入金済").reduce((s,i)=>s+i.amount,0),
-  };
 
   // 請求対象月キー（"2025-04"）と締日アウェアの請求期間を取得
   const periodOf = (inv) => {
