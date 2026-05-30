@@ -5110,7 +5110,7 @@ function AppearanceSettings() {
           <thead>
             <tr style={{ background: draft.bg }}>
               {['コード','品名','数量','ステータス'].map((h,i)=>(
-                <th key={h} style={{ padding: '8px 12px', border: `1px solid ${draft.line}`, borderBottom: `1px solid ${draft.lineDk}`, textAlign: i===2?'right':i===3?'center':'left', color: draft.textSub, fontSize: 12 }}>{h}</th>
+                <th key={h} style={{ padding: '8px 12px', borderTop: `1px solid ${draft.line}`, borderLeft: `1px solid ${draft.line}`, borderRight: `1px solid ${draft.line}`, borderBottom: `1px solid ${draft.lineDk}`, textAlign: i===2?'right':i===3?'center':'left', color: draft.textSub, fontSize: 12 }}>{h}</th>
               ))}
             </tr>
           </thead>
