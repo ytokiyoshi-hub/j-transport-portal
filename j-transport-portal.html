@@ -1101,13 +1101,13 @@ const PLPage = ({ accent, setPage }) => {
     });
   }
   // 4. 入金遅延・未請求
-  const unpaid = invoices.filter(i=>i.status==="入金遅延");
+  const unpaid = invoices.filter(i=>i.status==="遅延");
   const pending = invoices.filter(i=>i.status==="未請求");
   if (unpaid.length>0) {
     alerts.push({
       level:"high",
       title:`入金遅延: ${unpaid.length}件 ${fmt(unpaid.reduce((s,i)=>s+i.amount,0))}`,
-      desc: unpaid.map(i=>`${i.client}（${i.month}）`).join('、')+" — 至急督促"
+      desc: unpaid.map(i=>`${i.client}（${i.period}）`).join('、')+" — 至急督促"
     });
   }
   if (pending.length>0) {
