@@ -1753,7 +1753,7 @@ const RateMasterPage = ({ accent, setPage }) => {
       {/* 荷主追加モーダル */}
       {showAdd && (
         <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,.45)", zIndex:9999, display:"flex", alignItems:"center", justifyContent:"center" }}
-          onClick={()=>setShowAdd(false)}>
+          onClick={closeAdd}>
           <div style={{ background:"#fff", borderRadius:10, width:480, maxHeight:"85vh", overflowY:"auto", padding:32 }} onClick={e=>e.stopPropagation()}>
             <div style={{ fontSize:18, fontWeight:700, marginBottom:4 }}>荷主を追加</div>
             <div style={{ fontSize:12, color:"#9ca3af", marginBottom:20 }}>新しい荷主の基本情報と単価を登録します</div>
