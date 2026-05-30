@@ -1853,6 +1853,7 @@ const RateMasterPage = ({ accent, setPage }) => {
                   setSel(newClient);
                   setEditMode(false);
                   setShowAdd(false);
+                  showToast("荷主「" + name + "」を追加しました");
                 }}
                 style={{ flex:1, padding:"11px", background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:600, fontSize:13, cursor:"pointer" }}>追加する</button>
               <button onClick={()=>setShowAdd(false)}
