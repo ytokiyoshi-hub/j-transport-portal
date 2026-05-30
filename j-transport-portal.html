@@ -5354,7 +5354,7 @@ const DispatchPage = ({ accent, setPage }) => {
 
   // 確定セル → 実績(dailyActuals + jt_daily_edits)の読み取り専用ジョイン（computeLiveSum と同じセル単位マージ）
   const cellBilling = (cid, dk, did) => {
-    const c = clients.find(x=>x.id===cid); if(!c) return {sell:0,pay:0,has:false};
+    const c = resolveClientById(cid); if(!c) return {sell:0,pay:0,has:false};
     const baseDrv = (dailyActuals[cid]&&dailyActuals[cid][dk]&&dailyActuals[cid][dk][did]) || {};
     const editDrv = (dailyEdits[cid]&&dailyEdits[cid][dk]&&dailyEdits[cid][dk][did]) || {};
     const labels = new Set([...Object.keys(baseDrv), ...Object.keys(editDrv)]);
