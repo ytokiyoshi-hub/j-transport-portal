@@ -1684,9 +1684,9 @@ const RateMasterPage = ({ accent, setPage }) => {
                     return [["担当者","person","例）物流管理部 田中様"],["電話","tel","例）03-1234-5678"],["請求先住所","address","例）東京都〇〇区〇〇 1-2-3"]].map(([label,key,ph])=>(
                       <div key={label} style={{ display:"flex", gap:12, alignItems:"center" }}>
                         <div style={{ width:88, color:"#6b7280", flexShrink:0 }}>{label}</div>
-                        <input value={cinfo[key]||""} onChange={e=>updateContact(key, e.target.value)} onBlur={flushContact} placeholder={ph}
-                          style={{ flex:1, padding:"6px 10px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}
-                          onFocus={e=>e.target.style.borderColor=accent} onMouseOut={e=>{ if(document.activeElement!==e.target) e.target.style.borderColor="#e5e7eb"; }}/>
+                        <input value={cinfo[key]||""} onChange={e=>updateContact(key, e.target.value)}
+                          onFocus={e=>e.target.style.borderColor=accent} onBlur={e=>{ e.target.style.borderColor="#e5e7eb"; flushContact(); }} placeholder={ph}
+                          style={{ flex:1, padding:"6px 10px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
                       </div>
                     ));
                   })()}
