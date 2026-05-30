@@ -4985,7 +4985,7 @@ const ParentClientsPage = ({ accent }) => {
 
 // ── AppearanceSettings（配色テーマ設定画面） ─────────────────────────────
 function AppearanceSettings() {
-  const { theme, setTheme, previewTheme, resetTheme, presets } = useTheme();
+  const { theme, setTheme, resetTheme, presets } = useTheme();
   const [draft, setDraft] = React.useState(theme);
   React.useEffect(() => { setDraft(theme); }, [theme]);
 
