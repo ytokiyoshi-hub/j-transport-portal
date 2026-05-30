@@ -5086,7 +5086,9 @@ function AppearanceSettings() {
           </React.Fragment>
         ))}
         <div style={S.actions}>
-          <button type="button" style={S.btnPrimary} onClick={onSave}>保存して全画面に適用</button>
+          <span style={{ display:'inline-flex', alignItems:'center', gap:6, fontSize:12, color:'#16a34a', fontWeight:600 }}>
+            <Ic name="check" size={12} color="#16a34a" strokeWidth={2.5}/>変更は自動保存
+          </span>
           <button type="button" style={S.btn} onClick={onReset}>既定に戻す</button>
         </div>
       </div>
