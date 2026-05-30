@@ -5926,13 +5926,9 @@ const AttendancePage = ({ accent }) => {
                             {d.todaySt}{d.in!=="—"?` ${d.in}〜`:""}
                           </span>
                         </td>
-                        <td style={{ padding:"11px 14px", fontWeight:600 }}>{d.workDays}日</td>
-                        <td style={{ padding:"11px 14px" }}>
-                          <span style={{ fontWeight:600, color:otWarn?"#dc2626":"#374151" }}>{d.ot}</span>
-                          {otWarn&&<span style={{ fontSize:10, color:"#dc2626", marginLeft:4 }}>⚠</span>}
-                        </td>
-                        <td style={{ padding:"11px 14px", color:d.paidLeft<=3?"#d97706":"#374151", fontWeight:d.paidLeft<=3?600:400 }}>{d.paidLeft}日</td>
-                        <td style={{ padding:"11px 14px", color:d.absent>0?"#dc2626":"#9ca3af", fontWeight:d.absent>0?600:400 }}>{d.absent>0?`${d.absent}日`:"—"}</td>
+                        <td style={{ padding:"11px 14px", fontWeight:600 }}>{d.workDays>0?`${d.workDays}日`:"—"}</td>
+                        <td style={{ padding:"11px 14px", color:"#6b7280" }}>{d.restDays>0?`${d.restDays}日`:"—"}</td>
+                        <td style={{ padding:"11px 14px", color:d.todayClient?"#374151":"#9ca3af", fontSize:12 }}>{d.todayClient||"—"}</td>
                         <td style={{ padding:"11px 14px", color:"#9ca3af", fontSize:12 }}>{isExpanded?"▲":"▼"}</td>
                       </tr>
                       {isExpanded && (
