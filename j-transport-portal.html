@@ -1863,74 +1863,72 @@ const RateMasterPage = ({ accent, setPage }) => {
 };
 
 // ── ドライバー別収支 ───────────────────────────────────────────────────────
-const DriverFinancePage = ({ accent }) => {
-  const [sel, setSel] = React.useState(null);
-  const [slipDriver, setSlipDriver] = React.useState(null);
-  useEscapeToClose(!!slipDriver, ()=>setSlipDriver(null));
-  // 日次入力の編集を反映するために live aggregation
-  const [dailyEdits] = useLocalStorage("jt_daily_edits", {});
+// ── 支払明細書 共通ロジック（ドライバー別収支 / ドライバー管理 で共用）──────────
+const _dowOf = (ds) => { const [y,mm,dd] = ds.split("-").map(Number); return ["日","月","火","水","木","金","土"][new Date(y, mm-1, dd).getDay()]; };
+// 表示月: 今月実績があれば今月、なければ最新確定月
+const displayMonthForPay = (dailyEdits) => { const agg = monthAgg(REF_MONTH, dailyEdits); return agg.sell > 0 ? REF_MONTH : LATEST_DATA_MONTH; };
+// 支払予定日: 当月分を翌月15日払いと仮定
+const payDueFor = (mk) => { const [y,m] = mk.split("-").map(Number); const ny = m===12?y+1:y, nm = m===12?1:m+1; return `${ny}年${nm}月15日`; };
 
-  // 表示月: 今月実績があれば今月、なければ最新確定月
-  const _refAgg = monthAgg(REF_MONTH, dailyEdits);
-  const _displayMonth = _refAgg.sell > 0 ? REF_MONTH : LATEST_DATA_MONTH;
-  const _monthLabel = mkLabel(_displayMonth);
-  const _dow = (ds) => { const [y,mm,dd] = ds.split("-").map(Number); return ["日","月","火","水","木","金","土"][new Date(y, mm-1, dd).getDay()]; };
-  // 支払予定日: 当月分を翌月15日払いと仮定
-  const _payDue = (() => { const [y,m] = _displayMonth.split("-").map(Number); const ny = m===12?y+1:y, nm = m===12?1:m+1; return `${ny}年${nm}月15日`; })();
-
-  // 実際の日次実績(dailyActuals + 編集)から、ドライバー本人が運んだ実数で支払を集計（按分ではない）
-  const driverStatement = (d) => {
-    const mk = _displayMonth, clientMap = {}, dayMap = {};
-    let totalSell = 0, totalPay = 0;
-    allClientsLive().forEach(c => {
-      const ec = effectiveClient(c); // 単価編集を反映
-      const baseDA = (typeof dailyActuals !== "undefined" && dailyActuals[c.id]) || {};
-      const editsDA = (dailyEdits && dailyEdits[c.id]) || {};
-      [...new Set([...Object.keys(baseDA), ...Object.keys(editsDA)])].forEach(date => {
-        if (date.slice(0,7) !== mk) return; // 給与は暦月で集計
-        const bd = (baseDA[date]||{})[d.id] || {}, ed = (editsDA[date]||{})[d.id] || {};
-        [...new Set([...Object.keys(bd), ...Object.keys(ed)])].forEach(lbl => {
-          const v = ed[lbl] !== undefined ? ed[lbl] : bd[lbl];
-          const cnt = Number(v) || 0; if (!cnt) return;
-          const r = (ec.rates||[]).find(rr => rr.label === lbl); if (!r) return;
-          const payAmt = cnt * r.pay, sellAmt = cnt * r.sell;
-          if (!clientMap[c.id]) clientMap[c.id] = { name:c.name, lines:{}, pay:0, sell:0, days:new Set() };
-          const cmp = clientMap[c.id];
-          if (!cmp.lines[lbl]) cmp.lines[lbl] = { label:lbl, qty:0, unitPay:r.pay, amount:0 };
-          cmp.lines[lbl].qty += cnt; cmp.lines[lbl].amount += payAmt;
-          cmp.pay += payAmt; cmp.sell += sellAmt; cmp.days.add(date);
-          if (!dayMap[date]) dayMap[date] = { date, items:[], pay:0 };
-          dayMap[date].items.push({ client:c.name, label:lbl, qty:cnt, amount:payAmt });
-          dayMap[date].pay += payAmt;
-          totalPay += payAmt; totalSell += sellAmt;
-        });
+// 実際の日次実績(dailyActuals + 編集)から、ドライバー本人が運んだ実数で支払を集計（按分ではない）
+const buildDriverStatement = (d, dailyEdits, mk) => {
+  const clientMap = {}, dayMap = {};
+  let totalSell = 0, totalPay = 0;
+  allClientsLive().forEach(c => {
+    const ec = effectiveClient(c); // 単価編集を反映
+    const baseDA = (typeof dailyActuals !== "undefined" && dailyActuals[c.id]) || {};
+    const editsDA = (dailyEdits && dailyEdits[c.id]) || {};
+    [...new Set([...Object.keys(baseDA), ...Object.keys(editsDA)])].forEach(date => {
+      if (date.slice(0,7) !== mk) return; // 給与は暦月で集計
+      const bd = (baseDA[date]||{})[d.id] || {}, ed = (editsDA[date]||{})[d.id] || {};
+      [...new Set([...Object.keys(bd), ...Object.keys(ed)])].forEach(lbl => {
+        const v = ed[lbl] !== undefined ? ed[lbl] : bd[lbl];
+        const cnt = Number(v) || 0; if (!cnt) return;
+        const r = (ec.rates||[]).find(rr => rr.label === lbl); if (!r) return;
+        const payAmt = cnt * r.pay, sellAmt = cnt * r.sell;
+        if (!clientMap[c.id]) clientMap[c.id] = { name:c.name, lines:{}, pay:0, sell:0, days:new Set() };
+        const cmp = clientMap[c.id];
+        if (!cmp.lines[lbl]) cmp.lines[lbl] = { label:lbl, qty:0, unitPay:r.pay, amount:0 };
+        cmp.lines[lbl].qty += cnt; cmp.lines[lbl].amount += payAmt;
+        cmp.pay += payAmt; cmp.sell += sellAmt; cmp.days.add(date);
+        if (!dayMap[date]) dayMap[date] = { date, items:[], pay:0 };
+        dayMap[date].items.push({ client:c.name, label:lbl, qty:cnt, amount:payAmt });
+        dayMap[date].pay += payAmt;
+        totalPay += payAmt; totalSell += sellAmt;
       });
     });
-    const clientRows = Object.values(clientMap).map(cmp => ({
-      name:cmp.name, pay:cmp.pay, sell:cmp.sell, days:cmp.days.size, lines:Object.values(cmp.lines),
-    })).sort((a,b) => b.pay - a.pay);
-    const dayRows = Object.values(dayMap).sort((a,b) => a.date<b.date?-1:1).map(dr => ({ ...dr, dow:_dow(dr.date) }));
-    const tax = d.type === "協力会社" ? Math.round(totalPay * 0.1) : 0; // 外注は消費税込で支払
-    return { ...d, mk, clientRows, dayRows, totalSell, totalPay, totalProfit: totalSell-totalPay, tax, grandTotal: totalPay+tax, workDays: dayRows.length };
-  };
+  });
+  const clientRows = Object.values(clientMap).map(cmp => ({
+    name:cmp.name, pay:cmp.pay, sell:cmp.sell, days:cmp.days.size, lines:Object.values(cmp.lines),
+  })).sort((a,b) => b.pay - a.pay);
+  const dayRows = Object.values(dayMap).sort((a,b) => a.date<b.date?-1:1).map(dr => ({ ...dr, dow:_dowOf(dr.date) }));
+  const tax = d.type === "協力会社" ? Math.round(totalPay * 0.1) : 0; // 外注は消費税込で支払
+  return { ...d, mk, clientRows, dayRows, totalSell, totalPay, totalProfit: totalSell-totalPay, tax, grandTotal: totalPay+tax, workDays: dayRows.length };
+};
 
-  const driverSummary = drivers.map(driverStatement);
-  const totalSell = driverSummary.reduce((s,d) => s + d.totalSell, 0);
-  const totalPay  = driverSummary.reduce((s,d) => s + d.totalPay, 0);
-  const totalProfit = totalSell - totalPay;
+const exportDriverCSV = (d) => {
+  const rows = ["荷主,区分,数量,支払単価,金額"];
+  d.clientRows.forEach(c => c.lines.forEach(l => rows.push(`${c.name},${l.label},${l.qty},${l.unitPay},${l.amount}`)));
+  rows.push(`,,,小計,${d.totalPay}`);
+  if (d.tax > 0) rows.push(`,,,消費税(10%),${d.tax}`);
+  rows.push(`,,,支払合計,${d.grandTotal}`);
+  const a = document.createElement("a");
+  a.href = "data:text/csv;charset=utf-8," + encodeURIComponent("﻿" + rows.join("\n"));
+  a.download = `支払明細_${d.name}_${d.mk}.csv`; a.click();
+};
 
-  // 支払明細書(.driver-slip-paper)を iframe 経由で A4 印刷／PDF保存
-  const printSlip = (d) => {
-    const paper = document.querySelector(".driver-slip-paper");
-    if (!paper) return;
-    const clone = paper.cloneNode(true);
-    const old = document.getElementById("jt-slip-iframe"); if (old) old.remove();
-    const iframe = document.createElement("iframe");
-    iframe.id = "jt-slip-iframe";
-    iframe.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden;";
-    document.body.appendChild(iframe);
-    const doc = iframe.contentWindow.document; doc.open();
-    doc.write(`<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>支払明細書 ${d.name} ${_monthLabel}</title>
+// 支払明細書 A4印刷／PDF保存（.driver-slip-paper を iframe に複製して印刷）
+const printDriverSlip = (d, monthLabel) => {
+  const paper = document.querySelector(".driver-slip-paper");
+  if (!paper) return;
+  const clone = paper.cloneNode(true);
+  const old = document.getElementById("jt-slip-iframe"); if (old) old.remove();
+  const iframe = document.createElement("iframe");
+  iframe.id = "jt-slip-iframe";
+  iframe.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden;";
+  document.body.appendChild(iframe);
+  const doc = iframe.contentWindow.document; doc.open();
+  doc.write(`<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>支払明細書 ${d.name} ${monthLabel}</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { background:#fff; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
@@ -1945,20 +1943,161 @@ const DriverFinancePage = ({ accent }) => {
   .jt-slip-footer { break-inside:avoid; page-break-inside:avoid; }
   @page { size:A4 portrait; margin:14mm; }
 </style></head><body>${clone.outerHTML}</body></html>`);
-    doc.close();
-    setTimeout(() => { try { iframe.contentWindow.focus(); iframe.contentWindow.print(); } catch(e) { alert("印刷に失敗: "+e.message); } setTimeout(()=>iframe.remove(),1500); }, 250);
-  };
+  doc.close();
+  setTimeout(() => { try { iframe.contentWindow.focus(); iframe.contentWindow.print(); } catch(e) { alert("印刷に失敗: "+e.message); } setTimeout(()=>iframe.remove(),1500); }, 250);
+};
 
-  const exportCSV = (d) => {
-    const rows = ["荷主,区分,数量,支払単価,金額"];
-    d.clientRows.forEach(c => c.lines.forEach(l => rows.push(`${c.name},${l.label},${l.qty},${l.unitPay},${l.amount}`)));
-    rows.push(`,,,小計,${d.totalPay}`);
-    if (d.tax > 0) rows.push(`,,,消費税(10%),${d.tax}`);
-    rows.push(`,,,支払合計,${d.grandTotal}`);
-    const a = document.createElement("a");
-    a.href = "data:text/csv;charset=utf-8," + encodeURIComponent("﻿" + rows.join("\n"));
-    a.download = `支払明細_${d.name}_${d.mk}.csv`; a.click();
-  };
+// 支払明細書モーダル（A4印刷対応・ドライバー向け＝粗利は非表示）。driver は buildDriverStatement の戻り値
+const DriverSlipModal = ({ driver, accent, onClose }) => {
+  useEscapeToClose(!!driver, onClose);
+  if (!driver) return null;
+  const _monthLabel = mkLabel(driver.mk);
+  const _payDue = payDueFor(driver.mk);
+  return (
+    <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,.45)", zIndex:9999, display:"flex", alignItems:"flex-start", justifyContent:"center", overflowY:"auto", padding:"32px 16px" }}
+      onClick={onClose}>
+      <div style={{ background:"#fff", borderRadius:10, width:680, maxWidth:"100%" }} onClick={e=>e.stopPropagation()}>
+        {/* ツールバー（印刷対象外） */}
+        <div style={{ display:"flex", gap:10, padding:"14px 20px", borderBottom:"1px solid #e5e7eb", position:"sticky", top:0, background:"#fff", borderTopLeftRadius:10, borderTopRightRadius:10, zIndex:2 }}>
+          <button onClick={()=>printDriverSlip(driver, _monthLabel)}
+            style={{ padding:"9px 18px", background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:600, fontSize:13, cursor:"pointer" }}>印刷 / PDF保存</button>
+          <button onClick={()=>exportDriverCSV(driver)}
+            style={{ padding:"9px 18px", border:"1px solid #94a3b8", background:"#fff", color:"#374151", borderRadius:6, fontSize:13, cursor:"pointer" }}>CSV出力</button>
+          <div style={{ flex:1 }}/>
+          <button onClick={onClose}
+            style={{ padding:"9px 18px", border:"1.5px solid #e5e7eb", background:"#fff", color:"#374151", borderRadius:6, fontSize:13, cursor:"pointer" }}>閉じる</button>
+        </div>
+
+        {/* ===== 明細用紙（A4） ===== */}
+        <div className="driver-slip-paper" style={{ padding:36, fontSize:12.5, color:"#111827", lineHeight:1.6 }}>
+          {/* ヘッダー */}
+          <div className="jt-keep" style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:24, borderBottom:"2px solid #111827", paddingBottom:14 }}>
+            <div>
+              <div style={{ fontSize:15, fontWeight:700 }}>{driver.name} 様</div>
+              <div style={{ fontSize:11, color:"#6b7280", marginTop:2 }}>区分：{driver.type}{driver.area?` ／ ${driver.area}`:""}</div>
+            </div>
+            <div style={{ textAlign:"right" }}>
+              <div style={{ fontSize:20, fontWeight:800, letterSpacing:2 }}>支払明細書</div>
+              <div style={{ fontSize:12, color:"#6b7280", marginTop:4 }}>対象期間：{_monthLabel}分</div>
+            </div>
+          </div>
+
+          {/* 発行元 */}
+          <div className="jt-keep" style={{ display:"flex", justifyContent:"space-between", marginBottom:20 }}>
+            <div style={{ fontSize:11, color:"#6b7280" }}>
+              <div>下記のとおりお支払いいたします。</div>
+              <div style={{ marginTop:4 }}>稼働日数：{driver.workDays}日 ／ 取引社数：{driver.clientRows.length}社</div>
+            </div>
+            <div style={{ textAlign:"right", fontSize:11, color:"#374151" }}>
+              <div style={{ fontWeight:700, fontSize:13, color:"#111827" }}>J transport</div>
+              <div style={{ color:"#6b7280" }}>〒XXX-XXXX 東京都○○区○○</div>
+              <div style={{ color:"#6b7280" }}>TEL: 03-XXXX-XXXX</div>
+            </div>
+          </div>
+
+          {/* お支払金額（大きく） */}
+          <div className="jt-keep" style={{ background:"#f0f9ff", border:`1px solid ${accent}40`, borderRadius:8, padding:"14px 18px", marginBottom:22, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+            <div>
+              <div style={{ fontSize:13, fontWeight:700 }}>お支払金額（税込）</div>
+              <div style={{ fontSize:11, color:"#6b7280", marginTop:2 }}>支払予定日：{_payDue} ／ 銀行振込</div>
+            </div>
+            <span style={{ fontSize:26, fontWeight:800, color:accent }}>{fmt(driver.grandTotal)}</span>
+          </div>
+
+          {/* 区分別 明細 */}
+          <div style={{ fontSize:12, fontWeight:700, marginBottom:8 }}>支払明細</div>
+          <table style={{ width:"100%", borderCollapse:"collapse", fontSize:12, marginBottom:18 }}>
+            <thead>
+              <tr style={{ background:"#f9fafb" }}>
+                {["荷主","区分","数量","支払単価","金額"].map((h,k)=>(
+                  <th key={h} style={{ padding:"8px 10px", textAlign:k>=2?"right":"left", borderBottom:"1px solid #94a3b8", fontWeight:600, fontSize:11.5, color:"#374151", whiteSpace:"nowrap" }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {driver.clientRows.length === 0 ? (
+                <tr><td colSpan={5} style={{ padding:"14px 10px", color:"#9ca3af", textAlign:"center" }}>当月の運行実績はありません</td></tr>
+              ) : driver.clientRows.flatMap((c)=>
+                c.lines.map((l,j)=>(
+                  <tr key={c.name+l.label} style={{ borderBottom:"1px solid #e5e7eb" }}>
+                    <td style={{ padding:"8px 10px", fontWeight:500 }}>{j===0?c.name:""}</td>
+                    <td style={{ padding:"8px 10px" }}>{l.label}</td>
+                    <td style={{ padding:"8px 10px", textAlign:"right" }}>{l.qty}</td>
+                    <td style={{ padding:"8px 10px", textAlign:"right", color:"#6b7280" }}>{fmt(l.unitPay)}</td>
+                    <td style={{ padding:"8px 10px", textAlign:"right", fontWeight:600 }}>{fmt(l.amount)}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+            <tfoot>
+              <tr style={{ borderTop:"2px solid #475569" }}>
+                <td colSpan={4} style={{ padding:"9px 10px", textAlign:"right", color:"#6b7280" }}>支払小計</td>
+                <td style={{ padding:"9px 10px", textAlign:"right", fontWeight:600 }}>{fmt(driver.totalPay)}</td>
+              </tr>
+              {driver.tax > 0 && (
+                <tr>
+                  <td colSpan={4} style={{ padding:"6px 10px", textAlign:"right", color:"#6b7280" }}>消費税（10%）</td>
+                  <td style={{ padding:"6px 10px", textAlign:"right" }}>{fmt(driver.tax)}</td>
+                </tr>
+              )}
+              <tr style={{ background:"#f9fafb" }}>
+                <td colSpan={4} style={{ padding:"10px", textAlign:"right", fontWeight:700 }}>支払合計</td>
+                <td style={{ padding:"10px", textAlign:"right", fontWeight:800, color:accent, fontSize:15 }}>{fmt(driver.grandTotal)}</td>
+              </tr>
+            </tfoot>
+          </table>
+
+          {/* 日別明細（任意・件数が多い時は2ページ目へ） */}
+          {driver.dayRows.length > 0 && (
+            <div className={"jt-daily-section" + (driver.dayRows.length > 8 ? " jt-page2" : "")}>
+              <div style={{ fontSize:12, fontWeight:700, marginBottom:8 }}>日別 運行明細</div>
+              <table style={{ width:"100%", borderCollapse:"collapse", fontSize:11.5, marginBottom:16 }}>
+                <thead>
+                  <tr style={{ background:"#f9fafb" }}>
+                    {["日付","曜","運行内容","金額"].map((h,k)=>(
+                      <th key={h} style={{ padding:"6px 10px", textAlign:k===3?"right":"left", borderBottom:"1px solid #94a3b8", fontWeight:600, fontSize:11, color:"#374151" }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {driver.dayRows.map((dr,i)=>(
+                    <tr key={i} style={{ borderBottom:"1px solid #e5e7eb" }}>
+                      <td style={{ padding:"6px 10px", whiteSpace:"nowrap" }}>{dr.date.slice(5).replace("-","/")}</td>
+                      <td style={{ padding:"6px 10px", color: dr.dow==="日"?"#dc2626":dr.dow==="土"?"#2563eb":"#6b7280" }}>{dr.dow}</td>
+                      <td style={{ padding:"6px 10px", color:"#374151" }}>{dr.items.map(it=>`${it.client} ${it.label}×${it.qty}`).join("、")}</td>
+                      <td style={{ padding:"6px 10px", textAlign:"right", fontWeight:500 }}>{fmt(dr.pay)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* フッター */}
+          <div className="jt-slip-footer" style={{ borderTop:"1px solid #e5e7eb", paddingTop:12, fontSize:10.5, color:"#9ca3af" }}>
+            ※ 本明細は日次運行実績にもとづき作成しています。内容にご不明点がある場合は担当までお問い合わせください。
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const DriverFinancePage = ({ accent }) => {
+  const [sel, setSel] = React.useState(null);
+  const [slipDriver, setSlipDriver] = React.useState(null);
+  // 日次入力の編集を反映するために live aggregation
+  const [dailyEdits] = useLocalStorage("jt_daily_edits", {});
+
+  const _displayMonth = displayMonthForPay(dailyEdits);
+  const _monthLabel = mkLabel(_displayMonth);
+
+  const driverSummary = drivers.map(d => buildDriverStatement(d, dailyEdits, _displayMonth));
+  const totalSell = driverSummary.reduce((s,d) => s + d.totalSell, 0);
+  const totalPay  = driverSummary.reduce((s,d) => s + d.totalPay, 0);
+  const totalProfit = totalSell - totalPay;
+
+  const exportCSV = exportDriverCSV;
 
   return (
     <div>
