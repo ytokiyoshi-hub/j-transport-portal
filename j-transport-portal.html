@@ -5539,7 +5539,7 @@ const DispatchPage = ({ accent, setPage }) => {
   const isConfirmed = (dk) => !!confirmed[dk];
   const toggleConfirmDay = (dk) => {
     const has = dispCountFor(dk) > 0;
-    if(!confirmed[dk] && !has){ alert("この日には配車が入力されていないため、確定できません。"); return; }
+    if(!confirmed[dk] && !has){ showToast("この日には配車が入力されていないため、確定できません。", "error"); return; }
     setConfirmed(prev=>{ const next={...prev}; if(next[dk]) delete next[dk]; else next[dk]=new Date().toISOString(); return next; });
   };
   const confirmWeek = () => {
