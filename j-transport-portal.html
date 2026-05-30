@@ -1649,30 +1649,29 @@ const RateMasterPage = ({ accent, setPage }) => {
                       </div>
                     ) : null;
                   })}
-                  {editMode && (
-                    <div style={{ position:"relative" }}>
-                      <button onClick={()=>setShowDrvPicker(s=>!s)} style={{ padding:"6px 12px", border:`1.5px dashed ${accent}`, borderRadius:6, background:"transparent", color:accent, fontSize:12, fontWeight:600, cursor:"pointer" }}>+ ドライバー追加</button>
-                      {showDrvPicker && (
-                        <div style={{ position:"absolute", top:"110%", left:0, background:"#fff", border:"1px solid #94a3b8", borderRadius:6, padding:6, minWidth:200, maxHeight:280, overflowY:"auto", zIndex:20, boxShadow:"0 8px 24px rgba(0,0,0,0.12)" }}>
-                          {drivers.filter(d => !driversFor(sel).includes(d.id)).map(d=>(
-                            <button key={d.id} onClick={()=>{
-                              const cur = driversFor(sel);
-                              setDriverOverrides({ ...driverOverrides, [sel.id]: [...cur, d.id] });
-                              setShowDrvPicker(false);
-                            }} style={{ display:"block", width:"100%", padding:"6px 10px", background:"transparent", border:"none", textAlign:"left", fontSize:12, cursor:"pointer", borderRadius:4 }}
-                              onMouseEnter={e=>e.currentTarget.style.background="#f3f4f6"}
-                              onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
-                              {d.name}
-                              <span style={{ color:"#9ca3af", marginLeft:6, fontSize:10 }}>{d.type}</span>
-                            </button>
-                          ))}
-                          {drivers.filter(d => !driversFor(sel).includes(d.id)).length===0 && (
-                            <div style={{ padding:"8px 10px", fontSize:11, color:"#9ca3af" }}>追加できるドライバーなし</div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  )}
+                  <div style={{ position:"relative" }}>
+                    <button onClick={()=>setShowDrvPicker(s=>!s)} style={{ padding:"6px 12px", border:`1.5px dashed ${accent}`, borderRadius:6, background:"transparent", color:accent, fontSize:12, fontWeight:600, cursor:"pointer" }}>+ ドライバー追加</button>
+                    {showDrvPicker && (
+                      <div style={{ position:"absolute", top:"110%", left:0, background:"#fff", border:"1px solid #94a3b8", borderRadius:6, padding:6, minWidth:200, maxHeight:280, overflowY:"auto", zIndex:20, boxShadow:"0 8px 24px rgba(0,0,0,0.12)" }}>
+                        {drivers.filter(d => !driversFor(sel).includes(d.id)).map(d=>(
+                          <button key={d.id} onClick={()=>{
+                            const cur = driversFor(sel);
+                            setDriverOverrides({ ...driverOverrides, [sel.id]: [...cur, d.id] });
+                            setShowDrvPicker(false);
+                            showToast("担当ドライバーを更新しました");
+                          }} style={{ display:"block", width:"100%", padding:"6px 10px", background:"transparent", border:"none", textAlign:"left", fontSize:12, cursor:"pointer", borderRadius:4 }}
+                            onMouseEnter={e=>e.currentTarget.style.background="#f3f4f6"}
+                            onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+                            {d.name}
+                            <span style={{ color:"#9ca3af", marginLeft:6, fontSize:10 }}>{d.type}</span>
+                          </button>
+                        ))}
+                        {drivers.filter(d => !driversFor(sel).includes(d.id)).length===0 && (
+                          <div style={{ padding:"8px 10px", fontSize:11, color:"#9ca3af" }}>追加できるドライバーなし</div>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
