@@ -2177,7 +2177,7 @@ const InvoicePage = ({ accent }) => {
                   <td style={{ padding:"12px 16px", fontWeight:600, color:accent, fontSize:12 }}>{inv.id}</td>
                   <td style={{ padding:"12px 16px", fontWeight:500 }}>{inv.client}</td>
                   <td style={{ padding:"12px 16px", color:"#6b7280" }}>{inv.period}</td>
-                  <td style={{ padding:"12px 16px", fontWeight:700 }}>{fmt(inv.amount)}</td>
+                  <td style={{ padding:"12px 16px", fontWeight:700 }}>{fmt(subtotalFor(inv))}</td>
                   <td style={{ padding:"12px 16px" }}>
                     <StatusBadge label={issuedSet.has(inv.id)?"請求済":inv.status}/>
                   </td>
