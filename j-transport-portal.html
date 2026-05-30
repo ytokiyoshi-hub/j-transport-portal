@@ -957,7 +957,7 @@ const cm = (cid, mk, dailyEdits) => {
 // 全社合算
 const monthAgg = (mk, dailyEdits) => {
   let sell=0, pay=0;
-  clients.forEach(c => { const h = cm(c.id, mk, dailyEdits); sell += h.s; pay += h.p; });
+  allClientsLive().forEach(c => { const h = cm(c.id, mk, dailyEdits); sell += h.s; pay += h.p; });
   return { sell, pay, profit: sell-pay };
 };
 // 月ラベル整形
