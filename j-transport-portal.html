@@ -4808,9 +4808,9 @@ const ParentClientsPage = ({ accent }) => {
           <div style={{ fontSize:20, fontWeight:700 }}>上位荷主管理</div>
           <div style={{ fontSize:12, color:"#9ca3af", marginTop:2 }}>発注元・元請け・親会社など、現在の荷主の上位にあたる取引先を登録</div>
         </div>
-        <button onClick={()=>{ setShowForm(!showForm); setEditingId(null); setDraft({ name:"", contact:"", tel:"", address:"", email:"", note:"" }); }}
+        <button onClick={()=>{ committedIdRef.current = null; setShowForm(!showForm); setEditingId(null); setDraft({ name:"", contact:"", tel:"", address:"", email:"", note:"" }); }}
           style={{ padding:"7px 16px", background:showForm?"#f3f4f6":accent, color:showForm?"#374151":"#fff", border:"none", borderRadius:6, fontSize:13, fontWeight:600, cursor:"pointer" }}>
-          {showForm?"キャンセル":"+ 新規上位荷主を登録"}
+          {showForm?"閉じる":"+ 新規上位荷主を登録"}
         </button>
       </div>
 
