@@ -1775,8 +1775,10 @@ const RateMasterPage = ({ accent, setPage }) => {
                 </label>
                 <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5 }}>
                   <span style={{ fontSize:12, fontWeight:600, color:"#374151" }}>締め</span>
-                  <input value={form.billingCycle} onChange={e=>setForm({ ...form, billingCycle:e.target.value })} placeholder="例）翌月末締め"
-                    style={{ padding:"9px 12px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
+                  <select value={form.billingCycle} onChange={e=>setForm({ ...form, billingCycle:e.target.value })}
+                    style={{ padding:"9px 12px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none", background:"#fff" }}>
+                    {CYCLE_OPTIONS.map(o=><option key={o} value={o}>{o}</option>)}
+                  </select>
                 </label>
               </div>
 
