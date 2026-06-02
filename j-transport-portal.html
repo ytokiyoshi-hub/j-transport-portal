@@ -65,8 +65,9 @@
   table > thead > tr > th:last-child, table > tfoot > tr > td:last-child { border-right: none; }
 
   /* ── カード内のflush表: カードの角丸でクリップし、カード枠を表の唯一の外周にする（内側の格子線のみ残す） ── */
-  /* 表を直接内包するカード（padding:0 のデータ表カード）を自動検出してクリップ */
-  .jt-card:has(> table) { overflow: hidden; }
+  /* 表を直接内包するカード（padding:0 のデータ表カード）を自動検出。角丸クリップしつつ、
+     幅広な表は横スクロール可能に（overflow:hidden だと見切れるため X は auto）。縦はクリップのみ。 */
+  .jt-card:has(> table) { overflow-x: auto; overflow-y: hidden; }
   /* スクロール用 div 経由で表を内包するカード（収支/日次など）は flush 指定でクリップ */
   /* 表自身の外枠を除去（カード枠を唯一の外周にする） */
   .jt-card:has(> table) > table,
