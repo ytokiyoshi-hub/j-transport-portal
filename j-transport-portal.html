@@ -63,6 +63,23 @@
   table tfoot td { border-top: 2px solid #475569; }
   table > tbody > tr > td:last-child, table > tbody > tr > th:last-child,
   table > thead > tr > th:last-child, table > tfoot > tr > td:last-child { border-right: none; }
+
+  /* ── カード内のflush表: カードの角丸でクリップし、カード枠を表の唯一の外周にする（内側の格子線のみ残す） ── */
+  /* 表を直接内包するカード（padding:0 のデータ表カード）を自動検出してクリップ */
+  .jt-card:has(> table) { overflow: hidden; }
+  /* スクロール用 div 経由で表を内包するカード（収支/日次など）は flush 指定でクリップ */
+  /* 表自身の外枠を除去（カード枠を唯一の外周にする） */
+  .jt-card:has(> table) > table,
+  .jt-card--flush table { border: none; }
+  /* 最終行（tfoot があれば tfoot、なければ最終 tbody）の下端罫線を除去 → カード下辺との二重線を解消 */
+  .jt-card:has(> table) > table > tfoot > tr:last-child > td,
+  .jt-card:has(> table) > table > tfoot > tr:last-child > th,
+  .jt-card:has(> table) > table > tbody:last-child > tr:last-child > td,
+  .jt-card:has(> table) > table > tbody:last-child > tr:last-child > th,
+  .jt-card--flush table > tfoot > tr:last-child > td,
+  .jt-card--flush table > tfoot > tr:last-child > th,
+  .jt-card--flush table > tbody:last-child > tr:last-child > td,
+  .jt-card--flush table > tbody:last-child > tr:last-child > th { border-bottom: none; }
 </style>
 </head>
 <body>
