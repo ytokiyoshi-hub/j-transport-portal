@@ -5377,7 +5377,7 @@ const VehiclesPage = ({ accent }) => {
               </div>}
 
               <div style={{ fontSize:12, color:"#9ca3af", marginBottom:8 }}>整備・点検履歴</div>
-              {[...(maintExtras[sel.id]||[]), ...sel.maintenance].map((m,i)=>(
+              {[...(maintExtras[sel.id]||[]), ...sel.maintenance].sort((a,b)=> (b.date||"").localeCompare(a.date||"")).map((m,i)=>(
                 <div key={i} style={{ display:"flex", gap:10, padding:"8px 0", borderBottom:"1px solid #94a3b8", fontSize:13 }}>
                   <span style={{ color:"#9ca3af", fontSize:12, width:80, flexShrink:0 }}>{m.date}</span>
                   <span style={{ color:"#374151", flex:1 }}>{m.item}</span>
