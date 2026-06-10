@@ -5303,6 +5303,7 @@ const VehiclesPage = ({ accent }) => {
               {list.map(v=>{
                 const d = drivers.find(dr=>dr.id===v.driverId) || {};
                 const days = daysUntil(v.inspection);
+                const expired = days < 0;
                 const urgent = days <= 30;
                 const warn   = days <= 60 && days > 30;
                 return (
