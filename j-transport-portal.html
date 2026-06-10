@@ -3358,7 +3358,7 @@ const DailyInputPage = ({ accent }) => {
         {[
           { l:"月次売上（速報）", v:monthTotals.sell>0?fmt(monthTotals.sell):"—", c:accent },
           { l:"月次支払",         v:monthTotals.pay>0?fmt(monthTotals.pay):"—",   c:"#d97706" },
-          { l:"月次粗利",         v:monthTotals.profit>0?fmt(monthTotals.profit):"—", c:"#16a34a" },
+          { l:"月次粗利",         v:(monthTotals.sell>0||monthTotals.pay>0)?fmt(monthTotals.profit):"—", c:monthTotals.profit<0?"#dc2626":"#16a34a" },
           { l:"入力進捗",         v:`${inputDays} / ${workdays}日`, c:"#374151",
             sub: inputDays===workdays&&workdays>0?"✓ 入力完了":`残 ${workdays-inputDays}日` },
         ].map(({l,v,c,sub})=>(
