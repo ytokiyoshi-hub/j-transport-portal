@@ -4362,9 +4362,9 @@ const FAQPage = ({ accent }) => {
           <div style={{ fontSize:12, fontWeight:700, color:"#9ca3af", marginBottom:10 }}>{cat.cat}（{cat.items.length}件）</div>
           <Card>
             {cat.items.map((f,fi)=>{
-              const key=`${ci}-${fi}`; const isOpen=open===key;
+              const key=`${cat.cat}:${f.q}`; const isOpen=open===key;
               return (
-                <div key={fi} style={{ borderBottom:fi<cat.items.length-1?"1px solid #94a3b8":"none" }}>
+                <div key={f.q} style={{ borderBottom:fi<cat.items.length-1?"1px solid #94a3b8":"none" }}>
                   <button onClick={()=>setOpen(isOpen?null:key)} style={{ width:"100%", display:"flex", justifyContent:"space-between", alignItems:"center", padding:"16px 20px", background:"none", border:"none", textAlign:"left", gap:16 }}>
                     <div style={{ display:"flex", alignItems:"flex-start", gap:10, flex:1 }}>
                       <span style={{ fontSize:13, fontWeight:700, color:accent, flexShrink:0, marginTop:1 }}>Q</span>
