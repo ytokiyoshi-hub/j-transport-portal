@@ -3584,8 +3584,16 @@ const Dashboard = ({ accent, setPage }) => {
   });
   const margin = totalSell>0?(totalProfit/totalSell*100).toFixed(1):0;
 
-  const pendingInv = invoices.filter(i=>i.status==="未請求").reduce((s,i)=>s+i.amount,0);
+  // 請求管理（jt_issued）で発行済にした請求書は「未請求」から除外（実効ステータスを請求管理と揃える）
+  const [issuedArr] = useLocalStorage("jt_issued", []);
+  const pendingList = invoices.filter(i=>i.status==="未請求" && !issuedArr.includes(i.id));
+  const pendingInv = pendingList.reduce((s,i)=>s+i.amount,0);
   const delayedInv = invoices.filter(i=>i.status==="遅延").reduce((s,i)=>s+i.amount,0);
+
+  // お知らせ既読状態・追加投稿（AnnouncePage / ヘッダーのベルと localStorage を共有）
+  const [announceReadIds] = useLocalStorage("jt_announce_read_ids", announces.filter(a=>!a.unread).map(a=>a.id));
+  const [extraAnnounces] = useLocalStorage("jt_extra_announces", []);
+  const dashAnnounces = [...extraAnnounces, ...announces];
 
   return (
     <div>
