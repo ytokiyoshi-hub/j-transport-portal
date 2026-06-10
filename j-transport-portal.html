@@ -3879,7 +3879,10 @@ const AnnouncePage = ({ accent }) => {
     const now = new Date();
     const mm = String(now.getMonth()+1).padStart(2,"0");
     const dd = String(now.getDate()).padStart(2,"0");
-    setExtraPosts(p=>[{ id: Date.now(), title:newPost.title, cat:newPost.cat, body:newPost.body, date:`${mm}/${dd}`, unread:false }, ...p]);
+    const id = Date.now();
+    setExtraPosts(p=>[{ id, title:newPost.title, cat:newPost.cat, body:newPost.body, date:`${mm}/${dd}`, unread:false }, ...p]);
+    // 投稿者本人には既読扱いにする（既読管理は readIds ベースのため id を追加）
+    setReadIds(p=>p.includes(id) ? p : [...p, id]);
     setNewPost({ title:"", cat:"運行", body:"" });
     setShowForm(false);
   };
