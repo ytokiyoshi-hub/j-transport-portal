@@ -3791,12 +3791,11 @@ const Dashboard = ({ accent, setPage }) => {
           <Card>
             <SH title="承認待ち" action="申請→" onAction={()=>setPage("apply")}/>
             <div style={{ padding:"4px 0 8px" }}>
-              {[
-                { name:"田中 一郎", type:"有給申請",     date:"4/25", urgent:false },
-                { name:"鈴木 健太", type:"残業申請",     date:"4/28", urgent:true },
-                { name:"外部協力", type:"ドライバー追加", date:"4/29", urgent:false },
-              ].map((a,i)=>(
-                <div key={i} style={{ display:"flex", alignItems:"center", gap:10, padding:"9px 20px", borderBottom:i<2?"1px solid #94a3b8":"none" }}>
+              {pendingApprovals.length===0 && (
+                <div style={{ padding:"14px 20px", fontSize:12, color:"#9ca3af", textAlign:"center" }}>承認待ちの申請はありません</div>
+              )}
+              {pendingApprovals.map((a,i)=>(
+                <div key={a.id} style={{ display:"flex", alignItems:"center", gap:10, padding:"9px 20px", borderBottom:i<pendingApprovals.length-1?"1px solid #94a3b8":"none" }}>
                   <Avatar name={a.name} size={26} bg="#f3f4f6" color="#374151"/>
                   <div style={{ flex:1, minWidth:0 }}>
                     <div style={{ fontSize:13, fontWeight:600, display:"flex", alignItems:"center", gap:6 }}>
