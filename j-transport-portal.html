@@ -901,6 +901,8 @@ const prevMonthKey = (mk) => {
 const _lsGet = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
 // 追加荷主(jt_extra_clients)込みの全クライアント
 const allClientsLive = () => { const ex = _lsGet('jt_extra_clients', []); return Array.isArray(ex) && ex.length ? [...clients, ...ex] : clients; };
+// 担当ドライバー編集(jt_client_driver_overrides)を適用した実効担当ドライバー
+const driversOfClient = (c) => (_lsGet("jt_client_driver_overrides",{})[c.id]) || c.drivers || [];
 // 単価編集(jt_rate_overrides) / 締日編集(jt_cycle_overrides) を適用した実効クライアント
 const effectiveClient = (c) => {
   if (!c) return c;
