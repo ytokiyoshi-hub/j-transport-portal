@@ -3275,17 +3275,15 @@ const DailyInputPage = ({ accent }) => {
     return ()=>window.removeEventListener('keydown',h);
   }, [clientList]);
 
-  const stickyHeaderRef = React.useRef(null);
   React.useEffect(() => {
     // 左上セルの自動フォーカスは行わない（ユーザーが選んだ時のみフォーカス）
     if (isCurrentMonth) {
       setTimeout(() => {
         const todayEl = document.querySelector('[data-today="true"]');
         if (!todayEl) return;
-        const stickyH = stickyHeaderRef.current?.offsetHeight || 0;
-        const rect = todayEl.getBoundingClientRect();
-        const scroller = document.scrollingElement || document.documentElement;
-        scroller.scrollTo({ top: scroller.scrollTop + rect.top - stickyH - 20, behavior:"smooth" });
+        // scrollIntoView はテーブルの内側スクロールコンテナを含む全ての祖先をスクロールする
+        // （block:"center" で sticky ヘッダーに行が隠れない）
+        todayEl.scrollIntoView({ block:"center", behavior:"smooth" });
       }, 300);
     }
   }, [selClient, monthYear]);
