@@ -5324,7 +5324,7 @@ const VehiclesPage = ({ accent }) => {
                     <td style={{ padding:"12px 16px" }}>
                       <div style={{ display:"flex", alignItems:"center", gap:8 }}>
                         <span style={{ fontWeight: urgent||warn?700:400, color: urgent?"#dc2626":warn?"#d97706":"#374151" }}>{v.inspection}</span>
-                        {urgent && <span style={{ fontSize:11, background:"#fef2f2", color:"#dc2626", padding:"1px 7px", borderRadius:3, fontWeight:700 }}>あと{days}日</span>}
+                        {urgent && <span style={{ fontSize:11, background:"#fef2f2", color:"#dc2626", padding:"1px 7px", borderRadius:3, fontWeight:700 }}>{expired?`${-days}日超過`:`あと${days}日`}</span>}
                         {warn   && <span style={{ fontSize:11, background:"#fffbeb", color:"#d97706", padding:"1px 7px", borderRadius:3, fontWeight:700 }}>あと{days}日</span>}
                       </div>
                     </td>
