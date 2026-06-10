@@ -4163,7 +4163,7 @@ const SafetyPage = ({ accent }) => {
       {/* KPIカード */}
       <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14, marginBottom:20 }}>
         {[
-          { l:"連続無事故日数", v:"45日", sub:"今年度目標: 365日", c:accent, bar:45/365 },
+          { l:"連続無事故日数", v:`${noAccidentDays}日`, sub:"今年度目標: 365日", c:accent, bar:noAccidentDays/365 },
           { l:"アルコール検査",  v:"100%", sub:"本日 全員実施済",   c:"#16a34a", bar:1 },
           { l:"今月ヒヤリハット",v:`${incidents.filter(i=>i.date.startsWith("2025-04")).length}件`, sub:"前月比 −1件", c:"#d97706", bar:null },
           { l:"安全教育 修了率", v:`${Math.round(educationData.reduce((s,d)=>s+d.done,0)/educationData.reduce((s,d)=>s+d.total,0)*100)}%`, sub:`${educationData.filter(d=>d.done===d.total).length}/${educationData.length}名 完了`, c:"#7c3aed", bar:educationData.reduce((s,d)=>s+d.done,0)/educationData.reduce((s,d)=>s+d.total,0) },
