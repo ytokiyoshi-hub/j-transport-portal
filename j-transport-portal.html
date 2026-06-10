@@ -1948,8 +1948,9 @@ const buildDriverStatement = (d, dailyEdits, mk) => {
 };
 
 const exportDriverCSV = (d) => {
+  const esc = v => /[",\n]/.test(String(v)) ? '"'+String(v).replace(/"/g,'""')+'"' : String(v);
   const rows = ["荷主,区分,数量,支払単価,金額"];
-  d.clientRows.forEach(c => c.lines.forEach(l => rows.push(`${c.name},${l.label},${l.qty},${l.unitPay},${l.amount}`)));
+  d.clientRows.forEach(c => c.lines.forEach(l => rows.push([c.name,l.label,l.qty,l.unitPay,l.amount].map(esc).join(","))));
   rows.push(`,,,小計,${d.totalPay}`);
   if (d.tax > 0) rows.push(`,,,消費税(10%),${d.tax}`);
   rows.push(`,,,支払合計,${d.grandTotal}`);
