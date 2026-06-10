@@ -2657,13 +2657,19 @@ const InvoicePage = ({ accent }) => {
             </div>
 
             <div className="no-print" style={{ display:"flex", flexDirection:"column", gap:8 }}>
-              {sel.status==="未請求" && !issuedSet.has(sel.id) && (
-                <button onClick={()=>{ setIssuedSet(s=>new Set([...s,sel.id])); showToast("請求書を発行しました"); }}
+              {effStatus(sel)==="未請求" && (
+                <button onClick={()=>{ markIssued([sel.id]); showToast("請求書を発行しました"); }}
                   style={{ padding:"10px", background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:600, fontSize:13, cursor:"pointer" }}>
                   請求書を発行する
                 </button>
               )}
-              {sel.status==="遅延" && !remindedSet.has(sel.id) && (
+              {(effStatus(sel)==="請求済" || effStatus(sel)==="遅延") && (
+                <button onClick={()=>{ setPaidSet(s=>new Set([...s,sel.id])); showToast("入金済にしました"); }}
+                  style={{ padding:"10px", background:"#16a34a", color:"#fff", border:"none", borderRadius:6, fontWeight:600, fontSize:13, cursor:"pointer" }}>
+                  入金済にする
+                </button>
+              )}
+              {effStatus(sel)==="遅延" && !remindedSet.has(sel.id) && (
                 <button onClick={()=>{ setRemindedSet(s=>new Set([...s,sel.id])); showToast("督促メールを送付しました"); }}
                   style={{ padding:"10px", background:"#fee2e2", color:"#dc2626", border:"1.5px solid #dc2626", borderRadius:6, fontWeight:600, fontSize:13, cursor:"pointer" }}>
                   督促メールを送付
