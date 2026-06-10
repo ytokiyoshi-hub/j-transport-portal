@@ -4640,9 +4640,9 @@ const TodoPage = ({ accent }) => {
 
   const toggle = (id) => setTodos(prev => prev.map(t => t.id===id ? { ...t, done: !t.done, doneAt: t.done?null:Date.now() } : t));
   const remove = (id) => { if (confirm("このタスクを削除しますか？")) setTodos(prev => prev.filter(t => t.id!==id)); };
-  const startEdit = (t) => setEditingId(t.id);
+  const startEdit = (t) => { editOrigTitle.current = t.title; setEditingId(t.id); };
   const updateTodo = (id, patch) => setTodos(prev => prev.map(t => t.id===id ? { ...t, ...patch } : t));
-  const closeEdit = () => setEditingId(null);
+  const closeEdit = () => { const cur = todos.find(x => x.id === editingId); if (cur && !cur.title.trim()) updateTodo(cur.id, { title: editOrigTitle.current }); setEditingId(null); };
 
   const list = todos.filter(t => filter==="all" ? true : filter==="done" ? t.done : !t.done);
   // 優先度→期日順にソート
