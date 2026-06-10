@@ -3561,7 +3561,9 @@ const DailyInputPage = ({ accent }) => {
 
 // ── ダッシュボード ─────────────────────────────────────────────────────────
 const Dashboard = ({ accent, setPage }) => {
-  const now = new Date();
+  // 「自動更新」表示の通り、時計を30秒ごとに更新する
+  const [now, setNow] = React.useState(() => new Date());
+  React.useEffect(() => { const t = setInterval(() => setNow(new Date()), 30000); return () => clearInterval(t); }, []);
   const days = ["日","月","火","水","木","金","土"];
   const dateStr = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日（${days[now.getDay()]}）`;
   const timeStr = now.toTimeString().slice(0,5);
