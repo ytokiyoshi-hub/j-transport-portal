@@ -2829,7 +2829,7 @@ const ClientPage = ({ accent, setPage }) => {
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
         <div>
           <div style={{ fontSize:20, fontWeight:700 }}>荷主管理</div>
-          <div style={{ fontSize:12, color:"#9ca3af", marginTop:2 }}>全{list.length}社（自社{clients.length}＋追加{extraClients.length}）</div>
+          <div style={{ fontSize:12, color:"#9ca3af", marginTop:2 }}>全{clients.length + extraClients.length}社（自社{clients.length}＋追加{extraClients.length}）{search && `／該当${list.length}社`}</div>
         </div>
         <div style={{ display:"flex", gap:10 }}>
           <div style={{ position:"relative", display:"flex", alignItems:"center" }}>
