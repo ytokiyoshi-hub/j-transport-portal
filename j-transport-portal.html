@@ -2388,10 +2388,12 @@ const InvoicePage = ({ accent }) => {
       ...[...labelSet].filter(l => !(baseClient.rates || []).some(r => r.label === l)),
     ];
 
+    const issuedRaw = issuedDates[inv.id] || inv.issued;
     return {
       clientObj, items, subtotal, tax, total, dailyRows, dailyLabels,
       period: `${fmtDate(bp.start)} 〜 ${fmtDate(bp.end)}`,
-      issueDate: inv.issued || `${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日`,
+      issueDate: issuedRaw ? fmtDate(issuedRaw) : `${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日`,
+      dueDate: fmtDate(inv.due),
     };
   };
 
