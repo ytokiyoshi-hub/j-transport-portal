@@ -6467,7 +6467,7 @@ const ApplyPage = ({ accent }) => {
                     <span style={{ padding:"3px 8px", borderRadius:4, fontSize:11.5, fontWeight:600, background:sc.bg, color:sc.c }}>{p.status}</span>
                   </td>
                   <td style={{ padding:"11px 16px" }}>
-                    <button onClick={()=>alert(p.id+" "+p.type+" / 状態: "+p.status+" / 承認者: "+p.approver)} style={{ padding:"4px 10px", border:"1px solid #94a3b8", borderRadius:4, background:"#fff", fontSize:11, color:"#6b7280", cursor:"pointer" }}>詳細</button>
+                    <button onClick={()=>{ const d = p.detail ? "\n" + Object.entries(p.detail).map(([k,v])=>`${k}: ${v}`).join("\n") : ""; alert(p.id+" "+p.type+" / 状態: "+p.status+" / 承認者: "+p.approver+d); }} style={{ padding:"4px 10px", border:"1px solid #94a3b8", borderRadius:4, background:"#fff", fontSize:11, color:"#6b7280", cursor:"pointer" }}>詳細</button>
                   </td>
                 </tr>
               );
