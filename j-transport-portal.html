@@ -2850,7 +2850,7 @@ const ClientPage = ({ accent, setPage }) => {
           <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
             <thead>
               <tr style={{ background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
-                {["荷主","上位荷主","エリア","請求体系","担当ドライバー","今月売上","今月粗利","状態"].map(h=>(
+                {["荷主","上位荷主","エリア","請求体系","担当ドライバー",`売上（${mkLabel(dispMonth)}）`,`粗利（${mkLabel(dispMonth)}）`,"状態"].map(h=>(
                   <th key={h} style={{ padding:"9px 14px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:12, whiteSpace:"nowrap" }}>{h}</th>
                 ))}
               </tr>
