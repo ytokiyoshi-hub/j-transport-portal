@@ -6545,16 +6545,17 @@ const App = () => {
           if (!sb[r.client_id][r.entry_date][r.driver_id]) sb[r.client_id][r.entry_date][r.driver_id] = {};
           sb[r.client_id][r.entry_date][r.driver_id][r.rate_label] = String(r.value);
         });
-        // 既存 localStorage edits とマージ（local 優先）
+        // 既存 localStorage edits とマージ（SB 優先・local にしか無いセルは温存）
+        // ※編集は保存時に即 upsert されるため SB が正。local 優先だと他端末の更新が2回目以降反映されない
         const existing = (()=>{ try { return JSON.parse(localStorage.getItem("jt_daily_edits")||"{}"); } catch { return {}; } })();
-        const merged = JSON.parse(JSON.stringify(sb));
-        Object.keys(existing).forEach(cid => {
+        const merged = JSON.parse(JSON.stringify(existing));
+        Object.keys(sb).forEach(cid => {
           if (!merged[cid]) merged[cid] = {};
-          Object.keys(existing[cid]).forEach(d => {
+          Object.keys(sb[cid]).forEach(d => {
             if (!merged[cid][d]) merged[cid][d] = {};
-            Object.keys(existing[cid][d]).forEach(did => {
+            Object.keys(sb[cid][d]).forEach(did => {
               if (!merged[cid][d][did]) merged[cid][d][did] = {};
-              Object.assign(merged[cid][d][did], existing[cid][d][did]);
+              Object.assign(merged[cid][d][did], sb[cid][d][did]);
             });
           });
         });
