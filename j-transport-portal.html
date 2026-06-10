@@ -4247,7 +4247,11 @@ const SafetyPage = ({ accent }) => {
                       color:inc.type==="ヒヤリハット"?"#d97706":inc.type==="軽微な接触"?"#92400e":"#dc2626" }}>{inc.type}</span>
                     <span style={{ fontSize:12, fontWeight:600 }}>{inc.driver}</span>
                   </div>
-                  <span style={{ fontSize:11, color:"#9ca3af" }}>{inc.date}</span>
+                  <div style={{ display:"flex", gap:6, alignItems:"center" }}>
+                    <span onClick={()=>{ setIncidents(p=>p.map(x=>x.id===inc.id?{...x,resolved:!x.resolved}:x)); showToast(inc.resolved?"「未対応」に戻しました":"「対応済」にしました"); }}
+                      style={{ fontSize:11, padding:"1px 7px", borderRadius:3, fontWeight:600, cursor:"pointer", background:inc.resolved?"#f0fdf4":"#fef2f2", color:inc.resolved?"#16a34a":"#dc2626" }}>{inc.resolved?"対応済":"未対応"}</span>
+                    <span style={{ fontSize:11, color:"#9ca3af" }}>{inc.date}</span>
+                  </div>
                 </div>
                 <div style={{ fontSize:12, color:"#6b7280", lineHeight:1.6 }}>{inc.detail}</div>
                 {inc.location && <div style={{ fontSize:11, color:"#9ca3af", marginTop:2 }}>📍 {inc.location}</div>}
