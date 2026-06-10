@@ -4494,7 +4494,7 @@ const ManualPage = ({ accent }) => {
 
       {openManual && (
         <div onClick={()=>setOpenManual(null)} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.5)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:100, padding:24 }}>
-          <div onClick={e=>e.stopPropagation()} style={{ background:"#fff", borderRadius:10, width:680, maxWidth:"100%", maxHeight:"85vh", overflowY:"auto", padding:28 }}>
+          <div className="invoice-print" onClick={e=>e.stopPropagation()} style={{ background:"#fff", borderRadius:10, width:680, maxWidth:"100%", maxHeight:"85vh", overflowY:"auto", padding:28 }}>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:18, paddingBottom:14, borderBottom:`2px solid ${accent}` }}>
               <div>
                 <div style={{ fontSize:11, color:"#9ca3af", marginBottom:4 }}>{openManual.cat}</div>
