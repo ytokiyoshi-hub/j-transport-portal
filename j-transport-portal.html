@@ -5279,7 +5279,7 @@ const VehiclesPage = ({ accent }) => {
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
         <div>
           <div style={{ fontSize:20, fontWeight:700 }}>車両管理</div>
-          <div style={{ fontSize:12, color:"#9ca3af", marginTop:2 }}>全{vehicleMaster.length}台 ／ 車検期限30日以内: {vehicleMaster.filter(v=>daysUntil(v.inspection)<=30).length}台</div>
+          <div style={{ fontSize:12, color:"#9ca3af", marginTop:2 }}>全{vehicleMaster.length}台 ／ 車検期限30日以内: {vehicleMaster.filter(v=>{const d=daysUntil(v.inspection); return d>=0 && d<=30;}).length}台 ／ 期限切れ: {vehicleMaster.filter(v=>daysUntil(v.inspection)<0).length}台</div>
         </div>
         <div style={{ display:"flex", gap:8 }}>
           {["すべて","稼働中","整備中"].map(s=>(
