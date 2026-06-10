@@ -6100,6 +6100,7 @@ const AttendancePage = ({ accent }) => {
       if (cid) return _clientName[cid] || cid;
       const sh = shifts[wd.dk] && shifts[wd.dk][d.id];
       if (sh === "有休") return "有給";
+      if (sh === "休") return "休";
       return "—";
     });
   });
