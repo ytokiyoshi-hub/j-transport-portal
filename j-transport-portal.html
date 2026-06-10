@@ -3185,7 +3185,7 @@ const DailyInputPage = ({ accent }) => {
       sell: dayRows.reduce((s,day)=>s+(Number(getVal(day.dateStr,d.id,r.label))||0)*r.sell,0),
     }))
   );
-  const inputDays = dayRows.filter((_,i)=>dayTotals[i].sell>0).length;
+  const inputDays = dayRows.filter((d,i)=>!d.isWeekend && dayTotals[i].sell>0).length;
   const workdays  = dayRows.filter(d=>!d.isWeekend).length;
 
   // ── 今日・目標 ──
