@@ -3660,21 +3660,23 @@ const Dashboard = ({ accent, setPage }) => {
         <Card>
           <SH title="お知らせ" action="すべて→" onAction={()=>setPage("announce")}/>
           <div style={{ padding:"6px 0" }}>
-            {announces.map(a=>(
+            {dashAnnounces.map(a=>{
+              const unread = !announceReadIds.includes(a.id);
+              return (
               <div key={a.id} style={{ display:"flex", gap:8, padding:"9px 20px", cursor:"pointer" }}
                 onClick={()=>setPage("announce")}
                 onMouseEnter={e=>e.currentTarget.style.background="#f9fafb"}
                 onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
-                {a.unread && <div style={{ width:5, height:5, borderRadius:"50%", background:accent, marginTop:6, flexShrink:0 }}/>}
-                {!a.unread && <div style={{ width:5, flexShrink:0 }}/>}
+                {unread && <div style={{ width:5, height:5, borderRadius:"50%", background:accent, marginTop:6, flexShrink:0 }}/>}
+                {!unread && <div style={{ width:5, flexShrink:0 }}/>}
                 <div style={{ flex:1, minWidth:0 }}>
-                  <div style={{ fontSize:13, fontWeight:a.unread?600:400, color:a.unread?"#111827":"#6b7280", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{a.title}</div>
+                  <div style={{ fontSize:13, fontWeight:unread?600:400, color:unread?"#111827":"#6b7280", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{a.title}</div>
                   <div style={{ fontSize:11, color:"#9ca3af", marginTop:2, display:"flex", gap:6 }}>
                     <span>{a.date}</span><StatusBadge label={a.cat}/>
                   </div>
                 </div>
               </div>
-            ))}
+            );})}
           </div>
         </Card>
 
