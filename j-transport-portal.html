@@ -2137,6 +2137,7 @@ const DriverFinancePage = ({ accent }) => {
   const driverSummary = drivers.map(d => buildDriverStatement(d, dailyEdits, _displayMonth));
   const totalSell = driverSummary.reduce((s,d) => s + d.totalSell, 0);
   const totalPay  = driverSummary.reduce((s,d) => s + d.totalPay, 0);
+  const totalGrand = driverSummary.reduce((s,d) => s + d.grandTotal, 0);
   const totalProfit = totalSell - totalPay;
 
   const exportCSV = exportDriverCSV;
