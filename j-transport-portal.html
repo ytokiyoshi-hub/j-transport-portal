@@ -6721,9 +6721,9 @@ const App = () => {
       </div>
 
       <TweaksPanel title="Tweaks">
-        <TweakColor id="accent" label="アクセントカラー"/>
-        <TweakText id="userName" label="ユーザー名"/>
-        <TweakText id="dept" label="部署"/>
+        <TweakColor label="アクセントカラー" value={theme.accent} onChange={v=>setTheme({ ...theme, accent: v })}/>
+        <TweakText label="ユーザー名" value={tweaks.userName} onChange={v=>setTweak("userName", v)}/>
+        <TweakText label="部署" value={tweaks.dept} onChange={v=>setTweak("dept", v)}/>
       </TweaksPanel>
 
       <ToastHost/>
