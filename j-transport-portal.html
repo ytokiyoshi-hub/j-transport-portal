@@ -3669,8 +3669,15 @@ const Dashboard = ({ accent, setPage }) => {
   const [issuedArr] = useLocalStorage("jt_issued", []);
   const [paidArr] = useLocalStorage("jt_paid", []);
   const pendingList = invoices.filter(i=>i.status==="未請求" && !issuedArr.includes(i.id) && !paidArr.includes(i.id));
-  const pendingInv = pendingList.reduce((s,i)=>s+i.amount,0);
-  const delayedInv = invoices.filter(i=>i.status==="遅延" && !paidArr.includes(i.id)).reduce((s,i)=>s+i.amount,0);
+  // 金額は請求管理の subtotalFor と同じく日次実績（dailyActuals+dailyEdits）優先で算出し、KPIを両画面で一致させる
+  const _invAmount = (i) => {
+    const c = allClientsLive().find(x => x.name === i.client);
+    const mk = (i.period && /^\d{4}-\d{2}/.test(i.period)) ? i.period.slice(0,7) : LATEST_DATA_MONTH;
+    const live = c ? computeLiveSum(c.id, mk, dailyEdits) : null;
+    return (live && live.s > 0) ? live.s : i.amount;
+  };
+  const pendingInv = pendingList.reduce((s,i)=>s+_invAmount(i),0);
+  const delayedInv = invoices.filter(i=>i.status==="遅延" && !paidArr.includes(i.id)).reduce((s,i)=>s+_invAmount(i),0);
 
   // お知らせ既読状態・追加投稿（AnnouncePage / ヘッダーのベルと localStorage を共有）
   const [announceReadIds] = useLocalStorage("jt_announce_read_ids", announces.filter(a=>!a.unread).map(a=>a.id));
