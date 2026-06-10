@@ -5361,7 +5361,7 @@ const VehiclesPage = ({ accent }) => {
 
               {urgent && (
                 <div style={{ background:"#fef2f2", border:"1px solid #fecaca", borderRadius:6, padding:"10px 14px", marginBottom:16, fontSize:12.5, color:"#dc2626", fontWeight:600 }}>
-                  ⚠ 車検期限まであと{days}日です。早めに予約してください。
+                  {expired ? `⚠ 車検期限を${-days}日超過しています。至急対応してください。` : `⚠ 車検期限まであと${days}日です。早めに予約してください。`}
                 </div>
               )}
 
