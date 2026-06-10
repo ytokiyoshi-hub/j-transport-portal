@@ -3097,15 +3097,21 @@ const DailyInputPage = ({ accent }) => {
       delete saveTimers.current[key];
       if (!window.sb || !selClient?.id) return;
       const numV = v === "" ? null : Number(v);
+      let error;
       if (numV === null || isNaN(numV)) {
-        await window.sb.from("jt_daily_entries").delete()
+        ({ error } = await window.sb.from("jt_daily_entries").delete()
           .eq("entry_date", dateStr).eq("client_id", selClient.id)
-          .eq("driver_id", dId).eq("rate_label", rLabel);
+          .eq("driver_id", dId).eq("rate_label", rLabel));
       } else {
-        await window.sb.from("jt_daily_entries").upsert({
+        ({ error } = await window.sb.from("jt_daily_entries").upsert({
           entry_date: dateStr, client_id: selClient.id,
           driver_id: dId, rate_label: rLabel, value: numV,
-        }, { onConflict: "entry_date,client_id,driver_id,rate_label" });
+        }, { onConflict: "entry_date,client_id,driver_id,rate_label" }));
+      }
+      if (error) {
+        setSaved(false);
+        showToast("Supabaseへの保存に失敗しました（端末には保存済み）", "error");
+        return;
       }
       setSaved(true);
     }, 400);
