@@ -3996,7 +3996,10 @@ const DriversPage = ({ accent, setPage }) => {
   return (
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
-        <div style={{ fontSize:20, fontWeight:700 }}>ドライバー管理</div>
+        <div>
+          <div style={{ fontSize:20, fontWeight:700 }}>ドライバー管理</div>
+          <div style={{ fontSize:11.5, color:"#9ca3af", marginTop:3 }}>対象月: {mkLabel(_displayMonth)}{_displayMonth!==REF_MONTH && `（${REF_MONTH_LABEL}実績未入力のため最新確定月を表示）`}</div>
+        </div>
         <div style={{ display:"flex", gap:8, alignItems:"center" }}>
           <div style={{ position:"relative", display:"flex", alignItems:"center" }}>
             <div style={{ position:"absolute", left:10, pointerEvents:"none" }}><Ic name="search" size={13} color="#9ca3af"/></div>
