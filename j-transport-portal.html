@@ -4142,8 +4142,19 @@ const SafetyPage = ({ accent }) => {
     if (!incident.driver || !incident.detail) return;
     setIncidents(p=>[{ id:Date.now(), ...incident, resolved:false }, ...p]);
     setSubmittedIncident(true);
-    setTimeout(()=>{ setSubmittedIncident(false); setShowIncidentForm(false); setIncident({ date:"2025-04-30", driver:"", type:"ヒヤリハット", detail:"", location:"" }); }, 2000);
+    setTimeout(()=>{ setSubmittedIncident(false); setShowIncidentForm(false); setIncident({ date: todayLocal(), driver:"", type:"ヒヤリハット", detail:"", location:"" }); }, 2000);
   };
+
+  // 今月ヒヤリハットKPI: 当月(REF_MONTH)基準。当月0件時は最新記録月へフォールバックし月名を表示
+  const _incMonth = incidents.some(i=>i.date.startsWith(REF_MONTH)) ? REF_MONTH : (incidents.map(i=>i.date.slice(0,7)).sort().pop() || REF_MONTH);
+  const _incCount = incidents.filter(i=>i.date.startsWith(_incMonth)).length;
+  const _incPrev = (()=>{ const d = new Date(+_incMonth.slice(0,4), +_incMonth.slice(5,7)-2, 1); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`; })();
+  const _incDiff = _incCount - incidents.filter(i=>i.date.startsWith(_incPrev)).length;
+  // 連続無事故日数: ページ基準日(2025-04-30)起点、物損事故・人身事故の記録でリセット
+  const REF_TODAY = new Date("2025-04-30").getTime();
+  const _accTs = incidents.filter(i=>i.type==="物損事故"||i.type==="人身事故").map(i=>new Date(i.date).getTime()).filter(t=>!isNaN(t));
+  const _lastAccTs = _accTs.length ? Math.max(..._accTs) : new Date("2025-03-16").getTime(); /* 起算日定数=45日相当 */
+  const noAccidentDays = Math.max(0, Math.floor((REF_TODAY - _lastAccTs) / 86400000));
 
   return (
     <div>
