@@ -1745,11 +1745,11 @@ const RateMasterPage = ({ accent, setPage }) => {
 
             {/* 今月実績 */}
             <Card style={{ padding:20 }}>
-              <div style={{ fontSize:13, fontWeight:700, marginBottom:14 }}>今月実績（速報）</div>
               {(() => {
-                const act = monthlyDisplay.find(r=>r.name===sel.name) || {};
-                if (!(act.sell>0)) return <div style={{ color:"#9ca3af", fontSize:13 }}>実績なし</div>;
-                return (
+                const de = _lsGet("jt_daily_edits", {}); const liveCur = cm(sel.id, REF_MONTH, de); const isCur = liveCur.s > 0;
+                const h = isCur ? liveCur : cm(sel.id, LATEST_DATA_MONTH, de); const act = { sell:h.s, pay:h.p, profit:h.s-h.p };
+                return (<><div style={{ fontSize:13, fontWeight:700, marginBottom:14 }}>今月実績（速報）<span style={{ fontWeight:600, color:"#9ca3af", marginLeft:6, fontSize:11 }}>{isCur ? REF_MONTH_LABEL : "最新確定 "+LATEST_MONTH_LABEL}</span></div>
+                {!(act.sell>0) ? <div style={{ color:"#9ca3af", fontSize:13 }}>実績なし</div> : (
                   <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:16 }}>
                     {[["売上",fmt(act.sell),accent],["支払",fmt(act.pay),"#d97706"],["粗利",fmt(act.profit),"#16a34a"]].map(([l,v,c])=>(
                       <div key={l} style={{ textAlign:"center", padding:"12px", background:"#f8fafc", borderRadius:6 }}>
@@ -1758,7 +1758,7 @@ const RateMasterPage = ({ accent, setPage }) => {
                       </div>
                     ))}
                   </div>
-                );
+                )}</>);
               })()}
             </Card>
           </div>
