@@ -3499,8 +3499,8 @@ const DailyInputPage = ({ accent }) => {
                     <td style={{ padding:"4px 10px", textAlign:"right", fontSize:12, color:dt.pay>0?"#374151":"#e5e7eb", borderRight:"1px solid #94a3b8" }}>
                       {dt.pay>0?fmt(dt.pay):"—"}
                     </td>
-                    <td style={{ padding:"4px 10px", textAlign:"right", fontWeight:600, color:dt.profit>0?"#16a34a":"#e5e7eb", fontSize:12 }}>
-                      {dt.profit>0?fmt(dt.profit):"—"}
+                    <td style={{ padding:"4px 10px", textAlign:"right", fontWeight:600, color:(dt.sell>0||dt.pay>0)?(dt.profit<0?"#dc2626":"#16a34a"):"#e5e7eb", fontSize:12 }}>
+                      {(dt.sell>0||dt.pay>0)?fmt(dt.profit):"—"}
                     </td>
                     <td style={{ padding:"4px 8px", textAlign:"center", borderLeft:"1px solid #94a3b8", fontSize:13 }}>
                       {rowFilled?<span style={{ color:"#16a34a", fontWeight:700 }}>✓</span>
