@@ -5547,7 +5547,7 @@ const DispatchPage = ({ accent, setPage }) => {
   const todayDk = dkOf(now);
   const todayInWeek = weekDays.some(wd=>wd.dk===todayDk);
 
-  const assignableClients = (did) => clients.filter(c=>c.drivers.includes(did));
+  const assignableClients = (did) => allClientsLive().filter(c=>driversOfClient(c).includes(did));
   const vehByDriver = {}; vehicleMaster.forEach(v=>{ if(v.driverId) vehByDriver[v.driverId]=v; });
   const selfDrivers = drivers.filter(d=>d.type==="自社");
   const partnerDrivers = drivers.filter(d=>d.type==="協力会社");
