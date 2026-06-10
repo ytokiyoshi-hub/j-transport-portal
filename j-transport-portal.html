@@ -2945,7 +2945,8 @@ const ClientPage = ({ accent, setPage }) => {
               </div>
             ))}
             {(() => {
-              const act = monthlyDisplay.find(r=>r.name===sel.name) || {};
+              const _h = cm(sel.id, dispMonth, dailyEdits);
+              const act = { sell:_h.s, pay:_h.p, profit:_h.s-_h.p };
               if (!(act.sell>0)) return null;
               return (
                 <div style={{ marginTop:16, background:"#f8fafc", borderRadius:6, padding:14 }}>
