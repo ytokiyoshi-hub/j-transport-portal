@@ -2909,7 +2909,7 @@ const ClientPage = ({ accent, setPage }) => {
               <div style={{ fontSize:11, fontWeight:700, color:"#6b7280", marginBottom:6 }}>締め日（請求サイクル）</div>
               <select value={cycleFor(sel)} onChange={e=>{ setCycleOverrides({ ...cycleOverrides, [sel.id]: e.target.value }); showToast("締め日を保存しました"); }}
                 style={{ width:"100%", padding:"7px 10px", border:`1.5px solid ${accent}60`, borderRadius:5, fontSize:13, background:"#fff", color:"#374151", fontWeight:600, cursor:"pointer" }}>
-                {(CYCLE_OPTIONS.includes(cycleFor(sel)) ? CYCLE_OPTIONS : [cycleFor(sel), ...CYCLE_OPTIONS]).map(o=><option key={o} value={o}>{o}</option>)}
+                {Array.from(new Set([cycleFor(sel), sel.billingCycle, ...CYCLE_OPTIONS].filter(Boolean))).map(o=><option key={o} value={o}>{o}</option>)}
               </select>
               <div style={{ fontSize:11, color:"#9ca3af", marginTop:6 }}>請求対象期間の計算に使われます（単価マスタと共通）・変更は自動保存されます</div>
             </div>
