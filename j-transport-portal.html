@@ -3710,7 +3710,7 @@ const Dashboard = ({ accent, setPage }) => {
           { l:`今月売上（${REF_MONTH_LABEL}）`, v:fmt(totalSell),   sub:totalSell>0?"全11荷主合算 → 詳細は収支管理":`実績未入力。最新確定: ${LATEST_MONTH_LABEL} → 収支管理`, c:accent,    pg:"pl" },
           { l:`今月粗利（${REF_MONTH_LABEL}）`, v:fmt(totalProfit), sub:totalSell>0?`粗利率 ${margin}% → 収支管理`:"— → 収支管理",   c:"#16a34a", pg:"pl" },
           { l:"未請求（発行前）", v:fmt(pendingInv),  sub:`${pendingList.length}件 → 請求管理`,  c:"#64748b", pg:"invoice" },
-          { l:"入金遅延",         v:fmt(delayedInv),  sub:"タイヤ配送 3月分 → 請求管理",   c:"#dc2626", pg:"invoice" },
+          { l:"入金遅延",         v:fmt(delayedInv),  sub:delayedInv>0?"タイヤ配送 3月分 → 請求管理":"遅延なし → 請求管理",   c:"#dc2626", pg:"invoice" },
         ].map(({ l,v,sub,c,pg })=>(
           <Card key={l} style={{ padding:"16px 18px", cursor:"pointer" }} onClick={()=>setPage(pg)}
             onMouseEnter={e=>e.currentTarget.style.borderColor=c}
