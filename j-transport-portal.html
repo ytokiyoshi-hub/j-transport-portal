@@ -56,11 +56,11 @@
 
   /* 全テーブル共通: 罫線をはっきり描画 (全ページ統一) */
   table { border-collapse: collapse; }
-  table td, table th { border-bottom: 1px solid #94a3b8; border-right: 1px solid #94a3b8; }
-  table tr:last-child > td { border-bottom: 1px solid #94a3b8; }
+  table td, table th { border-bottom: 1px solid var(--jt-line-dk, #94a3b8); border-right: 1px solid var(--jt-line-dk, #94a3b8); }
+  table tr:last-child > td { border-bottom: 1px solid var(--jt-line-dk, #94a3b8); }
   /* thead の下端: 通常の border に戻す。 sticky 時の重なりは z-index と背景で制御 */
-  table thead th { border-bottom: 2px solid #475569 !important; }
-  table tfoot td { border-top: 2px solid #475569; }
+  table thead th { border-bottom: 2px solid var(--jt-text-sub, #475569) !important; }
+  table tfoot td { border-top: 2px solid var(--jt-text-sub, #475569); }
   table > tbody > tr > td:last-child, table > tbody > tr > th:last-child,
   table > thead > tr > th:last-child, table > tfoot > tr > td:last-child { border-right: none; }
 
