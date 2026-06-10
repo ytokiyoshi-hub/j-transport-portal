@@ -2185,8 +2185,8 @@ const DriverFinancePage = ({ accent }) => {
               <tr style={{ background:"#f9fafb", borderTop:"2px solid #475569" }}>
                 <td colSpan={4} style={{ padding:"12px 14px", fontWeight:700 }}>合計</td>
                 <td style={{ padding:"12px 14px", fontWeight:700, color:"#6b7280" }}>{fmt(totalSell)}</td>
-                <td style={{ padding:"12px 14px", fontWeight:700, color:accent }}>{fmt(totalPay)}</td>
-                <td style={{ padding:"12px 14px", fontWeight:700, color:"#16a34a" }}>{fmt(totalProfit)}</td>
+                <td style={{ padding:"12px 14px", fontWeight:700, color:accent }}>{fmt(totalGrand)}</td>
+                <td style={{ padding:"12px 14px", fontWeight:700, color:totalProfit<0?"#dc2626":"#16a34a" }}>{fmt(totalProfit)}</td>
                 <td/>
               </tr>
             </tfoot>
