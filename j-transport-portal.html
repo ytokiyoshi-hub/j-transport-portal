@@ -6584,6 +6584,29 @@ const App = () => {
       } catch (e) { console.warn("[Supabase] contact sync failed:", e); }
     })();
   }, []);
+  // 起動時に Supabase の jt_dispatch / jt_shifts を localStorage へ同期
+  // → 配車ページを一度も開かなくても、勤怠管理の集計・運行予定に他端末の配車・シフトが反映される
+  // SB が空の場合は何もしない（既存 localStorage の初回移行は DispatchPage 側の差分同期に委ねる）
+  React.useEffect(() => {
+    if (!window.sb) return;
+    (async () => {
+      try {
+        const [d, s] = await Promise.all([
+          window.sb.from("jt_dispatch").select("*"),
+          window.sb.from("jt_shifts").select("*"),
+        ]);
+        const apply = (key, rows, dateCol, valCol) => {
+          if (!rows || !rows.length) return;
+          const o = {}; rows.forEach(r => { (o[r[dateCol]] = o[r[dateCol]] || {})[r.driver_id] = r[valCol]; });
+          localStorage.setItem(key, JSON.stringify(o));
+          window.dispatchEvent(new CustomEvent("jt-ls-change", { detail: { key, val: o } }));
+        };
+        if (!d.error) apply("jt_dispatch", d.data, "dispatch_date", "client_id");
+        if (!s.error) apply("jt_shifts", s.data, "shift_date", "state");
+        console.log("[Supabase] dispatch/shifts boot synced:", d.data?.length||0, s.data?.length||0);
+      } catch (e) { console.warn("[Supabase] dispatch/shifts boot sync failed:", e); }
+    })();
+  }, []);
   const pp = { accent, setPage };
 
   const pageMap = {
