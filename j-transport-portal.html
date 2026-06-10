@@ -3375,7 +3375,8 @@ const DailyInputPage = ({ accent }) => {
       <Card flush>
         <div style={{ maxHeight:"calc(100vh - 320px)", overflow:"auto", position:"relative" }}>
           <style>{`
-            .jt-daily-tbl { border-collapse: collapse; border: 1px solid #94a3b8; }
+            .jt-daily-tbl { border-collapse: separate; border-spacing: 0; border: 1px solid #94a3b8; }
+            .jt-daily-tbl tfoot tr:first-child td { border-top: 2px solid #64748b; }
             .jt-daily-tbl td, .jt-daily-tbl th {
               border-bottom: 1px solid #94a3b8;
               border-right: 1px solid #94a3b8;
