@@ -4800,8 +4800,8 @@ const ParentClientsPage = ({ accent }) => {
   const [editingId, setEditingId] = React.useState(null);
   const [sel, setSel] = React.useState(null);
 
-  // 各上位荷主に紐付く下位荷主の一覧と当月集計
-  const refMonth = REF_MONTH;
+  // 各上位荷主に紐付く下位荷主の一覧と当月集計（今月実績が無ければ最新確定月へフォールバック）
+  const refMonth = displayMonthForPay(dailyEdits);
   const parentSummaries = parents.map(p => {
     const childIds = Object.keys(parentMap).filter(cid => parentMap[cid] === p.id);
     let sell=0, pay=0;
