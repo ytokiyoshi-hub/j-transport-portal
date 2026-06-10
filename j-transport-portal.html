@@ -4107,8 +4107,9 @@ const DriversPage = ({ accent, setPage }) => {
 };
 
 const SafetyPage = ({ accent }) => {
+  const todayLocal = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; };
   const [showIncidentForm, setShowIncidentForm] = React.useState(false);
-  const [incident, setIncident] = React.useState({ date:"2025-04-30", driver:"", type:"ヒヤリハット", detail:"", location:"" });
+  const [incident, setIncident] = React.useState({ date: todayLocal(), driver:"", type:"ヒヤリハット", detail:"", location:"" });
   const [incidents, setIncidents] = useLocalStorage("jt_incidents", [
     { id:1, date:"2025-04-18", driver:"田中 一郎", type:"ヒヤリハット", detail:"交差点で急ブレーキ。前方車両の急停車に気づくのが遅れた。", location:"東京都北区 赤羽交差点付近", resolved:true },
     { id:2, date:"2025-03-27", driver:"渡辺 六郎", type:"軽微な接触", detail:"バック時に駐車場のポールに軽く接触。車両損傷なし。", location:"川崎市 駐車場", resolved:true },
