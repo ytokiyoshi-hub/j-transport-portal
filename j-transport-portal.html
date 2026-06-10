@@ -3843,7 +3843,9 @@ const Dashboard = ({ accent, setPage }) => {
                   <td style={{ padding:"10px 14px", fontWeight:600 }}>{payD>0?fmt(payD):"—"}</td>
                   <td style={{ padding:"10px 14px", color:"#16a34a", fontWeight:600 }}>{sellD>0?fmt(sellD-payD):"—"}</td>
                   <td style={{ padding:"10px 14px" }}>
-                    <span style={{ padding:"2px 8px", borderRadius:4, fontSize:11.5, fontWeight:600, background:"#fffbeb", color:"#d97706" }}>未払</span>
+                    {sellD>0
+                      ? <span style={{ padding:"2px 8px", borderRadius:4, fontSize:11.5, fontWeight:600, background:"#fffbeb", color:"#d97706" }}>未払</span>
+                      : <span style={{ padding:"2px 8px", borderRadius:4, fontSize:11.5, fontWeight:600, background:"#f3f4f6", color:"#9ca3af" }}>実績なし</span>}
                   </td>
                 </tr>
               );
