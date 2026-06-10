@@ -4856,7 +4856,7 @@ const ParentClientsPage = ({ accent }) => {
     showToast(parentId ? "紐付けを保存しました" : "紐付けを解除しました");
   };
 
-  const unassignedClients = clients.filter(c => !parentMap[c.id]);
+  const unassignedClients = allClientsLive().filter(c => !parentMap[c.id]);
 
   return (
     <div>
