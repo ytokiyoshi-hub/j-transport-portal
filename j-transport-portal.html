@@ -5909,7 +5909,7 @@ const DispatchPage = ({ accent, setPage }) => {
           else { status="—"; sc="#cbd5e1"; sb="transparent"; }
           return {c, v, di, profit, margin, status, sc, sb};
         });
-        const tot = rows.reduce((a,r)=>({s:a.s+r.v.s,p:a.p+r.v.p,count:a.count+r.di.count,cc:a.cc+r.di.confirmedCount}),{s:0,p:0,count:0,cc:0});
+        const tot = rows.reduce((a,r)=>({s:a.s+r.v.s,p:a.p+r.v.p,count:a.count+r.di.count,cc:a.cc+r.di.confirmedCount,cd:a.cd+r.di.confirmedDays}),{s:0,p:0,count:0,cc:0,cd:0});
         const totProfit = tot.s - tot.p;
         const totMargin = tot.s>0 ? totProfit/tot.s*100 : 0;
         const needAttention = rows.filter(r=>r.status==="未確定"||r.status==="確定（実績待ち）").length;
