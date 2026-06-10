@@ -616,6 +616,16 @@ function ThemeProvider({ children }) {
     } catch {}
     return THEME_PRESETS.default;
   });
+  React.useEffect(() => {
+    const r = document.documentElement.style;
+    r.setProperty('--jt-line', theme.line);
+    r.setProperty('--jt-line-dk', theme.lineDk);
+    r.setProperty('--jt-accent', theme.accent);
+    r.setProperty('--jt-base', theme.base);
+    r.setProperty('--jt-bg', theme.bg);
+    r.setProperty('--jt-text', theme.text);
+    r.setProperty('--jt-text-sub', theme.textSub);
+  }, [theme]);
   const setTheme = React.useCallback((next) => {
     setThemeState(next);
     try { localStorage.setItem(THEME_KEY, JSON.stringify(next)); } catch {}
