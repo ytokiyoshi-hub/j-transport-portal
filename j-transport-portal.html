@@ -3665,11 +3665,12 @@ const Dashboard = ({ accent, setPage }) => {
   // バー幅の分母は「表示中の月」の合計（フォールバック表示時は totalSell=0 のため 0除算になる）
   const dispTotalSell = monthlyDisplay.reduce((s,r)=>s+r.sell,0);
 
-  // 請求管理（jt_issued）で発行済にした請求書は「未請求」から除外（実効ステータスを請求管理と揃える）
+  // 請求管理（jt_issued）で発行済にした請求書は「未請求」から、入金消込（jt_paid）済みは「未請求」「入金遅延」から除外（実効ステータスを請求管理と揃える）
   const [issuedArr] = useLocalStorage("jt_issued", []);
-  const pendingList = invoices.filter(i=>i.status==="未請求" && !issuedArr.includes(i.id));
+  const [paidArr] = useLocalStorage("jt_paid", []);
+  const pendingList = invoices.filter(i=>i.status==="未請求" && !issuedArr.includes(i.id) && !paidArr.includes(i.id));
   const pendingInv = pendingList.reduce((s,i)=>s+i.amount,0);
-  const delayedInv = invoices.filter(i=>i.status==="遅延").reduce((s,i)=>s+i.amount,0);
+  const delayedInv = invoices.filter(i=>i.status==="遅延" && !paidArr.includes(i.id)).reduce((s,i)=>s+i.amount,0);
 
   // お知らせ既読状態・追加投稿（AnnouncePage / ヘッダーのベルと localStorage を共有）
   const [announceReadIds] = useLocalStorage("jt_announce_read_ids", announces.filter(a=>!a.unread).map(a=>a.id));
