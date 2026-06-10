@@ -3583,6 +3583,8 @@ const Dashboard = ({ accent, setPage }) => {
     return { clientId: c.id, name: c.name, sell: h.s, pay: h.p, profit: h.s - h.p };
   });
   const margin = totalSell>0?(totalProfit/totalSell*100).toFixed(1):0;
+  // バー幅の分母は「表示中の月」の合計（フォールバック表示時は totalSell=0 のため 0除算になる）
+  const dispTotalSell = monthlyDisplay.reduce((s,r)=>s+r.sell,0);
 
   // 請求管理（jt_issued）で発行済にした請求書は「未請求」から除外（実効ステータスを請求管理と揃える）
   const [issuedArr] = useLocalStorage("jt_issued", []);
