@@ -6090,7 +6090,7 @@ const AttendancePage = ({ accent }) => {
     const isToday = d.toDateString()===now.toDateString();
     return { dk, label:`${d.getMonth()+1}/${d.getDate()}`, dayName:["月","火","水","木","金","土","日"][i], isToday, isSun:i===6, isSat:i===5 };
   });
-  const weekLabel = `${weekDays[0].label}（月）〜 ${weekDays[4].label}（金）`;
+  const weekLabel = `${weekDays[0].label}（月）〜 ${weekDays[6].label}（日）`;
 
   // 運行予定（実配車から週次で生成）：scheduleData[did] = 7日分の荷主名 or "—"
   const scheduleData = {};
