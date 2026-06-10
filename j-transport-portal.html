@@ -2301,10 +2301,15 @@ const InvoicePage = ({ accent }) => {
       });
     }
     // 実績データが無い場合のフォールバック（固定系 / 未登録月）
+    // 固定分は日額×日数で表し、端数（距離超過等の変動分）は調整行で補正して合計を inv.amount に一致させる
     if (c.billing.includes("固定")) {
       const r0 = c.rates[0] || { label:"固定日額", sell:0 };
       const days = r0.sell > 0 ? Math.round(inv.amount / r0.sell) : 0;
-      return [{ label:r0.label, qty:days || "—", unit:"日", unitPrice:r0.sell, amount:r0.sell * days || inv.amount, days }];
+      const fixedAmt = r0.sell * days;
+      const items = [{ label:r0.label, qty:days || "—", unit:"日", unitPrice:r0.sell, amount:fixedAmt || inv.amount, days }];
+      const diff = inv.amount - (fixedAmt || inv.amount);
+      if (diff !== 0) items.push({ label:"変動分（距離超過等）", qty:"—", unit:"式", unitPrice:diff, amount:diff, days:0 });
+      return items;
     }
     return c.rates.filter(r => r.sell > 0).map(r => ({ label:r.label, qty:"—", unit:"個", unitPrice:r.sell, amount:"—" }));
   };
