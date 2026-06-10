@@ -1681,7 +1681,7 @@ const RateMasterPage = ({ accent, setPage }) => {
                 <div style={{ fontSize:12, fontWeight:700, color:"#9ca3af", marginBottom:10 }}>担当ドライバー</div>
                 <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
                   {driversFor(sel).map(did => {
-                    const d = drivers.find(dr=>dr.id===did) || {};
+                    const d = drivers.find(dr=>dr.id===did);
                     return d ? (
                       <div key={did} style={{ display:"flex", alignItems:"center", gap:8, padding:"6px 12px", background:"#f8fafc", borderRadius:6, border:"1px solid #94a3b8" }}>
                         <Avatar name={d.name} size={24} bg={d.type==="自社"?"#dbeafe":"#ede9fe"} color={d.type==="自社"?"#1e40af":"#5b21b6"}/>
