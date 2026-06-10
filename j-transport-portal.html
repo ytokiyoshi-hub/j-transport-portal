@@ -2806,6 +2806,12 @@ const ClientPage = ({ accent, setPage }) => {
   // 締め日（請求サイクル）編集。単価マスタと同じ jt_cycle_overrides を共用
   const [cycleOverrides, setCycleOverrides] = useLocalStorage("jt_cycle_overrides", {});
   const cycleFor = (c) => (c && cycleOverrides[c.id]) || (c && c.billingCycle) || "—";
+  // 単価編集（単価マスタと共用 jt_rate_overrides）・日次実績編集をライブ反映
+  const [rateOverrides] = useLocalStorage("jt_rate_overrides", {});
+  const [dailyEdits] = useLocalStorage("jt_daily_edits", {});
+  // 表示対象月: 今月（REF_MONTH）に実績が無ければ最新確定月へフォールバック（ダッシュボードと同方式）
+  const liveTotal = monthAgg(REF_MONTH, dailyEdits);
+  const dispMonth = liveTotal.sell > 0 ? REF_MONTH : LATEST_DATA_MONTH;
   // 上位荷主マスタ & 紐付けマップ
   const [parents] = useLocalStorage("jt_parent_clients", []);
   const [parentMap, setParentMap] = useLocalStorage("jt_client_parent_map", {});
