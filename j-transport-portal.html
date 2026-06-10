@@ -3824,7 +3824,7 @@ const Dashboard = ({ accent, setPage }) => {
               let sellD=0, payD=0;
               clients.forEach(c=>{
                 if(!c.drivers.includes(d.id)) return;
-                const act=monthlyDisplay.find(r=>r.name===c.name) || {};
+                const act=monthlyDisplay.find(r=>r.name===c.name);
                 if(!act) return;
                 sellD+=Math.round(act.sell/c.drivers.length);
                 payD +=Math.round(act.pay /c.drivers.length);
