@@ -6358,8 +6358,8 @@ const ApplyPage = ({ accent }) => {
   const iField = (f) => {
     const base = { width:"100%", padding:"9px 12px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none", background:"#fff" };
     if (f.t==="textarea") return <textarea value={form[f.k]||""} onChange={e=>setForm(p=>({...p,[f.k]:e.target.value}))} style={{...base,resize:"vertical",minHeight:80}}/>;
-    if (f.t==="select")   return <select value={form[f.k]||""} onChange={e=>setForm(p=>({...p,[f.k]:e.target.value}))} style={base}>{(f.opts||[]).map(o=><option key={o}>{o}</option>)}</select>;
-    if (f.t==="file")     return <input type="file" style={{ fontSize:13 }}/>;
+    if (f.t==="select")   return <select value={form[f.k]||""} onChange={e=>setForm(p=>({...p,[f.k]:e.target.value}))} style={base}><option value="">選択してください</option>{(f.opts||[]).map(o=><option key={o}>{o}</option>)}</select>;
+    if (f.t==="file")     return <input type="file" onChange={e=>setForm(p=>({...p,[f.k]:(e.target.files&&e.target.files[0]&&e.target.files[0].name)||""}))} style={{ fontSize:13 }}/>;
     return <input type={f.t||"text"} value={form[f.k]||""} onChange={e=>setForm(p=>({...p,[f.k]:e.target.value}))} style={base}/>;
   };
 
