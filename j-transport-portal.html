@@ -4806,7 +4806,7 @@ const ParentClientsPage = ({ accent }) => {
     const childIds = Object.keys(parentMap).filter(cid => parentMap[cid] === p.id);
     let sell=0, pay=0;
     const children = childIds.map(cid => {
-      const c = clients.find(x => x.id === cid);
+      const c = allClientsLive().find(x => x.id === cid);
       if (!c) return null;
       const v = cm(cid, refMonth, dailyEdits);
       sell += v.s; pay += v.p;
