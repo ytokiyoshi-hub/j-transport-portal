@@ -2881,7 +2881,7 @@ const ClientPage = ({ accent, setPage }) => {
                           const d = drivers.find(dr=>dr.id===did) || {};
                           return d ? <div key={did} style={{ width:24, height:24, borderRadius:"50%", background:d.type==="自社"?"#dbeafe":"#ede9fe", display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, fontWeight:700, color:d.type==="自社"?"#1e40af":"#5b21b6" }}>{d.name[0]}</div> : null;
                         })}
-                        {c.drivers.length > 3 && <div style={{ width:24, height:24, borderRadius:"50%", background:"#f1f5f9", display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, color:"#64748b" }}>+{c.drivers.length-3}</div>}
+                        {dlist.length > 3 && <div style={{ width:24, height:24, borderRadius:"50%", background:"#f1f5f9", display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, color:"#64748b" }}>+{dlist.length-3}</div>}
                       </div>
                     </td>
                     <td style={{ padding:"12px 14px", fontWeight:700, color:accent }}>{act&&act.sell>0?fmt(act.sell):"—"}</td>
