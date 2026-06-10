@@ -3264,9 +3264,10 @@ const DailyInputPage = ({ accent }) => {
 
   React.useEffect(() => {
     const h = e => {
-      if((e.metaKey||e.ctrlKey)&&e.key==='s'){e.preventDefault();setSaved(true);}
-      if(e.altKey&&e.key>='1'&&e.key<='9'){
-        const idx=Number(e.key)-1;
+      if((e.metaKey||e.ctrlKey)&&e.key==='s'){e.preventDefault();if(Object.keys(saveTimers.current).length===0)setSaved(true);}
+      if(e.altKey&&/^Digit[1-9]$/.test(e.code||'')){
+        e.preventDefault();
+        const idx=Number(e.code.slice(5))-1;
         if(idx<clientList.length){setSelClient(clientList[idx]);setEntries({});setSaved(false);}
       }
     };
