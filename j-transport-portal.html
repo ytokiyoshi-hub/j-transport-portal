@@ -2514,13 +2514,14 @@ const InvoicePage = ({ accent }) => {
             address: _cov.address!==undefined ? _nd(_cov.address) : _nd(_baseClient.address),
             person:  _cov.person!==undefined  ? _nd(_cov.person)  : _nd(_baseClient.person||_baseClient.contact) };
           const _today = new Date();
-          const _issueDate = sel.issued || `${_today.getFullYear()}年${_today.getMonth()+1}月${_today.getDate()}日`;
+          const _fmtDate = (d) => { const [y,m,dd]=d.split("-"); return `${y}年${parseInt(m)}月${parseInt(dd)}日`; };
+          const _issuedRaw = issuedDates[sel.id] || sel.issued;
+          const _issueDate = _issuedRaw ? _fmtDate(_issuedRaw) : `${_today.getFullYear()}年${_today.getMonth()+1}月${_today.getDate()}日`;
           const _items = lineItemsFor(sel);
           const _subtotal = subtotalFor(sel);
           const _tax = Math.round(_subtotal * 0.1);
           const _total = _subtotal + _tax;
           const _bp = periodOf(sel).bp;
-          const _fmtDate = (d) => { const [y,m,dd]=d.split("-"); return `${y}年${parseInt(m)}月${parseInt(dd)}日`; };
           const _periodLabel = `${_fmtDate(_bp.start)} 〜 ${_fmtDate(_bp.end)}`;
           const _dm = invoiceModel(sel); // 日別明細(dailyRows/dailyLabels)を流用
           return (
