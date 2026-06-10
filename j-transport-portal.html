@@ -4564,7 +4564,7 @@ const ContactPage = ({ accent }) => {
       </div>
       <div style={{ fontSize:18, fontWeight:700, marginBottom:8 }}>送信しました</div>
       <div style={{ fontSize:13, color:"#6b7280", marginBottom:24 }}>担当部署より折り返しご連絡いたします</div>
-      <button onClick={()=>{ setSent(false); setForm({ dept:"", subject:"", body:"", urgency:"通常" }); }} style={{ padding:"10px 24px", background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:600, fontSize:14 }}>戻る</button>
+      <button onClick={()=>{ setSent(false); setForm({ dept:"選択してください", subject:"", body:"", urgency:"通常" }); }} style={{ padding:"10px 24px", background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:600, fontSize:14 }}>戻る</button>
     </div>
   );
   return (
