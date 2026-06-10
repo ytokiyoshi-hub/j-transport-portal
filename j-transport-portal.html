@@ -2857,7 +2857,9 @@ const ClientPage = ({ accent, setPage }) => {
             </thead>
             <tbody>
               {list.map((c,i)=>{
-                const act = monthlyDisplay.find(r=>r.name===c.name) || {};
+                const _h = cm(c.id, dispMonth, dailyEdits);
+                const act = { sell:_h.s, pay:_h.p, profit:_h.s-_h.p };
+                const dlist = driversOfClient(c);
                 const parentId = parentMap[c.id];
                 const parentObj = parentId ? parents.find(p=>p.id===parentId) : null;
                 return (
