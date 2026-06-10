@@ -3561,7 +3561,32 @@ const DailyInputPage = ({ accent }) => {
         {confirmClear ? (
           <div style={{ display:"flex", gap:6, alignItems:"center" }}>
             <span style={{ fontSize:12, color:"#dc2626" }}>クリアしますか？</span>
-            <button onClick={()=>{ setEntries({}); setSaved(false); setConfirmClear(false); }}
+            <button onClick={async ()=>{
+              // 保留中の自動保存タイマーをキャンセル（クリア直後にSupabaseへ再upsertされるのを防ぐ）
+              Object.values(saveTimers.current).forEach(clearTimeout);
+              saveTimers.current = {};
+              // localStorage(jt_daily_edits) から当該荷主×当月（締め期間）分を削除
+              setDailyEdits(prev => {
+                const cid = selClient?.id;
+                if (!cid || !prev[cid]) return prev;
+                const next = { ...prev };
+                const cur = { ...next[cid] };
+                Object.keys(cur).forEach(ds => { if (ds >= bStartStr && ds <= bEndStr) delete cur[ds]; });
+                if (Object.keys(cur).length) next[cid] = cur; else delete next[cid];
+                return next;
+              });
+              setEntries({});
+              setConfirmClear(false);
+              // Supabase(jt_daily_entries) の該当行も削除
+              if (window.sb && selClient?.id) {
+                const { error } = await window.sb.from("jt_daily_entries").delete()
+                  .eq("client_id", selClient.id)
+                  .gte("entry_date", bStartStr).lte("entry_date", bEndStr);
+                if (error) { setSaved(false); showToast("Supabaseのクリアに失敗しました（画面・端末のみクリア）", "error"); return; }
+              }
+              setSaved(true);
+              showToast("当月の入力をクリアしました");
+            }}
               style={{ padding:"10px 14px", background:"#dc2626", color:"#fff", border:"none", borderRadius:7, fontWeight:600, fontSize:12, cursor:"pointer" }}>確認</button>
             <button onClick={()=>setConfirmClear(false)}
               style={{ padding:"10px 14px", border:"1.5px solid #e5e7eb", background:"#fff", color:"#374151", borderRadius:7, fontSize:12, cursor:"pointer" }}>キャンセル</button>
