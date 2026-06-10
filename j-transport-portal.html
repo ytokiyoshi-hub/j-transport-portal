@@ -5249,6 +5249,8 @@ const VehiclesPage = ({ accent }) => {
   const [maintDraft, setMaintDraft] = React.useState({date:"", item:""});
   const [resDraft, setResDraft] = React.useState({date:"", note:""});
   const maintCommittedRef = React.useRef(false);
+  // 車両切替時はフォーム状態をリセット（別車両のドラフトを持ち越して誤保存するのを防止）
+  React.useEffect(()=>{ setShowResForm(false); setShowMaintForm(false); setResDraft({date:"",note:""}); setMaintDraft({date:"",item:""}); maintCommittedRef.current=false; }, [sel?.id]);
   // 車検予約: 予約日が入った時点で即保存（1台1予約の upsert）
   const onResDate = (val) => {
     const next = { ...resDraft, date: val };
