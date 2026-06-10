@@ -883,7 +883,7 @@ const Card = ({ children, style={}, onClick, onMouseEnter, onMouseLeave, title, 
     style={{ background:"#fff", borderRadius:8, border:"1px solid var(--jt-line-dk, #94a3b8)", ...(flush ? { overflow:"hidden" } : {}), ...style }}>{children}</div>
 );
 const SH = ({ title, action, onAction }) => (
-  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"14px 20px", borderBottom:"1px solid #94a3b8" }}>
+  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"14px 20px", borderBottom:"1px solid var(--jt-line-dk, #94a3b8)" }}>
     <span style={{ fontWeight:700, fontSize:14, color:"#111827" }}>{title}</span>
     {action && <button onClick={onAction} style={{ background:"none", border:"none", fontSize:12.5, color:"#6b7280", padding:0 }}>{action}</button>}
   </div>
