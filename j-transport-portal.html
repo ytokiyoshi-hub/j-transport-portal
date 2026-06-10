@@ -4740,7 +4740,7 @@ const TodoPage = ({ accent }) => {
                   <div style={{ flex:1, minWidth:0 }}>
                     {isEditing ? (
                       <div>
-                        <input value={t.title} onChange={e=>updateTodo(t.id,{title:e.target.value})} onBlur={()=>showToast("タスクを更新しました")}
+                        <input value={t.title} onChange={e=>updateTodo(t.id,{title:e.target.value})} onBlur={()=>{ if(!t.title.trim()){ updateTodo(t.id,{title:editOrigTitle.current}); showToast("タスク内容は必須です","error"); } else { showToast("タスクを更新しました"); } }}
                           style={{ width:"100%", padding:"6px 10px", border:"1.5px solid "+accent, borderRadius:4, fontSize:14, fontWeight:600, marginBottom:6, boxSizing:"border-box" }}/>
                         <div style={{ display:"grid", gridTemplateColumns:"100px 140px 140px", gap:6, marginBottom:6 }}>
                           <select value={t.priority} onChange={e=>{ updateTodo(t.id,{priority:e.target.value}); showToast("タスクを更新しました"); }}
