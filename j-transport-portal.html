@@ -5338,6 +5338,7 @@ const VehiclesPage = ({ accent }) => {
         {sel && (() => {
           const d = drivers.find(dr=>dr.id===sel.driverId) || {};
           const days = daysUntil(sel.inspection);
+          const expired = days < 0;
           const urgent = days <= 30;
           return (
             <Card style={{ padding:20, alignSelf:"start" }}>
