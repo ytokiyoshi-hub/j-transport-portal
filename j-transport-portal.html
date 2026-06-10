@@ -51,6 +51,8 @@
       border-radius: 0 !important;
     }
     .invoice-print .no-print { display: none !important; }
+    /* 画面では display:none の印刷専用ヘッダ/フッタ（宛名・合計・振込先）を印刷時に表示する */
+    .invoice-print .invoice-print-header, .invoice-print .invoice-print-footer { display: block !important; }
     .invoice-print table { page-break-inside: avoid; }
   }
 
