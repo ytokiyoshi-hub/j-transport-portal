@@ -4621,6 +4621,7 @@ const TodoPage = ({ accent }) => {
   const [draft, setDraft] = React.useState({ title:"", priority:"中", due:"", assignee:"", note:"" });
   const [filter, setFilter] = React.useState("active"); // active | all | done
   const [editingId, setEditingId] = React.useState(null);
+  const editOrigTitle = React.useRef("");
 
   const today = new Date();
   const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,"0")}-${String(today.getDate()).padStart(2,"0")}`;
