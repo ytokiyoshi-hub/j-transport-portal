@@ -6461,19 +6461,38 @@ const ApplyPage = ({ accent }) => {
           <tbody>
             {[...submitted, ...pendingList].map((p,i)=>{
               const sc=stC(p.status);
+              const dk = p.id+"-"+i;
+              const isOpen = openDetail===dk;
               return (
-                <tr key={i} style={{ borderBottom:"1px solid #94a3b8" }}>
-                  <td style={{ padding:"11px 16px", color:"#6b7280", fontSize:12 }}>{p.id}</td>
-                  <td style={{ padding:"11px 16px", fontWeight:600 }}>{p.type}</td>
-                  <td style={{ padding:"11px 16px", color:"#6b7280" }}>{p.date}</td>
-                  <td style={{ padding:"11px 16px", color:"#6b7280" }}>{p.approver}</td>
-                  <td style={{ padding:"11px 16px" }}>
-                    <span style={{ padding:"3px 8px", borderRadius:4, fontSize:11.5, fontWeight:600, background:sc.bg, color:sc.c }}>{p.status}</span>
-                  </td>
-                  <td style={{ padding:"11px 16px" }}>
-                    <button onClick={()=>{ const d = p.detail ? "\n" + Object.entries(p.detail).map(([k,v])=>`${k}: ${v}`).join("\n") : ""; alert(p.id+" "+p.type+" / 状態: "+p.status+" / 承認者: "+p.approver+d); }} style={{ padding:"4px 10px", border:"1px solid #94a3b8", borderRadius:4, background:"#fff", fontSize:11, color:"#6b7280", cursor:"pointer" }}>詳細</button>
-                  </td>
-                </tr>
+                <React.Fragment key={dk}>
+                  <tr style={{ borderBottom:"1px solid #94a3b8" }}>
+                    <td style={{ padding:"11px 16px", color:"#6b7280", fontSize:12 }}>{p.id}</td>
+                    <td style={{ padding:"11px 16px", fontWeight:600 }}>{p.type}</td>
+                    <td style={{ padding:"11px 16px", color:"#6b7280" }}>{p.date}</td>
+                    <td style={{ padding:"11px 16px", color:"#6b7280" }}>{p.approver}</td>
+                    <td style={{ padding:"11px 16px" }}>
+                      <span style={{ padding:"3px 8px", borderRadius:4, fontSize:11.5, fontWeight:600, background:sc.bg, color:sc.c }}>{p.status}</span>
+                    </td>
+                    <td style={{ padding:"11px 16px" }}>
+                      <button onClick={()=>setOpenDetail(isOpen?null:dk)} style={{ padding:"4px 10px", border:"1px solid #94a3b8", borderRadius:4, background:isOpen?"#f1f5f9":"#fff", fontSize:11, color:"#6b7280", cursor:"pointer" }}>{isOpen?"閉じる":"詳細"}</button>
+                    </td>
+                  </tr>
+                  {isOpen && (
+                    <tr style={{ borderBottom:"1px solid #94a3b8", background:"#f9fafb" }}>
+                      <td colSpan={6} style={{ padding:"12px 24px" }}>
+                        {p.detail && Object.keys(p.detail).length ? (
+                          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(240px,1fr))", gap:"6px 20px", fontSize:12.5 }}>
+                            {Object.entries(p.detail).map(([k,v])=>(
+                              <div key={k}><span style={{ color:"#9ca3af", marginRight:6 }}>{k}:</span><span style={{ color:"#374151", whiteSpace:"pre-wrap" }}>{v}</span></div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div style={{ fontSize:12, color:"#9ca3af" }}>この申請には詳細データがありません</div>
+                        )}
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
               );
             })}
           </tbody>
