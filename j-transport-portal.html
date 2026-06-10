@@ -3523,7 +3523,7 @@ const DailyInputPage = ({ accent }) => {
                 })}
                 <td style={{ padding:"7px 10px", textAlign:"right", fontWeight:800, color:monthTotals.sell>0?accent:"#9ca3af", borderLeft:"2px solid #64748b" }}>{monthTotals.sell>0?fmt(monthTotals.sell):"—"}</td>
                 <td style={{ padding:"7px 10px", textAlign:"right", fontWeight:800, color:monthTotals.pay>0?"#374151":"#9ca3af" }}>{monthTotals.pay>0?fmt(monthTotals.pay):"—"}</td>
-                <td style={{ padding:"7px 10px", textAlign:"right", fontWeight:800, color:monthTotals.profit>0?"#16a34a":"#9ca3af" }}>{monthTotals.profit>0?fmt(monthTotals.profit):"—"}</td>
+                <td style={{ padding:"7px 10px", textAlign:"right", fontWeight:800, color:(monthTotals.sell>0||monthTotals.pay>0)?(monthTotals.profit<0?"#dc2626":"#16a34a"):"#9ca3af" }}>{(monthTotals.sell>0||monthTotals.pay>0)?fmt(monthTotals.profit):"—"}</td>
                 <td style={{ borderLeft:"1px solid #94a3b8" }}/>
               </tr>
               <tr style={{ background:"#fafbff", borderTop:"1px solid #94a3b8" }}>
