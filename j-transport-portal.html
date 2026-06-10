@@ -5010,7 +5010,7 @@ const ParentClientsPage = ({ accent }) => {
               <select onChange={e=>{ if (e.target.value) { assignChild(e.target.value, sel.id); e.target.value=""; } }}
                 style={{ width:"100%", padding:"6px 10px", border:"1.5px solid #e5e7eb", borderRadius:4, fontSize:12, background:"#fff", cursor:"pointer" }}>
                 <option value="">— 荷主を選択 —</option>
-                {clients.filter(c => !parentMap[c.id] || parentMap[c.id]===sel.id).filter(c => !sel.children.some(ch=>ch.id===c.id)).map(c=>(
+                {allClientsLive().filter(c => !parentMap[c.id] || parentMap[c.id]===sel.id).filter(c => !sel.children.some(ch=>ch.id===c.id)).map(c=>(
                   <option key={c.id} value={c.id}>{c.name}（{c.id}）</option>
                 ))}
               </select>
