@@ -3388,7 +3388,7 @@ const DailyInputPage = ({ accent }) => {
             .jt-daily-tbl tbody td input { display: block; vertical-align: middle; }
             .jt-daily-tbl tbody tr.jt-weekend > td { background: #f8fafc; }
           `}</style>
-          <table className="jt-daily-tbl" style={{ borderCollapse:"collapse", fontSize:12, whiteSpace:"nowrap", tableLayout:"fixed" }}>
+          <table className="jt-daily-tbl" style={{ borderCollapse:"separate", borderSpacing:0, fontSize:12, whiteSpace:"nowrap", tableLayout:"fixed" }}>
             <colgroup>
               <col style={{ width:96 }} />
               {assignedDrivers.map(d => rates.map((r,ri)=><col key={d.id+'-'+ri} style={{ width:72 }} />))}
