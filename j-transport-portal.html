@@ -2239,16 +2239,27 @@ const InvoicePage = ({ accent }) => {
   const [sel, setSel] = React.useState(null);
   const [issuedArr, setIssuedArr] = useLocalStorage("jt_issued", []);
   const [remindedArr, setRemindedArr] = useLocalStorage("jt_reminded", []);
+  // 入金消込（請求済/遅延 → 入金済）した請求書ID
+  const [paidArr, setPaidArr] = useLocalStorage("jt_paid", []);
+  // 発行日を発行時に固定保存（{invoiceId: "YYYY-MM-DD"}）。開くたびに当日へ変わるのを防ぐ
+  const [issuedDates, setIssuedDates] = useLocalStorage("jt_issued_dates", {});
   // 日次入力の編集を請求金額・明細に反映
   const [dailyEdits] = useLocalStorage("jt_daily_edits", {});
   // 単価マスタで編集した請求先情報（担当者・住所）を請求書に反映
   const [contactOverrides] = useLocalStorage("jt_contact_overrides", {});
   const issuedSet = new Set(issuedArr);
   const remindedSet = new Set(remindedArr);
+  const paidSet = new Set(paidArr);
   const setIssuedSet = (fn) => setIssuedArr(prev => Array.from(fn(new Set(prev))));
   const setRemindedSet = (fn) => setRemindedArr(prev => Array.from(fn(new Set(prev))));
-  // 発行済（jt_issued）の未請求は実効ステータスを「請求済」に。行バッジ・KPI・フィルタを揃える
-  const effStatus = (inv) => (inv.status==="未請求" && issuedSet.has(inv.id)) ? "請求済" : inv.status;
+  const setPaidSet = (fn) => setPaidArr(prev => Array.from(fn(new Set(prev))));
+  // 発行済（jt_issued）の未請求は実効ステータスを「請求済」に、入金消込（jt_paid）済みは「入金済」に。行バッジ・KPI・フィルタを揃える
+  const effStatus = (inv) => paidSet.has(inv.id) ? "入金済" : ((inv.status==="未請求" && issuedSet.has(inv.id)) ? "請求済" : inv.status);
+  const todayYmd = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; };
+  const markIssued = (ids) => {
+    setIssuedSet(s=>new Set([...s,...ids]));
+    setIssuedDates(m=>{ const next={...m}; const t=todayYmd(); ids.forEach(id=>{ if(!next[id]) next[id]=t; }); return next; });
+  };
 
   const statuses = ["すべて","未請求","請求済","入金済","遅延"];
   const list = filter==="すべて"?invoices:invoices.filter(i=>effStatus(i)===filter);
