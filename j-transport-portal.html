@@ -4505,7 +4505,7 @@ const ManualPage = ({ accent }) => {
                   {openManual.tag && <span style={{ padding:"1px 6px", background:tagColor(openManual.tag)+"22", color:tagColor(openManual.tag), borderRadius:3, fontWeight:700 }}>{openManual.tag}</span>}
                 </div>
               </div>
-              <button onClick={()=>setOpenManual(null)} style={{ background:"none", border:"none", fontSize:20, color:"#9ca3af", cursor:"pointer", lineHeight:1 }}>×</button>
+              <button className="no-print" onClick={()=>setOpenManual(null)} style={{ background:"none", border:"none", fontSize:20, color:"#9ca3af", cursor:"pointer", lineHeight:1 }}>×</button>
             </div>
             <div style={{ fontSize:13, color:"#374151", lineHeight:1.8 }}>
               <h3 style={{ fontSize:14, fontWeight:700, marginBottom:8, color:"#111827" }}>1. 目的</h3>
