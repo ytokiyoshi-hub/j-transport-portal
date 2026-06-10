@@ -4549,7 +4549,7 @@ const ManualPage = ({ accent }) => {
 
 const ContactPage = ({ accent }) => {
   const [sent, setSent] = React.useState(false);
-  const [form, setForm] = React.useState({ dept:"", subject:"", body:"", urgency:"通常" });
+  const [form, setForm] = React.useState({ dept:"選択してください", subject:"", body:"", urgency:"通常" });
   const depts = [
     { name:"管理部",       desc:"請求・支払・契約",         ext:"102" },
     { name:"運行管理",     desc:"配送ルート・ドライバー",   ext:"301" },
