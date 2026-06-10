@@ -5984,7 +5984,7 @@ const DispatchPage = ({ accent, setPage }) => {
                     <td style={{ padding:"9px 12px", fontWeight:700, fontSize:12, color:"#374151", borderRight:"1px solid #94a3b8", position:"sticky", left:0, background:"#f9fafb", zIndex:1 }}>合計（{rows.length}社）</td>
                     <td/>
                     <td style={{ padding:"9px 12px", textAlign:"right", fontWeight:700 }}>{tot.count||"—"}</td>
-                    <td style={{ padding:"9px 12px", textAlign:"right", fontWeight:700, color:"#15803d" }}>{tot.cc||"—"}</td>
+                    <td style={{ padding:"9px 12px", textAlign:"right", fontWeight:700, color:"#15803d" }}>{tot.cd?`${tot.cd}日`:"—"}</td>
                     <td style={{ padding:"9px 12px", textAlign:"right", fontWeight:700, color:accent }}>{fmt(tot.s)}</td>
                     <td style={{ padding:"9px 12px", textAlign:"right", fontWeight:700 }}>{fmt(tot.p)}</td>
                     <td style={{ padding:"9px 12px", textAlign:"right", fontWeight:700, color:totProfit>=0?"#16a34a":"#dc2626" }}>{fmt(totProfit)}</td>
