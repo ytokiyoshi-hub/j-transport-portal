@@ -3818,9 +3818,9 @@ const Dashboard = ({ accent, setPage }) => {
             <SH title="今月のアクション" />
             <div style={{ padding:"8px 20px 16px" }}>
               {[
-                { done:true,  label:"4月分請求書 発行（ASKUL）" },
-                { done:true,  label:"4月分請求書 発行（Bloomee）" },
-                { done:false, label:"4月分請求書 発行（タイヤ配送）" },
+                { done:true,  label:`${_refMonthNum}月分請求書 発行（ASKUL）` },
+                { done:true,  label:`${_refMonthNum}月分請求書 発行（Bloomee）` },
+                { done:false, label:`${_refMonthNum}月分請求書 発行（タイヤ配送）` },
                 { done:false, label:"ドライバー支払明細 作成" },
                 { done:false, label:"月次収支レポート 提出" },
               ].map((t,i)=>(
