@@ -4597,7 +4597,7 @@ const ContactPage = ({ accent }) => {
               }
             </div>
           ))}
-          <button onClick={()=>setSent(true)} style={{ width:"100%", padding:13, background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:700, fontSize:14 }}>送信する</button>
+          <button onClick={()=>{ const ok = depts.some(d=>d.name===form.dept) && form.subject.trim() && form.body.trim(); if(!ok){ showToast("問い合わせ先・件名・内容を入力してください","error"); return; } setSent(true); }} style={{ width:"100%", padding:13, background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:700, fontSize:14 }}>送信する</button>
         </Card>
         <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
           {depts.map((d,i)=>(
