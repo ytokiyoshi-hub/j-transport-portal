@@ -3316,12 +3316,12 @@ const DailyInputPage = ({ accent }) => {
         <div style={{ display:"flex", alignItems:"center", gap:8 }}>
           <span style={{ fontSize:11, color:"#9ca3af", flexShrink:0 }}>対象月</span>
           <div style={{ display:"flex", gap:4, alignItems:"center" }}>
-            <button onClick={()=>{ const d=new Date(yr,mo-2,1); setMonthYear(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`); }}
+            <button onClick={()=>{ if(isNaN(yr)||isNaN(mo)){ setMonthYear(REF_MONTH); return; } const d=new Date(yr,mo-2,1); setMonthYear(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`); }}
               style={{ padding:"7px 10px", border:"1.5px solid #e5e7eb", borderRadius:6, background:"#fff", cursor:"pointer", fontSize:13 }}>‹</button>
-            <input type="month" value={monthYear} onChange={e=>setMonthYear(e.target.value)}
+            <input type="month" value={monthYear} onChange={e=>{ if(/^\d{4}-\d{2}$/.test(e.target.value)) setMonthYear(e.target.value); }}
               style={{ padding:"7px 12px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}
               onFocus={e=>e.target.style.borderColor=accent} onBlur={e=>e.target.style.borderColor="#e5e7eb"}/>
-            <button onClick={()=>{ const d=new Date(yr,mo,1); setMonthYear(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`); }}
+            <button onClick={()=>{ if(isNaN(yr)||isNaN(mo)){ setMonthYear(REF_MONTH); return; } const d=new Date(yr,mo,1); setMonthYear(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`); }}
               style={{ padding:"7px 10px", border:"1.5px solid #e5e7eb", borderRadius:6, background:"#fff", cursor:"pointer", fontSize:13 }}>›</button>
           </div>
         </div>
