@@ -6396,7 +6396,10 @@ const ApplyPage = ({ accent }) => {
             </div>
           ))}
           <button onClick={()=>{
-              const rec = { id:"A-"+String(Date.now()).slice(-4), type:sel.name, date:new Date().toISOString().slice(0,10), status:"承認待ち", approver:form.approver||"—" };
+              const missing = sel.fields.filter(f=>f.required!==false && f.t!=="file" && !String(form[f.k]||"").trim());
+              if (missing.length) { alert("必須項目が未入力です：\n・" + missing.map(f=>f.l).join("\n・")); return; }
+              const detail = Object.fromEntries(sel.fields.map(f=>[f.l, String(form[f.k]||"")]).filter(([,v])=>v));
+              const rec = { id:"A-"+String(Date.now()).slice(-4), type:sel.name, date:new Date().toISOString().slice(0,10), status:"承認待ち", approver:form.approver||"—", detail };
               setSubmitted(s=>[rec, ...s]);
               setOk(true);
             }} style={{ width:"100%", padding:13, background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:700, fontSize:14, cursor:"pointer", marginTop:8 }}>申請を送信する</button>
