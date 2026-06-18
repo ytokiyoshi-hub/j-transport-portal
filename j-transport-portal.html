@@ -3940,7 +3940,7 @@ const Dashboard = ({ accent, setPage }) => {
 
       {/* Row 4: ドライバー支払サマリー */}
       <Card>
-        <SH title="ドライバー別 支払サマリー（今月速報）" action="詳細→" onAction={()=>setPage("driverfinance")}/>
+        <SH title={`ドライバー別 支払サマリー（${totalSell>0?"今月速報":"最新確定 "+LATEST_MONTH_LABEL+" を表示"}）`} action="詳細→" onAction={()=>setPage("driverfinance")}/>
         <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
           <thead>
             <tr style={{ background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
