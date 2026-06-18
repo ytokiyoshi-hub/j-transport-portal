@@ -4564,6 +4564,8 @@ const ManualPage = ({ accent }) => {
     .filter(cat=>cat.items.length>0);
 
   const totalCount = manuals.flatMap(c=>c.items).length;
+  const filteredCount = filtered.flatMap(c=>c.items).length;
+  const isFiltered = !!kw || catFilter!=="すべて";
   const tagColor = (tag) => tag==="重要"?"#dc2626":tag==="新着"?"#0ea5e9":tag==="法令"?"#d97706":"#9ca3af";
 
   return (
