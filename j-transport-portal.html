@@ -6709,6 +6709,7 @@ const App = () => {
   const [page, setPage] = React.useState("dashboard");
   const accent = theme.accent;
   const mainScrollRef = React.useRef(null);
+  const [navOpen, setNavOpen] = React.useState(false); // モバイル: サイドバー(ドロワー)開閉
   // お知らせ未読件数（AnnouncePage と localStorage を共有）
   const [announceReadIds] = useLocalStorage("jt_announce_read_ids", announces.filter(a=>!a.unread).map(a=>a.id));
   const [extraAnnounces] = useLocalStorage("jt_extra_announces", []);
