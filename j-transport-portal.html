@@ -84,6 +84,18 @@
   .jt-card--flush table > tfoot > tr:last-child > th,
   .jt-card--flush table > tbody:last-child > tr:last-child > td,
   .jt-card--flush table > tbody:last-child > tr:last-child > th { border-bottom: none; }
+
+  /* ── レスポンシブ（モバイル, max-width:760px）: デスクトップ表示は一切変更しない ── */
+  .jt-hamburger { display: none; align-items: center; justify-content: center; width: 34px; height: 34px; margin-right: 4px; padding: 0; border: none; background: transparent; font-size: 20px; line-height: 1; cursor: pointer; flex-shrink: 0; }
+  @media (max-width: 760px) {
+    .jt-sidebar { position: fixed; top: 0; bottom: 0; left: 0; z-index: 60; width: 82% !important; max-width: 300px; transform: translateX(-100%); transition: transform .22s ease; box-shadow: 2px 0 18px rgba(0,0,0,.22); }
+    .jt-sidebar.jt-open { transform: translateX(0); }
+    .jt-backdrop { position: fixed; inset: 0; background: rgba(15,23,42,.42); z-index: 55; }
+    .jt-hamburger { display: inline-flex !important; }
+    .jt-main-header { padding: 0 10px !important; }
+    .jt-content { padding: 14px 12px !important; overflow-x: auto; }
+    .jt-content [style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+  }
 </style>
 </head>
 <body>
