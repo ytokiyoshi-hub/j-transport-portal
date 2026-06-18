@@ -4136,7 +4136,7 @@ const DriversPage = ({ accent, setPage }) => {
           <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
             <thead>
               <tr style={{ background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
-                {["氏名","雇用形態","担当エリア","稼働社数","今月売上","今月支払(税込)","粗利"].map(h=>(
+                {["氏名","雇用形態","担当エリア","稼働社数","今月売上","今月支払（税込）","粗利"].map(h=>(
                   <th key={h} style={{ padding:"10px 16px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:12, whiteSpace:"nowrap" }}>{h}</th>
                 ))}
               </tr>
@@ -4193,7 +4193,7 @@ const DriversPage = ({ accent, setPage }) => {
 
             <div style={{ fontSize:12, color:"#9ca3af", marginBottom:10 }}>今月財務サマリー（実績／{mkLabel(selSummary.mk)}分）</div>
             <div style={{ background:"#f8fafc", borderRadius:8, padding:14, marginBottom:16 }}>
-              {[["今月売上",fmt(selSummary.totalSell),accent],["今月支払(税込)",fmt(selSummary.grandTotal),"#d97706"],["粗利",fmt(selSummary.totalProfit),"#16a34a"]].map(([l,v,c])=>(
+              {[["今月売上",fmt(selSummary.totalSell),accent],["今月支払（税込）",fmt(selSummary.grandTotal),"#d97706"],["粗利",fmt(selSummary.totalProfit),"#16a34a"]].map(([l,v,c])=>(
                 <div key={l} style={{ display:"flex", justifyContent:"space-between", fontSize:13, padding:"6px 0", borderBottom:"1px solid #94a3b8" }}>
                   <span style={{ color:"#6b7280" }}>{l}</span>
                   <span style={{ fontWeight:700, color:c }}>{v}</span>
