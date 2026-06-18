@@ -1164,7 +1164,7 @@ const PLPage = ({ accent, setPage }) => {
   if (unpaid.length>0) {
     alerts.push({
       level:"high",
-      title:`入金遅延: ${unpaid.length}件 ${fmt(unpaid.reduce((s,i)=>s+i.amount,0))}`,
+      title:`入金遅延: ${unpaid.length}件 ${fmt(unpaid.reduce((s,i)=>s+_invAmount(i),0))}`,
       desc: unpaid.map(i=>`${i.client}（${i.period}）`).join('、')+" — 至急督促"
     });
   }
