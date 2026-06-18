@@ -1081,6 +1081,15 @@ const PLPage = ({ accent, setPage }) => {
   const [tblSort, setTblSort] = React.useState({key:"sell", dir:"desc"});
   // 日次入力ページからの編集を反映するために localStorage 経由で購読
   const [dailyEdits] = useLocalStorage("jt_daily_edits", {});
+  // 請求金額は請求管理/ダッシュボードと同じく「実効ステータス＋日次実績優先」で算出し、3画面の数値を一致させる
+  const [issuedArr] = useLocalStorage("jt_issued", []);
+  const [paidArr] = useLocalStorage("jt_paid", []);
+  const _invAmount = (i) => {
+    const c = allClientsLive().find(x => x.name === i.client);
+    const mk = (i.period && /^\d{4}-\d{2}/.test(i.period)) ? i.period.slice(0,7) : LATEST_DATA_MONTH;
+    const live = c ? computeLiveSum(c.id, mk, dailyEdits) : null;
+    return (live && live.s > 0) ? live.s : i.amount;
+  };
 
   // === 当月・前月・年計の集計 ===
   const cur = monthAgg(selectedMonth, dailyEdits);
