@@ -3697,7 +3697,14 @@ const Dashboard = ({ accent, setPage }) => {
     return (live && live.s > 0) ? live.s : i.amount;
   };
   const pendingInv = pendingList.reduce((s,i)=>s+_invAmount(i),0);
-  const delayedInv = invoices.filter(i=>i.status==="遅延" && !paidArr.includes(i.id)).reduce((s,i)=>s+_invAmount(i),0);
+  const delayedList = invoices.filter(i=>i.status==="遅延" && !paidArr.includes(i.id));
+  const delayedInv = delayedList.reduce((s,i)=>s+_invAmount(i),0);
+  // 入金遅延カードのサブ文言は実際の遅延請求（荷主名＋対象月）から動的生成する（ハードコード排除）
+  const _delayedHead = delayedList[0];
+  const _delayedMo = _delayedHead && /^\d{4}-\d{2}/.test(_delayedHead.period||"") ? Number(_delayedHead.period.slice(5,7)) : null;
+  const delayedSub = delayedList.length>0
+    ? `${_delayedHead.client}${_delayedMo?` ${_delayedMo}月分`:""}${delayedList.length>1?` 他${delayedList.length-1}件`:""} → 請求管理`
+    : "遅延なし → 請求管理";
 
   // お知らせ既読状態・追加投稿（AnnouncePage / ヘッダーのベルと localStorage を共有）
   const [announceReadIds] = useLocalStorage("jt_announce_read_ids", announces.filter(a=>!a.unread).map(a=>a.id));
