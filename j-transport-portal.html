@@ -1276,7 +1276,7 @@ const PLPage = ({ accent, setPage }) => {
           { l:"支払", v:fmt(cur.pay),  sub:`原価率 ${cur.sell>0?(cur.pay/cur.sell*100).toFixed(1):"—"}%`, c:"#d97706", up:null },
           { l:"粗利", v:fmt(cur.profit), sub:`前月比 ${profitDelta>=0?"+":""}${profitDelta.toFixed(1)}%`, c:"#16a34a", up: profitDelta>=0 },
           { l:`粗利率（目標 ${TARGET_MARGIN}%）`, v:`${curMargin.toFixed(1)}%`, sub:`前月 ${prevMargin.toFixed(1)}% ／ ${curMargin>=TARGET_MARGIN?"目標達成":"目標未達"}`, c: curMargin>=TARGET_MARGIN?"#16a34a":curMargin>=ALERT_MARGIN_LOW?"#d97706":"#dc2626", up: curMargin>=TARGET_MARGIN },
-          { l:"受取勘定（未請求＋遅延）", v:fmt(pending.reduce((s,i)=>s+i.amount,0)+unpaid.reduce((s,i)=>s+i.amount,0)), sub:`未請求 ${pending.length} ／ 遅延 ${unpaid.length}`, c:"#7c3aed", up:null },
+          { l:"受取勘定（未請求＋遅延）", v:fmt(pending.reduce((s,i)=>s+_invAmount(i),0)+unpaid.reduce((s,i)=>s+_invAmount(i),0)), sub:`未請求 ${pending.length} ／ 遅延 ${unpaid.length}`, c:"#7c3aed", up:null },
           { l:"黒字荷主数", v:`${profitableCount} / ${curActive.length}`, sub: profitableCount===curActive.length?"全社黒字":`${curActive.length-profitableCount}社が赤字`, c:profitableCount===curActive.length?"#16a34a":"#dc2626", up: profitableCount===curActive.length },
         ].map(({l,v,sub,c,up})=>(
           <Card key={l} style={{ padding:"14px 16px" }}>
