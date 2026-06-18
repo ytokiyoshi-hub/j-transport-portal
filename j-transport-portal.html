@@ -1159,8 +1159,8 @@ const PLPage = ({ accent, setPage }) => {
     });
   }
   // 4. 入金遅延・未請求
-  const unpaid = invoices.filter(i=>i.status==="遅延");
-  const pending = invoices.filter(i=>i.status==="未請求");
+  const unpaid = invoices.filter(i=>i.status==="遅延" && !paidArr.includes(i.id));
+  const pending = invoices.filter(i=>i.status==="未請求" && !issuedArr.includes(i.id) && !paidArr.includes(i.id));
   if (unpaid.length>0) {
     alerts.push({
       level:"high",
