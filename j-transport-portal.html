@@ -6823,7 +6823,8 @@ const App = () => {
   };
 
   return (
-    <div style={{ display:"flex", height:"100vh", background:theme.bg }}>
+    <div className="jt-shell" style={{ display:"flex", height:"100vh", background:theme.bg }}>
+      {navOpen && <div className="jt-backdrop" onClick={()=>setNavOpen(false)}/>}
       {/* Sidebar */}
       <div style={{ width:220, background:theme.base, borderRight:`1px solid ${theme.line}`, display:"flex", flexDirection:"column", flexShrink:0 }}>
         <div style={{ padding:"18px 20px 14px", borderBottom:`1px solid ${theme.line}` }}>
