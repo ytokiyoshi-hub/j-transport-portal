@@ -5383,7 +5383,7 @@ const VehiclesPage = ({ accent }) => {
   const [sel, setSel] = React.useState(null);
   const [statusFilter, setStatusFilter] = React.useState("すべて");
   const today = new Date(); today.setHours(0,0,0,0);
-  const daysUntil = (dateStr) => Math.ceil((new Date(dateStr) - today) / 86400000);
+  const daysUntil = (dateStr) => { const [y,m,d] = String(dateStr).split("-").map(Number); return Math.ceil((new Date(y, m-1, d) - today) / 86400000); };
   // 整備記録／車検予約は localStorage に追記保存
   const [maintExtras, setMaintExtras] = useLocalStorage("jt_vehicle_maintenance", {});
   const [reservations, setReservations] = useLocalStorage("jt_vehicle_reservations", {});
