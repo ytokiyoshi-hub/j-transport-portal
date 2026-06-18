@@ -4472,7 +4472,7 @@ const FAQPage = ({ accent }) => {
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
         <div style={{ fontSize:20, fontWeight:700 }}>FAQ（よくある質問）</div>
-        <div style={{ fontSize:12, color:"#9ca3af" }}>全{faqs.flatMap(c=>c.items).length}件</div>
+        <div style={{ fontSize:12, color:"#9ca3af" }}>{kw ? `該当${filtered.flatMap(c=>c.items).length}件 / 全${faqs.flatMap(c=>c.items).length}件` : `全${faqs.flatMap(c=>c.items).length}件`}</div>
       </div>
 
       <div style={{ position:"relative", marginBottom:24 }}>
