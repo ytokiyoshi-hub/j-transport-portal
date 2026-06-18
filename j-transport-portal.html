@@ -2994,7 +2994,7 @@ const ClientPage = ({ accent, setPage }) => {
               if (!(act.sell>0)) return null;
               return (
                 <div style={{ marginTop:16, background:"#f8fafc", borderRadius:6, padding:14 }}>
-                  <div style={{ fontSize:11, color:"#9ca3af", marginBottom:8 }}>実績（{mkLabel(dispMonth)}）{dispMonth!==REF_MONTH && `／今月（${REF_MONTH_LABEL}）実績未入力のため最新確定月を表示`}</div>
+                  <div style={{ fontSize:11, color:"#9ca3af", marginBottom:8 }}>実績（{mkLabel(dispMonth)}）{dispMonth!==REF_MONTH && `／今月（${mkLabel(REF_MONTH)}）実績未入力のため最新確定月を表示`}</div>
                   {[["売上",fmt(act.sell),accent],["支払",fmt(act.pay),"#374151"],["粗利",fmt(act.profit)+" ("+(act.sell>0?(act.profit/act.sell*100).toFixed(1):0)+"%)","#16a34a"]].map(([l,v,c])=>(
                     <div key={l} style={{ display:"flex", justifyContent:"space-between", fontSize:13, marginBottom:5 }}>
                       <span style={{ color:"#6b7280" }}>{l}</span>
