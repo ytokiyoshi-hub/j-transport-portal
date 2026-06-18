@@ -4572,7 +4572,7 @@ const ManualPage = ({ accent }) => {
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16 }}>
         <div style={{ fontSize:20, fontWeight:700 }}>業務マニュアル</div>
-        <div style={{ fontSize:12, color:"#9ca3af" }}>全{totalCount}件</div>
+        <div style={{ fontSize:12, color:"#9ca3af" }}>{isFiltered ? `該当${filteredCount}件 / 全${totalCount}件` : `全${totalCount}件`}</div>
       </div>
 
       <div style={{ display:"flex", gap:10, marginBottom:16, flexWrap:"wrap" }}>
