@@ -6870,8 +6870,11 @@ const App = () => {
 
       {/* Main */}
       <div className="jt-main" style={{ flex:1, display:"flex", flexDirection:"column", overflow:"hidden" }}>
-        <div style={{ background:theme.base, borderBottom:`1px solid ${theme.line}`, height:48, display:"flex", alignItems:"center", justifyContent:"space-between", padding:"0 24px", flexShrink:0 }}>
-          <div style={{ fontSize:12.5, color:theme.textMute }}>{navItems.find(n=>n.id===page)?.label}</div>
+        <div className="jt-main-header" style={{ background:theme.base, borderBottom:`1px solid ${theme.line}`, height:48, display:"flex", alignItems:"center", justifyContent:"space-between", padding:"0 24px", flexShrink:0 }}>
+          <div style={{ display:"flex", alignItems:"center", minWidth:0 }}>
+            <button className="jt-hamburger" onClick={()=>setNavOpen(true)} aria-label="メニューを開く" style={{ color:theme.textSub }}>☰</button>
+            <div style={{ fontSize:12.5, color:theme.textMute, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{navItems.find(n=>n.id===page)?.label}</div>
+          </div>
           <div style={{ display:"flex", alignItems:"center", gap:14 }}>
             <button onClick={()=>setPage("announce")} title="お知らせ" style={{ position:"relative", background:"transparent", border:"none", cursor:"pointer", padding:0 }}>
               <Ic name="bell" size={17} color={theme.textSub}/>
