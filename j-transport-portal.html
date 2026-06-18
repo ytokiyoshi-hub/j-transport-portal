@@ -3103,8 +3103,18 @@ const DailyInputPage = ({ accent }) => {
       });
     });
   }
+  // 担当から外れたドライバーが live 編集(jt_daily_edits)で当期間に入力したデータも列に出す
+  // （これを拾わないと日次画面の月次合計が収支管理/ダッシュボードの集計より過少になる）
+  if (dailyEdits && dailyEdits[selClient?.id]) {
+    Object.entries(dailyEdits[selClient.id]).forEach(([d, day]) => {
+      if (d < _bsStr || d > _beStr) return;
+      Object.entries(day).forEach(([did, drv]) => {
+        if (Object.values(drv).some(v => Number(v) > 0)) _activeIds.add(did);
+      });
+    });
+  }
   const _selDrivers = (clientDriverOverrides && clientDriverOverrides[selClient?.id]) || selClient.drivers || [];
-  const _allCandidates = driverSrc.filter(d => _selDrivers.includes(d.id) || (typeof dailyActuals!=="undefined" && dailyActuals[selClient.id] && Object.values(dailyActuals[selClient.id]).some(day=>day[d.id])));
+  const _allCandidates = driverSrc.filter(d => _selDrivers.includes(d.id) || (typeof dailyActuals!=="undefined" && dailyActuals[selClient.id] && Object.values(dailyActuals[selClient.id]).some(day=>day[d.id])) || (dailyEdits[selClient.id] && Object.values(dailyEdits[selClient.id]).some(day=>day[d.id])));
   // 担当ドライバー未設定の荷主（追加直後の新規荷主など）は全ドライバーを入力対象にフォールバック
   const assignedDrivers = _activeIds.size > 0
     ? _allCandidates.filter(d => _activeIds.has(d.id))
