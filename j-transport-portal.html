@@ -1234,7 +1234,7 @@ const PLPage = ({ accent, setPage }) => {
           </div>
           <div style={{ fontSize:12, color:"#9ca3af", marginTop:3 }}>
             対象月: {mkLabel(selectedMonth)} ／ 前月: {mkLabel(prevMk)}
-            {!_hasCurrent && selectedMonth===LATEST_DATA_MONTH && ` ／ 今月（${REF_MONTH_LABEL}）実績未入力のため最新確定月を表示`}
+            {!_hasCurrent && selectedMonth===LATEST_DATA_MONTH && ` ／ 今月（${mkLabel(REF_MONTH)}）実績未入力のため最新確定月を表示`}
           </div>
         </div>
         <div style={{ display:"flex", gap:10, alignItems:"center" }}>
