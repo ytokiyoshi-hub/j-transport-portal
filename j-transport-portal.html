@@ -2528,7 +2528,7 @@ const InvoicePage = ({ accent }) => {
         </Card>
 
         {sel && (() => {
-          const _baseClient = clients.find(c => c.name === sel.client) || {};
+          const _baseClient = resolveClientByName(sel.client) || {};
           const _cov = contactOverrides[_baseClient.id] || {};
           const _nd = (v) => (v && v !== "—") ? v : undefined;
           const _clientObj = { ..._baseClient,
