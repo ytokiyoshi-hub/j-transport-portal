@@ -3238,7 +3238,10 @@ const DailyInputPage = ({ accent }) => {
       sell: dayRows.reduce((s,day)=>s+(Number(getVal(day.dateStr,d.id,r.label))||0)*r.sell,0),
     }))
   );
-  const inputDays = dayRows.filter((d,i)=>!d.isWeekend && dayTotals[i].sell>0).length;
+  // 入力進捗は「状態」列の✓(rowFilled)と判定基準を一致させる:
+  // 平日かつ全セル(担当ドライバー×単価)が空欄でない日をカウント(0でも入力済みとみなす)。
+  // 旧実装は dayTotals[i].sell>0 だったため「✓なのに進捗に入らない」(全0入力/売単価0の日)不整合があった。
+  const inputDays = dayRows.filter(d=>!d.isWeekend && assignedDrivers.every(dr=>rates.every(r=>getVal(d.dateStr,dr.id,r.label)!==""))).length;
   const workdays  = dayRows.filter(d=>!d.isWeekend).length;
 
   // ── 今日・目標 ──
