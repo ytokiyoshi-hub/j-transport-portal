@@ -635,18 +635,29 @@ function ThemeProvider({ children }) {
     r.setProperty('--jt-line', theme.line);
     r.setProperty('--jt-line-dk', theme.lineDk);
     r.setProperty('--jt-accent', theme.accent);
+    r.setProperty('--jt-accent-dk', theme.accentDk);
+    r.setProperty('--jt-accent-lt', theme.accentLt);
+    r.setProperty('--jt-alert', theme.alert);
+    r.setProperty('--jt-alert-lt', theme.alertLt);
     r.setProperty('--jt-base', theme.base);
     r.setProperty('--jt-bg', theme.bg);
     r.setProperty('--jt-text', theme.text);
     r.setProperty('--jt-text-sub', theme.textSub);
+    r.setProperty('--jt-text-mute', theme.textMute);
   }, [theme]);
   const setTheme = React.useCallback((next) => {
     setThemeState(next);
-    try { localStorage.setItem(THEME_KEY, JSON.stringify(next)); } catch {}
+    try {
+      localStorage.setItem(THEME_KEY, JSON.stringify(next));
+      window.dispatchEvent(new CustomEvent("jt-ls-change", { detail: { key: THEME_KEY, val: next } }));
+    } catch {}
   }, []);
   const previewTheme = React.useCallback((next) => { setThemeState(next); }, []);
   const resetTheme = React.useCallback(() => {
-    try { localStorage.removeItem(THEME_KEY); } catch {}
+    try {
+      localStorage.removeItem(THEME_KEY);
+      window.dispatchEvent(new CustomEvent("jt-ls-change", { detail: { key: THEME_KEY, val: THEME_PRESETS.default } }));
+    } catch {}
     setThemeState(THEME_PRESETS.default);
   }, []);
   const value = React.useMemo(() => ({
@@ -700,6 +711,13 @@ const Ic = ({ name, size=16, color="currentColor", strokeWidth=1.8 }) => (
 );
 
 const fmt = n => "¥"+Number(Math.round(n)).toLocaleString();
+
+// CSV Injection対策: 数式文字（=, +, -, @）で始まる値をプレフィックス付きでエスケープ
+const csvSanitize = v => {
+  const s = String(v).trim();
+  if (/^[=+\-@]/.test(s)) return "'" + s;  // 先頭の数式文字をシングルクオート無害化
+  return s;
+};
 
 // ── Master Data ────────────────────────────────────────────────────────────
 
@@ -825,14 +843,6 @@ const totalProfit = totalSell - totalPay;
 // 表示用フォールバック: 今月（REF_MONTH）にデータが無ければ最新確定月のデータを表示
 const _hasCurrent = totalSell > 0;
 const DISPLAY_MONTH = _hasCurrent ? REF_MONTH : LATEST_DATA_MONTH;
-const monthlyDisplay = _hasCurrent ? monthlyActuals : clients.map(c => {
-  const h = (monthlyHistory[c.id] && monthlyHistory[c.id][LATEST_DATA_MONTH]) || {s:0,p:0};
-  return { clientId: c.id, name: c.name, sell: h.s, pay: h.p, profit: h.s - h.p };
-});
-const totalSellDisp   = monthlyDisplay.reduce((s,r)=>s+r.sell,0);
-const totalPayDisp    = monthlyDisplay.reduce((s,r)=>s+r.pay,0);
-const totalProfitDisp = totalSellDisp - totalPayDisp;
-const DISPLAY_MONTH_LABEL = `${DISPLAY_MONTH.replace("-","年")}月`;
 
 // 請求データ（前月分含む）
 const invoices = [
@@ -1514,13 +1524,14 @@ const PLPage = ({ accent, setPage }) => {
       {/* ── 年度ダイジェスト ── */}
       <Card>
         <SH title={`${curYear}年度 ダイジェスト（実績${ytdMonthCount}ヶ月）`}/>
-        <div style={{ padding:"14px 18px", display:"grid", gridTemplateColumns:"repeat(5,1fr)", gap:12 }}>
+        <div style={{ padding:"14px 18px", display:"grid", gridTemplateColumns:"repeat(6,1fr)", gap:12 }}>
           {[
             { l:"累計売上",       v:`${fmt(ytdData.sell)}`,         sub:`月平均 ${fmt(Math.round(monthAvg))}`,   c:accent },
             { l:"累計支払",       v:`${fmt(ytdData.pay)}`,          sub:`原価率 ${ytdData.sell>0?(ytdData.pay/ytdData.sell*100).toFixed(1):"—"}%`, c:"#d97706" },
             { l:"累計粗利",       v:`${fmt(ytdProfit)}`,           sub:`粗利率 ${ytdData.sell>0?(ytdProfit/ytdData.sell*100).toFixed(1):"—"}%`,   c:"#16a34a" },
             { l:"年間着地予測",   v:`${fmt(Math.round(projection))}`, sub:`月平均×12（${ytdMonthCount}ヶ月実績ベース）`, c:"#7c3aed" },
             { l:"目標達成率",     v:`${curMargin>=TARGET_MARGIN?"達成":"未達"}`, sub:`粗利率 ${curMargin.toFixed(1)}% ／ 目標 ${TARGET_MARGIN}%`, c: curMargin>=TARGET_MARGIN?"#16a34a":"#dc2626" },
+            { l:"年間着地利益",   v:`${fmt(Math.round(projectionProfit))}`, sub:`利益予測（${ytdMonthCount}ヶ月実績ベース）`, c:"#059669" },
           ].map(({l,v,sub,c})=>(
             <div key={l} style={{ padding:"10px 12px", borderLeft:`3px solid ${c}`, background:"#fafbfc", borderRadius:4 }}>
               <div style={{ fontSize:11, color:"#9ca3af", marginBottom:4 }}>{l}</div>
@@ -1544,6 +1555,7 @@ const RateMasterPage = ({ accent, setPage }) => {
   const [driverOverrides, setDriverOverrides] = useLocalStorage("jt_client_driver_overrides", {});
   const driversFor = (c) => (c && driverOverrides[c.id]) ? driverOverrides[c.id] : (c ? c.drivers : []);
   const [contactOverrides, setContactOverrides] = useLocalStorage("jt_contact_overrides", {});
+  const contactPrevRef = React.useRef({ person:"", tel:"", address:"" });
   const cv = (v) => (v && v !== "—") ? v : "";
   const contactFor = (c) => { const o = (c && contactOverrides[c.id]) || {}; return { person: o.person!==undefined?o.person:cv(c?.person||c?.contact), tel: o.tel!==undefined?o.tel:cv(c?.tel), address: o.address!==undefined?o.address:cv(c?.address) }; };
   // ── 自動保存ヘルパー（保存ボタン廃止：変更で即保存）──
@@ -1556,7 +1568,8 @@ const RateMasterPage = ({ accent, setPage }) => {
     const cur = contactFor(sel);
     setContactOverrides({ ...contactOverrides, [sel.id]: { ...cur, [key]: value } });
   };
-  const flushContact = () => {
+  const flushContact = (isDirty=true) => {
+    if (!isDirty) return;
     const c = contactFor(sel);
     if (window.sb) window.sb.from("jt_contact_overrides").upsert({ client_id: sel.id, person: c.person||null, tel: c.tel||null, address: c.address||null }, { onConflict:"client_id" }).then(({error})=>{ if(error) console.warn("[Supabase] contact upsert failed:", error); else console.log("[Supabase] contact saved:", sel.id); });
     showToast("請求先情報を保存しました");
@@ -1623,7 +1636,7 @@ const RateMasterPage = ({ accent, setPage }) => {
               const head=["荷主コード","荷主名","エリア","業務区分","売単価","支払単価","粗利","粗利率"];
               const rows=[head];
               allClients.forEach(c=>ratesFor(c).forEach(r=>{ const gp=r.sell-r.pay; const rt=r.sell>0?Math.round(gp/r.sell*100)+"%":""; rows.push([c.id,c.name,c.area,r.label,r.sell,r.pay,gp,rt]); }));
-              const csv="﻿"+rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(",")).join("\r\n");
+              const csv="﻿"+rows.map(r=>r.map(x=>`"${csvSanitize(x).replace(/"/g,'""')}"`).join(",")).join("\r\n");
               const url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8;"}));
               const a=document.createElement("a"); a.href=url; a.download="単価マスタ.csv"; a.click(); URL.revokeObjectURL(url);
             }} style={{ padding:"7px 16px", border:"1.5px solid #e5e7eb", background:"#fff", color:"#374151", borderRadius:6, fontSize:13, fontWeight:600, cursor:"pointer" }}>
@@ -1769,7 +1782,7 @@ const RateMasterPage = ({ accent, setPage }) => {
                       <div key={label} style={{ display:"flex", gap:12, alignItems:"center" }}>
                         <div style={{ width:88, color:"#6b7280", flexShrink:0 }}>{label}</div>
                         <input value={cinfo[key]||""} onChange={e=>updateContact(key, e.target.value)}
-                          onFocus={e=>e.target.style.borderColor=accent} onBlur={e=>{ e.target.style.borderColor="#e5e7eb"; flushContact(); }} placeholder={ph}
+                          onFocus={e=>{ e.target.style.borderColor=accent; contactPrevRef.current[key]=e.target.value; }} onBlur={e=>{ e.target.style.borderColor="#e5e7eb"; const isDirty=e.target.value!==(contactPrevRef.current[key]||""); flushContact(isDirty); }} placeholder={ph}
                           style={{ flex:1, padding:"6px 10px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
                       </div>
                     ));
@@ -1786,7 +1799,7 @@ const RateMasterPage = ({ accent, setPage }) => {
                 return (<><div style={{ fontSize:13, fontWeight:700, marginBottom:14 }}>今月実績（速報）<span style={{ fontWeight:600, color:"#9ca3af", marginLeft:6, fontSize:11 }}>{isCur ? REF_MONTH_LABEL : "最新確定 "+LATEST_MONTH_LABEL}</span></div>
                 {!(act.sell>0) ? <div style={{ color:"#9ca3af", fontSize:13 }}>実績なし</div> : (
                   <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:16 }}>
-                    {[["売上",fmt(act.sell),accent],["支払",fmt(act.pay),"#d97706"],["粗利",fmt(act.profit),"#16a34a"]].map(([l,v,c])=>(
+                    {[["売上",fmt(act.sell),accent],["支払",fmt(act.pay),"#d97706"],["粗利",fmt(act.profit),act.profit<0?"#dc2626":"#16a34a"]].map(([l,v,c])=>(
                       <div key={l} style={{ textAlign:"center", padding:"12px", background:"#f8fafc", borderRadius:6 }}>
                         <div style={{ fontSize:11, color:"#9ca3af" }}>{l}</div>
                         <div style={{ fontSize:18, fontWeight:700, color:c, marginTop:4 }}>{v}</div>
@@ -1969,15 +1982,23 @@ const buildDriverStatement = (d, dailyEdits, mk) => {
 };
 
 const exportDriverCSV = (d) => {
-  const esc = v => /[",\n]/.test(String(v)) ? '"'+String(v).replace(/"/g,'""')+'"' : String(v);
   const rows = ["荷主,区分,数量,支払単価,金額"];
-  d.clientRows.forEach(c => c.lines.forEach(l => rows.push([c.name,l.label,l.qty,l.unitPay,l.amount].map(esc).join(","))));
+  d.clientRows.forEach(c => c.lines.forEach(l => rows.push([c.name,l.label,l.qty,l.unitPay,l.amount].map(csvEscape).join(","))));
   rows.push(`,,,小計,${d.totalPay}`);
   if (d.tax > 0) rows.push(`,,,消費税(10%),${d.tax}`);
   rows.push(`,,,支払合計,${d.grandTotal}`);
   const a = document.createElement("a");
   a.href = "data:text/csv;charset=utf-8," + encodeURIComponent("﻿" + rows.join("\n"));
   a.download = `支払明細_${d.name}_${d.mk}.csv`; a.click();
+};
+
+// CSVセル値の無害化（数式インジェクション・改行・クオート対策）
+const csvEscape = (v) => {
+  const s = String(v);
+  // 先頭が数式文字(=,+,-,@)またはタブ・CRの場合は先頭に ' を付与
+  const sanitized = /^[=+\-@\t\r]/.test(s) ? "'" + s : s;
+  // クオートを二重化し、全体をクオートで囲む
+  return '"' + sanitized.replace(/"/g, '""') + '"';
 };
 
 // 支払明細書 A4印刷／PDF保存（.driver-slip-paper を iframe に複製して印刷）
@@ -2420,7 +2441,7 @@ const InvoicePage = ({ accent }) => {
           if (r) amount += cnt * r.sell;
         }
       }
-      const wd = ["日","月","火","水","木","金","土"][new Date(date).getDay()];
+      const wd = _dowOf(date);
       return { date, dow: wd, per, amount };
     }).filter(r => Object.keys(r.per).length);
     const dailyLabels = [
@@ -3057,6 +3078,7 @@ const DailyInputPage = ({ accent }) => {
   const inputRefs = React.useRef({});
 
   React.useEffect(() => {
+    if (!window.sb) return;
     (async () => {
       const [{ data: cs }, { data: rates }, { data: cds }, { data: ds }] = await Promise.all([
         window.sb.from("jt_clients").select("*").order("id"),
@@ -3197,7 +3219,7 @@ const DailyInputPage = ({ accent }) => {
         showToast("Supabaseへの保存に失敗しました（端末には保存済み）", "error");
         return;
       }
-      setSaved(true);
+      if (Object.keys(saveTimers.current).length === 0) setSaved(true);
     }, 400);
   };
 
@@ -3384,7 +3406,7 @@ const DailyInputPage = ({ accent }) => {
       return [day.dateStr,day.dayName,...vals,sell,pay,profit];
     });
     const footRow = ["月次合計","",...colTotals.map(c=>c.vol),monthTotals.sell,monthTotals.pay,monthTotals.profit];
-    const csv = [header,...rows,footRow].map(r=>r.join(",")).join("\n");
+    const csv = [header,...rows,footRow].map(r=>r.map(csvEscape).join(",")).join("\n");
     const a=document.createElement("a");
     a.href="data:text/csv;charset=utf-8,﻿"+encodeURIComponent(csv);
     a.download=`実績_${selClient.name}_${monthYear}.csv`;
@@ -4043,7 +4065,7 @@ const AnnouncePage = ({ accent }) => {
     const mm = String(now.getMonth()+1).padStart(2,"0");
     const dd = String(now.getDate()).padStart(2,"0");
     const id = Date.now();
-    setExtraPosts(p=>[{ id, title:newPost.title, cat:newPost.cat, body:newPost.body, date:`${mm}/${dd}`, unread:false }, ...p]);
+    setExtraPosts(p=>[{ id, title:newPost.title, cat:newPost.cat, body:newPost.body, date:`${mm}/${dd}` }, ...p]);
     // 投稿者本人には既読扱いにする（既読管理は readIds ベースのため id を追加）
     setReadIds(p=>p.includes(id) ? p : [...p, id]);
     setNewPost({ title:"", cat:"運行", body:"" });
@@ -4187,7 +4209,7 @@ const DriversPage = ({ accent, setPage }) => {
                   <td style={{ padding:"12px 16px", textAlign:"center" }}>{d.clientRows.length>0?`${d.clientRows.length}社`:"—"}</td>
                   <td style={{ padding:"12px 16px", fontWeight:700, color:accent }}>{d.totalSell>0?fmt(d.totalSell):"—"}</td>
                   <td style={{ padding:"12px 16px", fontWeight:600 }}>{d.grandTotal>0?fmt(d.grandTotal):"—"}</td>
-                  <td style={{ padding:"12px 16px", fontWeight:600, color:"#16a34a" }}>{d.totalProfit>0?fmt(d.totalProfit):"—"}</td>
+                  <td style={{ padding:"12px 16px", fontWeight:600, color:d.totalProfit<0?"#dc2626":"#16a34a" }}>{d.workDays>0?fmt(d.totalProfit):"—"}</td>
                 </tr>
               ))}
             </tbody>
@@ -4196,7 +4218,7 @@ const DriversPage = ({ accent, setPage }) => {
                 <td colSpan={4} style={{ padding:"10px 16px", fontWeight:700 }}>合計（{list.length}名）</td>
                 <td style={{ padding:"10px 16px", fontWeight:700, color:accent }}>{fmt(list.reduce((s,d)=>s+d.totalSell,0))}</td>
                 <td style={{ padding:"10px 16px", fontWeight:700 }}>{fmt(list.reduce((s,d)=>s+d.grandTotal,0))}</td>
-                <td style={{ padding:"10px 16px", fontWeight:700, color:"#16a34a" }}>{fmt(list.reduce((s,d)=>s+d.totalProfit,0))}</td>
+                <td style={{ padding:"10px 16px", fontWeight:700, color:(() => { const sum = list.reduce((s,d)=>s+d.totalProfit,0); return sum<0?"#dc2626":"#16a34a"; })() }}>{fmt(list.reduce((s,d)=>s+d.totalProfit,0))}</td>
               </tr>
             </tfoot>
           </table>
@@ -4304,7 +4326,7 @@ const SafetyPage = ({ accent }) => {
   const _incDiff = _incCount - incidents.filter(i=>i.date.startsWith(_incPrev)).length;
   // 連続無事故日数: 当日(実機日付)起点、物損事故・人身事故の記録でリセット。今月ヒヤリハットと時間基準を統一
   const _safetyToday = (()=>{ const d = new Date(); d.setHours(0,0,0,0); return d.getTime(); })();
-  const _accTs = incidents.filter(i=>i.type==="物損事故"||i.type==="人身事故").map(i=>new Date(i.date).getTime()).filter(t=>!isNaN(t));
+  const _accTs = incidents.filter(i=>i.type==="物損事故"||i.type==="人身事故").map(i=>new Date(i.date+"T00:00:00").getTime()).filter(t=>!isNaN(t));
   const _lastAccTs = _accTs.length ? Math.max(..._accTs) : (_safetyToday - 45*86400000); /* 事故記録が無い場合の既定=45日 */
   const noAccidentDays = Math.max(0, Math.floor((_safetyToday - _lastAccTs) / 86400000));
 
@@ -4639,11 +4661,11 @@ const ManualPage = ({ accent }) => {
       {filtered.length===0 && <div style={{ textAlign:"center", padding:"40px 0", color:"#9ca3af", fontSize:14 }}>検索条件に一致するマニュアルがありません</div>}
 
       {filtered.map((cat,ci)=>(
-        <div key={ci} style={{ marginBottom:20 }}>
+        <div key={cat.cat} style={{ marginBottom:20 }}>
           <div style={{ fontSize:12, fontWeight:700, color:"#9ca3af", marginBottom:10 }}>{cat.cat}（{cat.items.length}件）</div>
           <Card>
             {cat.items.map((m,mi)=>(
-              <div key={mi} style={{ display:"flex", alignItems:"center", padding:"13px 20px", borderBottom:mi<cat.items.length-1?"1px solid #94a3b8":"none", gap:14 }}
+              <div key={`${cat.cat}:${m.name}`} style={{ display:"flex", alignItems:"center", padding:"13px 20px", borderBottom:mi<cat.items.length-1?"1px solid #94a3b8":"none", gap:14 }}
                 onMouseEnter={e=>e.currentTarget.style.background="#f9fafb"}
                 onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
                 <Ic name="document" size={15} color={accent}/>
@@ -5436,7 +5458,12 @@ const VehiclesPage = ({ accent }) => {
   const onResDate = (val) => {
     const next = { ...resDraft, date: val };
     setResDraft(next);
-    if (next.date && sel) { setReservations({ ...reservations, [sel.id]: next }); showToast(sel.plate + " の車検予約を保存しました"); }
+    if (!val && sel) {
+      const cp = { ...reservations };
+      delete cp[sel.id];
+      setReservations(cp);
+      showToast(sel.plate + " の車検予約を削除しました");
+    } else if (next.date && sel) { setReservations({ ...reservations, [sel.id]: next }); showToast(sel.plate + " の車検予約を保存しました"); }
   };
   const onResNote = (val) => {
     const next = { ...resDraft, note: val };
@@ -5571,7 +5598,7 @@ const VehiclesPage = ({ accent }) => {
                 <div style={{ marginTop:14, padding:"10px 12px", background:"#dbeafe", borderRadius:6, fontSize:12.5 }}>
                   <div style={{ fontWeight:700, color:"#1e40af" }}>車検予約済み</div>
                   <div style={{ color:"#1e40af", marginTop:3 }}>予定日: {reservations[sel.id].date}{reservations[sel.id].note && ` ／ ${reservations[sel.id].note}`}</div>
-                  <button onClick={()=>{ const cp={...reservations}; delete cp[sel.id]; setReservations(cp); }} style={{ marginTop:6, padding:"3px 10px", border:"none", background:"#fff", color:"#1e40af", borderRadius:4, fontSize:11, cursor:"pointer" }}>キャンセル</button>
+                  <button onClick={()=>{ const cp={...reservations}; delete cp[sel.id]; setReservations(cp); setResDraft({date:"",note:""}); setShowResForm(false); }} style={{ marginTop:6, padding:"3px 10px", border:"none", background:"#fff", color:"#1e40af", borderRadius:4, fontSize:11, cursor:"pointer" }}>キャンセル</button>
                 </div>
               )}
 
@@ -5889,7 +5916,7 @@ const DispatchPage = ({ accent, setPage }) => {
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-end", marginBottom:14 }}>
         <div>
           <div style={{ fontSize:20, fontWeight:700 }}>配車管理</div>
-          <div style={{ fontSize:12, color:"#9ca3af", marginTop:2 }}>ドライバー {drivers.length}名・荷主 {clients.length}社／週単位で配車とシフトを編集・保存できます</div>
+          <div style={{ fontSize:12, color:"#9ca3af", marginTop:2 }}>ドライバー {drivers.length}名・荷主 {allClientsLive().length}社／週単位で配車とシフトを編集・保存できます</div>
         </div>
       </div>
 
@@ -5953,7 +5980,7 @@ const DispatchPage = ({ accent, setPage }) => {
       <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:12, alignItems:"center" }}>
         <span style={{ fontSize:11, color:"#9ca3af", marginRight:2 }}>{tab==="dispatch"?"荷主:":"区分:"}</span>
         {tab==="dispatch"
-          ? clients.map(c=>{ const col=DISPATCH_CLIENT_COLORS[c.id]||{bg:"#f1f5f9",fg:"#374151"}; const n=clientWeekCount[c.id]||0; return (
+          ? allClientsLive().map(c=>{ const col=DISPATCH_CLIENT_COLORS[c.id]||{bg:"#f1f5f9",fg:"#374151"}; const n=clientWeekCount[c.id]||0; return (
               <span key={c.id} style={{ display:"inline-flex", alignItems:"center", gap:4, padding:"2px 8px", borderRadius:4, fontSize:11, fontWeight:600, background:col.bg, color:col.fg }}>
                 {DISPATCH_CLIENT_SHORT[c.id]||c.name}{n>0 && <span style={{ fontSize:10, opacity:.75 }}>×{n}</span>}
               </span>
@@ -6015,7 +6042,7 @@ const DispatchPage = ({ accent, setPage }) => {
                               <td key={i} style={{ padding:"4px 5px", textAlign:"center", background:cellBg, borderRight:"1px solid #e5e7eb" }}>
                                 <div title="確定済（編集ロック中）／実績と連動" style={{ maxWidth:88, margin:"0 auto", padding:"3px 4px", borderRadius:4,
                                   border:`1px solid ${col.fg}55`, background:col.bg, color:col.fg }}>
-                                  <div style={{ fontSize:11, fontWeight:600, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>🔒{DISPATCH_CLIENT_SHORT[cur]||cur}</div>
+                                  <div style={{ fontSize:11, fontWeight:600, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>🔒{DISPATCH_CLIENT_SHORT[cur]||_clientName[cur]||cur}</div>
                                   <div style={{ fontSize:9, fontWeight:700, marginTop:1, opacity:.85 }}>{cb.has?fmt(cb.sell):"実績待ち"}</div>
                                 </div>
                               </td>
@@ -6590,7 +6617,7 @@ const ApplyPage = ({ accent }) => {
               if (missing.length) { alert("必須項目が未入力です：\n・" + missing.map(f=>f.l).join("\n・")); return; }
               const detail = Object.fromEntries(sel.fields.map(f=>[f.l, String(form[f.k]||"")]).filter(([,v])=>v));
               const d = new Date(); const localDate = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
-              const rec = { id:"A-"+String(Date.now()).slice(-4), type:sel.name, date:localDate, status:"承認待ち", approver:form.approver||"—", detail };
+              const rec = { id:"A-"+Date.now()+"-"+Math.random().toString(36).slice(2,8), type:sel.name, date:localDate, status:"承認待ち", approver:form.approver||"—", detail };
               setSubmitted(s=>[rec, ...s]);
               setOk(true);
             }} style={{ width:"100%", padding:13, background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:700, fontSize:14, cursor:"pointer", marginTop:8 }}>申請を送信する</button>
@@ -6933,7 +6960,6 @@ const App = () => {
       </div>
 
       <TweaksPanel title="Tweaks">
-        <TweakColor label="アクセントカラー" value={theme.accent} onChange={v=>setTheme({ ...theme, accent: v })}/>
         <TweakText label="ユーザー名" value={tweaks.userName} onChange={v=>setTweak("userName", v)}/>
         <TweakText label="部署" value={tweaks.dept} onChange={v=>setTweak("dept", v)}/>
       </TweaksPanel>
