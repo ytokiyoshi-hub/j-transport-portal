@@ -6951,7 +6951,7 @@ const App = () => {
         const { data, error } = await window.sb.from("jt_kv").select("*");
         if (error || !data || !data.length) return;
         data.forEach(row => {
-          if (!JT_KV_KEYS.has(row.k) || row.v == null) return;
+          if (!JT_KV_KEYS.has(row.k) || row.v == null || _jtKvEdited.has(row.k)) return;
           localStorage.setItem(row.k, JSON.stringify(row.v));
           window.dispatchEvent(new CustomEvent("jt-ls-change", { detail: { key: row.k, val: row.v } }));
         });
