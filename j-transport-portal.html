@@ -6973,7 +6973,8 @@ const App = () => {
         const o = {};
         data.forEach(r => { o[r.client_id] = { person:r.person||"", tel:r.tel||"", address:r.address||"" }; });
         const existing = (()=>{ try { return JSON.parse(localStorage.getItem("jt_contact_overrides")||"{}"); } catch { return {}; } })();
-        const merged = { ...o, ...existing }; // Local 優先（未blur編集がlocalStorageにあれば優先。SBに無い荷主のlocal編集も温存）
+        const merged = { ...existing, ...o }; // SB優先（他端末の更新・削除を反映。R21/R25対応）
+        _contactEdited.forEach(cid => { if (existing[cid]) merged[cid] = existing[cid]; }); // ただし本セッションで編集中の荷主はローカルを温存
         localStorage.setItem("jt_contact_overrides", JSON.stringify(merged));
         window.dispatchEvent(new CustomEvent("jt-ls-change", { detail: { key: "jt_contact_overrides", val: merged } }));
         console.log("[Supabase] jt_contact_overrides synced:", data.length);
