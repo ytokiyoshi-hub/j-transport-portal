@@ -3355,6 +3355,7 @@ const DailyInputPage = ({ accent }) => {
         const { data, error } = await window.sb.from("jt_daily_entries")
           .select("*").eq("client_id", selClient.id)
           .gte("entry_date", start).lte("entry_date", end);
+        if (ignore) return; // 切替後に到着した古い応答は破棄（先祖返り防止）
         if (error || !data || !data.length) return;
         setEntries(prev => {
           const m = JSON.parse(JSON.stringify(prev));
