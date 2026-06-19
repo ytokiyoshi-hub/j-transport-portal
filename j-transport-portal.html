@@ -1794,7 +1794,40 @@ const RateMasterPage = ({ accent, setPage }) => {
             {/* 今月実績 */}
             <Card style={{ padding:20 }}>
               {(() => {
-                const de = _lsGet("jt_daily_edits", {}); const liveCur = cm(sel.id, REF_MONTH, de); const isCur = liveCur.s > 0;
+                const de = _lsGet("jt_daily_edits", {}); 
+                const c_with_override = rateOverrides[sel.id] ? { ...sel, rates: rateOverrides[sel.id] } : sel;
+                const computeLiveSumDirect = (c, mk, edits) => {
+                  const bp = billingPeriodFor(mk, c.billingCycle);
+                  const baseDA = (typeof dailyActuals !== 'undefined' && dailyActuals[c.id]) || {};
+                  const editsDA = (edits && edits[c.id]) || {};
+                  const dateSet = new Set([...Object.keys(baseDA), ...Object.keys(editsDA)]);
+                  let sell=0, pay=0, hasAny=false;
+                  for (const date of dateSet) {
+                    if (date < bp.start || date > bp.end) continue;
+                    const baseDay = baseDA[date] || {};
+                    const editDay = editsDA[date] || {};
+                    const drivers = new Set([...Object.keys(baseDay), ...Object.keys(editDay)]);
+                    for (const did of drivers) {
+                      const baseDrv = baseDay[did] || {};
+                      const editDrv = editDay[did] || {};
+                      const labels = new Set([...Object.keys(baseDrv), ...Object.keys(editDrv)]);
+                      for (const lbl of labels) {
+                        const editV = editDrv[lbl];
+                        const baseV = baseDrv[lbl];
+                        const v = editV !== undefined ? editV : baseV;
+                        const cnt = Number(v) || 0;
+                        const r = c.rates.find(rr => rr.label === lbl);
+                        if (!r || cnt === 0) continue;
+                        sell += cnt * r.sell;
+                        pay += cnt * r.pay;
+                        hasAny = true;
+                      }
+                    }
+                  }
+                  return hasAny ? { s: sell, p: pay } : null;
+                };
+                const liveCur_local = computeLiveSumDirect(c_with_override, REF_MONTH, de);
+                const liveCur = liveCur_local ? liveCur_local : cm(sel.id, REF_MONTH, de); const isCur = liveCur.s > 0;
                 const h = isCur ? liveCur : cm(sel.id, LATEST_DATA_MONTH, de); const act = { sell:h.s, pay:h.p, profit:h.s-h.p };
                 return (<><div style={{ fontSize:13, fontWeight:700, marginBottom:14 }}>今月実績（速報）<span style={{ fontWeight:600, color:"#9ca3af", marginLeft:6, fontSize:11 }}>{isCur ? REF_MONTH_LABEL : "最新確定 "+LATEST_MONTH_LABEL}</span></div>
                 {!(act.sell>0) ? <div style={{ color:"#9ca3af", fontSize:13 }}>実績なし</div> : (
@@ -2315,7 +2348,18 @@ const InvoicePage = ({ accent }) => {
   const setRemindedSet = (fn) => setRemindedArr(prev => Array.from(fn(new Set(prev))));
   const setPaidSet = (fn) => setPaidArr(prev => Array.from(fn(new Set(prev))));
   // 発行済（jt_issued）の未請求は実効ステータスを「請求済」に、入金消込（jt_paid）済みは「入金済」に。行バッジ・KPI・フィルタを揃える
-  const effStatus = (inv) => paidSet.has(inv.id) ? "入金済" : ((inv.status==="未請求" && issuedSet.has(inv.id)) ? "請求済" : inv.status);
+  const effStatus = (inv) => {
+    if (paidSet.has(inv.id)) return "入金済";
+    if (inv.status === "未請求" && issuedSet.has(inv.id)) {
+      // 請求済だが、支払期限超過かつ未入金なら遅延
+      const today = new Date().toISOString().split('T')[0];
+      if (inv.due && inv.due < today) return "遅延";
+      return "請求済";
+    }
+    // 元々「遅延」ステータスの場合も遅延のまま
+    if (inv.status === "遅延") return "遅延";
+    return inv.status;
+  };
   const todayYmd = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; };
   const markIssued = (ids) => {
     setIssuedSet(s=>new Set([...s,...ids]));
@@ -3260,6 +3304,9 @@ const DailyInputPage = ({ accent }) => {
         setEntries(prev => {
           const m = JSON.parse(JSON.stringify(prev));
           data.forEach(r => {
+            // Guard: do not overwrite if there's a pending save timer for this cell (unsaved user input)
+            const key = `${r.entry_date}|${r.driver_id}|${r.rate_label}`;
+            if (saveTimers.current[key]) return; // Skip this cell, keep user's pending value
             if (!m[r.entry_date]) m[r.entry_date] = {};
             if (!m[r.entry_date][r.driver_id]) m[r.entry_date][r.driver_id] = {};
             m[r.entry_date][r.driver_id][r.rate_label] = String(r.value);
@@ -5675,6 +5722,7 @@ const DispatchPage = ({ accent, setPage }) => {
   const [confirmed, setConfirmed] = useLocalStorage("jt_dispatch_confirmed", {});
   const [dailyEdits] = useLocalStorage("jt_daily_edits", {});
   const [billMonth, setBillMonth] = React.useState(REF_MONTH);
+  const [saved, setSaved] = React.useState(true);
   const shiftMonth = (delta) => { const [y,m]=billMonth.split("-").map(Number); const d=new Date(y,m-1+delta,1); setBillMonth(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`); };
 
   // ── Supabase 永続化（jt_dispatch / jt_shifts / jt_dispatch_confirmed）─────────
@@ -5696,7 +5744,8 @@ const DispatchPage = ({ accent, setPage }) => {
       if(ups.length) await window.sb.from(table).upsert(ups, { onConflict:`${dateCol},driver_id` });
       for(const d of dels) await window.sb.from(table).delete().eq(dateCol,d.dk).eq("driver_id",d.did);
       sbSnap.current[snapKey] = JSON.parse(JSON.stringify(curr));
-    } catch(e){ console.warn(`[Supabase] ${table} sync failed:`, e); }
+      setSaved(true);
+    } catch(e){ console.warn(`[Supabase] ${table} sync failed:`, e); setSaved(false); showToast("配車の保存に失敗しました（端末には保存済み）", "error"); }
   };
   const syncConfirmed = async (curr) => {
     if(!window.sb) return;
@@ -5708,7 +5757,8 @@ const DispatchPage = ({ accent, setPage }) => {
       if(ups.length) await window.sb.from("jt_dispatch_confirmed").upsert(ups, { onConflict:"confirm_date" });
       for(const dk of dels) await window.sb.from("jt_dispatch_confirmed").delete().eq("confirm_date",dk);
       sbSnap.current.confirmed = JSON.parse(JSON.stringify(curr));
-    } catch(e){ console.warn("[Supabase] jt_dispatch_confirmed sync failed:", e); }
+      setSaved(true);
+    } catch(e){ console.warn("[Supabase] jt_dispatch_confirmed sync failed:", e); setSaved(false); showToast("確定配車の保存に失敗しました（端末には保存済み）", "error"); }
   };
   React.useEffect(() => {
     if(!window.sb){ sbReady.current = true; return; }
@@ -5736,13 +5786,13 @@ const DispatchPage = ({ accent, setPage }) => {
         if((!d.data || !d.data.length) && Object.keys(dispatch).length) syncFlat("jt_dispatch","dispatch_date","client_id",dispatch,"dispatch");
         if((!s.data || !s.data.length) && Object.keys(shifts).length) syncFlat("jt_shifts","shift_date","state",shifts,"shifts");
         if((!c.data || !c.data.length) && Object.keys(confirmed).length) syncConfirmed(confirmed);
-      } catch(e){ console.warn("[Supabase] dispatch load failed:", e); }
-      finally { sbReady.current = true; }
+      } catch(e){ console.warn("[Supabase] dispatch load failed:", e); showToast("配車情報の読み込みに失敗しました", "error"); }
+      finally { sbReady.current = true; setSaved(true); }
     })();
   }, []);
-  React.useEffect(() => { if(!sbReady.current) return; clearTimeout(sbTimer.current.d); sbTimer.current.d = setTimeout(()=>syncFlat("jt_dispatch","dispatch_date","client_id",dispatch,"dispatch"), 500); }, [dispatch]);
-  React.useEffect(() => { if(!sbReady.current) return; clearTimeout(sbTimer.current.s); sbTimer.current.s = setTimeout(()=>syncFlat("jt_shifts","shift_date","state",shifts,"shifts"), 500); }, [shifts]);
-  React.useEffect(() => { if(!sbReady.current) return; clearTimeout(sbTimer.current.c); sbTimer.current.c = setTimeout(()=>syncConfirmed(confirmed), 500); }, [confirmed]);
+  React.useEffect(() => { if(!sbReady.current) return; setSaved(false); clearTimeout(sbTimer.current.d); sbTimer.current.d = setTimeout(()=>syncFlat("jt_dispatch","dispatch_date","client_id",dispatch,"dispatch"), 500); }, [dispatch]);
+  React.useEffect(() => { if(!sbReady.current) return; setSaved(false); clearTimeout(sbTimer.current.s); sbTimer.current.s = setTimeout(()=>syncFlat("jt_shifts","shift_date","state",shifts,"shifts"), 500); }, [shifts]);
+  React.useEffect(() => { if(!sbReady.current) return; setSaved(false); clearTimeout(sbTimer.current.c); sbTimer.current.c = setTimeout(()=>syncConfirmed(confirmed), 500); }, [confirmed]);
 
   const now = new Date();
   const dkOf = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
@@ -6112,18 +6162,29 @@ const DispatchPage = ({ accent, setPage }) => {
 
       {tab === "bill" && (() => {
         const rows = allClientsLive().map(c=>{
-          const v = cm(c.id, billMonth, dailyEdits);
+          const v = computeLiveSum(c.id, billMonth, dailyEdits) || {s:0,p:0};
           const di = dispatchPeriodInfo(c.id, billMonth);
           const profit = v.s - v.p;
           const margin = v.s>0 ? profit/v.s*100 : 0;
           let status, sc, sb;
           if(di.confirmedDays>0){ status = v.s>0?"連動済":"確定（実績待ち）"; sc=v.s>0?"#15803d":"#b45309"; sb=v.s>0?"#dcfce7":"#fef3c7"; }
           else if(di.count>0){ status="未確定"; sc="#0369a1"; sb="#e0f2fe"; }
-          else if(v.s>0){ status="実績のみ"; sc="#64748b"; sb="#f1f5f9"; }
           else { status="—"; sc="#cbd5e1"; sb="transparent"; }
           return {c, v, di, profit, margin, status, sc, sb};
         });
-        const tot = rows.reduce((a,r)=>({s:a.s+r.v.s,p:a.p+r.v.p,count:a.count+r.di.count,cc:a.cc+r.di.confirmedCount,cd:a.cd+r.di.confirmedDays}),{s:0,p:0,count:0,cc:0,cd:0});
+        const allConfirmedDates = new Set();
+        rows.forEach(r => {
+          if (r.di.bp) {
+            const bp = r.di.bp;
+            Object.keys(dispatch).forEach(dk => {
+              if (dk < bp.start || dk > bp.end) return;
+              const day = dispatch[dk] || {};
+              if (confirmed[dk] && Object.keys(day).some(did => day[did] === r.c.id)) allConfirmedDates.add(dk);
+            });
+          }
+        });
+        const tot = rows.reduce((a,r)=>({s:a.s+r.v.s,p:a.p+r.v.p,count:a.count+r.di.count,cc:a.cc+r.di.confirmedCount,cd:0}),{s:0,p:0,count:0,cc:0,cd:0});
+        tot.cd = allConfirmedDates.size;
         const totProfit = tot.s - tot.p;
         const totMargin = tot.s>0 ? totProfit/tot.s*100 : 0;
         const needAttention = rows.filter(r=>r.status==="未確定"||r.status==="確定（実績待ち）").length;
@@ -6236,14 +6297,31 @@ const AttendancePage = ({ accent }) => {
   const _pad = n => String(n).padStart(2,"0");
   const _now = new Date();
   const _todayDk = `${_now.getFullYear()}-${_pad(_now.getMonth()+1)}-${_pad(_now.getDate())}`;
-  const _monthPrefix = REF_MONTH;            // 集計対象月（実データ基準月）
-  const _monthLabel = mkLabel(REF_MONTH);
-  const [_y, _mo] = REF_MONTH.split("-").map(Number);
+  // 当月に配車実績があるか判定してフォールバック（他画面と同じロジック）
+  const _hasCurrentDispatch = drivers.some(d => {
+    for (let dd = 1; dd <= 31; dd++) {
+      const dk = `${REF_MONTH}-${_pad(dd)}`;
+      if (dispatch[dk] && dispatch[dk][d.id]) return true;
+    }
+    return false;
+  });
+  const _monthPrefix = _hasCurrentDispatch ? REF_MONTH : LATEST_DATA_MONTH;
+  const _isFallback = !_hasCurrentDispatch && LATEST_DATA_MONTH !== REF_MONTH;
+  const _monthLabel = mkLabel(_monthPrefix);
+  const [_y, _mo] = _monthPrefix.split("-").map(Number);
   const _daysInMonth = new Date(_y, _mo, 0).getDate();
   const _dowName = ["日","月","火","水","木","金","土"];
   // id→荷主名（追加荷主込み）
   const _clientName = {}; allClientsLive().forEach(c => { _clientName[c.id] = c.name; });
   const _shiftToSt = { "有休":"有給", "休":"休日", "日勤":"出勤", "早番":"早番", "遅番":"遅番" };
+
+  // 配車とシフトの併存時は常にシフト優先で状態を決定するヘルパー
+  const _resolveState = (assigned, sh) => {
+    // 有休・休があれば、配車があってもシフト優先
+    if (sh && _shiftToSt[sh]) return _shiftToSt[sh];
+    if (assigned) return "出勤";
+    return null; // 両方ない
+  };
 
   // 実ドライバー（drivers）＋実配車（dispatch）／シフト（shifts）から月次サマリーを生成
   const driverSummary = drivers.map(d => {
@@ -6252,17 +6330,16 @@ const AttendancePage = ({ accent }) => {
       const dk = `${_monthPrefix}-${_pad(dd)}`;
       const assigned = dispatch[dk] && dispatch[dk][d.id];
       const sh = shifts[dk] && shifts[dk][d.id];
-      if (assigned) workDays++;
+      const st = _resolveState(assigned, sh);
+      if (st === "出勤") workDays++;
       else if (sh === "有休" || sh === "休") restDays++;
     }
     const tAssigned = dispatch[_todayDk] && dispatch[_todayDk][d.id];
     const tShift = shifts[_todayDk] && shifts[_todayDk][d.id];
-    let todaySt = "—";
-    if (tShift && _shiftToSt[tShift]) todaySt = _shiftToSt[tShift];
-    else if (tAssigned) todaySt = "出勤";
+    const todaySt = _resolveState(tAssigned, tShift) || "—";
     return { id:d.id, name:d.name, type:d.type, workDays, restDays,
       todaySt, in:"—", ot:"—", otMin:0, paidLeft:"—", absent:0,
-      todayClient: tAssigned ? (_clientName[tAssigned] || tAssigned) : null };
+      todayClient: (todaySt === "出勤" && tAssigned) ? (_clientName[tAssigned] || tAssigned) : null };
   });
 
   // ドライバー詳細日次記録（当月・実配車/シフトから生成）
@@ -6273,10 +6350,8 @@ const AttendancePage = ({ accent }) => {
       const dow = _dowName[new Date(_y, _mo-1, dd).getDay()];
       const assigned = dispatch[dk] && dispatch[dk][d.id];
       const sh = shifts[dk] && shifts[dk][d.id];
-      let st;
-      if (assigned) st = "出勤";
-      else if (sh && _shiftToSt[sh]) st = _shiftToSt[sh];
-      else continue; // 配車もシフトも無い日は表示しない
+      const st = _resolveState(assigned, sh);
+      if (!st) continue; // 配車もシフトも無い日は表示しない
       rows.push({ d:dd, day:dow, in:"—", out:"—",
         work: assigned ? (_clientName[assigned] || assigned) : "—",
         ot:"—", st });
@@ -6313,10 +6388,11 @@ const AttendancePage = ({ accent }) => {
   drivers.forEach(d => {
     scheduleData[d.id] = weekDays.map(wd => {
       const cid = dispatch[wd.dk] && dispatch[wd.dk][d.id];
-      if (cid) return _clientName[cid] || cid;
       const sh = shifts[wd.dk] && shifts[wd.dk][d.id];
-      if (sh === "有休") return "有給";
-      if (sh === "休") return "休";
+      const st = _resolveState(cid, sh);
+      if (st === "有給") return "有給";
+      if (st === "休") return "休";
+      if (st === "出勤") return _clientName[cid] || cid;
       return "—";
     });
   });
@@ -6351,7 +6427,7 @@ const AttendancePage = ({ accent }) => {
           <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12, marginBottom:16 }}>
             {[
               { label:"本日出勤", value:`${driverSummary.filter(d=>["出勤","出勤中","早番","遅番"].includes(d.todaySt)).length}名`, sub:`全${driverSummary.length}名中`, color:"#16a34a" },
-              { label:`${_monthLabel} 配車のべ日数`, value:`${driverSummary.reduce((s,d)=>s+d.workDays,0)}日`, sub:"確定・実績ベース", color:accent },
+              { label:`${_monthLabel} 配車のべ日数${_isFallback ? ` (${REF_MONTH_LABEL}実績未入力)` : ""}`, value:`${driverSummary.reduce((s,d)=>s+d.workDays,0)}日`, sub:"確定・実績ベース", color:accent },
               { label:"本日有給", value:`${driverSummary.filter(d=>d.todaySt==="有給").length}名`, sub:"取得中", color:"#7c3aed" },
               { label:"本日休日", value:`${driverSummary.filter(d=>d.todaySt==="休日").length}名`, sub:"シフト", color:"#6b7280" },
             ].map(k=>(
@@ -6404,7 +6480,7 @@ const AttendancePage = ({ accent }) => {
                         <tr>
                           <td colSpan={7} style={{ padding:"0 0 8px 0", background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
                             <div style={{ padding:"12px 16px" }}>
-                              <div style={{ fontSize:12, fontWeight:600, color:"#374151", marginBottom:8 }}>{_monthLabel} 日次記録（配車・シフト連動）</div>
+                              <div style={{ fontSize:12, fontWeight:600, color:"#374151", marginBottom:8 }}>{_monthLabel} 日次記録（配車・シフト連動）{_isFallback && ` / ${REF_MONTH_LABEL}実績未入力のため最新確定月を表示`}</div>
                               {recs.length===0 ? (
                                 <div style={{ fontSize:12, color:"#9ca3af", padding:"8px 0" }}>当月の配車・シフト記録はありません。</div>
                               ) : (
@@ -6833,36 +6909,16 @@ const App = () => {
         const o = {};
         data.forEach(r => { o[r.client_id] = { person:r.person||"", tel:r.tel||"", address:r.address||"" }; });
         const existing = (()=>{ try { return JSON.parse(localStorage.getItem("jt_contact_overrides")||"{}"); } catch { return {}; } })();
-        const merged = { ...existing, ...o }; // SB 優先（編集は即 upsert されるため SB が正。SB に無い荷主の local 編集は温存）
+        const merged = { ...o, ...existing }; // Local 優先（未blur編集がlocalStorageにあれば優先。SBに無い荷主のlocal編集も温存）
         localStorage.setItem("jt_contact_overrides", JSON.stringify(merged));
         window.dispatchEvent(new CustomEvent("jt-ls-change", { detail: { key: "jt_contact_overrides", val: merged } }));
         console.log("[Supabase] jt_contact_overrides synced:", data.length);
       } catch (e) { console.warn("[Supabase] contact sync failed:", e); }
     })();
   }, []);
-  // 起動時に Supabase の jt_dispatch / jt_shifts を localStorage へ同期
-  // → 配車ページを一度も開かなくても、勤怠管理の集計・運行予定に他端末の配車・シフトが反映される
-  // SB が空の場合は何もしない（既存 localStorage の初回移行は DispatchPage 側の差分同期に委ねる）
-  React.useEffect(() => {
-    if (!window.sb) return;
-    (async () => {
-      try {
-        const [d, s] = await Promise.all([
-          window.sb.from("jt_dispatch").select("*"),
-          window.sb.from("jt_shifts").select("*"),
-        ]);
-        const apply = (key, rows, dateCol, valCol) => {
-          if (!rows || !rows.length) return;
-          const o = {}; rows.forEach(r => { (o[r[dateCol]] = o[r[dateCol]] || {})[r.driver_id] = r[valCol]; });
-          localStorage.setItem(key, JSON.stringify(o));
-          window.dispatchEvent(new CustomEvent("jt-ls-change", { detail: { key, val: o } }));
-        };
-        if (!d.error) apply("jt_dispatch", d.data, "dispatch_date", "client_id");
-        if (!s.error) apply("jt_shifts", s.data, "shift_date", "state");
-        console.log("[Supabase] dispatch/shifts boot synced:", d.data?.length||0, s.data?.length||0);
-      } catch (e) { console.warn("[Supabase] dispatch/shifts boot sync failed:", e); }
-    })();
-  }, []);
+  // 注: jt_dispatch / jt_shifts はDispatchPage側で統一管理（差分同期+sbSnap）
+  // App側での起動syncは削除（F62: 複数エンドポイントでのレース競合・state巻き戻りを防止）
+  // App側は既存 localStorage から読み、DispatchPage遷移時に他端末値が反映される設計
   const pp = { accent, setPage };
 
   const pageMap = {
