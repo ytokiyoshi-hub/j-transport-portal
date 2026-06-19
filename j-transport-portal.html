@@ -575,8 +575,15 @@ function useLocalStorage(key, initial) {
         setVal(prev => JSON.stringify(prev) === JSON.stringify(e.detail.val) ? prev : e.detail.val);
       }
     };
+    // 別タブでの localStorage 変更を反映（native storage イベントは他タブでのみ発火＝自己ループしない）
+    const onStorage = (e) => {
+      if (e.key === key && e.newValue != null) {
+        try { const p = JSON.parse(e.newValue); setVal(prev => JSON.stringify(prev) === JSON.stringify(p) ? prev : p); } catch (err) {}
+      }
+    };
     window.addEventListener("jt-ls-change", onChange);
-    return () => window.removeEventListener("jt-ls-change", onChange);
+    window.addEventListener("storage", onStorage);
+    return () => { window.removeEventListener("jt-ls-change", onChange); window.removeEventListener("storage", onStorage); };
   }, [key]);
   return [val, setVal];
 }
