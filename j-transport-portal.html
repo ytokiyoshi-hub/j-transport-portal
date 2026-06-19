@@ -1569,7 +1569,7 @@ const PLPage = ({ accent, setPage }) => {
 
       {/* ── 年度ダイジェスト ── */}
       <Card>
-        <SH title={`${curYear}年度 ダイジェスト（実績${ytdMonthCount}ヶ月）`}/>
+        <SH title={`直近${ytdMonthCount}ヶ月 ダイジェスト（${mkLabel(selectedMonth)}まで）`}/>
         <div style={{ padding:"14px 18px", display:"grid", gridTemplateColumns:"repeat(6,1fr)", gap:12 }}>
           {[
             { l:"累計売上",       v:`${fmt(ytdData.sell)}`,         sub:`月平均 ${fmt(Math.round(monthAvg))}`,   c:accent },
