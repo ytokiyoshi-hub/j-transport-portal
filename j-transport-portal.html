@@ -925,10 +925,17 @@ const ALL_MONTH_KEYS = (()=>{
   return Array.from(s).sort();
 })();
 
-// 月キー操作
+// 月キー操作（前月が data に無い場合は直近実在月にフォールバック）
 const prevMonthKey = (mk) => {
   const [y,m] = mk.split('-').map(Number);
-  return m===1 ? `${y-1}-12` : `${y}-${String(m-1).padStart(2,'0')}`;
+  const candidate = m===1 ? `${y-1}-12` : `${y}-${String(m-1).padStart(2,'0')}`;
+  // candidate が実データに存在すれば返す
+  if (ALL_MONTH_KEYS.includes(candidate)) return candidate;
+  // 無ければ mk の1つ前のデータが存在する月を返す
+  const idx = ALL_MONTH_KEYS.indexOf(mk);
+  if (idx > 0) return ALL_MONTH_KEYS[idx - 1];
+  // フォールバック先も無い場合は candidate を返す（cm が {s:0,p:0} を返す）
+  return candidate;
 };
 
 // localStorage 直読みヘルパー（モジュールレベル: 編集オーバーライドを集計関数に反映するため）
@@ -1114,11 +1121,13 @@ const PLPage = ({ accent, setPage }) => {
   const curByClient = allClientsLive().map(c => {
     const h = cm(c.id, selectedMonth, dailyEdits);
     const ph = cm(c.id, prevMk, dailyEdits);
-    // 直近3ヶ月平均（当月含む直近3）
-    const idx = ALL_MONTH_KEYS.indexOf(selectedMonth);
+    // 直近3ヶ月平均（当月含む直近3）カレンダー月による計算
+    const m3 = selectedMonth;
+    const m2 = prevMonthKey(selectedMonth);
+    const m1 = prevMonthKey(m2);
     let avg3 = 0, n=0;
-    for (let k=Math.max(0,idx-2); k<=idx; k++) {
-      const v = cm(c.id, ALL_MONTH_KEYS[k], dailyEdits);
+    for (const mk of [m1, m2, m3]) {
+      const v = cm(c.id, mk, dailyEdits);
       if (v.s>0) { avg3 += v.s; n++; }
     }
     avg3 = n>0 ? avg3/n : 0;
@@ -1196,9 +1205,31 @@ const PLPage = ({ accent, setPage }) => {
 
   // === 12ヶ月推移 ===
   const trend = ALL_MONTH_KEYS.map(mk => ({...monthAgg(mk, dailyEdits), mk}));
-  const recentTrend = graphRange==="half" ? trend.slice(-6) : trend.slice(-12);
+  let recentTrend = graphRange==="half" ? trend.slice(-6) : trend.slice(-12);
+  // 月ギャップを補完（欠損月を0で埋める）
+  const fillMissingMonths = (arr) => {
+    if (arr.length < 2) return arr;
+    const filled = [];
+    for (let i = 0; i < arr.length; i++) {
+      filled.push(arr[i]);
+      if (i < arr.length - 1) {
+        const [cy, cm] = arr[i].mk.split('-').map(Number);
+        const [ny, nm] = arr[i+1].mk.split('-').map(Number);
+        const currDate = new Date(cy, cm-1, 1);
+        const nextDate = new Date(ny, nm-1, 1);
+        const monthDiff = (nextDate.getFullYear() - currDate.getFullYear())*12 + (nextDate.getMonth() - currDate.getMonth());
+        for (let j = 1; j < monthDiff; j++) {
+          const fillDate = new Date(cy, cm-1+j, 1);
+          const fillMkStr = `${fillDate.getFullYear()}-${String(fillDate.getMonth()+1).padStart(2,'0')}`;
+          filled.push({s: 0, p: 0, mk: fillMkStr});
+        }
+      }
+    }
+    return filled;
+  };
+  recentTrend = fillMissingMonths(recentTrend);
   const maxTrend = Math.max(...recentTrend.map(d=>d.sell), 1);
-  // 3ヶ月移動平均
+  // 3ヶ月移動平均（欠損補完後の連続月配列で計算）
   const ma3 = recentTrend.map((_,i) => {
     const slice = recentTrend.slice(Math.max(0,i-2), i+1);
     return slice.reduce((s,d)=>s+d.sell,0)/slice.length;
@@ -1217,7 +1248,7 @@ const PLPage = ({ accent, setPage }) => {
   // === 資金繰り予測（締め日別の入金スケジュール） ===
   const cycleGroups = {};
   curActive.forEach(r => {
-    const c = clients.find(x=>x.id===r.id) || {};
+    const c = resolveClientById(r.id) || {};
     const key = c?.billingCycle || "未設定";
     if (!cycleGroups[key]) cycleGroups[key] = { clients:[], sell:0, pay:0 };
     cycleGroups[key].clients.push(r);
@@ -1226,8 +1257,10 @@ const PLPage = ({ accent, setPage }) => {
   });
 
   // === YTD（年計）===
+  // 最後の12ヶ月（またはそれ以下）の合計で年計と予測を算出
   const curYear = selectedMonth.slice(0,4);
-  const ytdMonths = ALL_MONTH_KEYS.filter(mk => mk.startsWith(curYear));
+  const selectedIdx = ALL_MONTH_KEYS.indexOf(selectedMonth);
+  const ytdMonths = selectedIdx>=0 ? ALL_MONTH_KEYS.slice(Math.max(0, selectedIdx-11), selectedIdx+1) : [];
   const ytdData = ytdMonths.reduce((acc,mk)=>{
     const m = monthAgg(mk, dailyEdits); acc.sell+=m.sell; acc.pay+=m.pay; return acc;
   }, {sell:0,pay:0});
@@ -4044,21 +4077,15 @@ const Dashboard = ({ accent, setPage }) => {
         <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
           <thead>
             <tr style={{ background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
-              {["ドライバー","雇用形態","担当荷主","売上按分","支払按分","粗利貢献","ステータス"].map(h=>(
+              {["ドライバー","雇用形態","担当荷主","売上","支払","粗利貢献","ステータス"].map(h=>(
                 <th key={h} style={{ padding:"8px 14px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:11.5, whiteSpace:"nowrap" }}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {drivers.map((d,i)=>{
-              let sellD=0, payD=0;
-              clients.forEach(c=>{
-                if(!c.drivers.includes(d.id)) return;
-                const act=monthlyDisplay.find(r=>r.name===c.name);
-                if(!act) return;
-                sellD+=Math.round(act.sell/c.drivers.length);
-                payD +=Math.round(act.pay /c.drivers.length);
-              });
+              const stmt = buildDriverStatement(d, dailyEdits, displayMonthForPay(dailyEdits));
+              const sellD = stmt.totalSell, payD = stmt.totalPay;
               return (
                 <tr key={i} style={{ borderBottom:"1px solid #94a3b8" }}>
                   <td style={{ padding:"10px 14px" }}>
