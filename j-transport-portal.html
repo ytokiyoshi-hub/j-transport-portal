@@ -6920,7 +6920,9 @@ const App = () => {
     if (!window.sb) return;
     (async () => {
       try {
-        const { data, error } = await window.sb.from("jt_daily_entries").select("*");
+        // データ肥大化対策: 直近24ヶ月のみ取得（条件なし全件selectは運用数年で起動フリーズの原因。財務の前月比/3M平均/直近12ヶ月の比較期間は包含）
+        const _cut = (()=>{ const d=new Date(); d.setMonth(d.getMonth()-24); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; })();
+        const { data, error } = await window.sb.from("jt_daily_entries").select("*").gte("entry_date", _cut);
         if (error || !data || !data.length) return;
         // Supabase rows → nested structure {cid: {date: {did: {lbl: "value"}}}}
         const sb = {};
