@@ -5815,10 +5815,12 @@ const DispatchPage = ({ accent, setPage }) => {
     if(!window.sb){ sbReady.current = true; return; }
     (async () => {
       try {
+        // データ肥大化対策: 直近12ヶ月のみ取得（条件なし全件selectは運用数ヶ月で起動フリーズ/タブクラッシュの原因）
+        const _cut = (()=>{ const d=new Date(); d.setMonth(d.getMonth()-12); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; })();
         const [d,s,c] = await Promise.all([
-          window.sb.from("jt_dispatch").select("*"),
-          window.sb.from("jt_shifts").select("*"),
-          window.sb.from("jt_dispatch_confirmed").select("*"),
+          window.sb.from("jt_dispatch").select("*").gte("dispatch_date", _cut),
+          window.sb.from("jt_shifts").select("*").gte("shift_date", _cut),
+          window.sb.from("jt_dispatch_confirmed").select("*").gte("confirm_date", _cut),
         ]);
         if(!d.error && d.data && d.data.length){
           const o={}; d.data.forEach(r=>{ (o[r.dispatch_date]=o[r.dispatch_date]||{})[r.driver_id]=r.client_id; });
