@@ -2363,7 +2363,7 @@ const DriverFinancePage = ({ accent }) => {
             <div style={{ marginTop:14, display:"flex", gap:8 }}>
               <button onClick={()=>setSlipDriver(selSummary)}
                 style={{ flex:1, padding:"9px", background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:600, fontSize:13, cursor:"pointer" }}>支払明細書を発行</button>
-              <button onClick={()=>exportCSV(sel)}
+              <button onClick={()=>exportCSV(selSummary)}
                 style={{ flex:1, padding:"9px", border:"1px solid #94a3b8", background:"#fff", color:"#374151", borderRadius:6, fontSize:13, cursor:"pointer" }}>CSV出力</button>
             </div>
           </Card>
