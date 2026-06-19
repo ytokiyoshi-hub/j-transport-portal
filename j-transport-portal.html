@@ -2329,9 +2329,9 @@ const DriverFinancePage = ({ accent }) => {
 
             {/* 荷主別・区分別 実数内訳 */}
             <div style={{ fontSize:12, fontWeight:700, color:"#9ca3af", marginBottom:10 }}>荷主別 支払内訳（実数）</div>
-            {sel.clientRows.length === 0 ? (
+            {selSummary.clientRows.length === 0 ? (
               <div style={{ fontSize:13, color:"#9ca3af" }}>当月の運行実績なし</div>
-            ) : sel.clientRows.map((c,i)=>(
+            ) : selSummary.clientRows.map((c,i)=>(
               <div key={i} style={{ padding:"10px 0", borderBottom:"1px solid #94a3b8" }}>
                 <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
                   <span style={{ fontWeight:600, fontSize:13 }}>{c.name}<span style={{ fontSize:11, color:"#9ca3af", marginLeft:6 }}>{c.days}日</span></span>
