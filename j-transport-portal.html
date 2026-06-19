@@ -3371,6 +3371,7 @@ const DailyInputPage = ({ accent }) => {
         });
       })();
     }
+    return () => { ignore = true; };
   }, [selClient?.id, monthYear]);
 
   const dayTotals = dayRows.map(day => {
