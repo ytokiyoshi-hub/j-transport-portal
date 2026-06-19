@@ -3323,6 +3323,7 @@ const DailyInputPage = ({ accent }) => {
 
   // 月・荷主切替時に実績をロード（埋め込みdailyActuals → localStorage edits で上書き → Supabaseで上書き）
   React.useEffect(() => {
+    let ignore = false; // 月/荷主を高速切替した際、古いフェッチ応答が先祖返りするのを防ぐ
     const start = bStartStr;
     const end = bEndStr;
     const next = {};
