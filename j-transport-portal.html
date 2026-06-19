@@ -2406,7 +2406,7 @@ const InvoicePage = ({ accent }) => {
     if (paidSet.has(inv.id)) return "入金済";
     if (inv.status === "未請求" && issuedSet.has(inv.id)) {
       // 請求済だが、支払期限超過かつ未入金なら遅延
-      const today = new Date().toISOString().split('T')[0];
+      const today = (()=>{ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; })();
       if (inv.due && inv.due < today) return "遅延";
       return "請求済";
     }
