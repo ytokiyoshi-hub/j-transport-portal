@@ -1614,6 +1614,7 @@ const RateMasterPage = ({ accent, setPage }) => {
   };
   const updateContact = (key, value) => {
     const cur = contactFor(sel);
+    _contactEdited.add(sel.id); // 起動同期に上書きされないよう編集を記録
     setContactOverrides({ ...contactOverrides, [sel.id]: { ...cur, [key]: value } });
   };
   const flushContact = (isDirty=true) => {
