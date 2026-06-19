@@ -1004,7 +1004,6 @@ const computeLiveSum = (cid, mk, dailyEdits) => {
     const editDay = editsDA[date] || {};
     const driverIds = new Set([...Object.keys(baseDay), ...Object.keys(editDay)]);
     for (const did of driverIds) {
-      const driver = drivers.find(d => d.id === did);
       const baseDrv = baseDay[did] || {};
       const editDrv = editDay[did] || {};
       const labels = new Set([...Object.keys(baseDrv), ...Object.keys(editDrv)]);
