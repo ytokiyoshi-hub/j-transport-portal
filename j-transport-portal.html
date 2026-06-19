@@ -727,13 +727,6 @@ const Ic = ({ name, size=16, color="currentColor", strokeWidth=1.8 }) => (
 
 const fmt = n => "¥"+Number(Math.round(n)).toLocaleString();
 
-// CSV Injection対策: 数式文字（=, +, -, @）で始まる値をプレフィックス付きでエスケープ
-const csvSanitize = v => {
-  const s = String(v).trim();
-  if (/^[=+\-@]/.test(s)) return "'" + s;  // 先頭の数式文字をシングルクオート無害化
-  return s;
-};
-
 // ── Master Data ────────────────────────────────────────────────────────────
 
 // 荷主マスタ（実際のExcelファイルから）
