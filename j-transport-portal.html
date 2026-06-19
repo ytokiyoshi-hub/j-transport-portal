@@ -2292,7 +2292,8 @@ const DriverFinancePage = ({ accent }) => {
                   <td style={{ padding:"12px 14px" }}>{d.clientRows.length}社</td>
                   <td style={{ padding:"12px 14px" }}>{d.workDays>0?`${d.workDays}日`:"—"}</td>
                   <td style={{ padding:"12px 14px", color:"#6b7280" }}>{d.totalSell>0?fmt(d.totalSell):"—"}</td>
-                  <td style={{ padding:"12px 14px", fontWeight:700, color:accent }}>{d.grandTotal>0?fmt(d.grandTotal):"—"}</td>
+                  <td style={{ padding:"12px 14px", fontWeight:700, color:accent }}>{d.totalPay>0?fmt(d.totalPay):"—"}</td>
+                  <td style={{ padding:"12px 14px", color:"#9ca3af" }}>{d.tax>0?fmt(d.tax):"—"}</td>
                   <td style={{ padding:"12px 14px", fontWeight:600, color:d.totalProfit<0?"#dc2626":"#16a34a" }}>{d.workDays>0?fmt(d.totalProfit):"—"}</td>
                   <td style={{ padding:"12px 14px" }}>
                     {d.grandTotal>0
