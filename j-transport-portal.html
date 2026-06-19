@@ -6935,6 +6935,22 @@ const App = () => {
       } catch (e) { console.warn("[Supabase] sync failed:", e); }
     })();
   }, []);
+  // 起動時に Supabase(jt_kv) から 単価/締め/担当ドライバー/お知らせ の編集を localStorage へ同期（多端末で一致）
+  React.useEffect(() => {
+    if (!window.sb) return;
+    (async () => {
+      try {
+        const { data, error } = await window.sb.from("jt_kv").select("*");
+        if (error || !data || !data.length) return;
+        data.forEach(row => {
+          if (!JT_KV_KEYS.has(row.k) || row.v == null) return;
+          localStorage.setItem(row.k, JSON.stringify(row.v));
+          window.dispatchEvent(new CustomEvent("jt-ls-change", { detail: { key: row.k, val: row.v } }));
+        });
+        console.log("[Supabase] jt_kv synced:", data.length, "keys");
+      } catch (e) { console.warn("[Supabase] jt_kv sync failed:", e); }
+    })();
+  }, []);
   // 起動時に Supabase の jt_contact_overrides（請求先情報）を localStorage へ同期
   // → 単価マスタで編集した請求先が他端末・請求管理ページにも反映される
   React.useEffect(() => {
