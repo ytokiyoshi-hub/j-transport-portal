@@ -560,6 +560,7 @@ function useLocalStorage(key, initial) {
       window.dispatchEvent(new CustomEvent("jt-ls-change", { detail: { key, val } }));
       // 初回マウントでは upsert しない（起動時のSupabase読込より前に既定値で上書きするのを防ぐ）
       if (_mounted.current && JT_KV_KEYS.has(key) && window.sb) {
+        _jtKvEdited.add(key);
         window.sb.from("jt_kv").upsert({ k: key, v: val, updated_at: new Date().toISOString() }, { onConflict: "k" })
           .then(({ error }) => { if (error) console.warn("[jt_kv] save failed:", key, error); });
       }
