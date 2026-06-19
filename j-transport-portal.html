@@ -6721,6 +6721,26 @@ const ToastHost = () => {
   );
 };
 
+// ── Error Boundary（1画面の描画例外でアプリ全体が白画面化するのを防ぐ） ──
+class ErrorBoundary extends React.Component {
+  constructor(props){ super(props); this.state = { err: null }; }
+  static getDerivedStateFromError(err){ return { err }; }
+  componentDidCatch(err, info){ try { console.error("[ErrorBoundary]", err, info); } catch(e){} }
+  render(){
+    if (this.state.err) {
+      return (
+        <div style={{ padding:24, margin:16, border:"1px solid #fecaca", background:"#fef2f2", borderRadius:8, color:"#991b1b" }}>
+          <div style={{ fontSize:15, fontWeight:700, marginBottom:6 }}>この画面の表示中にエラーが発生しました</div>
+          <div style={{ fontSize:12, color:"#7f1d1d", marginBottom:10 }}>他の画面は引き続きご利用いただけます。お手数ですが、操作内容を控えて管理者にご連絡ください。</div>
+          <button onClick={()=>this.setState({ err:null })} style={{ padding:"6px 14px", border:"none", borderRadius:6, background:"#dc2626", color:"#fff", fontWeight:600, cursor:"pointer" }}>再表示する</button>
+          <pre style={{ marginTop:10, fontSize:10, color:"#9ca3af", whiteSpace:"pre-wrap", overflowX:"auto" }}>{String((this.state.err && this.state.err.message) || this.state.err)}</pre>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 // ── App ────────────────────────────────────────────────────────────────────
 const App = () => {
   const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
