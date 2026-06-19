@@ -1016,9 +1016,7 @@ const computeLiveSum = (cid, mk, dailyEdits) => {
         const r = c.rates.find(rr => rr.label === lbl);
         if (!r || cnt === 0) continue;
         sell += cnt * r.sell;
-        let linePay = cnt * r.pay;
-        if (driver && driver.type === "協力会社") linePay = Math.round(linePay * 1.1);
-        pay += linePay;
+        pay += cnt * r.pay;
         hasAny = true;
       }
     }
