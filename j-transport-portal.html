@@ -2263,6 +2263,8 @@ const DriverFinancePage = ({ accent }) => {
   const totalProfit = totalSell - totalPay;
 
   const exportCSV = exportDriverCSV;
+  // 選択中ドライバーの最新集計を毎レンダー再導出（dailyEdits変更後も明細書/CSVが古い値にならない）
+  const selSummary = sel ? driverSummary.find(d => d.id === sel.id) : null;
 
   return (
     <div>
