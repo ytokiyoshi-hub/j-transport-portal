@@ -6928,7 +6928,7 @@ const App = () => {
           </div>
         </div>
         <div ref={mainScrollRef} className="jt-content" style={{ flex:1, overflowY:"auto", padding:"22px 28px" }}>
-          {pageMap[page] || <div style={{ color:theme.textMute }}>ページが見つかりません</div>}
+          <ErrorBoundary key={page}>{pageMap[page] || <div style={{ color:theme.textMute }}>ページが見つかりません</div>}</ErrorBoundary>
         </div>
       </div>
 
