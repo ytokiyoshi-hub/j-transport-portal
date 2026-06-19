@@ -4438,7 +4438,7 @@ const SafetyPage = ({ accent }) => {
           { l:"連続無事故日数", v:`${noAccidentDays}日`, sub:"今年度目標: 365日", c:accent, bar:noAccidentDays/365 },
           { l:"アルコール検査",  v:"100%", sub:"本日 全員実施済",   c:"#16a34a", bar:1 },
           { l:"今月ヒヤリハット",v:`${_incCount}件`, sub:`${_incMonth===REF_MONTH?"":`${mkLabel(_incMonth)}実績 ／ `}前月比 ${_incDiff>0?`+${_incDiff}`:_incDiff<0?`-${-_incDiff}`:"±0"}件`, c:"#d97706", bar:null },
-          { l:"安全教育 修了率", v:`${Math.round(educationData.reduce((s,d)=>s+d.done,0)/educationData.reduce((s,d)=>s+d.total,0)*100)}%`, sub:`${educationData.filter(d=>d.done===d.total).length}/${educationData.length}名 完了`, c:"#7c3aed", bar:educationData.reduce((s,d)=>s+d.done,0)/educationData.reduce((s,d)=>s+d.total,0) },
+          { l:"安全教育 修了率", v:`${Math.round(educationData.reduce((s,d)=>s+d.total,0)>0 ? educationData.reduce((s,d)=>s+d.done,0)/educationData.reduce((s,d)=>s+d.total,0)*100 : 0)}%`, sub:`${educationData.filter(d=>d.done===d.total).length}/${educationData.length}名 完了`, c:"#7c3aed", bar:educationData.reduce((s,d)=>s+d.total,0)>0 ? educationData.reduce((s,d)=>s+d.done,0)/educationData.reduce((s,d)=>s+d.total,0) : 0 },
         ].map(({ l,v,sub,c,bar })=>(
           <Card key={l} style={{ padding:"18px 20px" }}>
             <div style={{ fontSize:26, fontWeight:700, color:c }}>{v}</div>
