@@ -1852,8 +1852,8 @@ const RateMasterPage = ({ accent, setPage }) => {
                     if (date < bp.start || date > bp.end) continue;
                     const baseDay = baseDA[date] || {};
                     const editDay = editsDA[date] || {};
-                    const drivers = new Set([...Object.keys(baseDay), ...Object.keys(editDay)]);
-                    for (const did of drivers) {
+                    const driverIds = new Set([...Object.keys(baseDay), ...Object.keys(editDay)]);
+                    for (const did of driverIds) {
                       const baseDrv = baseDay[did] || {};
                       const editDrv = editDay[did] || {};
                       const labels = new Set([...Object.keys(baseDrv), ...Object.keys(editDrv)]);
