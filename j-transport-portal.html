@@ -543,15 +543,25 @@ function useEscapeToClose(open, close) {
 
 // localStorage-backed state — persists across reloads. Drop-in replacement for React.useState.
 // 同一ウィンドウ内の複数インスタンス間でも同期する（カスタムイベント経由）
+// Supabase(jt_kv)へ同期する localStorage キー（単価/締め/担当ドライバー/お知らせ）。
+// 多端末で一致させ、「保存しました」トーストを実態に合わせる（旧: localStorageのみ＝虚偽）。
+const JT_KV_KEYS = new Set(["jt_rate_overrides","jt_cycle_overrides","jt_client_driver_overrides","jt_extra_announces","jt_announce_read_ids"]);
 function useLocalStorage(key, initial) {
   const [val, setVal] = React.useState(() => {
     try { const s = localStorage.getItem(key); return s != null ? JSON.parse(s) : initial; }
     catch (e) { return initial; }
   });
+  const _mounted = React.useRef(false);
   React.useEffect(() => {
     try {
       localStorage.setItem(key, JSON.stringify(val));
       window.dispatchEvent(new CustomEvent("jt-ls-change", { detail: { key, val } }));
+      // 初回マウントでは upsert しない（起動時のSupabase読込より前に既定値で上書きするのを防ぐ）
+      if (_mounted.current && JT_KV_KEYS.has(key) && window.sb) {
+        window.sb.from("jt_kv").upsert({ k: key, v: val, updated_at: new Date().toISOString() }, { onConflict: "k" })
+          .then(({ error }) => { if (error) console.warn("[jt_kv] save failed:", key, error); });
+      }
+      _mounted.current = true;
     } catch (e) {}
   }, [key, val]);
   React.useEffect(() => {
