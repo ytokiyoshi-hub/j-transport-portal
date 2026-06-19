@@ -2054,8 +2054,8 @@ const buildDriverStatement = (d, dailyEdits, mk) => {
   })).sort((a,b) => b.pay - a.pay);
   const dayRows = Object.values(dayMap).sort((a,b) => a.date<b.date?-1:1).map(dr => ({ ...dr, dow:_dowOf(dr.date) }));
   const tax = d.type === "協力会社" ? Math.round(totalPay * 0.1) : 0; // 外注は消費税込で支払
-  // 粗利は税込支払ベースで統一（売上 − 税込支払＝粗利。協力会社の消費税も原価に含める）
-  return { ...d, mk, clientRows, dayRows, totalSell, totalPay, totalProfit: totalSell-(totalPay+tax), tax, grandTotal: totalPay+tax, workDays: dayRows.length };
+  // 粗利は税抜どうしで算出（消費税は通過勘定のため粗利に含めない＝標準の売上総利益）
+  return { ...d, mk, clientRows, dayRows, totalSell, totalPay, totalProfit: totalSell-totalPay, tax, grandTotal: totalPay+tax, workDays: dayRows.length };
 };
 
 const exportDriverCSV = (d) => {
