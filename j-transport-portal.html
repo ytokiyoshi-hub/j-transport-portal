@@ -2317,7 +2317,7 @@ const DriverFinancePage = ({ accent }) => {
           </table>
         </Card>
 
-        {sel && (
+        {sel && selSummary && (
           <Card style={{ padding:20, alignSelf:"start" }}>
             <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:16 }}>
               <Avatar name={sel.name} size={36} bg={sel.type==="自社"?"#dbeafe":"#ede9fe"} color={sel.type==="自社"?"#1e40af":"#5b21b6"}/>
