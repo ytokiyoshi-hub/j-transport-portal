@@ -1002,8 +1002,9 @@ const computeLiveSum = (cid, mk, dailyEdits) => {
     if (date < bp.start || date > bp.end) continue;
     const baseDay = baseDA[date] || {};
     const editDay = editsDA[date] || {};
-    const drivers = new Set([...Object.keys(baseDay), ...Object.keys(editDay)]);
-    for (const did of drivers) {
+    const driverIds = new Set([...Object.keys(baseDay), ...Object.keys(editDay)]);
+    for (const did of driverIds) {
+      const driver = drivers.find(d => d.id === did);
       const baseDrv = baseDay[did] || {};
       const editDrv = editDay[did] || {};
       const labels = new Set([...Object.keys(baseDrv), ...Object.keys(editDrv)]);
@@ -1016,7 +1017,9 @@ const computeLiveSum = (cid, mk, dailyEdits) => {
         const r = c.rates.find(rr => rr.label === lbl);
         if (!r || cnt === 0) continue;
         sell += cnt * r.sell;
-        pay += cnt * r.pay;
+        let linePay = cnt * r.pay;
+        if (driver && driver.type === "協力会社") linePay = Math.round(linePay * 1.1);
+        pay += linePay;
         hasAny = true;
       }
     }
