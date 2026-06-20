@@ -5946,10 +5946,70 @@ const VehiclesPage = ({ accent }) => {
                   </div>
                 </div>
               )}
+
+              <div style={{ display:"flex", gap:8, marginTop:16, paddingTop:14, borderTop:"1px solid var(--jt-line)" }}>
+                <button onClick={()=>openEdit(sel)} style={{ flex:1, padding:"9px", background:"var(--jt-base)", color:"var(--jt-accent)", border:"none", borderRadius:13, fontWeight:600, fontSize:13, cursor:"pointer", boxShadow:"var(--jt-raised-sm)" }}>車両情報を編集</button>
+                {isExtra(sel.id) && <button onClick={()=>deleteExtraVehicle(sel.id)} style={{ padding:"9px 14px", background:"transparent", color:"var(--jt-alert)", border:"none", borderRadius:13, fontWeight:600, fontSize:13, cursor:"pointer" }}>削除</button>}
+              </div>
             </Card>
           );
         })()}
       </div>
+
+      {form && (
+        <div onClick={()=>setForm(null)} style={{ position:"fixed", inset:0, background:"rgba(60,55,75,.32)", display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"60px 16px", zIndex:1000, overflowY:"auto" }}>
+          <div onClick={(e)=>e.stopPropagation()} style={{ width:460, maxWidth:"calc(100vw - 32px)", background:"var(--jt-base)", borderRadius:18, boxShadow:"0 20px 50px rgba(35,28,50,.30)", padding:22, overflowX:"hidden", boxSizing:"border-box" }}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:18 }}>
+              <h3 style={{ margin:0, fontSize:17, fontWeight:700, color:"var(--jt-text)" }}>{form.mode==="add"?"車両追加":"車両情報の編集"}</h3>
+              <button onClick={()=>setForm(null)} style={{ width:30, height:30, borderRadius:9, border:"none", background:"var(--jt-base)", color:"var(--jt-text-sub)", cursor:"pointer", boxShadow:"var(--jt-raised-sm)", fontSize:16, lineHeight:1 }}>×</button>
+            </div>
+            <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+              <label style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                <span style={{ fontSize:12, fontWeight:600, color:"var(--jt-text-sub)" }}>ナンバー <span style={{ color:"var(--jt-alert)" }}>*</span></span>
+                <input value={form.plate} onChange={(e)=>setForm({...form, plate:e.target.value})} placeholder="例：品川 580 あ 1234" style={{ width:"100%", boxSizing:"border-box", padding:"11px 14px", border:"none", borderRadius:11, background:"var(--jt-base)", boxShadow:"var(--jt-inset)", color:"var(--jt-text)", fontSize:14, outline:"none" }} />
+              </label>
+              <div style={{ display:"flex", gap:12 }}>
+                <label style={{ flex:1, display:"flex", flexDirection:"column", gap:6, minWidth:0 }}>
+                  <span style={{ fontSize:12, fontWeight:600, color:"var(--jt-text-sub)" }}>車種</span>
+                  <select value={form.type} onChange={(e)=>setForm({...form, type:e.target.value})} style={{ width:"100%", boxSizing:"border-box", padding:"11px 14px", border:"none", borderRadius:11, background:"var(--jt-base)", boxShadow:"var(--jt-inset)", color:"var(--jt-text)", fontSize:14, outline:"none", cursor:"pointer" }}>
+                    <option value="軽バン">軽バン</option>
+                    <option value="軽トラック">軽トラック</option>
+                    <option value="その他">その他</option>
+                  </select>
+                </label>
+                <label style={{ flex:1, display:"flex", flexDirection:"column", gap:6, minWidth:0 }}>
+                  <span style={{ fontSize:12, fontWeight:600, color:"var(--jt-text-sub)" }}>状態</span>
+                  <select value={form.status} onChange={(e)=>setForm({...form, status:e.target.value})} style={{ width:"100%", boxSizing:"border-box", padding:"11px 14px", border:"none", borderRadius:11, background:"var(--jt-base)", boxShadow:"var(--jt-inset)", color:"var(--jt-text)", fontSize:14, outline:"none", cursor:"pointer" }}>
+                    <option value="稼働中">稼働中</option>
+                    <option value="整備中">整備中</option>
+                  </select>
+                </label>
+              </div>
+              <label style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                <span style={{ fontSize:12, fontWeight:600, color:"var(--jt-text-sub)" }}>担当ドライバー</span>
+                <select value={form.driverId} onChange={(e)=>setForm({...form, driverId:e.target.value})} style={{ width:"100%", boxSizing:"border-box", padding:"11px 14px", border:"none", borderRadius:11, background:"var(--jt-base)", boxShadow:"var(--jt-inset)", color:"var(--jt-text)", fontSize:14, outline:"none", cursor:"pointer" }}>
+                  <option value="">未割当</option>
+                  {drivers.map(dr => <option key={dr.id} value={dr.id}>{dr.name}</option>)}
+                </select>
+              </label>
+              <div style={{ display:"flex", gap:12 }}>
+                <label style={{ flex:1, display:"flex", flexDirection:"column", gap:6, minWidth:0 }}>
+                  <span style={{ fontSize:12, fontWeight:600, color:"var(--jt-text-sub)" }}>走行距離（km）</span>
+                  <input value={form.mileage} onChange={(e)=>setForm({...form, mileage:e.target.value})} inputMode="numeric" placeholder="0" style={{ width:"100%", boxSizing:"border-box", padding:"11px 14px", border:"none", borderRadius:11, background:"var(--jt-base)", boxShadow:"var(--jt-inset)", color:"var(--jt-text)", fontSize:14, outline:"none" }} />
+                </label>
+                <label style={{ flex:1, display:"flex", flexDirection:"column", gap:6, minWidth:0 }}>
+                  <span style={{ fontSize:12, fontWeight:600, color:"var(--jt-text-sub)" }}>車検期限</span>
+                  <input type="date" value={form.inspection} onChange={(e)=>setForm({...form, inspection:e.target.value})} style={{ width:"100%", boxSizing:"border-box", padding:"11px 14px", border:"none", borderRadius:11, background:"var(--jt-base)", boxShadow:"var(--jt-inset)", color:"var(--jt-text)", fontSize:14, outline:"none" }} />
+                </label>
+              </div>
+            </div>
+            <div style={{ display:"flex", gap:10, marginTop:22 }}>
+              <button onClick={()=>setForm(null)} style={{ flex:"0 0 auto", padding:"11px 18px", background:"transparent", color:"var(--jt-text-sub)", border:"none", borderRadius:12, fontWeight:600, fontSize:14, cursor:"pointer" }}>キャンセル</button>
+              <button onClick={saveVehicle} style={{ flex:1, padding:"11px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:12, fontWeight:700, fontSize:14, cursor:"pointer", boxShadow:"var(--jt-raised-sm), inset 0 1px 0 rgba(255,255,255,.28)" }}>{form.mode==="add"?"追加する":"更新する"}</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
