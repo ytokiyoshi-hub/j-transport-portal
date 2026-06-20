@@ -1651,6 +1651,7 @@ const PLPage = ({ accent, setPage }) => {
 
 // ── 単価マスタ管理 ─────────────────────────────────────────────────────────
 const RateMasterPage = ({ accent, setPage }) => {
+  const drivers = driversLive();
   const [sel, setSel] = React.useState(null);
   const [extraClients, setExtraClients] = useLocalStorage("jt_extra_clients", []);
   const [rateOverrides, setRateOverrides] = useLocalStorage("jt_rate_overrides", {});
@@ -2308,6 +2309,7 @@ const DriverSlipModal = ({ driver, accent, onClose }) => {
 };
 
 const DriverFinancePage = ({ accent }) => {
+  const drivers = driversLive();
   const [sel, setSel] = React.useState(null);
   const [slipDriver, setSlipDriver] = React.useState(null);
   // 日次入力の編集を反映するために live aggregation
@@ -3059,6 +3061,7 @@ const InvoicePage = ({ accent }) => {
 
 // ── 荷主管理 ───────────────────────────────────────────────────────────────
 const ClientPage = ({ accent, setPage }) => {
+  const drivers = driversLive();
   const [sel, setSel] = React.useState(null);
   const [search, setSearch] = React.useState("");
   const [extraClients] = useLocalStorage("jt_extra_clients", []);
@@ -3233,6 +3236,7 @@ const ClientPage = ({ accent, setPage }) => {
 
 // ── 日次実績入力（罫線濃色化） ─────────────────────────────────────────────
 const DailyInputPage = ({ accent }) => {
+  const drivers = driversLive();
   const [scClients, setScClients] = React.useState(null);
   const [scDrivers, setScDrivers] = React.useState(null);
   const [extraClients] = useLocalStorage("jt_extra_clients", []);
@@ -3897,6 +3901,7 @@ const DailyInputPage = ({ accent }) => {
 
 // ── ダッシュボード ─────────────────────────────────────────────────────────
 const Dashboard = ({ accent, setPage }) => {
+  const drivers = driversLive();
   // 「自動更新」表示の通り、時計を30秒ごとに更新する
   const [now, setNow] = React.useState(() => new Date());
   React.useEffect(() => { const t = setInterval(() => setNow(new Date()), 30000); return () => clearInterval(t); }, []);
@@ -4332,12 +4337,43 @@ const DriversPage = ({ accent, setPage }) => {
   const [search, setSearch] = React.useState("");
   const [typeFilter, setTypeFilter] = React.useState("すべて");
   const [clientDriverOverrides] = useLocalStorage("jt_client_driver_overrides", {});
+  const [extraDrivers, setExtraDrivers] = useLocalStorage("jt_extra_drivers", []);
+  const [driverOverrides, setDriverOverrides] = useLocalStorage("jt_driver_overrides", {});
+  const [form, setForm] = React.useState(null); // null=閉 / {mode,id?,name,type,area}
+  useEscapeToClose(!!form, ()=>setForm(null));
 
+  const drivers = driversLive(); // 追加・編集を反映した実効ドライバー一覧
   // ドライバー情報の管理画面（売上・支払・粗利は「ドライバー別収支」へ）
   const vehByDriver = {}; vehicleMaster.forEach(v => { if (v.driverId) vehByDriver[v.driverId] = v; });
   // 担当荷主＝単価マスタの担当ドライバー設定を反映した実効値
   const driverClients = (did) => allClientsLive().filter(c => ((clientDriverOverrides[c.id]) || c.drivers || []).includes(did)).map(c => c.name);
   const driverStatus = (d) => { const v = vehByDriver[d.id]; return v && v.status === "整備中" ? "整備中" : "稼働中"; };
+
+  // ── 追加・編集 ──
+  const isExtra = (id) => (extraDrivers||[]).some(d => d.id === id);
+  const nextDriverId = () => { const nums = drivers.map(d => parseInt((String(d.id).match(/\d+/)||["0"])[0],10)||0); return "DR-" + String(Math.max(0,...nums) + 1).padStart(2,"0"); };
+  const _syncDriverToSb = async (d) => { if (!window.sb) return; try { await window.sb.from("jt_drivers").upsert({ id:d.id, name:d.name, type:d.type, area:d.area, status:"稼働中" }, { onConflict:"id" }); } catch(e){} };
+  const openAdd = () => setForm({ mode:"add", name:"", type:"自社", area:"" });
+  const openEdit = (d) => setForm({ mode:"edit", id:d.id, name:d.name, type:d.type, area:d.area||"" });
+  const saveDriver = () => {
+    const name = (form.name||"").trim();
+    if (!name) { showToast("氏名を入力してください", "error"); return; }
+    const rec = { name, type: form.type, area: (form.area||"").trim() || "—" };
+    if (form.mode === "add") {
+      const id = nextDriverId();
+      setExtraDrivers([ ...(extraDrivers||[]), { id, clients:[], ...rec } ]);
+      _syncDriverToSb({ id, ...rec });
+      showToast("ドライバーを追加しました");
+    } else {
+      if (isExtra(form.id)) setExtraDrivers((extraDrivers||[]).map(d => d.id===form.id ? { ...d, ...rec } : d));
+      else setDriverOverrides({ ...driverOverrides, [form.id]: rec });
+      _syncDriverToSb({ id: form.id, ...rec });
+      setSel(s => (s && s.id===form.id) ? { ...s, ...rec } : s);
+      showToast("ドライバー情報を更新しました");
+    }
+    setForm(null);
+  };
+  const deleteExtraDriver = (id) => { if (!confirm("この追加ドライバーを削除しますか？")) return; setExtraDrivers((extraDrivers||[]).filter(d => d.id !== id)); setSel(null); showToast("削除しました"); };
 
   const list = drivers.filter(d => {
     const matchSearch = d.name.includes(search) || (d.area || "").includes(search);
@@ -4460,6 +4496,7 @@ const DriversPage = ({ accent, setPage }) => {
 };
 
 const SafetyPage = ({ accent }) => {
+  const drivers = driversLive();
   const todayLocal = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; };
   const [showIncidentForm, setShowIncidentForm] = React.useState(false);
   const [incident, setIncident] = React.useState({ date: todayLocal(), driver:"", type:"ヒヤリハット", detail:"", location:"" });
@@ -5632,6 +5669,7 @@ const vehicleMaster = [
 ];
 
 const VehiclesPage = ({ accent }) => {
+  const drivers = driversLive();
   const [sel, setSel] = React.useState(null);
   const [statusFilter, setStatusFilter] = React.useState("すべて");
   const today = new Date(); today.setHours(0,0,0,0);
@@ -5863,6 +5901,7 @@ const SHIFT_STYLE = {
 };
 
 const DispatchPage = ({ accent, setPage }) => {
+  const drivers = driversLive();
   const [tab, setTab] = React.useState("dispatch"); // dispatch | shift | bill
   const [weekOffset, setWeekOffset] = React.useState(0);
   const [dispatch, setDispatch] = useLocalStorage("jt_dispatch", {});
@@ -6491,6 +6530,7 @@ const DispatchPage = ({ accent, setPage }) => {
 };
 
 const AttendancePage = ({ accent }) => {
+  const drivers = driversLive();
   const [tab, setTab] = React.useState("attendance"); // "attendance" | "schedule"
   const [expandedDriver, setExpandedDriver] = React.useState(null);
   const [weekOffset, setWeekOffset] = React.useState(0);
