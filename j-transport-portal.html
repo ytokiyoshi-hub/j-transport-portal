@@ -918,7 +918,7 @@ const announces = [
 
 // ── Shared UI ──────────────────────────────────────────────────────────────
 const StatusBadge = ({ label }) => {
-  const D=["#F3E6E3","#B05A60"], S=["#E6EFE4","#5E8C68"], W=["#F2EBDC","#8C6A2E"], A=["#EFEDF3","#7E6593"], N=["#ECEAF0","#645F6E"];
+  const D=["#F3E6E3","#B05A60"], S=["#E6EFE4","#6E9E78"], W=["#F2EBDC","#8C6A2E"], A=["#EFEDF3","#7E6593"], N=["#ECEAF0","#645F6E"];
   const map = {
     重要:D, 遅延:D, 持戻り:D, 却下:D, 至急:D, 差戻し:D, 未割当:D,
     運行:S, 入金済:S, 稼働中:S, 出勤:S, 承認済:S, 承認済み:S, 完了:S, 異常なし:S, 割当済:S, 正常:S, 解決:S, 良好:S,
@@ -1133,8 +1133,8 @@ const ParentClientSummaryBlock = ({ accent, selectedMonth, dailyEdits }) => {
                 <td style={{ padding:"9px 14px", textAlign:"right", color:"#645F6E" }}>{g.count}件</td>
                 <td style={{ padding:"9px 14px", textAlign:"right", fontWeight:700, color:accent }}>{g.sell>0?fmt(g.sell):"—"}</td>
                 <td style={{ padding:"9px 14px", textAlign:"right", color:"#645F6E" }}>{g.pay>0?fmt(g.pay):"—"}</td>
-                <td style={{ padding:"9px 14px", textAlign:"right", fontWeight:700, color:g.profit>0?"#5E8C68":"#A09AAB" }}>{g.profit!==0?fmt(g.profit):"—"}</td>
-                <td style={{ padding:"9px 14px", textAlign:"right", color:g.rate>=15?"#5E8C68":g.rate>=10?"#C39A52":"#B05A60" }}>{g.sell>0?g.rate.toFixed(1)+"%":"—"}</td>
+                <td style={{ padding:"9px 14px", textAlign:"right", fontWeight:700, color:g.profit>0?"#6E9E78":"#A09AAB" }}>{g.profit!==0?fmt(g.profit):"—"}</td>
+                <td style={{ padding:"9px 14px", textAlign:"right", color:g.rate>=15?"#6E9E78":g.rate>=10?"#C39A52":"#B05A60" }}>{g.sell>0?g.rate.toFixed(1)+"%":"—"}</td>
                 <td style={{ padding:"9px 14px", textAlign:"right" }}>
                   <div style={{ display:"inline-flex", alignItems:"center", gap:6 }}>
                     <div style={{ width:60, height:6, background:"#DEDAE5", borderRadius:3, overflow:"hidden" }}>
@@ -1375,15 +1375,15 @@ const PLPage = ({ accent, setPage }) => {
         {[
           { l:"売上", v:fmt(cur.sell), sub:`前月比 ${sellDelta>=0?"+":""}${sellDelta.toFixed(1)}%`, c:"#7E6593", up: sellDelta>=0 },
           { l:"支払", v:fmt(cur.pay),  sub:`原価率 ${cur.sell>0?(cur.pay/cur.sell*100).toFixed(1):"—"}%`, c:"#C39A52", up:null },
-          { l:"粗利", v:fmt(cur.profit), sub:`前月比 ${profitDelta>=0?"+":""}${profitDelta.toFixed(1)}%`, c:"#5E8C68", up: profitDelta>=0 },
-          { l:`粗利率（目標 ${TARGET_MARGIN}%）`, v:`${curMargin.toFixed(1)}%`, sub:`前月 ${prevMargin.toFixed(1)}% ／ ${curMargin>=TARGET_MARGIN?"目標達成":"目標未達"}`, c: curMargin>=TARGET_MARGIN?"#5E8C68":curMargin>=ALERT_MARGIN_LOW?"#C39A52":"#B05A60", up: curMargin>=TARGET_MARGIN },
+          { l:"粗利", v:fmt(cur.profit), sub:`前月比 ${profitDelta>=0?"+":""}${profitDelta.toFixed(1)}%`, c:"#6E9E78", up: profitDelta>=0 },
+          { l:`粗利率（目標 ${TARGET_MARGIN}%）`, v:`${curMargin.toFixed(1)}%`, sub:`前月 ${prevMargin.toFixed(1)}% ／ ${curMargin>=TARGET_MARGIN?"目標達成":"目標未達"}`, c: curMargin>=TARGET_MARGIN?"#6E9E78":curMargin>=ALERT_MARGIN_LOW?"#C39A52":"#B05A60", up: curMargin>=TARGET_MARGIN },
           { l:"受取勘定（未請求＋遅延）", v:fmt(pending.reduce((s,i)=>s+_invAmount(i),0)+unpaid.reduce((s,i)=>s+_invAmount(i),0)), sub:`未請求 ${pending.length} ／ 遅延 ${unpaid.length}`, c:"#7E6593", up:null },
-          { l:"黒字荷主数", v:`${profitableCount} / ${curActive.length}`, sub: profitableCount===curActive.length?"全社黒字":`${curActive.length-profitableCount}社が赤字`, c:profitableCount===curActive.length?"#5E8C68":"#B05A60", up: profitableCount===curActive.length },
+          { l:"黒字荷主数", v:`${profitableCount} / ${curActive.length}`, sub: profitableCount===curActive.length?"全社黒字":`${curActive.length-profitableCount}社が赤字`, c:profitableCount===curActive.length?"#6E9E78":"#B05A60", up: profitableCount===curActive.length },
         ].map(({l,v,sub,c,up})=>(
           <Card key={l} style={{ padding:"14px 16px" }}>
             <div style={{ fontSize:10.5, color:"#A09AAB", marginBottom:6, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{l}</div>
             <div style={{ fontSize:18, fontWeight:800, color:c, lineHeight:1.1 }}>{v}</div>
-            <div style={{ fontSize:10.5, color: up===true?"#5E8C68":up===false?"#B05A60":"#A09AAB", marginTop:5 }}>{sub}</div>
+            <div style={{ fontSize:10.5, color: up===true?"#6E9E78":up===false?"#B05A60":"#A09AAB", marginTop:5 }}>{sub}</div>
           </Card>
         ))}
       </div>
@@ -1511,8 +1511,8 @@ const PLPage = ({ accent, setPage }) => {
                     </td>
                     <td style={{ padding:"10px 12px", textAlign:"right", fontWeight:700, color:accent }}>{fmt(r.sell)}</td>
                     <td style={{ padding:"10px 12px", textAlign:"right", color:"#645F6E" }}>{fmt(r.pay)}</td>
-                    <td style={{ padding:"10px 12px", textAlign:"right", fontWeight:700, color:r.profit>=0?"#5E8C68":"#B05A60" }}>{fmt(r.profit)}</td>
-                    <td style={{ padding:"10px 12px", textAlign:"right", fontWeight:700, color:r.rate>=TARGET_MARGIN?"#5E8C68":r.rate>=ALERT_MARGIN_LOW?"#C39A52":"#B05A60" }}>{r.rate.toFixed(1)}%</td>
+                    <td style={{ padding:"10px 12px", textAlign:"right", fontWeight:700, color:r.profit>=0?"#6E9E78":"#B05A60" }}>{fmt(r.profit)}</td>
+                    <td style={{ padding:"10px 12px", textAlign:"right", fontWeight:700, color:r.rate>=TARGET_MARGIN?"#6E9E78":r.rate>=ALERT_MARGIN_LOW?"#C39A52":"#B05A60" }}>{r.rate.toFixed(1)}%</td>
                     <td style={{ padding:"10px 12px", textAlign:"right" }}>
                       <div style={{ display:"flex", alignItems:"center", gap:6, justifyContent:"flex-end" }}>
                         <div style={{ width:50, height:4, background:"var(--jt-base)", borderRadius:13, boxShadow:"var(--jt-inset-sm)" }}>
@@ -1521,14 +1521,14 @@ const PLPage = ({ accent, setPage }) => {
                         <span style={{ fontSize:11 }}>{r.pct.toFixed(1)}%</span>
                       </div>
                     </td>
-                    <td style={{ padding:"10px 12px", textAlign:"right", color:r.sellDelta>=0?"#5E8C68":"#B05A60", fontWeight:600 }}>
+                    <td style={{ padding:"10px 12px", textAlign:"right", color:r.sellDelta>=0?"#6E9E78":"#B05A60", fontWeight:600 }}>
                       {r.prevSell>0 ? `${r.sellDelta>=0?"+":""}${r.sellDelta.toFixed(1)}%` : "—"}
                     </td>
                     <td style={{ padding:"10px 12px", textAlign:"right", color:"#645F6E", fontSize:11 }}>{fmt(Math.round(r.avg3))}</td>
                     <td style={{ padding:"10px 12px", textAlign:"center" }}>
                       <div style={{ display:"flex", gap:3, flexWrap:"wrap", justifyContent:"center" }}>
                         {warn.length===0
-                          ? <span style={{ fontSize:10, padding:"2px 6px", background:"var(--jt-base)", color:"#5E8C68", borderRadius:3, fontWeight:600, boxShadow:"var(--jt-inset)" }}>健全</span>
+                          ? <span style={{ fontSize:10, padding:"2px 6px", background:"var(--jt-base)", color:"#6E9E78", borderRadius:3, fontWeight:600, boxShadow:"var(--jt-inset)" }}>健全</span>
                           : warn.map((w,wi)=><span key={wi} style={{ fontSize:10, padding:"2px 6px", background:w.c+"22", color:w.c, borderRadius:3, fontWeight:600 }}>{w.l}</span>)
                         }
                       </div>
@@ -1542,10 +1542,10 @@ const PLPage = ({ accent, setPage }) => {
                 <td colSpan={2} style={{ padding:"11px 12px", fontWeight:700 }}>合計（{curActive.length}社）</td>
                 <td style={{ padding:"11px 12px", textAlign:"right", fontWeight:800, color:accent }}>{fmt(cur.sell)}</td>
                 <td style={{ padding:"11px 12px", textAlign:"right", fontWeight:800 }}>{fmt(cur.pay)}</td>
-                <td style={{ padding:"11px 12px", textAlign:"right", fontWeight:800, color:"#5E8C68" }}>{fmt(cur.profit)}</td>
+                <td style={{ padding:"11px 12px", textAlign:"right", fontWeight:800, color:"#6E9E78" }}>{fmt(cur.profit)}</td>
                 <td style={{ padding:"11px 12px", textAlign:"right", fontWeight:800 }}>{curMargin.toFixed(1)}%</td>
                 <td style={{ padding:"11px 12px", textAlign:"right", fontWeight:600 }}>100%</td>
-                <td style={{ padding:"11px 12px", textAlign:"right", fontWeight:600, color:sellDelta>=0?"#5E8C68":"#B05A60" }}>{prev.sell>0?`${sellDelta>=0?"+":""}${sellDelta.toFixed(1)}%`:"—"}</td>
+                <td style={{ padding:"11px 12px", textAlign:"right", fontWeight:600, color:sellDelta>=0?"#6E9E78":"#B05A60" }}>{prev.sell>0?`${sellDelta>=0?"+":""}${sellDelta.toFixed(1)}%`:"—"}</td>
                 <td colSpan={2}/>
               </tr>
             </tfoot>
@@ -1572,7 +1572,7 @@ const PLPage = ({ accent, setPage }) => {
             </div>
             <div style={{ padding:"10px 12px", border:"none", borderRadius:4, marginBottom:8, background:"var(--jt-base)", boxShadow:"var(--jt-inset)" }}>
               <div style={{ fontSize:11, color:"#A09AAB" }}>1ドライバーあたり粗利貢献（{activeDriverCount}名）</div>
-              <div style={{ fontSize:18, fontWeight:800, color:"#5E8C68", marginTop:3 }}>{fmt(Math.round(perDriverProfit))}/名</div>
+              <div style={{ fontSize:18, fontWeight:800, color:"#6E9E78", marginTop:3 }}>{fmt(Math.round(perDriverProfit))}/名</div>
               <div style={{ fontSize:10, color:"#A09AAB", marginTop:2 }}>当月粗利 ÷ 全ドライバー数</div>
             </div>
             <div style={{ fontSize:11, color:"#645F6E", lineHeight:1.5 }}>
@@ -1600,7 +1600,7 @@ const PLPage = ({ accent, setPage }) => {
                     </div>
                     <div style={{ textAlign:"right" }}>
                       <div style={{ fontSize:15, fontWeight:800, color:accent }}>{fmt(grp.sell)}</div>
-                      <div style={{ fontSize:10, color:"#5E8C68" }}>粗利 {fmt(grp.sell-grp.pay)}</div>
+                      <div style={{ fontSize:10, color:"#6E9E78" }}>粗利 {fmt(grp.sell-grp.pay)}</div>
                     </div>
                   </div>
                   <div style={{ fontSize:10.5, color:"#645F6E", marginTop:4 }}>
@@ -1624,10 +1624,10 @@ const PLPage = ({ accent, setPage }) => {
           {[
             { l:"累計売上",       v:`${fmt(ytdData.sell)}`,         sub:`月平均 ${fmt(Math.round(monthAvg))}`,   c:accent },
             { l:"累計支払",       v:`${fmt(ytdData.pay)}`,          sub:`原価率 ${ytdData.sell>0?(ytdData.pay/ytdData.sell*100).toFixed(1):"—"}%`, c:"#C39A52" },
-            { l:"累計粗利",       v:`${fmt(ytdProfit)}`,           sub:`粗利率 ${ytdData.sell>0?(ytdProfit/ytdData.sell*100).toFixed(1):"—"}%`,   c:"#5E8C68" },
+            { l:"累計粗利",       v:`${fmt(ytdProfit)}`,           sub:`粗利率 ${ytdData.sell>0?(ytdProfit/ytdData.sell*100).toFixed(1):"—"}%`,   c:"#6E9E78" },
             { l:"年間着地予測",   v:`${fmt(Math.round(projection))}`, sub:`月平均×12（${ytdMonthCount}ヶ月実績ベース）`, c:"#7E6593" },
-            { l:"目標達成率",     v:`${curMargin>=TARGET_MARGIN?"達成":"未達"}`, sub:`粗利率 ${curMargin.toFixed(1)}% ／ 目標 ${TARGET_MARGIN}%`, c: curMargin>=TARGET_MARGIN?"#5E8C68":"#B05A60" },
-            { l:"年間着地利益",   v:`${fmt(Math.round(projectionProfit))}`, sub:`利益予測（${ytdMonthCount}ヶ月実績ベース）`, c:"#5E8C68" },
+            { l:"目標達成率",     v:`${curMargin>=TARGET_MARGIN?"達成":"未達"}`, sub:`粗利率 ${curMargin.toFixed(1)}% ／ 目標 ${TARGET_MARGIN}%`, c: curMargin>=TARGET_MARGIN?"#6E9E78":"#B05A60" },
+            { l:"年間着地利益",   v:`${fmt(Math.round(projectionProfit))}`, sub:`利益予測（${ytdMonthCount}ヶ月実績ベース）`, c:"#6E9E78" },
           ].map(({l,v,sub,c})=>(
             <div key={l} style={{ padding:"10px 12px", borderLeft:`3px solid ${c}`, background:"var(--jt-base)", borderRadius:4, boxShadow:"var(--jt-inset)" }}>
               <div style={{ fontSize:11, color:"#A09AAB", marginBottom:4 }}>{l}</div>
@@ -1808,12 +1808,12 @@ const RateMasterPage = ({ accent, setPage }) => {
                               onBlur={()=>showToast("単価を保存しました")}
                               style={{ width:96, padding:"6px 10px", background:"var(--jt-base)", border:"none", boxShadow:"var(--jt-inset)", borderRadius:10, fontSize:13, fontFamily:"inherit", outline:"none", color:"var(--jt-text)" }}/>
                           </td>
-                          <td style={{ padding:"10px 12px", color: gp < 0 ? "#B05A60" : "#5E8C68", fontWeight:600 }}>
+                          <td style={{ padding:"10px 12px", color: gp < 0 ? "#B05A60" : "#6E9E78", fontWeight:600 }}>
                             {gp !== 0 ? (gp > 0 ? "+" + fmt(gp) : "-" + fmt(-gp)) : "—"}
                           </td>
                           <td style={{ padding:"10px 12px" }}>
                             {rate !== "—" ? (
-                              <span style={{ fontWeight:600, color: Number(rate)<0?"#B05A60":Number(rate)>=30?"#5E8C68":Number(rate)>=20?"#7E6593":"#C39A52" }}>{rate}%</span>
+                              <span style={{ fontWeight:600, color: Number(rate)<0?"#B05A60":Number(rate)>=30?"#6E9E78":Number(rate)>=20?"#7E6593":"#C39A52" }}>{rate}%</span>
                             ) : "—"}
                           </td>
                         </tr>
@@ -1931,7 +1931,7 @@ const RateMasterPage = ({ accent, setPage }) => {
                 return (<><div style={{ fontSize:13, fontWeight:700, marginBottom:14 }}>今月実績（速報）<span style={{ fontWeight:600, color:"#645F6E", marginLeft:6, fontSize:11 }}>{isCur ? REF_MONTH_LABEL : "最新確定 "+LATEST_MONTH_LABEL}</span></div>
                 {!(act.sell>0) ? <div style={{ color:"#A09AAB", fontSize:13 }}>実績なし</div> : (
                   <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:16 }}>
-                    {[["売上",fmt(act.sell),"#7E6593"],["支払",fmt(act.pay),"#C39A52"],["粗利",fmt(act.profit),act.profit<0?"#B05A60":"#5E8C68"]].map(([l,v,c])=>(
+                    {[["売上",fmt(act.sell),"#7E6593"],["支払",fmt(act.pay),"#C39A52"],["粗利",fmt(act.profit),act.profit<0?"#B05A60":"#6E9E78"]].map(([l,v,c])=>(
                       <div key={l} style={{ textAlign:"center", padding:"12px", background:"var(--jt-base)", borderRadius:6, boxShadow:"var(--jt-inset)" }}>
                         <div style={{ fontSize:11, color:"#A09AAB" }}>{l}</div>
                         <div style={{ fontSize:18, fontWeight:700, color:c, marginTop:4 }}>{v}</div>
@@ -2040,8 +2040,8 @@ const RateMasterPage = ({ accent, setPage }) => {
             </div>
 
             <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:10, marginTop:24 }}>
-              <span style={{ display:"inline-flex", alignItems:"center", gap:5, fontSize:12, color:"#5E8C68", fontWeight:600 }}>
-                <Ic name="check" size={13} color="#5E8C68" strokeWidth={2.5}/>
+              <span style={{ display:"inline-flex", alignItems:"center", gap:5, fontSize:12, color:"#6E9E78", fontWeight:600 }}>
+                <Ic name="check" size={13} color="#6E9E78" strokeWidth={2.5}/>
                 荷主コードと荷主名を入力すると自動登録
               </span>
               <button onClick={closeAdd}
@@ -2360,7 +2360,7 @@ const DriverFinancePage = ({ accent }) => {
                   <td style={{ padding:"12px 14px", color:"var(--jt-text-sub)" }}>{d.totalSell>0?fmt(d.totalSell):"—"}</td>
                   <td style={{ padding:"12px 14px", fontWeight:700, color:"var(--jt-accent)" }}>{d.totalPay>0?fmt(d.totalPay):"—"}</td>
                   <td style={{ padding:"12px 14px", color:"var(--jt-text-mute)" }}>{d.tax>0?fmt(d.tax):"—"}</td>
-                  <td style={{ padding:"12px 14px", fontWeight:600, color:d.totalProfit<0?"var(--jt-alert)":"#5E8C68" }}>{d.workDays>0?fmt(d.totalProfit):"—"}</td>
+                  <td style={{ padding:"12px 14px", fontWeight:600, color:d.totalProfit<0?"var(--jt-alert)":"#6E9E78" }}>{d.workDays>0?fmt(d.totalProfit):"—"}</td>
                   <td style={{ padding:"12px 14px" }}>
                     {d.grandTotal>0
                       ? <span style={{ padding:"2px 8px", borderRadius:4, fontSize:11.5, fontWeight:600, background:"#F2EBDC", color:"#8C6A2E" }}>未払</span>
@@ -2375,7 +2375,7 @@ const DriverFinancePage = ({ accent }) => {
                 <td style={{ padding:"12px 14px", fontWeight:700, color:"var(--jt-text-sub)" }}>{fmt(totalSell)}</td>
                 <td style={{ padding:"12px 14px", fontWeight:700, color:"var(--jt-accent)" }}>{fmt(totalPay)}</td>
                 <td style={{ padding:"12px 14px", fontWeight:700, color:"var(--jt-text-mute)" }}>{fmt(totalGrand-totalPay)}</td>
-                <td style={{ padding:"12px 14px", fontWeight:700, color:totalProfit<0?"var(--jt-alert)":"#5E8C68" }}>{fmt(totalProfit)}</td>
+                <td style={{ padding:"12px 14px", fontWeight:700, color:totalProfit<0?"var(--jt-alert)":"#6E9E78" }}>{fmt(totalProfit)}</td>
                 <td/>
               </tr>
             </tfoot>
@@ -2671,7 +2671,7 @@ const InvoicePage = ({ accent }) => {
           { l:"未請求（発行前・税抜）",  v:fmt(summary.未請求), n:invoices.filter(i=>effStatus(i)==="未請求").length, c:"#A09AAB" },
           { l:"請求済（入金待ち・税抜）",v:fmt(summary.請求済), n:invoices.filter(i=>effStatus(i)==="請求済").length, c:"#7E6593" },
           { l:"入金遅延（税抜）",        v:fmt(summary.遅延),   n:invoices.filter(i=>effStatus(i)==="遅延").length,   c:"#B05A60" },
-          { l:"入金済（累計・税抜）",    v:fmt(summary.入金済), n:invoices.filter(i=>effStatus(i)==="入金済").length,  c:"#5E8C68" },
+          { l:"入金済（累計・税抜）",    v:fmt(summary.入金済), n:invoices.filter(i=>effStatus(i)==="入金済").length,  c:"#6E9E78" },
         ].map(({ l,v,n,c })=>(
           <Card key={l} style={{ padding:"16px 20px" }}>
             <div style={{ fontSize:11, color:"#A09AAB", marginBottom:6 }}>{l}</div>
@@ -2716,7 +2716,7 @@ const InvoicePage = ({ accent }) => {
                         <button onClick={()=>{ markIssued([inv.id]); showToast("請求書を発行しました"); }}
                           style={{ padding:"4px 10px", border:"none", borderRadius:4, background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", fontSize:11, fontWeight:700, cursor:"pointer", boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF,inset 0 1px 0 rgba(255,255,255,.28)" }}>発行</button>
                       )}
-                      {issuedSet.has(inv.id) && <span style={{ fontSize:11, color:"#5E8C68", fontWeight:600 }}>発行済</span>}
+                      {issuedSet.has(inv.id) && <span style={{ fontSize:11, color:"#6E9E78", fontWeight:600 }}>発行済</span>}
                       {effStatus(inv)==="遅延" && !remindedSet.has(inv.id) && (
                         <button onClick={()=>{ setRemindedSet(s=>new Set([...s,inv.id])); showToast("督促を送信しました"); }}
                           style={{ padding:"4px 10px", border:"none", borderRadius:4, background:"transparent", color:"var(--jt-alert)", fontSize:11, fontWeight:600, cursor:"pointer" }}>督促</button>
@@ -2895,7 +2895,7 @@ const InvoicePage = ({ accent }) => {
               )}
               {(effStatus(sel)==="請求済" || effStatus(sel)==="遅延") && (
                 <button onClick={()=>{ setPaidSet(s=>new Set([...s,sel.id])); showToast("入金済にしました"); }}
-                  style={{ padding:"10px", background:"#5E8C68", color:"#fff", border:"none", borderRadius:6, fontWeight:600, fontSize:13, cursor:"pointer", boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF,inset 0 1px 0 rgba(255,255,255,.28)" }}>
+                  style={{ padding:"10px", background:"#6E9E78", color:"#fff", border:"none", borderRadius:6, fontWeight:600, fontSize:13, cursor:"pointer", boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF,inset 0 1px 0 rgba(255,255,255,.28)" }}>
                   入金済にする
                 </button>
               )}
@@ -3212,7 +3212,7 @@ const ClientPage = ({ accent, setPage }) => {
               return (
                 <div style={{ marginTop:16, background:"var(--jt-base)", borderRadius:13, padding:14, boxShadow:"var(--jt-inset-sm)" }}>
                   <div style={{ fontSize:11, color:"var(--jt-text-mute)", marginBottom:8 }}>実績（{mkLabel(dispMonth)}）{dispMonth!==REF_MONTH && `／今月（${mkLabel(REF_MONTH)}）実績未入力のため最新確定月を表示`}</div>
-                  {[["売上",fmt(act.sell),"#7E6593"],["支払",fmt(act.pay),"#645F6E"],["粗利",fmt(act.profit)+" ("+(act.sell>0?(act.profit/act.sell*100).toFixed(1):0)+"%)","#5E8C68"]].map(([l,v,c])=>(
+                  {[["売上",fmt(act.sell),"#7E6593"],["支払",fmt(act.pay),"#645F6E"],["粗利",fmt(act.profit)+" ("+(act.sell>0?(act.profit/act.sell*100).toFixed(1):0)+"%)","#6E9E78"]].map(([l,v,c])=>(
                     <div key={l} style={{ display:"flex", justifyContent:"space-between", fontSize:13, marginBottom:5 }}>
                       <span style={{ color:"#645F6E" }}>{l}</span>
                       <span style={{ fontWeight:600, color:c }}>{v}</span>
@@ -3652,14 +3652,14 @@ const DailyInputPage = ({ accent }) => {
         {[
           { l:"月次売上（速報）", v:monthTotals.sell>0?fmt(monthTotals.sell):"—", c:accent },
           { l:"月次支払",         v:monthTotals.pay>0?fmt(monthTotals.pay):"—",   c:"#C39A52" },
-          { l:"月次粗利",         v:(monthTotals.sell>0||monthTotals.pay>0)?fmt(monthTotals.profit):"—", c:monthTotals.profit<0?"#B05A60":"#5E8C68" },
+          { l:"月次粗利",         v:(monthTotals.sell>0||monthTotals.pay>0)?fmt(monthTotals.profit):"—", c:monthTotals.profit<0?"#B05A60":"#6E9E78" },
           { l:"入力進捗",         v:`${inputDays} / ${workdays}日`, c:"#645F6E",
             sub: inputDays===workdays&&workdays>0?"✓ 入力完了":`残 ${workdays-inputDays}日` },
         ].map(({l,v,c,sub})=>(
           <Card key={l} style={{ padding:"8px 14px" }}>
             <div style={{ fontSize:11, color:"var(--jt-text-mute)", marginBottom:2 }}>{l}</div>
             <div style={{ fontSize:16, fontWeight:700, color:c }}>{v}</div>
-            {sub && <div style={{ fontSize:10, color:inputDays===workdays&&workdays>0?"#5E8C68":"#A09AAB", marginTop:2 }}>{sub}</div>}
+            {sub && <div style={{ fontSize:10, color:inputDays===workdays&&workdays>0?"#6E9E78":"#A09AAB", marginTop:2 }}>{sub}</div>}
           </Card>
         ))}
       </div>
@@ -3795,11 +3795,11 @@ const DailyInputPage = ({ accent }) => {
                     <td style={{ padding:"4px 10px", textAlign:"right", fontSize:12, color:dt.pay>0?"#393443":"#DEDAE5", borderRight:"1px solid #DEDAE5" }}>
                       {dt.pay>0?fmt(dt.pay):"—"}
                     </td>
-                    <td style={{ padding:"4px 10px", textAlign:"right", fontWeight:600, color:(dt.sell>0||dt.pay>0)?(dt.profit<0?"#B05A60":"#5E8C68"):"#DEDAE5", fontSize:12 }}>
+                    <td style={{ padding:"4px 10px", textAlign:"right", fontWeight:600, color:(dt.sell>0||dt.pay>0)?(dt.profit<0?"#B05A60":"#6E9E78"):"#DEDAE5", fontSize:12 }}>
                       {(dt.sell>0||dt.pay>0)?fmt(dt.profit):"—"}
                     </td>
                     <td style={{ padding:"4px 8px", textAlign:"center", borderLeft:"1px solid #DEDAE5", fontSize:13 }}>
-                      {rowFilled?<span style={{ color:"#5E8C68", fontWeight:700 }}>✓</span>
+                      {rowFilled?<span style={{ color:"#6E9E78", fontWeight:700 }}>✓</span>
                        :rowPartial?<span style={{ color:"#C39A52" }}>…</span>:null}
                     </td>
                   </tr>
@@ -3819,7 +3819,7 @@ const DailyInputPage = ({ accent }) => {
                 })}
                 <td style={{ padding:"7px 10px", textAlign:"right", fontWeight:800, color:monthTotals.sell>0?accent:"var(--jt-text-mute)", borderLeft:"1px solid #C9C0D6" }}>{monthTotals.sell>0?fmt(monthTotals.sell):"—"}</td>
                 <td style={{ padding:"7px 10px", textAlign:"right", fontWeight:800, color:monthTotals.pay>0?"var(--jt-text)":"var(--jt-text-mute)" }}>{monthTotals.pay>0?fmt(monthTotals.pay):"—"}</td>
-                <td style={{ padding:"7px 10px", textAlign:"right", fontWeight:800, color:(monthTotals.sell>0||monthTotals.pay>0)?(monthTotals.profit<0?"var(--jt-alert)":"#5E8C68"):"var(--jt-text-mute)" }}>{(monthTotals.sell>0||monthTotals.pay>0)?fmt(monthTotals.profit):"—"}</td>
+                <td style={{ padding:"7px 10px", textAlign:"right", fontWeight:800, color:(monthTotals.sell>0||monthTotals.pay>0)?(monthTotals.profit<0?"var(--jt-alert)":"#6E9E78"):"var(--jt-text-mute)" }}>{(monthTotals.sell>0||monthTotals.pay>0)?fmt(monthTotals.profit):"—"}</td>
                 <td style={{ borderLeft:"1px solid #DEDAE5" }}/>
               </tr>
               <tr style={{ background:"var(--jt-base)", borderTop:"1px solid var(--jt-line)" }}>
@@ -3843,9 +3843,9 @@ const DailyInputPage = ({ accent }) => {
       {/* アクションボタン */}
       <div style={{ display:"flex", gap:10, marginTop:12 }}>
         <div
-          style={{ flex:2, padding:"12px", background:"var(--jt-base)", color:saved?"#5E8C68":"#8C6A2E", border:"none", borderRadius:7, fontWeight:600, fontSize:13, display:"flex", alignItems:"center", justifyContent:"center", gap:8, boxShadow:"var(--jt-raised-sm)" }}>
+          style={{ flex:2, padding:"12px", background:"var(--jt-base)", color:saved?"#6E9E78":"#8C6A2E", border:"none", borderRadius:7, fontWeight:600, fontSize:13, display:"flex", alignItems:"center", justifyContent:"center", gap:8, boxShadow:"var(--jt-raised-sm)" }}>
           {saved
-            ? <><Ic name="check" size={16} color="#5E8C68" strokeWidth={2.5}/> 自動保存済み（Supabase）</>
+            ? <><Ic name="check" size={16} color="#6E9E78" strokeWidth={2.5}/> 自動保存済み（Supabase）</>
             : <><span style={{ display:"inline-block", width:8, height:8, borderRadius:"50%", background:"#C39A52" }}/> 保存中…</>
           }
         </div>
@@ -3983,7 +3983,7 @@ const Dashboard = ({ accent, setPage }) => {
       <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12, marginBottom:14 }}>
         {[
           { l:`今月売上（${REF_MONTH_LABEL}）`, v:fmt(totalSell),   sub:totalSell>0?"全11荷主合算 → 詳細は収支管理":`実績未入力。最新確定: ${LATEST_MONTH_LABEL} → 収支管理`, c:accent,    pg:"pl" },
-          { l:`今月粗利（${REF_MONTH_LABEL}）`, v:fmt(totalProfit), sub:totalSell>0?`粗利率 ${margin}% → 収支管理`:"— → 収支管理",   c:"#5E8C68", pg:"pl" },
+          { l:`今月粗利（${REF_MONTH_LABEL}）`, v:fmt(totalProfit), sub:totalSell>0?`粗利率 ${margin}% → 収支管理`:"— → 収支管理",   c:"#6E9E78", pg:"pl" },
           { l:"未請求（発行前）", v:fmt(pendingInv),  sub:`${pendingList.length}件 → 請求管理`,  c:"#645F6E", pg:"invoice" },
           { l:"入金遅延",         v:fmt(delayedInv),  sub:delayedSub,   c:"#B05A60", pg:"invoice" },
         ].map(({ l,v,sub,c,pg })=>(
@@ -4017,7 +4017,7 @@ const Dashboard = ({ accent, setPage }) => {
                       <div style={{ width: dispTotalSell>0 ? `${(r.sell/dispTotalSell)*100}%` : 0, height:"100%", background:accent+"80", borderRadius:2 }}/>
                     </div>
                   </div>
-                  <span style={{ fontSize:11, color: Number(rate)>=30?"#5E8C68":Number(rate)>=20?accent:"#C39A52", fontWeight:600, marginLeft:8, width:32, textAlign:"right" }}>{rate}%</span>
+                  <span style={{ fontSize:11, color: Number(rate)>=30?"#6E9E78":Number(rate)>=20?accent:"#C39A52", fontWeight:600, marginLeft:8, width:32, textAlign:"right" }}>{rate}%</span>
                 </div>
               );
             })}
@@ -4087,7 +4087,7 @@ const Dashboard = ({ accent, setPage }) => {
           <div style={{ padding:"0 20px 16px" }}>
             <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:10, marginBottom:16 }}>
               {[
-                { l:"稼働中", v:9, c:"#5E8C68", bg:"#E9E7EE" },
+                { l:"稼働中", v:9, c:"#6E9E78", bg:"#E9E7EE" },
                 { l:"整備中", v:1, c:"#C39A52", bg:"#E9E7EE" },
                 { l:"配達完了", v:7, c:accent, bg:"#E9E7EE" },
                 { l:"持戻り", v:2, c:"#B05A60", bg:"#E9E7EE" },
@@ -4107,7 +4107,7 @@ const Dashboard = ({ accent, setPage }) => {
               { name:"渡辺 翔",   client:"タイヤ配送",   status:"配達中",   done:6,  total:11, time:"16:50" },
             ].map((r,i)=>{
               const pct = r.total>0 ? Math.round(r.done/r.total*100) : 0;
-              const sc = r.status==="完了"?{bg:"#dcfce7",c:"#5E8C68"}:r.status==="配達中"?{bg:accent+"18",c:accent}:{bg:"#fee2e2",c:"#B05A60"};
+              const sc = r.status==="完了"?{bg:"#dcfce7",c:"#6E9E78"}:r.status==="配達中"?{bg:accent+"18",c:accent}:{bg:"#fee2e2",c:"#B05A60"};
               return (
                 <div key={i} style={{ display:"flex", alignItems:"center", gap:12, padding:"9px 0", borderBottom:i<5?"1px solid #DEDAE5":"none" }}>
                   <Avatar name={r.name} size={28} bg="#EDEBF1" color="#645F6E"/>
@@ -4120,7 +4120,7 @@ const Dashboard = ({ accent, setPage }) => {
                       </div>
                     </div>
                     <div style={{ height:4, background:"var(--jt-base)", borderRadius:2, boxShadow:"var(--jt-inset-sm)" }}>
-                      <div style={{ width:`${pct}%`, height:"100%", background:r.status==="完了"?"#5E8C68":r.status==="持戻り"?"#B05A60":accent, borderRadius:2, transition:"width .3s" }}/>
+                      <div style={{ width:`${pct}%`, height:"100%", background:r.status==="完了"?"#6E9E78":r.status==="持戻り"?"#B05A60":accent, borderRadius:2, transition:"width .3s" }}/>
                     </div>
                   </div>
                   <span style={{ padding:"2px 7px", borderRadius:4, fontSize:11, fontWeight:600, background:sc.bg, color:sc.c, flexShrink:0 }}>{r.status}</span>
@@ -4206,7 +4206,7 @@ const Dashboard = ({ accent, setPage }) => {
                   <td style={{ padding:"10px 14px", fontSize:12, color:"#645F6E" }}>{d.clients.slice(0,2).join(", ")}{d.clients.length>2?` 他${d.clients.length-2}社`:""}  </td>
                   <td style={{ padding:"10px 14px", fontWeight:600, color:accent }}>{sellD>0?fmt(sellD):"—"}</td>
                   <td style={{ padding:"10px 14px", fontWeight:600 }}>{payD>0?fmt(payD):"—"}</td>
-                  <td style={{ padding:"10px 14px", color:"#5E8C68", fontWeight:600 }}>{sellD>0?fmt(sellD-payD):"—"}</td>
+                  <td style={{ padding:"10px 14px", color:"#6E9E78", fontWeight:600 }}>{sellD>0?fmt(sellD-payD):"—"}</td>
                   <td style={{ padding:"10px 14px" }}>
                     {sellD>0
                       ? <span style={{ padding:"2px 8px", borderRadius:4, fontSize:11.5, fontWeight:600, background:"#F2EBDC", color:"#8C6A2E" }}>未払</span>
@@ -4593,7 +4593,7 @@ const SafetyPage = ({ accent }) => {
       <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14, marginBottom:20 }}>
         {[
           { l:"連続無事故日数", v:`${noAccidentDays}日`, sub:"今年度目標: 365日", c:accent, bar:noAccidentDays/365 },
-          { l:"アルコール検査",  v:"100%", sub:"本日 全員実施済",   c:"#5E8C68", bar:1 },
+          { l:"アルコール検査",  v:"100%", sub:"本日 全員実施済",   c:"#6E9E78", bar:1 },
           { l:"今月ヒヤリハット",v:`${_incCount}件`, sub:`${_incMonth===REF_MONTH?"":`${mkLabel(_incMonth)}実績 ／ `}前月比 ${_incDiff>0?`+${_incDiff}`:_incDiff<0?`-${-_incDiff}`:"±0"}件`, c:"#C39A52", bar:null },
           { l:"安全教育 修了率", v:`${Math.round(educationData.reduce((s,d)=>s+d.total,0)>0 ? educationData.reduce((s,d)=>s+d.done,0)/educationData.reduce((s,d)=>s+d.total,0)*100 : 0)}%`, sub:`${educationData.filter(d=>d.done===d.total).length}/${educationData.length}名 完了`, c:"#7E6593", bar:educationData.reduce((s,d)=>s+d.total,0)>0 ? educationData.reduce((s,d)=>s+d.done,0)/educationData.reduce((s,d)=>s+d.total,0) : 0 },
         ].map(({ l,v,sub,c,bar })=>(
@@ -4622,8 +4622,8 @@ const SafetyPage = ({ accent }) => {
           {showIncidentForm && (
             <div style={{ padding:"16px 20px", borderBottom:"1px solid var(--jt-line)", background:"var(--jt-base)" }}>
               {submittedIncident ? (
-                <div style={{ textAlign:"center", padding:"10px 0", color:"#5E8C68", fontWeight:700 }}>
-                  <Ic name="check" size={16} color="#5E8C68" strokeWidth={2.5}/> 報告を受け付けました
+                <div style={{ textAlign:"center", padding:"10px 0", color:"#6E9E78", fontWeight:700 }}>
+                  <Ic name="check" size={16} color="#6E9E78" strokeWidth={2.5}/> 報告を受け付けました
                 </div>
               ) : (
                 <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
@@ -4678,7 +4678,7 @@ const SafetyPage = ({ accent }) => {
                   </div>
                   <div style={{ display:"flex", gap:6, alignItems:"center" }}>
                     <span onClick={()=>{ setIncidents(p=>p.map(x=>x.id===inc.id?{...x,resolved:!x.resolved}:x)); showToast(inc.resolved?"「未対応」に戻しました":"「対応済」にしました"); }}
-                      style={{ fontSize:11, padding:"1px 7px", borderRadius:3, fontWeight:600, cursor:"pointer", background:inc.resolved?"#E6EFE4":"#F3E6E3", color:inc.resolved?"#5E8C68":"#B05A60" }}>{inc.resolved?"対応済":"未対応"}</span>
+                      style={{ fontSize:11, padding:"1px 7px", borderRadius:3, fontWeight:600, cursor:"pointer", background:inc.resolved?"#E6EFE4":"#F3E6E3", color:inc.resolved?"#6E9E78":"#B05A60" }}>{inc.resolved?"対応済":"未対応"}</span>
                     <span style={{ fontSize:11, color:"#A09AAB" }}>{inc.date}</span>
                   </div>
                 </div>
@@ -4699,10 +4699,10 @@ const SafetyPage = ({ accent }) => {
               <div key={i} style={{ marginBottom:10 }}>
                 <div style={{ display:"flex", justifyContent:"space-between", fontSize:12.5, marginBottom:4 }}>
                   <span style={{ fontWeight:500 }}>{d.name}</span>
-                  <span style={{ fontWeight:700, color:d.done===d.total?"#5E8C68":"#7E6593" }}>{d.done}/{d.total}</span>
+                  <span style={{ fontWeight:700, color:d.done===d.total?"#6E9E78":"#7E6593" }}>{d.done}/{d.total}</span>
                 </div>
                 <div style={{ height:5, background:"var(--jt-base)", boxShadow:"var(--jt-inset-sm)", borderRadius:3 }}>
-                  <div style={{ width:`${d.total>0?(d.done/d.total*100):0}%`, height:"100%", background:d.done===d.total?"#5E8C68":"#7E6593", borderRadius:3, transition:"width .3s" }}/>
+                  <div style={{ width:`${d.total>0?(d.done/d.total*100):0}%`, height:"100%", background:d.done===d.total?"#6E9E78":"#7E6593", borderRadius:3, transition:"width .3s" }}/>
                 </div>
               </div>
             ))}
@@ -4715,7 +4715,7 @@ const SafetyPage = ({ accent }) => {
               <div key={i} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", fontSize:13, padding:"8px 0", borderBottom:"1px solid var(--jt-line)" }}>
                 <span style={{ color:"var(--jt-text-sub)", fontSize:12 }}>{h.date}</span>
                 <div style={{ display:"flex", alignItems:"center", gap:6 }}>
-                  <div style={{ width:7, height:7, borderRadius:"50%", background:"#5E8C68" }}/>
+                  <div style={{ width:7, height:7, borderRadius:"50%", background:"#6E9E78" }}/>
                   <span style={{ fontSize:12.5 }}>{h.results}</span>
                 </div>
               </div>
@@ -4728,7 +4728,7 @@ const SafetyPage = ({ accent }) => {
             {[["軽貨物運送業 届出",true,"2026-09-30"],["ドライバー健康診断",true,"2026-10-31"],["フリーランス保護新法 対応",false,"2025-05-31"],["アルコール検査記録保存",true,"随時"]].map(([n,ok,dl],i)=>(
               <div key={i} style={{ display:"flex", gap:10, alignItems:"center", marginBottom:i<3?12:0 }}>
                 <div style={{ width:20, height:20, borderRadius:"50%", background:ok?"#E6EFE4":"#F3E6E3", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-                  <Ic name={ok?"check":"alert"} size={11} color={ok?"#5E8C68":"#B05A60"} strokeWidth={2.5}/>
+                  <Ic name={ok?"check":"alert"} size={11} color={ok?"#6E9E78":"#B05A60"} strokeWidth={2.5}/>
                 </div>
                 <div style={{ flex:1 }}>
                   <div style={{ fontSize:13, fontWeight:500 }}>{n}</div>
@@ -4823,7 +4823,7 @@ const FAQPage = ({ accent }) => {
                   {isOpen && (
                     <div style={{ padding:"0 20px 16px 20px", borderTop:"1px solid var(--jt-line)", background:"transparent" }}>
                       <div style={{ display:"flex", gap:10, paddingTop:12 }}>
-                        <span style={{ fontSize:13, fontWeight:700, color:"#5E8C68", flexShrink:0, marginTop:2 }}>A</span>
+                        <span style={{ fontSize:13, fontWeight:700, color:"#6E9E78", flexShrink:0, marginTop:2 }}>A</span>
                         <div style={{ fontSize:13.5, color:"var(--jt-text-sub)", lineHeight:1.8 }}>{f.a}</div>
                       </div>
                     </div>
@@ -5013,7 +5013,7 @@ const ContactPage = ({ accent }) => {
   if (sent) return (
     <div style={{ textAlign:"center", paddingTop:100 }}>
       <div style={{ width:56, height:56, borderRadius:"50%", background:"#E6EFE4", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 16px" }}>
-        <Ic name="check" size={24} color="#5E8C68" strokeWidth={2.5}/>
+        <Ic name="check" size={24} color="#6E9E78" strokeWidth={2.5}/>
       </div>
       <div style={{ fontSize:18, fontWeight:700, marginBottom:8 }}>送信しました</div>
       <div style={{ fontSize:13, color:"var(--jt-text-sub)", marginBottom:24 }}>担当部署より折り返しご連絡いたします</div>
@@ -5125,7 +5125,7 @@ const TodoPage = ({ accent }) => {
     if (!due || done) return "#A09AAB";
     if (due < todayStr) return "#B05A60";
     if (due === todayStr) return "#C39A52";
-    return "#5E8C68";
+    return "#6E9E78";
   };
   const dueLabel = (due) => {
     if (!due) return "—";
@@ -5334,8 +5334,8 @@ const ParentClientsPage = ({ accent }) => {
         <Card style={{ padding:20, marginBottom:20, border:`1.5px solid ${accent}30` }}>
           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:14 }}>
             <div style={{ fontSize:13, fontWeight:700 }}>{editingId?"上位荷主を編集":"新規上位荷主登録"}</div>
-            <span style={{ display:"inline-flex", alignItems:"center", gap:6, fontSize:11, color:"#5E8C68", fontWeight:600 }}>
-              <Ic name="check" size={11} color="#5E8C68" strokeWidth={2.5}/>入力すると自動保存
+            <span style={{ display:"inline-flex", alignItems:"center", gap:6, fontSize:11, color:"#6E9E78", fontWeight:600 }}>
+              <Ic name="check" size={11} color="#6E9E78" strokeWidth={2.5}/>入力すると自動保存
             </span>
           </div>
           <div onBlur={commitParent} style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, marginBottom:10 }}>
@@ -5381,7 +5381,7 @@ const ParentClientsPage = ({ accent }) => {
         </Card>
         <Card style={{ padding:"16px 20px" }}>
           <div style={{ fontSize:11, color:"#A09AAB", marginBottom:6 }}>紐付け済 荷主</div>
-          <div style={{ fontSize:20, fontWeight:700, color:"#5E8C68" }}>{Object.keys(parentMap).length} / {allClientsLive().length}件</div>
+          <div style={{ fontSize:20, fontWeight:700, color:"#6E9E78" }}>{Object.keys(parentMap).length} / {allClientsLive().length}件</div>
         </Card>
         <Card style={{ padding:"16px 20px" }}>
           <div style={{ fontSize:11, color:"#A09AAB", marginBottom:6 }}>未紐付け 荷主</div>
@@ -5423,7 +5423,7 @@ const ParentClientsPage = ({ accent }) => {
                       )}
                     </td>
                     <td style={{ padding:"12px 14px", fontWeight:700, color:"var(--jt-accent)" }}>{p.totalSell>0?fmt(p.totalSell):"—"}</td>
-                    <td style={{ padding:"12px 14px", fontWeight:700, color:"#5E8C68" }}>{p.totalProfit>0?fmt(p.totalProfit):"—"}</td>
+                    <td style={{ padding:"12px 14px", fontWeight:700, color:"#6E9E78" }}>{p.totalProfit>0?fmt(p.totalProfit):"—"}</td>
                     <td style={{ padding:"12px 14px" }}>
                       <div style={{ display:"flex", gap:4 }} onClick={e=>e.stopPropagation()}>
                         <button onClick={()=>startEdit(p)} style={{ padding:"4px 10px", background:"var(--jt-base)", color:"var(--jt-text-sub)", border:"none", borderRadius:13, fontSize:11, fontWeight:600, cursor:"pointer", boxShadow:"var(--jt-raised-sm)" }}>編集</button>
@@ -5604,8 +5604,8 @@ function AppearanceSettings() {
           </React.Fragment>
         ))}
         <div style={S.actions}>
-          <span style={{ display:'inline-flex', alignItems:'center', gap:6, fontSize:12, color:'#5E8C68', fontWeight:600 }}>
-            <Ic name="check" size={12} color="#5E8C68" strokeWidth={2.5}/>変更は自動保存
+          <span style={{ display:'inline-flex', alignItems:'center', gap:6, fontSize:12, color:'#6E9E78', fontWeight:600 }}>
+            <Ic name="check" size={12} color="#6E9E78" strokeWidth={2.5}/>変更は自動保存
           </span>
           <button type="button" style={S.btn} onClick={onReset}>既定に戻す</button>
         </div>
@@ -5833,7 +5833,7 @@ const VehiclesPage = ({ accent }) => {
                       </div>}
                     </td>
                     <td style={{ padding:"12px 16px" }}>
-                      <span style={{ padding:"2px 9px", borderRadius:4, fontSize:11.5, fontWeight:600, background:v.status==="稼働中"?"#E6EFE4":"#F3E6E3", color:v.status==="稼働中"?"#5E8C68":"#B05A60" }}>{v.status}</span>
+                      <span style={{ padding:"2px 9px", borderRadius:4, fontSize:11.5, fontWeight:600, background:v.status==="稼働中"?"#E6EFE4":"#F3E6E3", color:v.status==="稼働中"?"#6E9E78":"#B05A60" }}>{v.status}</span>
                     </td>
                     <td style={{ padding:"12px 16px", color:"var(--jt-text-sub)" }}>{v.mileage.toLocaleString()} km</td>
                     <td style={{ padding:"12px 16px" }}>
@@ -5862,7 +5862,7 @@ const VehiclesPage = ({ accent }) => {
                   <div style={{ fontWeight:700, fontSize:18, color:"var(--jt-text)" }}>{sel.plate}</div>
                   <div style={{ fontSize:12, color:"var(--jt-text-mute)", marginTop:2 }}>{sel.type} ／ {sel.id}</div>
                 </div>
-                <span style={{ padding:"2px 9px", borderRadius:4, fontSize:11.5, fontWeight:600, background:sel.status==="稼働中"?"#E6EFE4":"#F3E6E3", color:sel.status==="稼働中"?"#5E8C68":"#B05A60" }}>{sel.status}</span>
+                <span style={{ padding:"2px 9px", borderRadius:4, fontSize:11.5, fontWeight:600, background:sel.status==="稼働中"?"#E6EFE4":"#F3E6E3", color:sel.status==="稼働中"?"#6E9E78":"#B05A60" }}>{sel.status}</span>
               </div>
 
               <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:16 }}>
@@ -5923,8 +5923,8 @@ const VehiclesPage = ({ accent }) => {
                   <input type="text" placeholder="例: ○○整備工場" value={resDraft.note} onChange={e=>onResNote(e.target.value)} onBlur={()=>{ if(resDraft.date) showToast("車検予約を保存しました"); }}
                     style={{ width:"100%", padding:"6px 10px", border:"1px solid #DEDAE5", borderRadius:4, fontSize:13, marginBottom:8, boxShadow:"inset 2px 2px 4px #CECAD5" }}/>
                   <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-                    <span style={{ display:"inline-flex", alignItems:"center", gap:5, fontSize:11, color:"#5E8C68", fontWeight:600 }}>
-                      <Ic name="check" size={11} color="#5E8C68" strokeWidth={2.5}/>予約日を入れると自動保存
+                    <span style={{ display:"inline-flex", alignItems:"center", gap:5, fontSize:11, color:"#6E9E78", fontWeight:600 }}>
+                      <Ic name="check" size={11} color="#6E9E78" strokeWidth={2.5}/>予約日を入れると自動保存
                     </span>
                     <button onClick={()=>setShowResForm(false)} style={{ padding:"6px 14px", background:"transparent", border:"none", borderRadius:4, fontSize:12, cursor:"pointer", color:"#645F6E" }}>閉じる</button>
                   </div>
@@ -5940,8 +5940,8 @@ const VehiclesPage = ({ accent }) => {
                   <input type="text" placeholder="例: オイル交換" value={maintDraft.item} onChange={e=>setMaintDraft({...maintDraft, item:e.target.value})}
                     style={{ width:"100%", padding:"6px 10px", border:"1px solid #DEDAE5", borderRadius:4, fontSize:13, marginBottom:8, boxShadow:"inset 2px 2px 4px #CECAD5" }}/>
                   <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-                    <span style={{ display:"inline-flex", alignItems:"center", gap:5, fontSize:11, color:"#5E8C68", fontWeight:600 }}>
-                      <Ic name="check" size={11} color="#5E8C68" strokeWidth={2.5}/>整備日・内容を入れると自動保存
+                    <span style={{ display:"inline-flex", alignItems:"center", gap:5, fontSize:11, color:"#6E9E78", fontWeight:600 }}>
+                      <Ic name="check" size={11} color="#6E9E78" strokeWidth={2.5}/>整備日・内容を入れると自動保存
                     </span>
                     <button onClick={()=>{ commitMaint(); setShowMaintForm(false); }} style={{ padding:"6px 14px", background:"transparent", border:"none", borderRadius:4, fontSize:12, cursor:"pointer", color:"#645F6E" }}>閉じる</button>
                   </div>
@@ -6390,14 +6390,14 @@ const DispatchPage = ({ accent, setPage }) => {
       <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12, marginBottom:16 }}>
         {(tab==="dispatch" ? [
           { label:"今週のべ配車", value:`${weekDispTotal}件`, sub:`平日 ${weekdayDispTotal}件`, color:accent },
-          { label:"確定状況", value:`${weekConfirmedDays}/${weekDispDays}日`, sub:weekConfirmedDays>0?`確定済み ${weekConfirmedDays}日`:(weekDispDays>0?"未確定":"配車なし"), color:weekConfirmedDays>0?"#5E8C68":(weekDispDays>0?"#C39A52":"#A09AAB") },
-          { label:"稼働ドライバー", value:`${activeDriverIds.size}名`, sub:`全${drivers.length}名中`, color:"#5E8C68" },
+          { label:"確定状況", value:`${weekConfirmedDays}/${weekDispDays}日`, sub:weekConfirmedDays>0?`確定済み ${weekConfirmedDays}日`:(weekDispDays>0?"未確定":"配車なし"), color:weekConfirmedDays>0?"#6E9E78":(weekDispDays>0?"#C39A52":"#A09AAB") },
+          { label:"稼働ドライバー", value:`${activeDriverIds.size}名`, sub:`全${drivers.length}名中`, color:"#6E9E78" },
           { label:"空き枠（平日）", value:`${openSlots}`, sub:"未配車セル", color:openSlots>0?"#C39A52":"#A09AAB" },
         ] : [
           { label:"今週のべ出勤", value:`${weekWork}件`, sub:"日勤+早番+遅番", color:"#7E6593" },
           { label:"今週のべ休", value:`${weekOff}件`, sub:"公休等", color:"#A09AAB" },
           { label:"今週のべ有休", value:`${weekPaid}件`, sub:"有給取得", color:"#7E6593" },
-          { label:todayInWeek?"本日 出勤予定":"シフト設定済み", value: todayInWeek?`${shiftCount(todayDk,["日勤","早番","遅番"])}名`:`${weekDays.filter(wd=>Object.keys(shifts[wd.dk]||{}).length).length}日`, sub: todayInWeek?`休 ${shiftCount(todayDk,["休","有休"])}名`:"今週", color:"#5E8C68" },
+          { label:todayInWeek?"本日 出勤予定":"シフト設定済み", value: todayInWeek?`${shiftCount(todayDk,["日勤","早番","遅番"])}名`:`${weekDays.filter(wd=>Object.keys(shifts[wd.dk]||{}).length).length}日`, sub: todayInWeek?`休 ${shiftCount(todayDk,["休","有休"])}名`:"今週", color:"#6E9E78" },
         ]).map(k=>(
           <Card key={k.label} style={{ padding:"14px 18px" }}>
             <div style={{ fontSize:11, color:"#645F6E", marginBottom:6 }}>{k.label}</div>
@@ -6439,7 +6439,7 @@ const DispatchPage = ({ accent, setPage }) => {
                   {tab==="dispatch" && dispCountFor(d.dk)>0 && (
                     <div onClick={()=>toggleConfirmDay(d.dk)} title={isConfirmed(d.dk)?"クリックで確定解除":"クリックでこの日を確定"}
                       style={{ marginTop:3, fontSize:10, fontWeight:700, borderRadius:20, padding:"3px 10px", cursor:"pointer", display:"block", marginLeft:"auto", marginRight:"auto", width:"fit-content",
-                        background:isConfirmed(d.dk)?"#E6EFE4":"#F2EBDC", color:isConfirmed(d.dk)?"#5E8C68":"#8C6A2E", border:"none" }}>
+                        background:isConfirmed(d.dk)?"#E6EFE4":"#F2EBDC", color:isConfirmed(d.dk)?"#6E9E78":"#8C6A2E", border:"none" }}>
                       {isConfirmed(d.dk)?"確定済":"未確定"}
                     </div>
                   )}
@@ -6548,7 +6548,7 @@ const DispatchPage = ({ accent, setPage }) => {
           const profit = v.s - v.p;
           const margin = v.s>0 ? profit/v.s*100 : 0;
           let status, sc, sb;
-          if(di.confirmedDays>0){ status = v.s>0?"連動済":"確定（実績待ち）"; sc=v.s>0?"#5E8C68":"#b45309"; sb=v.s>0?"#dcfce7":"#fef3c7"; }
+          if(di.confirmedDays>0){ status = v.s>0?"連動済":"確定（実績待ち）"; sc=v.s>0?"#6E9E78":"#b45309"; sb=v.s>0?"#dcfce7":"#fef3c7"; }
           else if(di.count>0){ status="未確定"; sc="#0369a1"; sb="#e0f2fe"; }
           else { status="—"; sc="var(--jt-text-mute)"; sb="transparent"; }
           return {c, v, di, profit, margin, status, sc, sb};
@@ -6575,8 +6575,8 @@ const DispatchPage = ({ accent, setPage }) => {
         );
         const kpis = [
           { label:"請求対象 売上", value:fmt(tot.s), sub:mkLabel(billMonth)+"（締め期間ベース）", color:accent },
-          { label:"粗利", value:fmt(totProfit), sub:`粗利率 ${totMargin.toFixed(1)}%`, color:totProfit>=0?"#5E8C68":"#B05A60" },
-          { label:"確定配車のべ", value:`${tot.cc}件`, sub:`配車のべ ${tot.count}件中`, color:"#5E8C68" },
+          { label:"粗利", value:fmt(totProfit), sub:`粗利率 ${totMargin.toFixed(1)}%`, color:totProfit>=0?"#6E9E78":"#B05A60" },
+          { label:"確定配車のべ", value:`${tot.cc}件`, sub:`配車のべ ${tot.count}件中`, color:"#6E9E78" },
           { label:"要確認", value:`${needAttention}社`, sub:`連動済 ${linked}社`, color:needAttention>0?"#C39A52":"#A09AAB" },
         ];
         return (
@@ -6624,10 +6624,10 @@ const DispatchPage = ({ accent, setPage }) => {
                       </td>
                       <td style={{ padding:"8px 12px", textAlign:"center", fontSize:11, color:"var(--jt-text-sub)", whiteSpace:"nowrap" }}>{r.c.billingCycle||"—"}</td>
                       <td style={{ padding:"8px 12px", textAlign:"right", fontWeight:600, color:r.di.count>0?"#393443":"var(--jt-text-mute)" }}>{r.di.count||"—"}</td>
-                      <td style={{ padding:"8px 12px", textAlign:"right", fontWeight:600, color:r.di.confirmedDays>0?"#5E8C68":"var(--jt-text-mute)" }}>{r.di.confirmedDays?`${r.di.confirmedDays}日`:"—"}</td>
+                      <td style={{ padding:"8px 12px", textAlign:"right", fontWeight:600, color:r.di.confirmedDays>0?"#6E9E78":"var(--jt-text-mute)" }}>{r.di.confirmedDays?`${r.di.confirmedDays}日`:"—"}</td>
                       <td style={{ padding:"8px 12px", textAlign:"right", fontWeight:700, color:r.v.s>0?"#393443":"var(--jt-text-mute)" }}>{r.v.s>0?fmt(r.v.s):"—"}</td>
                       <td style={{ padding:"8px 12px", textAlign:"right", color:r.v.p>0?"#645F6E":"var(--jt-text-mute)" }}>{r.v.p>0?fmt(r.v.p):"—"}</td>
-                      <td style={{ padding:"8px 12px", textAlign:"right", fontWeight:600, color:r.profit>=0?"#5E8C68":"#B05A60" }}>{r.v.s>0?fmt(r.profit):"—"}</td>
+                      <td style={{ padding:"8px 12px", textAlign:"right", fontWeight:600, color:r.profit>=0?"#6E9E78":"#B05A60" }}>{r.v.s>0?fmt(r.profit):"—"}</td>
                       <td style={{ padding:"8px 12px", textAlign:"right", fontSize:12, color:"#645F6E" }}>{r.v.s>0?r.margin.toFixed(1)+"%":"—"}</td>
                       <td style={{ padding:"8px 12px", textAlign:"center" }}>
                         <span style={{ fontSize:11, fontWeight:700, padding:"2px 8px", borderRadius:10, color:r.sc, background:r.sb }}>{r.status}</span>
@@ -6640,10 +6640,10 @@ const DispatchPage = ({ accent, setPage }) => {
                     <td style={{ padding:"9px 12px", fontWeight:700, fontSize:12, color:"var(--jt-text-sub)", borderRight:"1px solid var(--jt-line)", position:"sticky", left:0, background:"var(--jt-accent-lt)", zIndex:1 }}>合計（{rows.length}社）</td>
                     <td/>
                     <td style={{ padding:"9px 12px", textAlign:"right", fontWeight:700 }}>{tot.count||"—"}</td>
-                    <td style={{ padding:"9px 12px", textAlign:"right", fontWeight:700, color:"#5E8C68" }}>{tot.cd?`${tot.cd}日`:"—"}</td>
+                    <td style={{ padding:"9px 12px", textAlign:"right", fontWeight:700, color:"#6E9E78" }}>{tot.cd?`${tot.cd}日`:"—"}</td>
                     <td style={{ padding:"9px 12px", textAlign:"right", fontWeight:700, color:accent }}>{fmt(tot.s)}</td>
                     <td style={{ padding:"9px 12px", textAlign:"right", fontWeight:700 }}>{fmt(tot.p)}</td>
-                    <td style={{ padding:"9px 12px", textAlign:"right", fontWeight:700, color:totProfit>=0?"#5E8C68":"#B05A60" }}>{fmt(totProfit)}</td>
+                    <td style={{ padding:"9px 12px", textAlign:"right", fontWeight:700, color:totProfit>=0?"#6E9E78":"#B05A60" }}>{fmt(totProfit)}</td>
                     <td style={{ padding:"9px 12px", textAlign:"right", fontWeight:700, color:"#645F6E" }}>{totMargin.toFixed(1)}%</td>
                     <td/>
                   </tr>
@@ -6654,7 +6654,7 @@ const DispatchPage = ({ accent, setPage }) => {
             <div style={{ fontSize:11, color:"var(--jt-text-mute)", marginTop:10, lineHeight:1.8 }}>
               ※「請求連動」は確定した配車を実績（日次実績・収支）と<b>読み取り専用</b>で突合する画面です。配車の確定によって請求金額そのものが書き換わることはありません。<br/>
               ※ 売上・支払・粗利は各荷主の<b>締め期間</b>（{mkLabel(billMonth)}）で集計しています（収支管理・請求管理と同一ロジック）。<br/>
-              ※ 連動状態: <b style={{color:"#5E8C68"}}>連動済</b>=確定配車あり＋実績あり／<b style={{color:"#b45309"}}>確定（実績待ち）</b>=確定済だが実績未入力／<b style={{color:"#0369a1"}}>未確定</b>=配車はあるが未確定／<b style={{color:"#645F6E"}}>実績のみ</b>=配車登録なし。<br/>
+              ※ 連動状態: <b style={{color:"#6E9E78"}}>連動済</b>=確定配車あり＋実績あり／<b style={{color:"#b45309"}}>確定（実績待ち）</b>=確定済だが実績未入力／<b style={{color:"#0369a1"}}>未確定</b>=配車はあるが未確定／<b style={{color:"#645F6E"}}>実績のみ</b>=配車登録なし。<br/>
               ※ 実際の請求書発行・入金消込は「請求管理」、金額の修正は「日次実績入力」で行ってください。
             </div>
           </div>
@@ -6673,7 +6673,7 @@ const AttendancePage = ({ accent }) => {
   const [dispatch] = useLocalStorage("jt_dispatch", {});
   const [shifts] = useLocalStorage("jt_shifts", {});
 
-  const stColor = { "出勤":"#5E8C68","出勤中":"#7E6593","有給":"#7E6593","休日":"#A09AAB","欠勤":"#B05A60","公休":"#645F6E","早番":"#0891b2","遅番":"#7E6593" };
+  const stColor = { "出勤":"#6E9E78","出勤中":"#7E6593","有給":"#7E6593","休日":"#A09AAB","欠勤":"#B05A60","公休":"#645F6E","早番":"#0891b2","遅番":"#7E6593" };
   const stBg    = { "出勤":"#E6EFE4","出勤中":"#EFEDF3","有給":"#f5f3ff","休日":"#EDEBF1","欠勤":"#F3E6E3","公休":"#ECEAF0","早番":"#ecfeff","遅番":"#f5f3ff" };
 
   const _pad = n => String(n).padStart(2,"0");
@@ -6809,7 +6809,7 @@ const AttendancePage = ({ accent }) => {
           {/* サマリーKPI */}
           <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12, marginBottom:16 }}>
             {[
-              { label:"本日出勤", value:`${driverSummary.filter(d=>["出勤","出勤中","早番","遅番"].includes(d.todaySt)).length}名`, sub:`全${driverSummary.length}名中`, color:"#5E8C68" },
+              { label:"本日出勤", value:`${driverSummary.filter(d=>["出勤","出勤中","早番","遅番"].includes(d.todaySt)).length}名`, sub:`全${driverSummary.length}名中`, color:"#6E9E78" },
               { label:`${_monthLabel} 配車のべ日数${_isFallback ? ` (${REF_MONTH_LABEL}実績未入力)` : ""}`, value:`${driverSummary.reduce((s,d)=>s+d.workDays,0)}日`, sub:"確定・実績ベース", color:accent },
               { label:"本日有給", value:`${driverSummary.filter(d=>d.todaySt==="有給").length}名`, sub:"取得中", color:"#7E6593" },
               { label:"本日休日", value:`${driverSummary.filter(d=>d.todaySt==="休日").length}名`, sub:"シフト", color:"#645F6E" },
@@ -6979,7 +6979,7 @@ const ApplyPage = ({ accent }) => {
     { id:"A-038", type:"備品購入申請", date:"2025-04-15", status:"却下",     approver:"管理部" },
   ]);
 
-  const stC = s => s==="承認待ち"?{bg:"#F2EBDC",c:"#8C6A2E"}:s==="承認済み"?{bg:"#E6EFE4",c:"#5E8C68"}:{bg:"#fee2e2",c:"#B05A60"};
+  const stC = s => s==="承認待ち"?{bg:"#F2EBDC",c:"#8C6A2E"}:s==="承認済み"?{bg:"#E6EFE4",c:"#6E9E78"}:{bg:"#fee2e2",c:"#B05A60"};
 
   const types = [
     { name:"有給休暇申請",    icon:"calendar",  fields:[
@@ -7042,7 +7042,7 @@ const ApplyPage = ({ accent }) => {
   if (ok) return (
     <div style={{ textAlign:"center", paddingTop:80 }}>
       <div style={{ width:64, height:64, borderRadius:"50%", background:"#E6EFE4", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 20px" }}>
-        <Ic name="check" size={28} color="#5E8C68" strokeWidth={2.5}/>
+        <Ic name="check" size={28} color="#6E9E78" strokeWidth={2.5}/>
       </div>
       <div style={{ fontSize:18, fontWeight:700, marginBottom:8 }}>申請を送信しました</div>
       <div style={{ fontSize:13, color:"#645F6E", marginBottom:6 }}>担当者が確認後、承認・却下の通知が届きます</div>
