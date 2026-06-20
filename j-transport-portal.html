@@ -6201,7 +6201,7 @@ const DispatchPage = ({ accent, setPage }) => {
                               <select value={cur} onChange={e=>setDisp(wd.dk,dr.id,e.target.value)}
                                 style={{ width:"100%", maxWidth:88, padding:"4px 4px", borderRadius:4, fontSize:11, fontWeight:cur?600:400, fontFamily:"inherit", cursor:"pointer",
                                   border:cur?`1px solid ${col.fg}33`:"1px dashed var(--jt-line)",
-                                  background:cur?col.bg:"#fff", color:cur?col.fg:"var(--jt-text-mute)", textAlignLast:"center", appearance:"none", outline:"none" }}>
+                                  background:cur?col.bg:"transparent", color:cur?col.fg:"var(--jt-text-mute)", textAlignLast:"center", appearance:"none", outline:"none" }}>
                                 <option value="">－ 空き</option>
                                 {ac.map(c=><option key={c.id} value={c.id}>{DISPATCH_CLIENT_SHORT[c.id]||c.name}</option>)}
                               </select>
