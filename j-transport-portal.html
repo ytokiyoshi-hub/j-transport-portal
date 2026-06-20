@@ -6122,6 +6122,7 @@ const DispatchPage = ({ accent, setPage }) => {
         <div style={{ flex:1 }}/>
         {tab==="dispatch" ? (
           <>
+            <button onClick={()=>setShowRules(s=>!s)} style={{ ...actBtn(false), color: showRules?"var(--jt-accent)":"var(--jt-text-sub)" }}>⚙ ルール</button>
             <button onClick={autoFillWeek} style={actBtn(true)}>平日を自動配車</button>
             <button onClick={copyPrevWeek} style={actBtn(false)}>先週をコピー</button>
             <button onClick={confirmWeek} style={{ ...actBtn(false), color:"var(--jt-accent)", border:"none", background:"var(--jt-base)" }}>週を確定</button>
