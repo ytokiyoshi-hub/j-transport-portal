@@ -1954,41 +1954,41 @@ const RateMasterPage = ({ accent, setPage }) => {
       {showAdd && (
         <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,.45)", zIndex:9999, display:"flex", alignItems:"center", justifyContent:"center" }}
           onClick={closeAdd}>
-          <div style={{ background:"var(--jt-base)", borderRadius:18, width:480, maxHeight:"85vh", overflowY:"auto", padding:32, boxShadow:"var(--jt-raised)" }} onClick={e=>e.stopPropagation()}>
+          <div style={{ background:"var(--jt-base)", borderRadius:16, width:560, maxWidth:"calc(100vw - 32px)", maxHeight:"85vh", overflowY:"auto", overflowX:"hidden", padding:28, boxShadow:"0 20px 50px rgba(35,28,50,.30)" }} onClick={e=>e.stopPropagation()}>
             <div style={{ fontSize:18, fontWeight:700, marginBottom:4 }}>荷主を追加</div>
             <div style={{ fontSize:12, color:"#A09AAB", marginBottom:20 }}>新しい荷主の基本情報と単価を登録します</div>
 
             <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
               <div style={{ display:"flex", gap:12 }}>
-                <label style={{ flex:"0 0 132px", display:"flex", flexDirection:"column", gap:5 }}>
+                <label style={{ flex:"0 0 132px", display:"flex", flexDirection:"column", gap:5, minWidth:0 }}>
                   <span style={{ fontSize:12, fontWeight:600, color:"#645F6E" }}>荷主コード</span>
                   <input value={form.code} onChange={e=>setForm({ ...form, code:e.target.value })} placeholder="C-12"
-                    style={{ padding:"9px 12px", border:"none", borderRadius:6, fontSize:13, fontFamily:"ui-monospace, monospace", outline:"none", background:"var(--jt-base)", boxShadow:"var(--jt-inset-sm)" }}/>
+                    style={{ padding:"9px 12px", border:"none", borderRadius:6, fontSize:13, fontFamily:"ui-monospace, monospace", outline:"none", background:"var(--jt-base)", boxShadow:"var(--jt-inset-sm)", width:"100%", boxSizing:"border-box" }}/>
                 </label>
-                <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5 }}>
+                <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5, minWidth:0 }}>
                   <span style={{ fontSize:12, fontWeight:600, color:"#645F6E" }}>荷主名</span>
                   <input value={form.name} onChange={e=>setForm({ ...form, name:e.target.value })} placeholder="例）新規物流株式会社"
-                    style={{ padding:"9px 12px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
+                    style={{ padding:"9px 12px", border:"none", boxShadow:"var(--jt-inset-sm)", background:"var(--jt-base)", color:"var(--jt-text)", borderRadius:8, fontSize:13, fontFamily:"inherit", outline:"none", width:"100%", boxSizing:"border-box" }}/>
                 </label>
               </div>
-              <label style={{ display:"flex", flexDirection:"column", gap:5 }}>
+              <label style={{ display:"flex", flexDirection:"column", gap:5, minWidth:0 }}>
                 <span style={{ fontSize:12, fontWeight:600, color:"#645F6E" }}>エリア</span>
                 <input value={form.area} onChange={e=>setForm({ ...form, area:e.target.value })} placeholder="例）東京西部・多摩"
-                  style={{ padding:"9px 12px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
+                  style={{ padding:"9px 12px", border:"none", boxShadow:"var(--jt-inset-sm)", background:"var(--jt-base)", color:"var(--jt-text)", borderRadius:8, fontSize:13, fontFamily:"inherit", outline:"none", width:"100%", boxSizing:"border-box" }}/>
               </label>
 
               <div style={{ display:"flex", gap:12 }}>
-                <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5 }}>
+                <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5, minWidth:0 }}>
                   <span style={{ fontSize:12, fontWeight:600, color:"#645F6E" }}>請求体系</span>
                   <select value={form.billing} onChange={e=>setForm({ ...form, billing:e.target.value })}
-                    style={{ padding:"9px 12px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none", background:"var(--jt-base)" }}>
+                    style={{ padding:"9px 12px", border:"none", boxShadow:"var(--jt-inset-sm)", background:"var(--jt-base)", color:"var(--jt-text)", borderRadius:8, fontSize:13, fontFamily:"inherit", outline:"none", width:"100%", boxSizing:"border-box", background:"var(--jt-base)" }}>
                     {billingOptions.map(o=><option key={o} value={o}>{o}</option>)}
                   </select>
                 </label>
-                <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5 }}>
+                <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5, minWidth:0 }}>
                   <span style={{ fontSize:12, fontWeight:600, color:"#645F6E" }}>締め</span>
                   <select value={form.billingCycle} onChange={e=>setForm({ ...form, billingCycle:e.target.value })}
-                    style={{ padding:"9px 12px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none", background:"var(--jt-base)" }}>
+                    style={{ padding:"9px 12px", border:"none", boxShadow:"var(--jt-inset-sm)", background:"var(--jt-base)", color:"var(--jt-text)", borderRadius:8, fontSize:13, fontFamily:"inherit", outline:"none", width:"100%", boxSizing:"border-box", background:"var(--jt-base)" }}>
                     {CYCLE_OPTIONS.map(o=><option key={o} value={o}>{o}</option>)}
                   </select>
                 </label>
@@ -1998,21 +1998,21 @@ const RateMasterPage = ({ accent, setPage }) => {
                 <div style={{ fontSize:12, fontWeight:700, color:"#A09AAB", marginBottom:10 }}>請求先情報（請求書に記載）</div>
                 <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
                   <div style={{ display:"flex", gap:10 }}>
-                    <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5 }}>
+                    <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5, minWidth:0 }}>
                       <span style={{ fontSize:11, color:"#645F6E" }}>担当者</span>
                       <input value={form.person} onChange={e=>setForm({ ...form, person:e.target.value })} placeholder="例）物流管理部 田中様"
-                        style={{ padding:"8px 10px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
+                        style={{ padding:"8px 10px", border:"none", boxShadow:"var(--jt-inset-sm)", background:"var(--jt-base)", color:"var(--jt-text)", borderRadius:8, fontSize:13, fontFamily:"inherit", outline:"none", width:"100%", boxSizing:"border-box" }}/>
                     </label>
-                    <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5 }}>
+                    <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5, minWidth:0 }}>
                       <span style={{ fontSize:11, color:"#645F6E" }}>電話</span>
                       <input value={form.tel} onChange={e=>setForm({ ...form, tel:e.target.value })} placeholder="例）03-1234-5678"
-                        style={{ padding:"8px 10px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
+                        style={{ padding:"8px 10px", border:"none", boxShadow:"var(--jt-inset-sm)", background:"var(--jt-base)", color:"var(--jt-text)", borderRadius:8, fontSize:13, fontFamily:"inherit", outline:"none", width:"100%", boxSizing:"border-box" }}/>
                     </label>
                   </div>
-                  <label style={{ display:"flex", flexDirection:"column", gap:5 }}>
+                  <label style={{ display:"flex", flexDirection:"column", gap:5, minWidth:0 }}>
                     <span style={{ fontSize:11, color:"#645F6E" }}>請求先住所</span>
                     <input value={form.address} onChange={e=>setForm({ ...form, address:e.target.value })} placeholder="例）東京都〇〇区〇〇 1-2-3"
-                      style={{ padding:"8px 10px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
+                      style={{ padding:"8px 10px", border:"none", boxShadow:"var(--jt-inset-sm)", background:"var(--jt-base)", color:"var(--jt-text)", borderRadius:8, fontSize:13, fontFamily:"inherit", outline:"none", width:"100%", boxSizing:"border-box" }}/>
                   </label>
                 </div>
               </div>
@@ -2020,20 +2020,20 @@ const RateMasterPage = ({ accent, setPage }) => {
               <div style={{ background:"#EDEBF1", borderRadius:8, padding:"14px 16px" }}>
                 <div style={{ fontSize:12, fontWeight:700, color:"#A09AAB", marginBottom:10 }}>初期単価（後から編集できます）</div>
                 <div style={{ display:"flex", gap:10 }}>
-                  <label style={{ flex:1.4, display:"flex", flexDirection:"column", gap:5 }}>
+                  <label style={{ flex:1.4, display:"flex", flexDirection:"column", gap:5, minWidth:0 }}>
                     <span style={{ fontSize:11, color:"#645F6E" }}>業務区分</span>
                     <input value={form.rateLabel} onChange={e=>setForm({ ...form, rateLabel:e.target.value })}
-                      style={{ padding:"8px 10px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
+                      style={{ padding:"8px 10px", border:"none", boxShadow:"var(--jt-inset-sm)", background:"var(--jt-base)", color:"var(--jt-text)", borderRadius:8, fontSize:13, fontFamily:"inherit", outline:"none", width:"100%", boxSizing:"border-box" }}/>
                   </label>
-                  <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5 }}>
+                  <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5, minWidth:0 }}>
                     <span style={{ fontSize:11, color:"#645F6E" }}>売単価</span>
                     <input value={form.sell} onChange={e=>setForm({ ...form, sell:e.target.value })} type="number" placeholder="0"
-                      style={{ padding:"8px 10px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
+                      style={{ padding:"8px 10px", border:"none", boxShadow:"var(--jt-inset-sm)", background:"var(--jt-base)", color:"var(--jt-text)", borderRadius:8, fontSize:13, fontFamily:"inherit", outline:"none", width:"100%", boxSizing:"border-box" }}/>
                   </label>
-                  <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5 }}>
+                  <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5, minWidth:0 }}>
                     <span style={{ fontSize:11, color:"#645F6E" }}>支払単価</span>
                     <input value={form.pay} onChange={e=>setForm({ ...form, pay:e.target.value })} type="number" placeholder="0"
-                      style={{ padding:"8px 10px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
+                      style={{ padding:"8px 10px", border:"none", boxShadow:"var(--jt-inset-sm)", background:"var(--jt-base)", color:"var(--jt-text)", borderRadius:8, fontSize:13, fontFamily:"inherit", outline:"none", width:"100%", boxSizing:"border-box" }}/>
                   </label>
                 </div>
               </div>
@@ -3313,10 +3313,9 @@ const DailyInputPage = ({ accent }) => {
   }
   const _selDrivers = (clientDriverOverrides && clientDriverOverrides[selClient?.id]) || selClient.drivers || [];
   const _allCandidates = driverSrc.filter(d => _selDrivers.includes(d.id) || (typeof dailyActuals!=="undefined" && dailyActuals[selClient.id] && Object.values(dailyActuals[selClient.id]).some(day=>day[d.id])) || (dailyEdits[selClient.id] && Object.entries(dailyEdits[selClient.id]).some(([dt,day])=> dt>=_bsStr && dt<=_beStr && day[d.id] && Object.values(day[d.id]).some(v=>Number(v)>0))));
-  // 担当ドライバー未設定の荷主（追加直後の新規荷主など）は全ドライバーを入力対象にフォールバック
-  const assignedDrivers = _activeIds.size > 0
-    ? _allCandidates.filter(d => _activeIds.has(d.id))
-    : (_allCandidates.length ? _allCandidates : driverSrc);
+  // 担当ドライバーは常に全員を列表示する（1人入力したら他が消えるバグ防止）。
+  // 担当未設定の荷主（追加直後の新規荷主など）は全ドライバーを入力対象にフォールバック。
+  const assignedDrivers = _allCandidates.length ? _allCandidates : driverSrc;
   const rates = effectiveClient(selClient).rates.filter(r => r.sell > 0 || r.pay > 0);
   const nD = assignedDrivers.length;
   const nR = rates.length;
