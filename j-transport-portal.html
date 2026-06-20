@@ -5608,6 +5608,27 @@ function AppearanceSettings() {
         </div>
       </div>
       <div style={S.card}>
+        <div style={S.cardHead}>テーマカラー（主色）</div>
+        <div style={S.row}>
+          <span style={S.label}>テーマカラー<small style={S.hint}>選ぶと濃淡（hover・active背景）を自動調整（accent）</small></span>
+          <span style={S.picker}>
+            <input type="color" style={S.color} value={draft.accent || '#7E6593'} onChange={(e)=>setThemeColor(e.target.value)} onBlur={()=>showToast('テーマカラーを変更しました')} />
+            <span style={S.hex}>{draft.accent}</span>
+          </span>
+        </div>
+        <div style={{ display:'flex', gap:8, marginTop:6, flexWrap:'wrap' }}>
+          {['#7E6593','#3F6CB0','#2E8B8B','#3F8A57','#B0622E','#9A3B5A','#5B5B66','#1F2937'].map(c=>(
+            <button key={c} type="button" onClick={()=>setThemeColor(c)} title={c}
+              style={{ width:26, height:26, borderRadius:8, border:(draft.accent||'').toLowerCase()===c.toLowerCase()?`2px solid ${draft.text}`:`1px solid ${draft.lineDk}`, background:c, cursor:'pointer', padding:0 }} />
+          ))}
+        </div>
+        <div style={{ display:'flex', alignItems:'center', gap:12, marginTop:14, paddingTop:12, borderTop:`1px solid ${draft.line}`, flexWrap:'wrap' }}>
+          <span style={{ padding:'8px 16px', borderRadius:13, background:draft.accent, color:'#fff', fontSize:12, fontWeight:700, boxShadow:'var(--jt-raised-sm)' }}>主アクション</span>
+          <span style={{ display:'inline-block', padding:'4px 12px', borderRadius:13, background:draft.accentLt, color:draft.accent, fontSize:11, fontWeight:600 }}>active 背景</span>
+          <small style={{ fontSize:11, color:draft.textMute }}>濃 {draft.accentDk} ／ 薄 {draft.accentLt}（自動）</small>
+        </div>
+      </div>
+      <div style={S.card}>
         <div style={S.cardHead}>カスタム調整</div>
         {fields.map(group => (
           <React.Fragment key={group.group}>
