@@ -5925,15 +5925,42 @@ const DispatchPage = ({ accent, setPage }) => {
     if(Object.keys(day).length) next[dk]=day; else delete next[dk];
     return next;
   });
+  // ── 自動配車ルール（案件の優先順位 × 必要便数/日 × 担当ドライバー） ──
+  const clientById = (cid) => allClientsLive().find(c=>c.id===cid);
+  const isSpotClient = (c) => !!(c && (c.billing||"").includes("スポット"));
+  // 既定の必要便数 = 現ロジックの主担当人数（その案件を first-eligible とするドライバー数）。スポットは0。
+  const primaryCount = {}; drivers.forEach(d=>{ const ac=assignableClients(d.id); if(ac.length) primaryCount[ac[0].id]=(primaryCount[ac[0].id]||0)+1; });
+  const defaultDemand = (cid) => { const c=clientById(cid); if(!c) return 0; return isSpotClient(c)?0:(primaryCount[cid]||0); };
+  const planOrder = () => { const all=allClientsLive().map(c=>c.id); const saved=(plan&&plan.priority)||[]; const seen=new Set(); const out=[]; saved.forEach(id=>{ if(all.includes(id)&&!seen.has(id)){ out.push(id); seen.add(id); } }); all.forEach(id=>{ if(!seen.has(id)){ out.push(id); seen.add(id); } }); return out; };
+  const demandFor = (cid) => (plan&&plan.perDay&&plan.perDay[cid]!=null) ? Number(plan.perDay[cid]) : defaultDemand(cid);
+  // 案件に割当可能なドライバーを「自社優先→登録順」で並べる
+  const orderedDriversForClient = (cid) => { const c=clientById(cid); if(!c) return []; const elig=driversOfClient(c); return drivers.filter(d=>elig.includes(d.id)).sort((a,b)=>(a.type==="自社"?0:1)-(b.type==="自社"?0:1)).map(d=>d.id); };
+  const setDemand = (cid,n) => { const v=Math.max(0,Math.floor(Number(n)||0)); setPlan(p=>({ ...p, perDay:{ ...((p&&p.perDay)||{}), [cid]:v } })); };
+  const movePriority = (cid,dir) => { const ord=planOrder(); const i=ord.indexOf(cid), j=i+dir; if(i<0||j<0||j>=ord.length) return; const a=[...ord]; [a[i],a[j]]=[a[j],a[i]]; setPlan(p=>({ ...p, priority:a })); };
+  const resetPlan = () => { if(!confirm("自動配車ルール（優先順位・必要便数）を初期値に戻します。よろしいですか？")) return; setPlan({}); };
+  const miniBtn = (disabled) => ({ width:22, height:14, padding:0, lineHeight:1, fontSize:8, border:"none", borderRadius:4, cursor:disabled?"default":"pointer", background:"var(--jt-base)", color:disabled?"var(--jt-text-mute)":"var(--jt-text-sub)", boxShadow:disabled?"none":"var(--jt-raised-sm)", opacity:disabled?.4:1 });
+
   const autoFillWeek = () => {
-    if(!confirm("空いている平日（月〜金）に、各ドライバーの主担当荷主を自動配車します。\n（入力済みのセルは変更しません）")) return;
+    if(!confirm("空いている平日（月〜金）に、優先順位の高い案件から「必要便数/日」だけ担当ドライバーを割り当てます。\n（入力済みセル・確定済みの日は変更しません。必要便数0=スポット等は自動配車しません）")) return;
     setDispatch(prev=>{
       const next={...prev};
+      const order = planOrder();
       weekDays.forEach(wd=>{
         if(wd.isWeekend || confirmed[wd.dk]) return;
         const day={...(next[wd.dk]||{})};
-        drivers.forEach(dr=>{ if(day[dr.id]) return; const ac=assignableClients(dr.id); if(ac.length) day[dr.id]=ac[0].id; });
-        if(Object.keys(day).length) next[wd.dk]=day;
+        const used = new Set(Object.keys(day)); // その日すでに割当済みのドライバー（手入力含む）
+        order.forEach(cid=>{
+          const need = demandFor(cid);
+          if(need<=0) return;
+          let cnt = Object.values(day).filter(v=>v===cid).length; // 既にこの案件に入っている数
+          if(cnt>=need) return;
+          for(const did of orderedDriversForClient(cid)){
+            if(cnt>=need) break;
+            if(used.has(did)) continue;
+            day[did]=cid; used.add(did); cnt++;
+          }
+        });
+        if(Object.keys(day).length) next[wd.dk]=day; else delete next[wd.dk];
       });
       return next;
     });
