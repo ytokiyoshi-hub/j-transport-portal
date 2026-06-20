@@ -3817,7 +3817,7 @@ const DailyInputPage = ({ accent }) => {
                     </td>
                   );
                 })}
-                <td style={{ padding:"7px 10px", textAlign:"right", fontWeight:800, color:monthTotals.sell>0?accent:"var(--jt-text-mute)", borderLeft:"2px solid var(--jt-text-sub)" }}>{monthTotals.sell>0?fmt(monthTotals.sell):"—"}</td>
+                <td style={{ padding:"7px 10px", textAlign:"right", fontWeight:800, color:monthTotals.sell>0?accent:"var(--jt-text-mute)", borderLeft:"1px solid #C9C0D6" }}>{monthTotals.sell>0?fmt(monthTotals.sell):"—"}</td>
                 <td style={{ padding:"7px 10px", textAlign:"right", fontWeight:800, color:monthTotals.pay>0?"var(--jt-text)":"var(--jt-text-mute)" }}>{monthTotals.pay>0?fmt(monthTotals.pay):"—"}</td>
                 <td style={{ padding:"7px 10px", textAlign:"right", fontWeight:800, color:(monthTotals.sell>0||monthTotals.pay>0)?(monthTotals.profit<0?"var(--jt-alert)":"#5E8C68"):"var(--jt-text-mute)" }}>{(monthTotals.sell>0||monthTotals.pay>0)?fmt(monthTotals.profit):"—"}</td>
                 <td style={{ borderLeft:"1px solid #DEDAE5" }}/>
