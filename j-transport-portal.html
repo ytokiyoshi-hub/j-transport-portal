@@ -953,6 +953,14 @@ const JtLogo = ({ size=32, radius }) => (
     </svg>
   </div>
 );
+// ── ロゴ・ワードマーク（実ロゴ「[J transport]」を再現: 角括弧＋青文字＋黄の立体影） ──
+const JT_BLUE = "#1B66B2", JT_YELLOW = "#EFAD1C";
+const JtWordmark = ({ height=28 }) => (
+  <svg height={height} viewBox="0 0 216 60" style={{ display:"block" }} role="img" aria-label="J transport">
+    <text x="6" y="45" fontFamily="'Plus Jakarta Sans','Noto Sans JP',sans-serif" fontSize="40" fontStyle="italic" fontWeight="800" letterSpacing="-1.2" fill={JT_YELLOW}>[J transport]</text>
+    <text x="3" y="42" fontFamily="'Plus Jakarta Sans','Noto Sans JP',sans-serif" fontSize="40" fontStyle="italic" fontWeight="800" letterSpacing="-1.2" fill={JT_BLUE}>[J transport]</text>
+  </svg>
+);
 // ── 社印（角印・朱色）。請求書に押印 ──
 const JtSeal = ({ size=58 }) => (
   <svg width={size} height={size} viewBox="0 0 72 72" style={{ flexShrink:0 }} role="img" aria-label="J transport株式会社神戸 社印">
