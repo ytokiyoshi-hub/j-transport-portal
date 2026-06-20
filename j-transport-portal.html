@@ -109,7 +109,8 @@
   .jt-content input:focus, .jt-content select:focus, .jt-content textarea:focus { outline:none; box-shadow: var(--jt-inset), 0 0 0 2px rgba(126,101,147,.55); }
   .jt-content td input:focus, .jt-content th input:focus { box-shadow: inset 0 0 0 2px rgba(126,101,147,.55); }
   ::-webkit-scrollbar { width:9px; height:9px; }
-  ::-webkit-scrollbar-thumb { background:#CECAD5; border-radius:11px; }
+  ::-webkit-scrollbar-thumb { background: var(--jt-line-dk); background: color-mix(in srgb, var(--jt-accent) 48%, var(--jt-line-dk)); border-radius:11px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--jt-accent); }
   ::-webkit-scrollbar-track { background:transparent; }
 </style>
 </head>
