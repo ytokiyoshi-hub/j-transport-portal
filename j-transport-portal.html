@@ -3029,7 +3029,8 @@ const InvoicePage = ({ accent }) => {
 
                 <div className="jt-invoice-footer" style={{ marginTop:24, paddingTop:14, borderTop:"1px solid #DEDAE5", fontSize:11.5 }}>
                   <div style={{ fontWeight:700, marginBottom:4 }}>お振込先</div>
-                  <div>〇〇銀行 〇〇支店 普通 1234567 J transport株式会社（ジェイトランスポート（カ）</div>
+                  <div>{COMPANY.bankLine}</div>
+                  <div>口座名義: {COMPANY.bankHolder}</div>
                   <div style={{ marginTop:10, fontSize:10.5, color:"var(--jt-text-sub)" }}>※ 恐れ入りますが、振込手数料は貴社にてご負担くださいますようお願い申し上げます。</div>
                 </div>
               </div>
