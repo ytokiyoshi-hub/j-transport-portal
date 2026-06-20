@@ -146,7 +146,7 @@
 </style>
 </head>
 <body>
-<template id="__bundler_thumbnail"><svg viewBox="0 0 160 112" xmlns="http://www.w3.org/2000/svg"><rect width="160" height="112" fill="#f4f5f7"/><rect width="36" height="112" fill="#fff"/><rect x="8" y="12" width="20" height="4" rx="2" fill="#0ea5e9"/><rect x="44" y="8" width="108" height="18" rx="2" fill="#fff"/><rect x="44" y="30" width="52" height="38" rx="2" fill="#fff"/><rect x="100" y="30" width="52" height="38" rx="2" fill="#fff"/><rect x="44" y="72" width="108" height="32" rx="2" fill="#fff"/></svg></template>
+<template id="__bundler_thumbnail"><svg viewBox="0 0 160 112" xmlns="http://www.w3.org/2000/svg"><rect width="160" height="112" fill="#f4f5f7"/><rect width="36" height="112" fill="#fff"/><rect x="8" y="12" width="20" height="4" rx="2" fill="#7E6593"/><rect x="44" y="8" width="108" height="18" rx="2" fill="#fff"/><rect x="44" y="30" width="52" height="38" rx="2" fill="#fff"/><rect x="100" y="30" width="52" height="38" rx="2" fill="#fff"/><rect x="44" y="72" width="108" height="32" rx="2" fill="#fff"/></svg></template>
 <div id="root"></div>
 <script type="text/babel">
 
@@ -675,14 +675,14 @@ const THEME_PRESETS = {
   green: {
     line: '#c8d8c8', lineDk: '#6b8e6b',
     accent: '#166534', accentDk: '#0f3f1f', accentLt: '#dcfce7',
-    alert: '#b91c1c', alertLt: '#fef2f2',
+    alert: '#B05A60', alertLt: '#fef2f2',
     base: '#ffffff', bg: '#f5faf5',
-    text: '#0f172a', textSub: '#475569', textMute: '#94a3b8',
+    text: '#393443', textSub: '#475569', textMute: '#94a3b8',
   },
   warm: {
     line: '#d8cdbf', lineDk: '#94806a',
     accent: '#7c2d12', accentDk: '#431407', accentLt: '#fef3e7',
-    alert: '#b91c1c', alertLt: '#fef2f2',
+    alert: '#B05A60', alertLt: '#fef2f2',
     base: '#fffaf3', bg: '#fcf3e7',
     text: '#1c1917', textSub: '#57534e', textMute: '#a8a29e',
   },
@@ -946,22 +946,22 @@ const announces = [
 // ── Shared UI ──────────────────────────────────────────────────────────────
 const StatusBadge = ({ label }) => {
   const map = {
-    重要:["#fef2f2","#dc2626"], 請求:["#eff6ff","#2563eb"], 運行:["#f0fdf4","#16a34a"],
-    支払:["#fffbeb","#d97706"], 人事:["#faf5ff","#7c3aed"], 規程:["#f8fafc","#64748b"],
-    入金済:["#f0fdf4","#16a34a"], 請求済:["#eff6ff","#2563eb"],
-    未請求:["#f8fafc","#64748b"], 遅延:["#fef2f2","#dc2626"],
+    重要:["#fef2f2","#B05A60"], 請求:["#eff6ff","#2563eb"], 運行:["#f0fdf4","#5E8C68"],
+    支払:["#fffbeb","#C39A52"], 人事:["#faf5ff","#7c3aed"], 規程:["#EDEBF1","#645F6E"],
+    入金済:["#f0fdf4","#5E8C68"], 請求済:["#eff6ff","#2563eb"],
+    未請求:["#EDEBF1","#645F6E"], 遅延:["#fef2f2","#B05A60"],
     自社:["#eff6ff","#2563eb"], 協力会社:["#faf5ff","#7c3aed"],
-    稼働中:["#f0fdf4","#16a34a"], 個建て:["#eff6ff","#2563eb"],
-    "固定（日額）":["#fffbeb","#d97706"], "固定＋変動":["#fdf4ff","#9333ea"],
+    稼働中:["#f0fdf4","#5E8C68"], 個建て:["#eff6ff","#2563eb"],
+    "固定（日額）":["#fffbeb","#C39A52"], "固定＋変動":["#fdf4ff","#9333ea"],
     "個建て（2区分）":["#eff6ff","#2563eb"], "個建て（3区分）":["#eff6ff","#2563eb"],
-    スポット:["#f8fafc","#64748b"],
-    出勤中:["#eff6ff","#2563eb"], 休日:["#f8fafc","#9ca3af"], 出勤:["#f0fdf4","#16a34a"], 有給:["#faf5ff","#7c3aed"],
-    承認済:["#f0fdf4","#16a34a"],
+    スポット:["#EDEBF1","#645F6E"],
+    出勤中:["#eff6ff","#2563eb"], 休日:["#EDEBF1","#A09AAB"], 出勤:["#f0fdf4","#5E8C68"], 有給:["#faf5ff","#7c3aed"],
+    承認済:["#f0fdf4","#5E8C68"],
   };
   const [bg,fg]=map[label]||["#f1f5f9","#475569"];
   return <span style={{ display:"inline-block", padding:"2px 9px", borderRadius:4, fontSize:11.5, fontWeight:600, background:bg, color:fg, letterSpacing:0.2 }}>{label}</span>;
 };
-const Avatar = ({ name, size=32, bg="#e5e7eb", color="#374151" }) => (
+const Avatar = ({ name, size=32, bg="#DEDAE5", color="#645F6E" }) => (
   <div style={{ width:size, height:size, borderRadius:"50%", background:bg, color, display:"flex", alignItems:"center", justifyContent:"center", fontSize:size*0.38, fontWeight:700, flexShrink:0 }}>{name[0]}</div>
 );
 const Card = ({ children, style={}, onClick, onMouseEnter, onMouseLeave, title, flush, className }) => (
@@ -971,8 +971,8 @@ const Card = ({ children, style={}, onClick, onMouseEnter, onMouseLeave, title, 
 );
 const SH = ({ title, action, onAction }) => (
   <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"14px 20px", borderBottom:"1px solid var(--jt-line-dk, #94a3b8)" }}>
-    <span style={{ fontWeight:700, fontSize:14, color:"#111827" }}>{title}</span>
-    {action && <button onClick={onAction} style={{ background:"none", border:"none", fontSize:12.5, color:"#6b7280", padding:0 }}>{action}</button>}
+    <span style={{ fontWeight:700, fontSize:14, color:"#393443" }}>{title}</span>
+    {action && <button onClick={onAction} style={{ background:"none", border:"none", fontSize:12.5, color:"#645F6E", padding:0 }}>{action}</button>}
   </div>
 );
 
@@ -1114,15 +1114,15 @@ const ParentClientSummaryBlock = ({ accent, selectedMonth, dailyEdits }) => {
 
   return (
     <Card style={{ marginBottom:14, padding:0 }}>
-      <div style={{ padding:"12px 16px", borderBottom:"1px solid #e5e7eb", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+      <div style={{ padding:"12px 16px", borderBottom:"1px solid #DEDAE5", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
         <div style={{ fontSize:14, fontWeight:700 }}>上位荷主別 月次サマリ（{mkLabel(selectedMonth)}）</div>
-        <div style={{ fontSize:11, color:"#9ca3af" }}>下位荷主の合算を発注元単位で表示</div>
+        <div style={{ fontSize:11, color:"#A09AAB" }}>下位荷主の合算を発注元単位で表示</div>
       </div>
       <table style={{ width:"100%", borderCollapse:"collapse", fontSize:12.5 }}>
         <thead>
-          <tr style={{ background:"#f9fafb", borderBottom:"1px solid #e5e7eb" }}>
+          <tr style={{ background:"#f9fafb", borderBottom:"1px solid #DEDAE5" }}>
             {["上位荷主","紐付け件数","売上","支払","粗利","粗利率","構成比"].map(h=>(
-              <th key={h} style={{ padding:"8px 14px", textAlign:h==="上位荷主"?"left":"right", color:"#6b7280", fontWeight:500, fontSize:11.5 }}>{h}</th>
+              <th key={h} style={{ padding:"8px 14px", textAlign:h==="上位荷主"?"left":"right", color:"#645F6E", fontWeight:500, fontSize:11.5 }}>{h}</th>
             ))}
           </tr>
         </thead>
@@ -1131,19 +1131,19 @@ const ParentClientSummaryBlock = ({ accent, selectedMonth, dailyEdits }) => {
             const pct = total>0 ? g.sell/total*100 : 0;
             const isUnassigned = g.id === "__unassigned__";
             return (
-              <tr key={g.id} style={{ borderBottom:"1px solid #f3f4f6", background:isUnassigned?"#fef3c7":"transparent" }}>
+              <tr key={g.id} style={{ borderBottom:"1px solid #EDEBF1", background:isUnassigned?"#fef3c7":"transparent" }}>
                 <td style={{ padding:"9px 14px", fontWeight:600, color:isUnassigned?"#92400e":"#1a1f2e" }}>{g.name}</td>
-                <td style={{ padding:"9px 14px", textAlign:"right", color:"#6b7280" }}>{g.count}件</td>
+                <td style={{ padding:"9px 14px", textAlign:"right", color:"#645F6E" }}>{g.count}件</td>
                 <td style={{ padding:"9px 14px", textAlign:"right", fontWeight:700, color:accent }}>{g.sell>0?fmt(g.sell):"—"}</td>
-                <td style={{ padding:"9px 14px", textAlign:"right", color:"#6b7280" }}>{g.pay>0?fmt(g.pay):"—"}</td>
-                <td style={{ padding:"9px 14px", textAlign:"right", fontWeight:700, color:g.profit>0?"#16a34a":"#9ca3af" }}>{g.profit!==0?fmt(g.profit):"—"}</td>
-                <td style={{ padding:"9px 14px", textAlign:"right", color:g.rate>=15?"#16a34a":g.rate>=10?"#d97706":"#dc2626" }}>{g.sell>0?g.rate.toFixed(1)+"%":"—"}</td>
+                <td style={{ padding:"9px 14px", textAlign:"right", color:"#645F6E" }}>{g.pay>0?fmt(g.pay):"—"}</td>
+                <td style={{ padding:"9px 14px", textAlign:"right", fontWeight:700, color:g.profit>0?"#5E8C68":"#A09AAB" }}>{g.profit!==0?fmt(g.profit):"—"}</td>
+                <td style={{ padding:"9px 14px", textAlign:"right", color:g.rate>=15?"#5E8C68":g.rate>=10?"#C39A52":"#B05A60" }}>{g.sell>0?g.rate.toFixed(1)+"%":"—"}</td>
                 <td style={{ padding:"9px 14px", textAlign:"right" }}>
                   <div style={{ display:"inline-flex", alignItems:"center", gap:6 }}>
-                    <div style={{ width:60, height:6, background:"#e5e7eb", borderRadius:3, overflow:"hidden" }}>
+                    <div style={{ width:60, height:6, background:"#DEDAE5", borderRadius:3, overflow:"hidden" }}>
                       <div style={{ width:`${pct}%`, height:"100%", background:accent }}/>
                     </div>
-                    <span style={{ fontSize:11, color:"#6b7280", minWidth:36 }}>{pct.toFixed(0)}%</span>
+                    <span style={{ fontSize:11, color:"#645F6E", minWidth:36 }}>{pct.toFixed(0)}%</span>
                   </div>
                 </td>
               </tr>
@@ -1360,15 +1360,15 @@ const PLPage = ({ accent, setPage }) => {
           <div style={{ fontSize:28, fontWeight:700, display:"flex", alignItems:"center", gap:10, color:"#393443" }}>
             収支管理 <span style={{ fontSize:11, padding:"2px 8px", background:accent+"22", color:accent, borderRadius:99, fontWeight:600 }}>経営分析室</span>
           </div>
-          <div style={{ fontSize:12, color:"#9ca3af", marginTop:3 }}>
+          <div style={{ fontSize:12, color:"#A09AAB", marginTop:3 }}>
             対象月: {mkLabel(selectedMonth)} ／ 前月: {mkLabel(prevMk)}
             {!_hasCurrent && selectedMonth===LATEST_DATA_MONTH && ` ／ 今月（${mkLabel(REF_MONTH)}）実績未入力のため最新確定月を表示`}
           </div>
         </div>
         <div style={{ display:"flex", gap:10, alignItems:"center" }}>
-          <label style={{ fontSize:12, color:"#6b7280" }}>対象月：</label>
+          <label style={{ fontSize:12, color:"#645F6E" }}>対象月：</label>
           <select value={selectedMonth} onChange={e=>setSelectedMonth(e.target.value)}
-            style={{ padding:"7px 14px", border:`1.5px solid ${accent}`, borderRadius:6, background:"#fff", fontSize:13, fontWeight:600, color:"#111827", cursor:"pointer", fontFamily:"inherit", outline:"none" }}>
+            style={{ padding:"7px 14px", border:`1.5px solid ${accent}`, borderRadius:6, background:"#fff", fontSize:13, fontWeight:600, color:"#393443", cursor:"pointer", fontFamily:"inherit", outline:"none" }}>
             {ALL_MONTH_KEYS.slice().reverse().map(mk=>(
               <option key={mk} value={mk}>{mkLabel(mk)}</option>
             ))}
@@ -1387,7 +1387,7 @@ const PLPage = ({ accent, setPage }) => {
           { l:"黒字荷主数", v:`${profitableCount} / ${curActive.length}`, sub: profitableCount===curActive.length?"全社黒字":`${curActive.length-profitableCount}社が赤字`, c:profitableCount===curActive.length?"#5E8C68":"#B05A60", up: profitableCount===curActive.length },
         ].map(({l,v,sub,c,up})=>(
           <Card key={l} style={{ padding:"14px 16px" }}>
-            <div style={{ fontSize:10.5, color:"#9ca3af", marginBottom:6, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{l}</div>
+            <div style={{ fontSize:10.5, color:"#A09AAB", marginBottom:6, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{l}</div>
             <div style={{ fontSize:18, fontWeight:800, color:c, lineHeight:1.1 }}>{v}</div>
             <div style={{ fontSize:10.5, color: up===true?"#5E8C68":up===false?"#B05A60":"#A09AAB", marginTop:5 }}>{sub}</div>
           </Card>
@@ -1403,8 +1403,8 @@ const PLPage = ({ accent, setPage }) => {
               <div key={i} style={{ display:"flex", gap:10, padding:"9px 10px", marginBottom:6, background:alertBg(a.level), borderLeft:`4px solid ${alertColor(a.level)}`, borderRadius:4 }}>
                 <span style={{ fontSize:11, fontWeight:700, color:alertColor(a.level), minWidth:36, textTransform:"uppercase" }}>{a.level==="high"?"高":a.level==="mid"?"中":"情報"}</span>
                 <div style={{ flex:1 }}>
-                  <div style={{ fontSize:13, fontWeight:700, color:"#111827" }}>{a.title}</div>
-                  <div style={{ fontSize:11.5, color:"#6b7280", marginTop:2 }}>{a.desc}</div>
+                  <div style={{ fontSize:13, fontWeight:700, color:"#393443" }}>{a.title}</div>
+                  <div style={{ fontSize:11.5, color:"#645F6E", marginTop:2 }}>{a.desc}</div>
                 </div>
               </div>
             ))}
@@ -1420,7 +1420,7 @@ const PLPage = ({ accent, setPage }) => {
             <div style={{ display:"flex", gap:5 }}>
               {[{v:"half",l:"6ヶ月"},{v:"year",l:"12ヶ月"}].map(opt=>(
                 <button key={opt.v} onClick={()=>setGraphRange(opt.v)}
-                  style={{ padding:"3px 10px", borderRadius:4, border:`1.5px solid ${graphRange===opt.v?accent:"#94a3b8"}`, background:graphRange===opt.v?accent:"#fff", color:graphRange===opt.v?"#fff":"#374151", fontSize:11, fontWeight:graphRange===opt.v?600:400, cursor:"pointer" }}>
+                  style={{ padding:"3px 10px", borderRadius:4, border:`1.5px solid ${graphRange===opt.v?accent:"#94a3b8"}`, background:graphRange===opt.v?accent:"#fff", color:graphRange===opt.v?"#fff":"#645F6E", fontSize:11, fontWeight:graphRange===opt.v?600:400, cursor:"pointer" }}>
                   {opt.l}
                 </button>
               ))}
@@ -1441,7 +1441,7 @@ const PLPage = ({ accent, setPage }) => {
                     </div>
                     {/* 移動平均ドット */}
                     <div style={{ position:"absolute", left:"50%", bottom:`${mh}%`, transform:"translate(-50%,50%)", width:6, height:6, background:"#B05A60", borderRadius:"50%", zIndex:2 }}/>
-                    <div style={{ fontSize:9.5, color:isCur?accent:"#9ca3af", marginTop:5, fontWeight:isCur?700:400 }}>{mkShort(d.mk)}</div>
+                    <div style={{ fontSize:9.5, color:isCur?accent:"#A09AAB", marginTop:5, fontWeight:isCur?700:400 }}>{mkShort(d.mk)}</div>
                   </div>
                 );
               })}
@@ -1499,19 +1499,19 @@ const PLPage = ({ accent, setPage }) => {
             <tbody>
               {curSorted.map((r,i)=>{
                 const warn = [];
-                if (r.rate<ALERT_MARGIN_LOW) warn.push({l:"低粗利", c:"#dc2626"});
-                if (r.sellDelta<=-ALERT_DROP_PCT) warn.push({l:"急減", c:"#dc2626"});
-                if (r.pct>=30) warn.push({l:"集中", c:"#d97706"});
-                if (r.profit<0) warn.push({l:"赤字", c:"#dc2626"});
+                if (r.rate<ALERT_MARGIN_LOW) warn.push({l:"低粗利", c:"#B05A60"});
+                if (r.sellDelta<=-ALERT_DROP_PCT) warn.push({l:"急減", c:"#B05A60"});
+                if (r.pct>=30) warn.push({l:"集中", c:"#C39A52"});
+                if (r.profit<0) warn.push({l:"赤字", c:"#B05A60"});
                 return (
-                  <tr key={r.id} onMouseEnter={e=>e.currentTarget.style.background="#f8fafc"} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+                  <tr key={r.id} onMouseEnter={e=>e.currentTarget.style.background="#EDEBF1"} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
                     <td style={{ padding:"10px 12px", fontWeight:700 }}>{r.name}</td>
                     <td style={{ padding:"10px 12px", fontSize:11 }}>
                       <div>{r.billing}</div>
-                      <div style={{ color:"#9ca3af" }}>{r.billingCycle}</div>
+                      <div style={{ color:"#A09AAB" }}>{r.billingCycle}</div>
                     </td>
                     <td style={{ padding:"10px 12px", textAlign:"right", fontWeight:700, color:accent }}>{fmt(r.sell)}</td>
-                    <td style={{ padding:"10px 12px", textAlign:"right", color:"#374151" }}>{fmt(r.pay)}</td>
+                    <td style={{ padding:"10px 12px", textAlign:"right", color:"#645F6E" }}>{fmt(r.pay)}</td>
                     <td style={{ padding:"10px 12px", textAlign:"right", fontWeight:700, color:r.profit>=0?"#5E8C68":"#B05A60" }}>{fmt(r.profit)}</td>
                     <td style={{ padding:"10px 12px", textAlign:"right", fontWeight:700, color:r.rate>=TARGET_MARGIN?"#5E8C68":r.rate>=ALERT_MARGIN_LOW?"#C39A52":"#B05A60" }}>{r.rate.toFixed(1)}%</td>
                     <td style={{ padding:"10px 12px", textAlign:"right" }}>
@@ -1525,7 +1525,7 @@ const PLPage = ({ accent, setPage }) => {
                     <td style={{ padding:"10px 12px", textAlign:"right", color:r.sellDelta>=0?"#5E8C68":"#B05A60", fontWeight:600 }}>
                       {r.prevSell>0 ? `${r.sellDelta>=0?"+":""}${r.sellDelta.toFixed(1)}%` : "—"}
                     </td>
-                    <td style={{ padding:"10px 12px", textAlign:"right", color:"#6b7280", fontSize:11 }}>{fmt(Math.round(r.avg3))}</td>
+                    <td style={{ padding:"10px 12px", textAlign:"right", color:"#645F6E", fontSize:11 }}>{fmt(Math.round(r.avg3))}</td>
                     <td style={{ padding:"10px 12px", textAlign:"center" }}>
                       <div style={{ display:"flex", gap:3, flexWrap:"wrap", justifyContent:"center" }}>
                         {warn.length===0
@@ -1572,11 +1572,11 @@ const PLPage = ({ accent, setPage }) => {
               </div>
             </div>
             <div style={{ padding:"10px 12px", border:"1px solid #DEDAE5", borderRadius:4, marginBottom:8 }}>
-              <div style={{ fontSize:11, color:"#9ca3af" }}>1ドライバーあたり粗利貢献（{activeDriverCount}名）</div>
+              <div style={{ fontSize:11, color:"#A09AAB" }}>1ドライバーあたり粗利貢献（{activeDriverCount}名）</div>
               <div style={{ fontSize:18, fontWeight:800, color:"#5E8C68", marginTop:3 }}>{fmt(Math.round(perDriverProfit))}/名</div>
-              <div style={{ fontSize:10, color:"#9ca3af", marginTop:2 }}>当月粗利 ÷ 全ドライバー数</div>
+              <div style={{ fontSize:10, color:"#A09AAB", marginTop:2 }}>当月粗利 ÷ 全ドライバー数</div>
             </div>
-            <div style={{ fontSize:11, color:"#6b7280", lineHeight:1.5 }}>
+            <div style={{ fontSize:11, color:"#645F6E", lineHeight:1.5 }}>
               詳細はドライバー別収支ページへ →
               <button onClick={()=>setPage("driverfinance")} style={{ marginLeft:6, padding:"3px 10px", background:accent, color:"#fff", border:"none", borderRadius:4, fontSize:11, cursor:"pointer" }}>詳細</button>
             </div>
@@ -1597,14 +1597,14 @@ const PLPage = ({ accent, setPage }) => {
                   <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline" }}>
                     <div>
                       <div style={{ fontSize:13, fontWeight:700 }}>{cyc}</div>
-                      <div style={{ fontSize:10.5, color:"#9ca3af" }}>{dueLabel}</div>
+                      <div style={{ fontSize:10.5, color:"#A09AAB" }}>{dueLabel}</div>
                     </div>
                     <div style={{ textAlign:"right" }}>
                       <div style={{ fontSize:15, fontWeight:800, color:accent }}>{fmt(grp.sell)}</div>
                       <div style={{ fontSize:10, color:"#5E8C68" }}>粗利 {fmt(grp.sell-grp.pay)}</div>
                     </div>
                   </div>
-                  <div style={{ fontSize:10.5, color:"#6b7280", marginTop:4 }}>
+                  <div style={{ fontSize:10.5, color:"#645F6E", marginTop:4 }}>
                     対象: {grp.clients.map(c=>c.name).join("、")}
                   </div>
                 </div>
@@ -1631,9 +1631,9 @@ const PLPage = ({ accent, setPage }) => {
             { l:"年間着地利益",   v:`${fmt(Math.round(projectionProfit))}`, sub:`利益予測（${ytdMonthCount}ヶ月実績ベース）`, c:"#5E8C68" },
           ].map(({l,v,sub,c})=>(
             <div key={l} style={{ padding:"10px 12px", borderLeft:`3px solid ${c}`, background:"#EFEDF3", borderRadius:4 }}>
-              <div style={{ fontSize:11, color:"#9ca3af", marginBottom:4 }}>{l}</div>
+              <div style={{ fontSize:11, color:"#A09AAB", marginBottom:4 }}>{l}</div>
               <div style={{ fontSize:16, fontWeight:800, color:c }}>{v}</div>
-              <div style={{ fontSize:10, color:"#9ca3af", marginTop:3 }}>{sub}</div>
+              <div style={{ fontSize:10, color:"#A09AAB", marginTop:3 }}>{sub}</div>
             </div>
           ))}
         </div>
@@ -1728,7 +1728,7 @@ const RateMasterPage = ({ accent, setPage }) => {
         <div>
           <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>財務・請求管理</div>
           <div style={{ fontSize:26, fontWeight:700, color:"#393443" }}>単価マスタ管理</div>
-          <div style={{ fontSize:12, color:"#9ca3af", marginTop:2 }}>荷主ごとの売単価・支払単価を一元管理</div>
+          <div style={{ fontSize:12, color:"#A09AAB", marginTop:2 }}>荷主ごとの売単価・支払単価を一元管理</div>
         </div>
         <div style={{ display:"flex", gap:8 }}>
           <button onClick={()=>{
@@ -1759,7 +1759,7 @@ const RateMasterPage = ({ accent, setPage }) => {
                   <span style={{ fontWeight:600, fontSize:13 }}>{c.name}</span>
                   <StatusBadge label={c.billing.replace("（2区分）","").replace("（3区分）","")}/>
                 </div>
-                <span style={{ fontSize:11, color:"#9ca3af" }}><span style={{ fontFamily:"ui-monospace, monospace", color:"#6b7280" }}>{c.id}</span> ・ {c.area}</span>
+                <span style={{ fontSize:11, color:"#A09AAB" }}><span style={{ fontFamily:"ui-monospace, monospace", color:"#645F6E" }}>{c.id}</span> ・ {c.area}</span>
               </button>
             ))}
           </div>
@@ -1772,19 +1772,19 @@ const RateMasterPage = ({ accent, setPage }) => {
               <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:20 }}>
                 <div>
                   <div style={{ fontSize:18, fontWeight:700 }}>{sel.name}</div>
-                  <div style={{ fontSize:12, color:"#645F6E", marginTop:2, display:"flex", alignItems:"center", gap:6 }}><span style={{ fontFamily:"ui-monospace, monospace", color:"#6b7280", fontWeight:700 }}>{sel.id}</span><span>／</span><span>{sel.area}</span><span>／</span><span style={{ color:"#6b7280" }}>締め:</span><select value={cycleFor(sel)} onChange={e=>{ setCycleOverrides({ ...cycleOverrides, [sel.id]: e.target.value }); showToast("締め日を保存しました"); }} style={{ padding:"2px 8px", border:"1.5px solid #7E659360", borderRadius:4, fontSize:12, fontFamily:"inherit", outline:"none", background:"#fff", fontWeight:600, color:"#393443", cursor:"pointer" }}>{Array.from(new Set([cycleFor(sel), sel.billingCycle, ...CYCLE_OPTIONS].filter(Boolean))).map(o=><option key={o} value={o}>{o}</option>)}</select></div>
+                  <div style={{ fontSize:12, color:"#645F6E", marginTop:2, display:"flex", alignItems:"center", gap:6 }}><span style={{ fontFamily:"ui-monospace, monospace", color:"#645F6E", fontWeight:700 }}>{sel.id}</span><span>／</span><span>{sel.area}</span><span>／</span><span style={{ color:"#645F6E" }}>締め:</span><select value={cycleFor(sel)} onChange={e=>{ setCycleOverrides({ ...cycleOverrides, [sel.id]: e.target.value }); showToast("締め日を保存しました"); }} style={{ padding:"2px 8px", border:"1.5px solid #7E659360", borderRadius:4, fontSize:12, fontFamily:"inherit", outline:"none", background:"#fff", fontWeight:600, color:"#393443", cursor:"pointer" }}>{Array.from(new Set([cycleFor(sel), sel.billingCycle, ...CYCLE_OPTIONS].filter(Boolean))).map(o=><option key={o} value={o}>{o}</option>)}</select></div>
                 </div>
-                <span style={{ display:"flex", alignItems:"center", gap:5, fontSize:11, color:"#9ca3af", fontWeight:600, whiteSpace:"nowrap" }}><Ic name="check" size={12} color="#34d399" strokeWidth={2.5}/>自動保存</span>
+                <span style={{ display:"flex", alignItems:"center", gap:5, fontSize:11, color:"#A09AAB", fontWeight:600, whiteSpace:"nowrap" }}><Ic name="check" size={12} color="#34d399" strokeWidth={2.5}/>自動保存</span>
               </div>
 
               {/* 単価テーブル */}
               <div style={{ marginBottom:20 }}>
-                <div style={{ fontSize:12, fontWeight:700, color:"#9ca3af", marginBottom:10 }}>単価設定</div>
+                <div style={{ fontSize:12, fontWeight:700, color:"#A09AAB", marginBottom:10 }}>単価設定</div>
                 <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
                   <thead>
                     <tr style={{ background:"#E9E7EE", borderBottom:"1px solid #DEDAE5" }}>
                       {["業務区分","売単価（荷主→自社）","支払単価（自社→ドライバー）","粗利単価","粗利率"].map(h=>(
-                        <th key={h} style={{ padding:"8px 12px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:12 }}>{h}</th>
+                        <th key={h} style={{ padding:"8px 12px", textAlign:"left", color:"#645F6E", fontWeight:500, fontSize:12 }}>{h}</th>
                       ))}
                     </tr>
                   </thead>
@@ -1825,7 +1825,7 @@ const RateMasterPage = ({ accent, setPage }) => {
 
               {/* 担当ドライバー */}
               <div>
-                <div style={{ fontSize:12, fontWeight:700, color:"#9ca3af", marginBottom:10 }}>担当ドライバー</div>
+                <div style={{ fontSize:12, fontWeight:700, color:"#A09AAB", marginBottom:10 }}>担当ドライバー</div>
                 <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
                   {driversFor(sel).map(did => {
                     const d = drivers.find(dr=>dr.id===did);
@@ -1834,14 +1834,14 @@ const RateMasterPage = ({ accent, setPage }) => {
                         <Avatar name={d.name} size={24} bg={d.type==="自社"?"#dbeafe":"#ede9fe"} color={d.type==="自社"?"#1e40af":"#5b21b6"}/>
                         <div>
                           <div style={{ fontSize:13, fontWeight:500 }}>{d.name}</div>
-                          <div style={{ fontSize:10, color:"#9ca3af" }}><StatusBadge label={d.type}/></div>
+                          <div style={{ fontSize:10, color:"#A09AAB" }}><StatusBadge label={d.type}/></div>
                         </div>
                         <button onClick={()=>{
                           const cur = driversFor(sel);
                           const next = cur.filter(x => x !== did);
                           setDriverOverrides({ ...driverOverrides, [sel.id]: next });
                           showToast("担当ドライバーを更新しました");
-                        }} title="解除" style={{ marginLeft:4, padding:"2px 6px", border:"none", background:"transparent", color:"#9ca3af", cursor:"pointer", fontSize:14, lineHeight:1 }}>×</button>
+                        }} title="解除" style={{ marginLeft:4, padding:"2px 6px", border:"none", background:"transparent", color:"#A09AAB", cursor:"pointer", fontSize:14, lineHeight:1 }}>×</button>
                       </div>
                     ) : null;
                   })}
@@ -1859,11 +1859,11 @@ const RateMasterPage = ({ accent, setPage }) => {
                             onMouseEnter={e=>e.currentTarget.style.background="#E9E7EE"}
                             onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
                             {d.name}
-                            <span style={{ color:"#9ca3af", marginLeft:6, fontSize:10 }}>{d.type}</span>
+                            <span style={{ color:"#A09AAB", marginLeft:6, fontSize:10 }}>{d.type}</span>
                           </button>
                         ))}
                         {drivers.filter(d => !driversFor(sel).includes(d.id)).length===0 && (
-                          <div style={{ padding:"8px 10px", fontSize:11, color:"#9ca3af" }}>追加できるドライバーなし</div>
+                          <div style={{ padding:"8px 10px", fontSize:11, color:"#A09AAB" }}>追加できるドライバーなし</div>
                         )}
                       </div>
                     )}
@@ -1873,16 +1873,16 @@ const RateMasterPage = ({ accent, setPage }) => {
 
               {/* 請求先情報 */}
               <div style={{ marginTop:20 }}>
-                <div style={{ fontSize:12, fontWeight:700, color:"#9ca3af", marginBottom:10 }}>請求先情報（請求書に記載）</div>
+                <div style={{ fontSize:12, fontWeight:700, color:"#A09AAB", marginBottom:10 }}>請求先情報（請求書に記載）</div>
                 <div style={{ display:"flex", flexDirection:"column", gap:8, fontSize:13 }}>
                   {(() => {
                     const cinfo = contactFor(sel);
                     return [["担当者","person","例）物流管理部 田中様"],["電話","tel","例）03-1234-5678"],["請求先住所","address","例）東京都〇〇区〇〇 1-2-3"]].map(([label,key,ph])=>(
                       <div key={label} style={{ display:"flex", gap:12, alignItems:"center" }}>
-                        <div style={{ width:88, color:"#6b7280", flexShrink:0 }}>{label}</div>
+                        <div style={{ width:88, color:"#645F6E", flexShrink:0 }}>{label}</div>
                         <input value={cinfo[key]||""} onChange={e=>updateContact(key, e.target.value)}
-                          onFocus={e=>{ e.target.style.borderColor=accent; contactPrevRef.current[key]=e.target.value; }} onBlur={e=>{ e.target.style.borderColor="#e5e7eb"; const isDirty=e.target.value!==(contactPrevRef.current[key]||""); flushContact(isDirty); }} placeholder={ph}
-                          style={{ flex:1, padding:"6px 10px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
+                          onFocus={e=>{ e.target.style.borderColor=accent; contactPrevRef.current[key]=e.target.value; }} onBlur={e=>{ e.target.style.borderColor="#DEDAE5"; const isDirty=e.target.value!==(contactPrevRef.current[key]||""); flushContact(isDirty); }} placeholder={ph}
+                          style={{ flex:1, padding:"6px 10px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
                       </div>
                     ));
                   })()}
@@ -1929,11 +1929,11 @@ const RateMasterPage = ({ accent, setPage }) => {
                 const liveCur = liveCur_local ? liveCur_local : cm(sel.id, REF_MONTH, de); const isCur = liveCur.s > 0;
                 const h = isCur ? liveCur : cm(sel.id, LATEST_DATA_MONTH, de); const act = { sell:h.s, pay:h.p, profit:h.s-h.p };
                 return (<><div style={{ fontSize:13, fontWeight:700, marginBottom:14 }}>今月実績（速報）<span style={{ fontWeight:600, color:"#645F6E", marginLeft:6, fontSize:11 }}>{isCur ? REF_MONTH_LABEL : "最新確定 "+LATEST_MONTH_LABEL}</span></div>
-                {!(act.sell>0) ? <div style={{ color:"#9ca3af", fontSize:13 }}>実績なし</div> : (
+                {!(act.sell>0) ? <div style={{ color:"#A09AAB", fontSize:13 }}>実績なし</div> : (
                   <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:16 }}>
                     {[["売上",fmt(act.sell),"#7E6593"],["支払",fmt(act.pay),"#C39A52"],["粗利",fmt(act.profit),act.profit<0?"#B05A60":"#5E8C68"]].map(([l,v,c])=>(
                       <div key={l} style={{ textAlign:"center", padding:"12px", background:"#E9E7EE", borderRadius:6, boxShadow:"inset 3px 3px 7px #CECAD5,inset -3px -3px 7px #FFFFFF" }}>
-                        <div style={{ fontSize:11, color:"#9ca3af" }}>{l}</div>
+                        <div style={{ fontSize:11, color:"#A09AAB" }}>{l}</div>
                         <div style={{ fontSize:18, fontWeight:700, color:c, marginTop:4 }}>{v}</div>
                       </div>
                     ))}
@@ -1944,8 +1944,8 @@ const RateMasterPage = ({ accent, setPage }) => {
           </div>
         ) : (
           <Card style={{ padding:60, textAlign:"center" }}>
-            <Ic name="tag" size={36} color="#e5e7eb"/>
-            <div style={{ fontSize:14, color:"#9ca3af", marginTop:12 }}>荷主を選択すると単価詳細が表示されます</div>
+            <Ic name="tag" size={36} color="#DEDAE5"/>
+            <div style={{ fontSize:14, color:"#A09AAB", marginTop:12 }}>荷主を選択すると単価詳細が表示されます</div>
           </Card>
         )}
       </div>
@@ -1956,37 +1956,37 @@ const RateMasterPage = ({ accent, setPage }) => {
           onClick={closeAdd}>
           <div style={{ background:"#fff", borderRadius:10, width:480, maxHeight:"85vh", overflowY:"auto", padding:32, boxShadow:"0 10px 40px rgba(0,0,0,0.16)" }} onClick={e=>e.stopPropagation()}>
             <div style={{ fontSize:18, fontWeight:700, marginBottom:4 }}>荷主を追加</div>
-            <div style={{ fontSize:12, color:"#9ca3af", marginBottom:20 }}>新しい荷主の基本情報と単価を登録します</div>
+            <div style={{ fontSize:12, color:"#A09AAB", marginBottom:20 }}>新しい荷主の基本情報と単価を登録します</div>
 
             <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
               <div style={{ display:"flex", gap:12 }}>
                 <label style={{ flex:"0 0 132px", display:"flex", flexDirection:"column", gap:5 }}>
-                  <span style={{ fontSize:12, fontWeight:600, color:"#374151" }}>荷主コード</span>
+                  <span style={{ fontSize:12, fontWeight:600, color:"#645F6E" }}>荷主コード</span>
                   <input value={form.code} onChange={e=>setForm({ ...form, code:e.target.value })} placeholder="C-12"
                     style={{ padding:"9px 12px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"ui-monospace, monospace", outline:"none" }}/>
                 </label>
                 <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5 }}>
-                  <span style={{ fontSize:12, fontWeight:600, color:"#374151" }}>荷主名</span>
+                  <span style={{ fontSize:12, fontWeight:600, color:"#645F6E" }}>荷主名</span>
                   <input value={form.name} onChange={e=>setForm({ ...form, name:e.target.value })} placeholder="例）新規物流株式会社"
                     style={{ padding:"9px 12px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
                 </label>
               </div>
               <label style={{ display:"flex", flexDirection:"column", gap:5 }}>
-                <span style={{ fontSize:12, fontWeight:600, color:"#374151" }}>エリア</span>
+                <span style={{ fontSize:12, fontWeight:600, color:"#645F6E" }}>エリア</span>
                 <input value={form.area} onChange={e=>setForm({ ...form, area:e.target.value })} placeholder="例）東京西部・多摩"
                   style={{ padding:"9px 12px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
               </label>
 
               <div style={{ display:"flex", gap:12 }}>
                 <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5 }}>
-                  <span style={{ fontSize:12, fontWeight:600, color:"#374151" }}>請求体系</span>
+                  <span style={{ fontSize:12, fontWeight:600, color:"#645F6E" }}>請求体系</span>
                   <select value={form.billing} onChange={e=>setForm({ ...form, billing:e.target.value })}
                     style={{ padding:"9px 12px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none", background:"#fff" }}>
                     {billingOptions.map(o=><option key={o} value={o}>{o}</option>)}
                   </select>
                 </label>
                 <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5 }}>
-                  <span style={{ fontSize:12, fontWeight:600, color:"#374151" }}>締め</span>
+                  <span style={{ fontSize:12, fontWeight:600, color:"#645F6E" }}>締め</span>
                   <select value={form.billingCycle} onChange={e=>setForm({ ...form, billingCycle:e.target.value })}
                     style={{ padding:"9px 12px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none", background:"#fff" }}>
                     {CYCLE_OPTIONS.map(o=><option key={o} value={o}>{o}</option>)}
@@ -1994,44 +1994,44 @@ const RateMasterPage = ({ accent, setPage }) => {
                 </label>
               </div>
 
-              <div style={{ background:"#f8fafc", borderRadius:8, padding:"14px 16px" }}>
-                <div style={{ fontSize:12, fontWeight:700, color:"#9ca3af", marginBottom:10 }}>請求先情報（請求書に記載）</div>
+              <div style={{ background:"#EDEBF1", borderRadius:8, padding:"14px 16px" }}>
+                <div style={{ fontSize:12, fontWeight:700, color:"#A09AAB", marginBottom:10 }}>請求先情報（請求書に記載）</div>
                 <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
                   <div style={{ display:"flex", gap:10 }}>
                     <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5 }}>
-                      <span style={{ fontSize:11, color:"#6b7280" }}>担当者</span>
+                      <span style={{ fontSize:11, color:"#645F6E" }}>担当者</span>
                       <input value={form.person} onChange={e=>setForm({ ...form, person:e.target.value })} placeholder="例）物流管理部 田中様"
                         style={{ padding:"8px 10px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
                     </label>
                     <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5 }}>
-                      <span style={{ fontSize:11, color:"#6b7280" }}>電話</span>
+                      <span style={{ fontSize:11, color:"#645F6E" }}>電話</span>
                       <input value={form.tel} onChange={e=>setForm({ ...form, tel:e.target.value })} placeholder="例）03-1234-5678"
                         style={{ padding:"8px 10px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
                     </label>
                   </div>
                   <label style={{ display:"flex", flexDirection:"column", gap:5 }}>
-                    <span style={{ fontSize:11, color:"#6b7280" }}>請求先住所</span>
+                    <span style={{ fontSize:11, color:"#645F6E" }}>請求先住所</span>
                     <input value={form.address} onChange={e=>setForm({ ...form, address:e.target.value })} placeholder="例）東京都〇〇区〇〇 1-2-3"
                       style={{ padding:"8px 10px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
                   </label>
                 </div>
               </div>
 
-              <div style={{ background:"#f8fafc", borderRadius:8, padding:"14px 16px" }}>
-                <div style={{ fontSize:12, fontWeight:700, color:"#9ca3af", marginBottom:10 }}>初期単価（後から編集できます）</div>
+              <div style={{ background:"#EDEBF1", borderRadius:8, padding:"14px 16px" }}>
+                <div style={{ fontSize:12, fontWeight:700, color:"#A09AAB", marginBottom:10 }}>初期単価（後から編集できます）</div>
                 <div style={{ display:"flex", gap:10 }}>
                   <label style={{ flex:1.4, display:"flex", flexDirection:"column", gap:5 }}>
-                    <span style={{ fontSize:11, color:"#6b7280" }}>業務区分</span>
+                    <span style={{ fontSize:11, color:"#645F6E" }}>業務区分</span>
                     <input value={form.rateLabel} onChange={e=>setForm({ ...form, rateLabel:e.target.value })}
                       style={{ padding:"8px 10px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
                   </label>
                   <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5 }}>
-                    <span style={{ fontSize:11, color:"#6b7280" }}>売単価</span>
+                    <span style={{ fontSize:11, color:"#645F6E" }}>売単価</span>
                     <input value={form.sell} onChange={e=>setForm({ ...form, sell:e.target.value })} type="number" placeholder="0"
                       style={{ padding:"8px 10px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
                   </label>
                   <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5 }}>
-                    <span style={{ fontSize:11, color:"#6b7280" }}>支払単価</span>
+                    <span style={{ fontSize:11, color:"#645F6E" }}>支払単価</span>
                     <input value={form.pay} onChange={e=>setForm({ ...form, pay:e.target.value })} type="number" placeholder="0"
                       style={{ padding:"8px 10px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
                   </label>
@@ -2149,7 +2149,7 @@ const printDriverSlip = (d, monthLabel) => {
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { background:#fff; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-  body { font-family:'Noto Sans JP','Hiragino Sans',sans-serif; color:#111827; font-size:12px; line-height:1.6; }
+  body { font-family:'Noto Sans JP','Hiragino Sans',sans-serif; color:#393443; font-size:12px; line-height:1.6; }
   table { border-collapse:collapse; width:100%; } td, th { vertical-align:middle; }
   thead { display:table-header-group; } tfoot { display:table-row-group; }
   tr { break-inside:avoid; page-break-inside:avoid; }
@@ -2175,40 +2175,40 @@ const DriverSlipModal = ({ driver, accent, onClose }) => {
       onClick={onClose}>
       <div style={{ background:"#fff", borderRadius:10, width:680, maxWidth:"100%" }} onClick={e=>e.stopPropagation()}>
         {/* ツールバー（印刷対象外） */}
-        <div style={{ display:"flex", gap:10, padding:"14px 20px", borderBottom:"1px solid #e5e7eb", position:"sticky", top:0, background:"#fff", borderTopLeftRadius:10, borderTopRightRadius:10, zIndex:2 }}>
+        <div style={{ display:"flex", gap:10, padding:"14px 20px", borderBottom:"1px solid #DEDAE5", position:"sticky", top:0, background:"#fff", borderTopLeftRadius:10, borderTopRightRadius:10, zIndex:2 }}>
           <button onClick={()=>printDriverSlip(driver, _monthLabel)}
             style={{ padding:"9px 18px", background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:600, fontSize:13, cursor:"pointer" }}>印刷 / PDF保存</button>
           <button onClick={()=>exportDriverCSV(driver)}
-            style={{ padding:"9px 18px", border:"1px solid #94a3b8", background:"#fff", color:"#374151", borderRadius:6, fontSize:13, cursor:"pointer" }}>CSV出力</button>
+            style={{ padding:"9px 18px", border:"1px solid #DEDAE5", background:"#fff", color:"#645F6E", borderRadius:6, fontSize:13, cursor:"pointer" }}>CSV出力</button>
           <div style={{ flex:1 }}/>
           <button onClick={onClose}
-            style={{ padding:"9px 18px", border:"1.5px solid #e5e7eb", background:"#fff", color:"#374151", borderRadius:6, fontSize:13, cursor:"pointer" }}>閉じる</button>
+            style={{ padding:"9px 18px", border:"1.5px solid #DEDAE5", background:"#fff", color:"#645F6E", borderRadius:6, fontSize:13, cursor:"pointer" }}>閉じる</button>
         </div>
 
         {/* ===== 明細用紙（A4） ===== */}
-        <div className="driver-slip-paper" style={{ padding:36, fontSize:12.5, color:"#111827", lineHeight:1.6 }}>
+        <div className="driver-slip-paper" style={{ padding:36, fontSize:12.5, color:"#393443", lineHeight:1.6 }}>
           {/* ヘッダー */}
-          <div className="jt-keep" style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:24, borderBottom:"2px solid #111827", paddingBottom:14 }}>
+          <div className="jt-keep" style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:24, borderBottom:"2px solid #393443", paddingBottom:14 }}>
             <div>
               <div style={{ fontSize:15, fontWeight:700 }}>{driver.name} 様</div>
-              <div style={{ fontSize:11, color:"#6b7280", marginTop:2 }}>区分：{driver.type}{driver.area?` ／ ${driver.area}`:""}</div>
+              <div style={{ fontSize:11, color:"#645F6E", marginTop:2 }}>区分：{driver.type}{driver.area?` ／ ${driver.area}`:""}</div>
             </div>
             <div style={{ textAlign:"right" }}>
               <div style={{ fontSize:20, fontWeight:800, letterSpacing:2 }}>支払明細書</div>
-              <div style={{ fontSize:12, color:"#6b7280", marginTop:4 }}>対象期間：{_monthLabel}分</div>
+              <div style={{ fontSize:12, color:"#645F6E", marginTop:4 }}>対象期間：{_monthLabel}分</div>
             </div>
           </div>
 
           {/* 発行元 */}
           <div className="jt-keep" style={{ display:"flex", justifyContent:"space-between", marginBottom:20 }}>
-            <div style={{ fontSize:11, color:"#6b7280" }}>
+            <div style={{ fontSize:11, color:"#645F6E" }}>
               <div>下記のとおりお支払いいたします。</div>
               <div style={{ marginTop:4 }}>稼働日数：{driver.workDays}日 ／ 取引社数：{driver.clientRows.length}社</div>
             </div>
-            <div style={{ textAlign:"right", fontSize:11, color:"#374151" }}>
-              <div style={{ fontWeight:700, fontSize:13, color:"#111827" }}>J transport</div>
-              <div style={{ color:"#6b7280" }}>〒XXX-XXXX 東京都○○区○○</div>
-              <div style={{ color:"#6b7280" }}>TEL: 03-XXXX-XXXX</div>
+            <div style={{ textAlign:"right", fontSize:11, color:"#645F6E" }}>
+              <div style={{ fontWeight:700, fontSize:13, color:"#393443" }}>J transport</div>
+              <div style={{ color:"#645F6E" }}>〒XXX-XXXX 東京都○○区○○</div>
+              <div style={{ color:"#645F6E" }}>TEL: 03-XXXX-XXXX</div>
             </div>
           </div>
 
@@ -2216,7 +2216,7 @@ const DriverSlipModal = ({ driver, accent, onClose }) => {
           <div className="jt-keep" style={{ background:"#f0f9ff", border:`1px solid ${accent}40`, borderRadius:8, padding:"14px 18px", marginBottom:22, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
             <div>
               <div style={{ fontSize:13, fontWeight:700 }}>お支払金額（税込）</div>
-              <div style={{ fontSize:11, color:"#6b7280", marginTop:2 }}>支払予定日：{_payDue} ／ 銀行振込</div>
+              <div style={{ fontSize:11, color:"#645F6E", marginTop:2 }}>支払予定日：{_payDue} ／ 銀行振込</div>
             </div>
             <span style={{ fontSize:26, fontWeight:800, color:accent }}>{fmt(driver.grandTotal)}</span>
           </div>
@@ -2227,20 +2227,20 @@ const DriverSlipModal = ({ driver, accent, onClose }) => {
             <thead>
               <tr style={{ background:"#f9fafb" }}>
                 {["荷主","区分","数量","支払単価","金額"].map((h,k)=>(
-                  <th key={h} style={{ padding:"8px 10px", textAlign:k>=2?"right":"left", borderBottom:"1px solid #94a3b8", fontWeight:600, fontSize:11.5, color:"#374151", whiteSpace:"nowrap" }}>{h}</th>
+                  <th key={h} style={{ padding:"8px 10px", textAlign:k>=2?"right":"left", borderBottom:"1px solid #DEDAE5", fontWeight:600, fontSize:11.5, color:"#645F6E", whiteSpace:"nowrap" }}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {driver.clientRows.length === 0 ? (
-                <tr><td colSpan={5} style={{ padding:"14px 10px", color:"#9ca3af", textAlign:"center" }}>当月の運行実績はありません</td></tr>
+                <tr><td colSpan={5} style={{ padding:"14px 10px", color:"#A09AAB", textAlign:"center" }}>当月の運行実績はありません</td></tr>
               ) : driver.clientRows.flatMap((c)=>
                 c.lines.map((l,j)=>(
-                  <tr key={c.name+l.label} style={{ borderBottom:"1px solid #e5e7eb" }}>
+                  <tr key={c.name+l.label} style={{ borderBottom:"1px solid #DEDAE5" }}>
                     <td style={{ padding:"8px 10px", fontWeight:500 }}>{j===0?c.name:""}</td>
                     <td style={{ padding:"8px 10px" }}>{l.label}</td>
                     <td style={{ padding:"8px 10px", textAlign:"right" }}>{l.qty}</td>
-                    <td style={{ padding:"8px 10px", textAlign:"right", color:"#6b7280" }}>{fmt(l.unitPay)}</td>
+                    <td style={{ padding:"8px 10px", textAlign:"right", color:"#645F6E" }}>{fmt(l.unitPay)}</td>
                     <td style={{ padding:"8px 10px", textAlign:"right", fontWeight:600 }}>{fmt(l.amount)}</td>
                   </tr>
                 ))
@@ -2248,12 +2248,12 @@ const DriverSlipModal = ({ driver, accent, onClose }) => {
             </tbody>
             <tfoot>
               <tr style={{ borderTop:"2px solid #475569" }}>
-                <td colSpan={4} style={{ padding:"9px 10px", textAlign:"right", color:"#6b7280" }}>支払小計</td>
+                <td colSpan={4} style={{ padding:"9px 10px", textAlign:"right", color:"#645F6E" }}>支払小計</td>
                 <td style={{ padding:"9px 10px", textAlign:"right", fontWeight:600 }}>{fmt(driver.totalPay)}</td>
               </tr>
               {driver.tax > 0 && (
                 <tr>
-                  <td colSpan={4} style={{ padding:"6px 10px", textAlign:"right", color:"#6b7280" }}>消費税（10%）</td>
+                  <td colSpan={4} style={{ padding:"6px 10px", textAlign:"right", color:"#645F6E" }}>消費税（10%）</td>
                   <td style={{ padding:"6px 10px", textAlign:"right" }}>{fmt(driver.tax)}</td>
                 </tr>
               )}
@@ -2272,16 +2272,16 @@ const DriverSlipModal = ({ driver, accent, onClose }) => {
                 <thead>
                   <tr style={{ background:"#f9fafb" }}>
                     {["日付","曜","運行内容","金額"].map((h,k)=>(
-                      <th key={h} style={{ padding:"6px 10px", textAlign:k===3?"right":"left", borderBottom:"1px solid #94a3b8", fontWeight:600, fontSize:11, color:"#374151" }}>{h}</th>
+                      <th key={h} style={{ padding:"6px 10px", textAlign:k===3?"right":"left", borderBottom:"1px solid #DEDAE5", fontWeight:600, fontSize:11, color:"#645F6E" }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {driver.dayRows.map((dr,i)=>(
-                    <tr key={i} style={{ borderBottom:"1px solid #e5e7eb" }}>
+                    <tr key={i} style={{ borderBottom:"1px solid #DEDAE5" }}>
                       <td style={{ padding:"6px 10px", whiteSpace:"nowrap" }}>{dr.date.slice(5).replace("-","/")}</td>
-                      <td style={{ padding:"6px 10px", color: dr.dow==="日"?"#dc2626":dr.dow==="土"?"#2563eb":"#6b7280" }}>{dr.dow}</td>
-                      <td style={{ padding:"6px 10px", color:"#374151" }}>{dr.items.map(it=>`${it.client} ${it.label}×${it.qty}`).join("、")}</td>
+                      <td style={{ padding:"6px 10px", color: dr.dow==="日"?"#B05A60":dr.dow==="土"?"#2563eb":"#645F6E" }}>{dr.dow}</td>
+                      <td style={{ padding:"6px 10px", color:"#645F6E" }}>{dr.items.map(it=>`${it.client} ${it.label}×${it.qty}`).join("、")}</td>
                       <td style={{ padding:"6px 10px", textAlign:"right", fontWeight:500 }}>{fmt(dr.pay)}</td>
                     </tr>
                   ))}
@@ -2291,7 +2291,7 @@ const DriverSlipModal = ({ driver, accent, onClose }) => {
           )}
 
           {/* フッター */}
-          <div className="jt-slip-footer" style={{ borderTop:"1px solid #e5e7eb", paddingTop:12, fontSize:10.5, color:"#9ca3af" }}>
+          <div className="jt-slip-footer" style={{ borderTop:"1px solid #DEDAE5", paddingTop:12, fontSize:10.5, color:"#A09AAB" }}>
             ※ 本明細は日次運行実績にもとづき作成しています。内容にご不明点がある場合は担当までお問い合わせください。
           </div>
         </div>
@@ -2323,15 +2323,15 @@ const DriverFinancePage = ({ accent }) => {
     <div>
       <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>財務・請求管理</div>
       <div style={{ fontSize:27, fontWeight:700, marginBottom:4, color:"#393443" }}>ドライバー別収支</div>
-      <div style={{ fontSize:12, color:"#9ca3af", marginBottom:20 }}>{_monthLabel}分 ／ 日次実績にもとづく実支払額（按分ではなく実数集計）</div>
+      <div style={{ fontSize:12, color:"#A09AAB", marginBottom:20 }}>{_monthLabel}分 ／ 日次実績にもとづく実支払額（按分ではなく実数集計）</div>
 
       <div style={{ display:"grid", gridTemplateColumns: sel?"1fr 380px":"1fr", gap:16 }}>
         <Card>
           <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
             <thead>
-              <tr style={{ background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
+              <tr style={{ background:"#f9fafb", borderBottom:"1px solid #DEDAE5" }}>
                 {["ドライバー","雇用","担当社数","稼働日","売上寄与","支払(税抜)","消費税","粗利","状態"].map(h=>(
-                  <th key={h} style={{ padding:"9px 14px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:12, whiteSpace:"nowrap" }}>{h}</th>
+                  <th key={h} style={{ padding:"9px 14px", textAlign:"left", color:"#645F6E", fontWeight:500, fontSize:12, whiteSpace:"nowrap" }}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -2390,7 +2390,7 @@ const DriverFinancePage = ({ accent }) => {
             ) : selSummary.clientRows.map((c,i)=>(
               <div key={i} style={{ padding:"10px 0", borderBottom:"1px solid #DEDAE5" }}>
                 <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
-                  <span style={{ fontWeight:600, fontSize:13 }}>{c.name}<span style={{ fontSize:11, color:"#9ca3af", marginLeft:6 }}>{c.days}日</span></span>
+                  <span style={{ fontWeight:600, fontSize:13 }}>{c.name}<span style={{ fontSize:11, color:"#A09AAB", marginLeft:6 }}>{c.days}日</span></span>
                   <span style={{ fontWeight:700, color:accent }}>{fmt(c.pay)}</span>
                 </div>
                 {c.lines.map((l,j)=>(
@@ -2624,7 +2624,7 @@ const InvoicePage = ({ accent }) => {
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  body { font-family: 'Noto Sans JP', 'Hiragino Sans', sans-serif; color: #111827; font-size: 12px; line-height: 1.6; }
+  body { font-family: 'Noto Sans JP', 'Hiragino Sans', sans-serif; color: #393443; font-size: 12px; line-height: 1.6; }
   table { border-collapse: collapse; width: 100%; }
   td, th { vertical-align: middle; }
   /* 改ページしても各表のヘッダを繰り返す／合計は末尾に1回だけ */
@@ -2665,9 +2665,9 @@ const InvoicePage = ({ accent }) => {
           { l:"入金済（累計・税抜）",    v:fmt(summary.入金済), n:invoices.filter(i=>effStatus(i)==="入金済").length,  c:"#5E8C68" },
         ].map(({ l,v,n,c })=>(
           <Card key={l} style={{ padding:"16px 20px" }}>
-            <div style={{ fontSize:11, color:"#9ca3af", marginBottom:6 }}>{l}</div>
+            <div style={{ fontSize:11, color:"#A09AAB", marginBottom:6 }}>{l}</div>
             <div style={{ fontSize:20, fontWeight:700, color:c }}>{v}</div>
-            <div style={{ fontSize:11, color:"#9ca3af", marginTop:4 }}>{n}件</div>
+            <div style={{ fontSize:11, color:"#A09AAB", marginTop:4 }}>{n}件</div>
           </Card>
         ))}
       </div>
@@ -2681,7 +2681,7 @@ const InvoicePage = ({ accent }) => {
         <Card>
           <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
             <thead>
-              <tr style={{ background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
+              <tr style={{ background:"#f9fafb", borderBottom:"1px solid #DEDAE5" }}>
                 {["請求番号","荷主","対象月","請求金額（税抜）","状態","支払期限","操作"].map(h=>(
                   <th key={h} style={{ padding:"9px 16px", textAlign:"left", color:"#645F6E", fontWeight:500, fontSize:12, whiteSpace:"nowrap" }}>{h}</th>
                 ))}
@@ -2695,24 +2695,24 @@ const InvoicePage = ({ accent }) => {
                   onMouseLeave={e=>{ if(sel?.id!==inv.id) e.currentTarget.style.background="transparent"; }}>
                   <td style={{ padding:"12px 16px", fontWeight:600, color:accent, fontSize:12 }}>{inv.id}</td>
                   <td style={{ padding:"12px 16px", fontWeight:500 }}>{inv.client}</td>
-                  <td style={{ padding:"12px 16px", color:"#6b7280" }}>{inv.period}</td>
+                  <td style={{ padding:"12px 16px", color:"#645F6E" }}>{inv.period}</td>
                   <td style={{ padding:"12px 16px", fontWeight:700 }}>{fmt(subtotalFor(inv))}</td>
                   <td style={{ padding:"12px 16px" }}>
                     <StatusBadge label={effStatus(inv)}/>
                   </td>
-                  <td style={{ padding:"12px 16px", color:effStatus(inv)==="遅延"?"#dc2626":"#374151", fontWeight:effStatus(inv)==="遅延"?600:400 }}>{inv.due}</td>
+                  <td style={{ padding:"12px 16px", color:effStatus(inv)==="遅延"?"#B05A60":"#645F6E", fontWeight:effStatus(inv)==="遅延"?600:400 }}>{inv.due}</td>
                   <td style={{ padding:"12px 16px" }}>
                     <div style={{ display:"flex", gap:6 }} onClick={e=>e.stopPropagation()}>
                       {effStatus(inv)==="未請求" && (
                         <button onClick={()=>{ markIssued([inv.id]); showToast("請求書を発行しました"); }}
                           style={{ padding:"4px 10px", border:"none", borderRadius:4, background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", fontSize:11, fontWeight:700, cursor:"pointer", boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF,inset 0 1px 0 rgba(255,255,255,.28)" }}>発行</button>
                       )}
-                      {issuedSet.has(inv.id) && <span style={{ fontSize:11, color:"#16a34a", fontWeight:600 }}>発行済</span>}
+                      {issuedSet.has(inv.id) && <span style={{ fontSize:11, color:"#5E8C68", fontWeight:600 }}>発行済</span>}
                       {effStatus(inv)==="遅延" && !remindedSet.has(inv.id) && (
                         <button onClick={()=>{ setRemindedSet(s=>new Set([...s,inv.id])); showToast("督促を送信しました"); }}
                           style={{ padding:"4px 10px", border:"none", borderRadius:4, background:"transparent", color:"#B05A60", fontSize:11, fontWeight:600, cursor:"pointer" }}>督促</button>
                       )}
-                      {remindedSet.has(inv.id) && <span style={{ fontSize:11, color:"#dc2626", fontWeight:600 }}>督促送信済</span>}
+                      {remindedSet.has(inv.id) && <span style={{ fontSize:11, color:"#B05A60", fontWeight:600 }}>督促送信済</span>}
                     </div>
                   </td>
                 </tr>
@@ -2744,16 +2744,16 @@ const InvoicePage = ({ accent }) => {
             {/* 印刷時のみ表示する正式な請求書ヘッダ */}
             <div className="invoice-print-header" style={{ display:"none" }}>
               <div style={{ textAlign:"center", marginBottom:24 }}>
-                <div style={{ fontSize:24, fontWeight:700, letterSpacing:8, borderBottom:"3px double #111827", display:"inline-block", padding:"4px 32px 8px" }}>請　求　書</div>
+                <div style={{ fontSize:24, fontWeight:700, letterSpacing:8, borderBottom:"3px double #393443", display:"inline-block", padding:"4px 32px 8px" }}>請　求　書</div>
               </div>
               <div style={{ display:"flex", justifyContent:"space-between", marginBottom:18 }}>
                 <div>
                   <div style={{ fontSize:14, marginBottom:8 }}>{_clientObj.name||sel.client} <span style={{ fontSize:12 }}>御中</span></div>
-                  {_clientObj.address && <div style={{ fontSize:11, color:"#374151" }}>{_clientObj.address}</div>}
-                  {_clientObj.person && <div style={{ fontSize:11, color:"#374151", marginTop:2 }}>ご担当: {_clientObj.person} 様</div>}
+                  {_clientObj.address && <div style={{ fontSize:11, color:"#645F6E" }}>{_clientObj.address}</div>}
+                  {_clientObj.person && <div style={{ fontSize:11, color:"#645F6E", marginTop:2 }}>ご担当: {_clientObj.person} 様</div>}
                   <div style={{ marginTop:12, fontSize:11 }}>下記の通りご請求申し上げます。</div>
                   <div style={{ marginTop:14, padding:"8px 14px", background:"#f1f5f9", display:"inline-block" }}>
-                    <span style={{ fontSize:11, color:"#6b7280" }}>合計金額（税込）</span><br/>
+                    <span style={{ fontSize:11, color:"#645F6E" }}>合計金額（税込）</span><br/>
                     <span style={{ fontSize:22, fontWeight:700 }}>¥{Number(_total).toLocaleString()}</span>
                   </div>
                 </div>
@@ -2762,7 +2762,7 @@ const InvoicePage = ({ accent }) => {
                   <div>発行日: {_issueDate}</div>
                   <div>支払期限: {_fmtDate(sel.due)}</div>
                   <div>対象期間: {_periodLabel}</div>
-                  <div style={{ marginTop:14, border:"1px solid #94a3b8", padding:10, textAlign:"left" }}>
+                  <div style={{ marginTop:14, border:"1px solid #DEDAE5", padding:10, textAlign:"left" }}>
                     <div style={{ fontWeight:700, fontSize:13, marginBottom:4 }}>J transport株式会社</div>
                     <div>〒XXX-XXXX 東京都〇〇区〇〇 1-2-3</div>
                     <div>TEL: 03-XXXX-XXXX</div>
@@ -2774,48 +2774,48 @@ const InvoicePage = ({ accent }) => {
             {/* 通常画面用ヘッダ（印刷時非表示） */}
             <div className="no-print" style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:16 }}>
               <div>
-                <div style={{ fontSize:11, color:"#9ca3af", marginBottom:3 }}>{sel.id}</div>
+                <div style={{ fontSize:11, color:"#A09AAB", marginBottom:3 }}>{sel.id}</div>
                 <div style={{ fontSize:16, fontWeight:700 }}>{sel.client}</div>
-                <div style={{ fontSize:12, color:"#6b7280", marginTop:2 }}>{sel.period} 分</div>
+                <div style={{ fontSize:12, color:"#645F6E", marginTop:2 }}>{sel.period} 分</div>
               </div>
-              <button onClick={()=>setSel(null)} style={{ background:"none", border:"none", fontSize:18, color:"#9ca3af", cursor:"pointer", lineHeight:1 }}>×</button>
+              <button onClick={()=>setSel(null)} style={{ background:"none", border:"none", fontSize:18, color:"#A09AAB", cursor:"pointer", lineHeight:1 }}>×</button>
             </div>
 
             <div className="no-print" style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8, marginBottom:16 }}>
               {[
                 { l:"請求金額（税込）", v:fmt(_total), c:accent },
                 { l:"状態", v:<StatusBadge label={effStatus(sel)}/>, c:null },
-                { l:"対象期間", v:_periodLabel, c:"#374151" },
-                { l:"支払期限", v:sel.due, c:effStatus(sel)==="遅延"?"#dc2626":"#374151" },
+                { l:"対象期間", v:_periodLabel, c:"#645F6E" },
+                { l:"支払期限", v:sel.due, c:effStatus(sel)==="遅延"?"#B05A60":"#645F6E" },
               ].map(({ l,v,c })=>(
-                <div key={l} style={{ background:"#f8fafc", borderRadius:6, padding:"10px 12px" }}>
-                  <div style={{ fontSize:11, color:"#9ca3af", marginBottom:4 }}>{l}</div>
-                  <div style={{ fontSize:13, fontWeight:600, color:c||"#111827" }}>{v}</div>
+                <div key={l} style={{ background:"#EDEBF1", borderRadius:6, padding:"10px 12px" }}>
+                  <div style={{ fontSize:11, color:"#A09AAB", marginBottom:4 }}>{l}</div>
+                  <div style={{ fontSize:13, fontWeight:600, color:c||"#393443" }}>{v}</div>
                 </div>
               ))}
             </div>
 
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline", marginBottom:10 }}>
-              <div style={{ fontSize:12, fontWeight:700, color:"#374151" }}>請求明細</div>
-              <div style={{ fontSize:10.5, color:"#6b7280" }}>対象期間: {_periodLabel}</div>
+              <div style={{ fontSize:12, fontWeight:700, color:"#645F6E" }}>請求明細</div>
+              <div style={{ fontSize:10.5, color:"#645F6E" }}>対象期間: {_periodLabel}</div>
             </div>
             <table style={{ width:"100%", borderCollapse:"collapse", fontSize:12, marginBottom:14 }}>
               <thead>
                 <tr style={{ background:"#f9fafb" }}>
                   {["区分","数量","単価","金額"].map((h,hi)=>(
-                    <th key={h} style={{ padding:"6px 10px", textAlign:hi===0?"left":"right", color:"#374151", fontWeight:600, fontSize:11, borderTop:"1px solid #111827", borderBottom:"1px solid #94a3b8" }}>{h}</th>
+                    <th key={h} style={{ padding:"6px 10px", textAlign:hi===0?"left":"right", color:"#645F6E", fontWeight:600, fontSize:11, borderTop:"1px solid #393443", borderBottom:"1px solid #DEDAE5" }}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {_items.map((item,ii)=>(
-                  <tr key={ii} style={{ borderBottom:"1px solid #94a3b8" }}>
+                  <tr key={ii} style={{ borderBottom:"1px solid #DEDAE5" }}>
                     <td style={{ padding:"7px 10px", fontWeight:500 }}>
                       {item.label}
-                      {item.days>0 && <span style={{ fontSize:10, color:"#9ca3af", marginLeft:6 }}>（{item.days}日稼働）</span>}
+                      {item.days>0 && <span style={{ fontSize:10, color:"#A09AAB", marginLeft:6 }}>（{item.days}日稼働）</span>}
                     </td>
-                    <td style={{ padding:"7px 10px", color:"#374151", textAlign:"right" }}>{typeof item.qty==="number"?item.qty.toLocaleString():item.qty}{item.unit}</td>
-                    <td style={{ padding:"7px 10px", color:"#374151", textAlign:"right" }}>{item.unitPrice>0?fmt(item.unitPrice):"—"}</td>
+                    <td style={{ padding:"7px 10px", color:"#645F6E", textAlign:"right" }}>{typeof item.qty==="number"?item.qty.toLocaleString():item.qty}{item.unit}</td>
+                    <td style={{ padding:"7px 10px", color:"#645F6E", textAlign:"right" }}>{item.unitPrice>0?fmt(item.unitPrice):"—"}</td>
                     <td style={{ padding:"7px 10px", fontWeight:600, textAlign:"right" }}>{typeof item.amount==="number"?fmt(item.amount):"—"}</td>
                   </tr>
                 ))}
@@ -2823,9 +2823,9 @@ const InvoicePage = ({ accent }) => {
               <tfoot>
                 <tr><td colSpan={3} style={{ padding:"6px 10px", textAlign:"right", fontWeight:500, fontSize:11 }}>小計</td><td style={{ padding:"6px 10px", textAlign:"right", fontWeight:600 }}>{fmt(_subtotal)}</td></tr>
                 <tr><td colSpan={3} style={{ padding:"6px 10px", textAlign:"right", fontWeight:500, fontSize:11 }}>消費税（10%）</td><td style={{ padding:"6px 10px", textAlign:"right", fontWeight:600 }}>{fmt(_tax)}</td></tr>
-                <tr style={{ borderTop:"2px solid #111827", background:"#f9fafb" }}>
+                <tr style={{ borderTop:"2px solid #393443", background:"#f9fafb" }}>
                   <td colSpan={3} style={{ padding:"10px", textAlign:"right", fontWeight:700, fontSize:13 }}>合計（税込）</td>
-                  <td style={{ padding:"10px", fontWeight:700, color:"#111827", textAlign:"right", fontSize:14 }}>{fmt(_total)}</td>
+                  <td style={{ padding:"10px", fontWeight:700, color:"#393443", textAlign:"right", fontSize:14 }}>{fmt(_total)}</td>
                 </tr>
               </tfoot>
             </table>
@@ -2833,13 +2833,13 @@ const InvoicePage = ({ accent }) => {
             {/* 日別明細（オンライン確認用・実績の内訳） */}
             {_dm.dailyRows.length > 0 && (
               <div className="no-print" style={{ marginBottom:14 }}>
-                <div style={{ fontSize:12, fontWeight:700, color:"#374151", marginBottom:8 }}>日別明細（{_dm.dailyRows.length}日）</div>
-                <div style={{ maxHeight:240, overflowY:"auto", border:"1px solid #e5e7eb", borderRadius:6 }}>
+                <div style={{ fontSize:12, fontWeight:700, color:"#645F6E", marginBottom:8 }}>日別明細（{_dm.dailyRows.length}日）</div>
+                <div style={{ maxHeight:240, overflowY:"auto", border:"1px solid #DEDAE5", borderRadius:6 }}>
                   <table style={{ width:"100%", borderCollapse:"collapse", fontSize:11 }}>
                     <thead>
                       <tr style={{ background:"#f9fafb" }}>
                         {["日付","曜","内訳","金額"].map((h,hi)=>(
-                          <th key={h} style={{ padding:"6px 8px", textAlign:hi===3?"right":"left", color:"#6b7280", fontWeight:600, fontSize:10.5, borderBottom:"1px solid #e5e7eb", position:"sticky", top:0, background:"#f9fafb", whiteSpace:"nowrap" }}>{h}</th>
+                          <th key={h} style={{ padding:"6px 8px", textAlign:hi===3?"right":"left", color:"#645F6E", fontWeight:600, fontSize:10.5, borderBottom:"1px solid #DEDAE5", position:"sticky", top:0, background:"#f9fafb", whiteSpace:"nowrap" }}>{h}</th>
                         ))}
                       </tr>
                     </thead>
@@ -2847,14 +2847,14 @@ const InvoicePage = ({ accent }) => {
                       {_dm.dailyRows.map((r,ri)=>(
                         <tr key={ri} style={{ borderBottom:"1px solid #f1f5f9" }}>
                           <td style={{ padding:"5px 8px", whiteSpace:"nowrap" }}>{r.date.slice(5).replace("-","/")}</td>
-                          <td style={{ padding:"5px 8px", color: r.dow==="日"?"#dc2626":r.dow==="土"?"#2563eb":"#6b7280" }}>{r.dow}</td>
-                          <td style={{ padding:"5px 8px", color:"#374151" }}>{_dm.dailyLabels.filter(l=>r.per[l]).map(l=>`${l}×${r.per[l]}`).join("、")}</td>
+                          <td style={{ padding:"5px 8px", color: r.dow==="日"?"#B05A60":r.dow==="土"?"#2563eb":"#645F6E" }}>{r.dow}</td>
+                          <td style={{ padding:"5px 8px", color:"#645F6E" }}>{_dm.dailyLabels.filter(l=>r.per[l]).map(l=>`${l}×${r.per[l]}`).join("、")}</td>
                           <td style={{ padding:"5px 8px", textAlign:"right", fontWeight:500 }}>{fmt(r.amount)}</td>
                         </tr>
                       ))}
                     </tbody>
                     <tfoot>
-                      <tr style={{ background:"#f9fafb", borderTop:"1px solid #94a3b8" }}>
+                      <tr style={{ background:"#f9fafb", borderTop:"1px solid #DEDAE5" }}>
                         <td colSpan={3} style={{ padding:"6px 8px", fontWeight:700 }}>合計</td>
                         <td style={{ padding:"6px 8px", textAlign:"right", fontWeight:700 }}>{fmt(_dm.dailyRows.reduce((s,r)=>s+r.amount,0))}</td>
                       </tr>
@@ -2865,10 +2865,10 @@ const InvoicePage = ({ accent }) => {
             )}
 
             {/* 印刷時のみ: 振込先・備考 */}
-            <div className="invoice-print-footer" style={{ display:"none", marginTop:18, paddingTop:12, borderTop:"1px solid #94a3b8", fontSize:11 }}>
+            <div className="invoice-print-footer" style={{ display:"none", marginTop:18, paddingTop:12, borderTop:"1px solid #DEDAE5", fontSize:11 }}>
               <div style={{ fontWeight:700, marginBottom:4 }}>お振込先</div>
               <div>〇〇銀行 〇〇支店 普通 1234567 J transport株式会社</div>
-              <div style={{ marginTop:10, fontSize:10, color:"#6b7280" }}>※ 恐れ入りますが、振込手数料は貴社にてご負担くださいますようお願い申し上げます。</div>
+              <div style={{ marginTop:10, fontSize:10, color:"#645F6E" }}>※ 恐れ入りますが、振込手数料は貴社にてご負担くださいますようお願い申し上げます。</div>
             </div>
 
             <div className="no-print" style={{ display:"flex", flexDirection:"column", gap:8 }}>
@@ -2910,8 +2910,8 @@ const InvoicePage = ({ accent }) => {
             <div onClick={e=>e.stopPropagation()}
               style={{ width:"min(794px,100%)", background:"#fff", borderRadius:8, boxShadow:"0 20px 60px rgba(0,0,0,0.35)", marginBottom:32 }}>
               {/* ツールバー（印刷対象外） */}
-              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"12px 16px", borderBottom:"1px solid #e5e7eb", background:"#f8fafc", borderRadius:"8px 8px 0 0", position:"sticky", top:0 }}>
-                <div style={{ fontWeight:700, fontSize:13, color:"#111827" }}>請求書プレビュー — {preview.id}</div>
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"12px 16px", borderBottom:"1px solid #DEDAE5", background:"#EDEBF1", borderRadius:"8px 8px 0 0", position:"sticky", top:0 }}>
+                <div style={{ fontWeight:700, fontSize:13, color:"#393443" }}>請求書プレビュー — {preview.id}</div>
                 <div style={{ display:"flex", gap:8 }}>
                   <button onClick={()=>printPaper(preview)}
                     style={{ padding:"7px 16px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:6, fontWeight:700, cursor:"pointer", boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF,inset 0 1px 0 rgba(255,255,255,.28)", fontSize:12.5 }}>印刷 / PDF保存</button>
@@ -2921,32 +2921,32 @@ const InvoicePage = ({ accent }) => {
               </div>
 
               {/* 正式な請求書（印刷対象） */}
-              <div className="invoice-paper" style={{ padding:"40px 44px", color:"#111827", fontSize:12.5, lineHeight:1.6 }}>
+              <div className="invoice-paper" style={{ padding:"40px 44px", color:"#393443", fontSize:12.5, lineHeight:1.6 }}>
                 <div style={{ textAlign:"center", marginBottom:28 }}>
-                  <span style={{ fontSize:26, fontWeight:700, letterSpacing:10, borderBottom:"3px double #111827", padding:"2px 36px 8px" }}>請　求　書</span>
+                  <span style={{ fontSize:26, fontWeight:700, letterSpacing:10, borderBottom:"3px double #393443", padding:"2px 36px 8px" }}>請　求　書</span>
                 </div>
 
                 <div className="jt-keep" style={{ display:"flex", justifyContent:"space-between", gap:24, marginBottom:24 }}>
                   <div style={{ flex:1 }}>
-                    <div style={{ fontSize:16, fontWeight:700, borderBottom:"2px solid #111827", paddingBottom:4, display:"inline-block" }}>
+                    <div style={{ fontSize:16, fontWeight:700, borderBottom:"2px solid #393443", paddingBottom:4, display:"inline-block" }}>
                       {C.name||preview.client} <span style={{ fontSize:13, fontWeight:400 }}>御中</span>
                     </div>
-                    {C.address && <div style={{ fontSize:11.5, color:"#374151", marginTop:8 }}>{C.address}</div>}
-                    {C.tel && <div style={{ fontSize:11.5, color:"#374151", marginTop:2 }}>TEL: {C.tel}</div>}
-                    {C.person && <div style={{ fontSize:11.5, color:"#374151", marginTop:2 }}>ご担当: {C.person} 様</div>}
+                    {C.address && <div style={{ fontSize:11.5, color:"#645F6E", marginTop:8 }}>{C.address}</div>}
+                    {C.tel && <div style={{ fontSize:11.5, color:"#645F6E", marginTop:2 }}>TEL: {C.tel}</div>}
+                    {C.person && <div style={{ fontSize:11.5, color:"#645F6E", marginTop:2 }}>ご担当: {C.person} 様</div>}
                     <div style={{ marginTop:16, fontSize:12 }}>下記の通りご請求申し上げます。</div>
-                    <div style={{ marginTop:12, border:"1px solid #111827", display:"inline-block" }}>
+                    <div style={{ marginTop:12, border:"1px solid #393443", display:"inline-block" }}>
                       <div style={{ display:"flex", alignItems:"stretch" }}>
-                        <div style={{ background:"#111827", color:"#fff", padding:"10px 16px", fontSize:13, fontWeight:600, display:"flex", alignItems:"center" }}>ご請求金額</div>
+                        <div style={{ background:"#393443", color:"#fff", padding:"10px 16px", fontSize:13, fontWeight:600, display:"flex", alignItems:"center" }}>ご請求金額</div>
                         <div style={{ padding:"10px 20px", fontSize:22, fontWeight:700 }}>{yen(m.total)}<span style={{ fontSize:11, fontWeight:400, marginLeft:6 }}>（税込）</span></div>
                       </div>
                     </div>
                   </div>
                   <div style={{ width:240, fontSize:11.5 }}>
-                    <div style={{ display:"flex", justifyContent:"space-between", marginBottom:3 }}><span style={{ color:"#6b7280" }}>請求書番号</span><b>{preview.id}</b></div>
-                    <div style={{ display:"flex", justifyContent:"space-between", marginBottom:3 }}><span style={{ color:"#6b7280" }}>発行日</span><span>{m.issueDate}</span></div>
-                    <div style={{ display:"flex", justifyContent:"space-between", marginBottom:3 }}><span style={{ color:"#6b7280" }}>支払期限</span><span>{m.dueDate}</span></div>
-                    <div style={{ marginTop:14, border:"1px solid #94a3b8", borderRadius:4, padding:"10px 12px" }}>
+                    <div style={{ display:"flex", justifyContent:"space-between", marginBottom:3 }}><span style={{ color:"#645F6E" }}>請求書番号</span><b>{preview.id}</b></div>
+                    <div style={{ display:"flex", justifyContent:"space-between", marginBottom:3 }}><span style={{ color:"#645F6E" }}>発行日</span><span>{m.issueDate}</span></div>
+                    <div style={{ display:"flex", justifyContent:"space-between", marginBottom:3 }}><span style={{ color:"#645F6E" }}>支払期限</span><span>{m.dueDate}</span></div>
+                    <div style={{ marginTop:14, border:"1px solid #DEDAE5", borderRadius:4, padding:"10px 12px" }}>
                       <div style={{ fontWeight:700, fontSize:13, marginBottom:4 }}>J transport株式会社</div>
                       <div>〒XXX-XXXX 東京都〇〇区〇〇 1-2-3</div>
                       <div>TEL: 03-XXXX-XXXX</div>
@@ -2955,12 +2955,12 @@ const InvoicePage = ({ accent }) => {
                   </div>
                 </div>
 
-                <div style={{ fontSize:11.5, color:"#374151", marginBottom:6 }}>対象期間: {m.period}</div>
+                <div style={{ fontSize:11.5, color:"#645F6E", marginBottom:6 }}>対象期間: {m.period}</div>
                 <table style={{ width:"100%", borderCollapse:"collapse", fontSize:12 }}>
                   <thead>
                     <tr style={{ background:"#f1f5f9" }}>
                       {["区分","数量","単価","金額"].map((h,hi)=>(
-                        <th key={h} style={{ padding:"8px 12px", textAlign:hi===0?"left":"right", fontWeight:700, fontSize:11.5, borderTop:"2px solid #111827", borderBottom:"1px solid #94a3b8" }}>{h}</th>
+                        <th key={h} style={{ padding:"8px 12px", textAlign:hi===0?"left":"right", fontWeight:700, fontSize:11.5, borderTop:"2px solid #393443", borderBottom:"1px solid #DEDAE5" }}>{h}</th>
                       ))}
                     </tr>
                   </thead>
@@ -2969,7 +2969,7 @@ const InvoicePage = ({ accent }) => {
                       <tr key={ii} style={{ borderBottom:"1px solid #d1d5db" }}>
                         <td style={{ padding:"8px 12px", fontWeight:500 }}>
                           {it.label}
-                          {it.days>0 && <span style={{ fontSize:10, color:"#9ca3af", marginLeft:6 }}>（{it.days}日稼働）</span>}
+                          {it.days>0 && <span style={{ fontSize:10, color:"#A09AAB", marginLeft:6 }}>（{it.days}日稼働）</span>}
                         </td>
                         <td style={{ padding:"8px 12px", textAlign:"right" }}>{typeof it.qty==="number"?it.qty.toLocaleString():it.qty}{it.unit}</td>
                         <td style={{ padding:"8px 12px", textAlign:"right" }}>{it.unitPrice>0?yen(it.unitPrice):"—"}</td>
@@ -2977,13 +2977,13 @@ const InvoicePage = ({ accent }) => {
                       </tr>
                     ))}
                     {Array.from({ length: Math.max(0, 5 - m.items.length) }).map((_,ii)=>(
-                      <tr key={"e"+ii} style={{ borderBottom:"1px solid #e5e7eb" }}><td style={{ padding:"8px 12px", height:18 }}>&nbsp;</td><td/><td/><td/></tr>
+                      <tr key={"e"+ii} style={{ borderBottom:"1px solid #DEDAE5" }}><td style={{ padding:"8px 12px", height:18 }}>&nbsp;</td><td/><td/><td/></tr>
                     ))}
                   </tbody>
                   <tfoot>
                     <tr><td colSpan={3} style={{ padding:"7px 12px", textAlign:"right", fontSize:11.5 }}>小計</td><td style={{ padding:"7px 12px", textAlign:"right", fontWeight:600 }}>{yen(m.subtotal)}</td></tr>
                     <tr><td colSpan={3} style={{ padding:"7px 12px", textAlign:"right", fontSize:11.5 }}>消費税（10%）</td><td style={{ padding:"7px 12px", textAlign:"right", fontWeight:600 }}>{yen(m.tax)}</td></tr>
-                    <tr style={{ background:"#f1f5f9", borderTop:"2px solid #111827" }}>
+                    <tr style={{ background:"#f1f5f9", borderTop:"2px solid #393443" }}>
                       <td colSpan={3} style={{ padding:"10px 12px", textAlign:"right", fontWeight:700, fontSize:13 }}>合計（税込）</td>
                       <td style={{ padding:"10px 12px", textAlign:"right", fontWeight:700, fontSize:14 }}>{yen(m.total)}</td>
                     </tr>
@@ -2997,24 +2997,24 @@ const InvoicePage = ({ accent }) => {
                       <thead>
                         <tr style={{ background:"#f1f5f9" }}>
                           {[["日付","left"],["曜","left"],["運行内訳（区分 × 数量）","left"],["金額","right"]].map(([h,al])=>(
-                            <th key={h} style={{ padding:"6px 10px", textAlign:al, fontWeight:700, fontSize:10.5, borderTop:"1.5px solid #111827", borderBottom:"1px solid #94a3b8", whiteSpace:"nowrap" }}>{h}</th>
+                            <th key={h} style={{ padding:"6px 10px", textAlign:al, fontWeight:700, fontSize:10.5, borderTop:"1.5px solid #393443", borderBottom:"1px solid #DEDAE5", whiteSpace:"nowrap" }}>{h}</th>
                           ))}
                         </tr>
                       </thead>
                       <tbody>
                         {m.dailyRows.map((r,ri)=>(
-                          <tr key={ri} style={{ borderBottom:"1px solid #e5e7eb", background:(r.dow==="日"||r.dow==="土")?"#fafafa":"#fff" }}>
+                          <tr key={ri} style={{ borderBottom:"1px solid #DEDAE5", background:(r.dow==="日"||r.dow==="土")?"#fafafa":"#fff" }}>
                             <td style={{ padding:"5px 10px", whiteSpace:"nowrap" }}>{parseInt(r.date.slice(5,7))}/{parseInt(r.date.slice(8,10))}</td>
-                            <td style={{ padding:"5px 10px", color:(r.dow==="日")?"#dc2626":(r.dow==="土")?"#2563eb":"#6b7280" }}>{r.dow}</td>
-                            <td style={{ padding:"5px 10px", color:"#374151" }}>{m.dailyLabels.filter(l=>r.per[l]).map(l=>`${l}×${r.per[l].toLocaleString()}`).join("、")}</td>
+                            <td style={{ padding:"5px 10px", color:(r.dow==="日")?"#B05A60":(r.dow==="土")?"#2563eb":"#645F6E" }}>{r.dow}</td>
+                            <td style={{ padding:"5px 10px", color:"#645F6E" }}>{m.dailyLabels.filter(l=>r.per[l]).map(l=>`${l}×${r.per[l].toLocaleString()}`).join("、")}</td>
                             <td style={{ padding:"5px 10px", textAlign:"right", fontWeight:600 }}>¥{Number(r.amount).toLocaleString()}</td>
                           </tr>
                         ))}
                       </tbody>
                       <tfoot>
-                        <tr style={{ background:"#f1f5f9", borderTop:"1.5px solid #111827" }}>
+                        <tr style={{ background:"#f1f5f9", borderTop:"1.5px solid #393443" }}>
                           <td colSpan={2} style={{ padding:"7px 10px", fontWeight:700 }}>合計（{m.dailyRows.length}日）</td>
-                          <td style={{ padding:"7px 10px", fontWeight:700, color:"#374151" }}>{m.dailyLabels.map(l=>`${l} ${m.dailyRows.reduce((s,r)=>s+(r.per[l]||0),0).toLocaleString()}`).join("、")}</td>
+                          <td style={{ padding:"7px 10px", fontWeight:700, color:"#645F6E" }}>{m.dailyLabels.map(l=>`${l} ${m.dailyRows.reduce((s,r)=>s+(r.per[l]||0),0).toLocaleString()}`).join("、")}</td>
                           <td style={{ padding:"7px 10px", textAlign:"right", fontWeight:700 }}>{yen(m.subtotal)}</td>
                         </tr>
                       </tfoot>
@@ -3022,10 +3022,10 @@ const InvoicePage = ({ accent }) => {
                   </div>
                 )}
 
-                <div className="jt-invoice-footer" style={{ marginTop:24, paddingTop:14, borderTop:"1px solid #94a3b8", fontSize:11.5 }}>
+                <div className="jt-invoice-footer" style={{ marginTop:24, paddingTop:14, borderTop:"1px solid #DEDAE5", fontSize:11.5 }}>
                   <div style={{ fontWeight:700, marginBottom:4 }}>お振込先</div>
                   <div>〇〇銀行 〇〇支店 普通 1234567 J transport株式会社（ジェイトランスポート（カ）</div>
-                  <div style={{ marginTop:10, fontSize:10.5, color:"#6b7280" }}>※ 恐れ入りますが、振込手数料は貴社にてご負担くださいますようお願い申し上げます。</div>
+                  <div style={{ marginTop:10, fontSize:10.5, color:"#645F6E" }}>※ 恐れ入りますが、振込手数料は貴社にてご負担くださいますようお願い申し上げます。</div>
                 </div>
               </div>
             </div>
@@ -3068,13 +3068,13 @@ const ClientPage = ({ accent, setPage }) => {
         <div>
           <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>荷主・人員管理</div>
           <div style={{ fontSize:28, fontWeight:700, color:"#393443" }}>荷主管理</div>
-          <div style={{ fontSize:12, color:"#9ca3af", marginTop:2 }}>全{clients.length + extraClients.length}社（自社{clients.length}＋追加{extraClients.length}）{search && `／該当${list.length}社`}</div>
+          <div style={{ fontSize:12, color:"#A09AAB", marginTop:2 }}>全{clients.length + extraClients.length}社（自社{clients.length}＋追加{extraClients.length}）{search && `／該当${list.length}社`}</div>
         </div>
         <div style={{ display:"flex", gap:10 }}>
           <div style={{ position:"relative", display:"flex", alignItems:"center" }}>
-            <div style={{ position:"absolute", left:10, pointerEvents:"none" }}><Ic name="search" size={13} color="#9ca3af"/></div>
+            <div style={{ position:"absolute", left:10, pointerEvents:"none" }}><Ic name="search" size={13} color="#A09AAB"/></div>
             <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="荷主・エリア検索"
-              style={{ paddingLeft:32, paddingRight:12, height:34, borderRadius:6, border:"1.5px solid #e5e7eb", fontSize:13, fontFamily:"inherit", outline:"none", width:200 }}/>
+              style={{ paddingLeft:32, paddingRight:12, height:34, borderRadius:6, border:"1.5px solid #DEDAE5", fontSize:13, fontFamily:"inherit", outline:"none", width:200 }}/>
           </div>
           <button onClick={()=>setPage("ratemaster")} style={{ padding:"7px 14px", border:"none", background:"#E9E7EE", color:"#5C5766", borderRadius:6, fontSize:13, fontWeight:600, cursor:"pointer" }}>単価マスタ</button>
           <button onClick={()=>{ try { sessionStorage.setItem("jt_open_add_client","1"); } catch(e){} setPage("ratemaster"); }}
@@ -3088,9 +3088,9 @@ const ClientPage = ({ accent, setPage }) => {
         <Card>
           <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
             <thead>
-              <tr style={{ background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
+              <tr style={{ background:"#f9fafb", borderBottom:"1px solid #DEDAE5" }}>
                 {["荷主","上位荷主","エリア","請求体系","担当ドライバー",`売上（${mkLabel(dispMonth)}）`,`粗利（${mkLabel(dispMonth)}）`,"状態"].map(h=>(
-                  <th key={h} style={{ padding:"9px 14px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:12, whiteSpace:"nowrap" }}>{h}</th>
+                  <th key={h} style={{ padding:"9px 14px", textAlign:"left", color:"#645F6E", fontWeight:500, fontSize:12, whiteSpace:"nowrap" }}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -3136,7 +3136,7 @@ const ClientPage = ({ accent, setPage }) => {
         {sel && (
           <Card style={{ padding:20, alignSelf:"start" }}>
             <div style={{ fontWeight:700, fontSize:16, marginBottom:4 }}>{sel.name}</div>
-            <div style={{ fontSize:12, color:"#9ca3af", marginBottom:16 }}>{sel.area}</div>
+            <div style={{ fontSize:12, color:"#A09AAB", marginBottom:16 }}>{sel.area}</div>
 
             {/* 上位荷主 */}
             <div style={{ background:"#E9E7EE", borderRadius:6, padding:12, marginBottom:14, border:"1px solid #DEDAE5" }}>
@@ -3155,7 +3155,7 @@ const ClientPage = ({ accent, setPage }) => {
                 const p = parents.find(x=>x.id===parentMap[sel.id]);
                 if (!p) return null;
                 return (
-                  <div style={{ fontSize:11, color:"#6b7280", marginTop:6 }}>
+                  <div style={{ fontSize:11, color:"#645F6E", marginTop:6 }}>
                     {p.contact && <div>👤 {p.contact}</div>}
                     {p.tel && <div>📞 {p.tel}</div>}
                   </div>
@@ -3170,7 +3170,7 @@ const ClientPage = ({ accent, setPage }) => {
                 style={{ width:"100%", padding:"7px 10px", border:"1.5px solid #DEDAE5", borderRadius:5, fontSize:13, background:"#E9E7EE", color:"#645F6E", fontWeight:600, cursor:"pointer" }}>
                 {Array.from(new Set([cycleFor(sel), sel.billingCycle, ...CYCLE_OPTIONS].filter(Boolean))).map(o=><option key={o} value={o}>{o}</option>)}
               </select>
-              <div style={{ fontSize:11, color:"#9ca3af", marginTop:6 }}>請求対象期間の計算に使われます（単価マスタと共通）・変更は自動保存されます</div>
+              <div style={{ fontSize:11, color:"#A09AAB", marginTop:6 }}>請求対象期間の計算に使われます（単価マスタと共通）・変更は自動保存されます</div>
             </div>
 
             <div style={{ fontSize:12, fontWeight:700, color:"#A09AAB", marginBottom:8 }}>単価一覧</div>
@@ -3179,7 +3179,7 @@ const ClientPage = ({ accent, setPage }) => {
                 <span style={{ color:"#645F6E" }}>{r.label}</span>
                 <div style={{ textAlign:"right" }}>
                   <span style={{ fontWeight:700, color:accent }}>{r.sell>0?fmt(r.sell):"要確認"}</span>
-                  <span style={{ color:"#9ca3af", fontSize:11, marginLeft:6 }}>→ 支払{r.pay>0?fmt(r.pay):"—"}</span>
+                  <span style={{ color:"#A09AAB", fontSize:11, marginLeft:6 }}>→ 支払{r.pay>0?fmt(r.pay):"—"}</span>
                 </div>
               </div>
             ))}
@@ -3583,13 +3583,13 @@ const DailyInputPage = ({ accent }) => {
           <div style={{ fontSize:12, color:"#645F6E", marginTop:2 }}>月次一覧・スプレッドシート形式</div>
         </div>
         <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-          <span style={{ fontSize:11, color:"#9ca3af", flexShrink:0 }}>対象月</span>
+          <span style={{ fontSize:11, color:"#A09AAB", flexShrink:0 }}>対象月</span>
           <div style={{ display:"flex", gap:4, alignItems:"center" }}>
             <button onClick={()=>{ if(isNaN(yr)||isNaN(mo)){ setMonthYear(REF_MONTH); return; } const d=new Date(yr,mo-2,1); setMonthYear(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`); }}
               style={{ padding:"7px 10px", border:"1.5px solid #DEDAE5", borderRadius:6, background:"#E9E7EE", color:"#5C5766", fontWeight:600, cursor:"pointer", fontSize:13 }}>‹</button>
             <input type="month" value={monthYear} onChange={e=>{ if(/^\d{4}-\d{2}$/.test(e.target.value)) setMonthYear(e.target.value); }}
-              style={{ padding:"7px 12px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}
-              onFocus={e=>e.target.style.borderColor=accent} onBlur={e=>e.target.style.borderColor="#e5e7eb"}/>
+              style={{ padding:"7px 12px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}
+              onFocus={e=>e.target.style.borderColor=accent} onBlur={e=>e.target.style.borderColor="#DEDAE5"}/>
             <button onClick={()=>{ if(isNaN(yr)||isNaN(mo)){ setMonthYear(REF_MONTH); return; } const d=new Date(yr,mo,1); setMonthYear(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`); }}
               style={{ padding:"7px 10px", border:"1.5px solid #DEDAE5", borderRadius:6, background:"#E9E7EE", color:"#5C5766", fontWeight:600, cursor:"pointer", fontSize:13 }}>›</button>
           </div>
@@ -3598,7 +3598,7 @@ const DailyInputPage = ({ accent }) => {
 
       {/* 操作バー（荷主） */}
       <div style={{ marginBottom:8 }}>
-        <label style={{ fontSize:11, color:"#9ca3af", display:"block", marginBottom:4 }}>荷主</label>
+        <label style={{ fontSize:11, color:"#A09AAB", display:"block", marginBottom:4 }}>荷主</label>
         <div style={{ position:"relative", display:"inline-block" }}>
           <select
             value={selClient.id}
@@ -3610,7 +3610,7 @@ const DailyInputPage = ({ accent }) => {
               appearance:"none", WebkitAppearance:"none", MozAppearance:"none",
               padding:"8px 36px 8px 14px", minWidth:260,
               border:`1.5px solid ${accent}`, borderRadius:8, background:"#fff",
-              color:"#111827", fontSize:13.5, fontWeight:600,
+              color:"#393443", fontSize:13.5, fontWeight:600,
               fontFamily:"inherit", cursor:"pointer", outline:"none",
               boxShadow:`0 2px 8px -2px ${accent}33`,
             }}>
@@ -3632,7 +3632,7 @@ const DailyInputPage = ({ accent }) => {
             sub: inputDays===workdays&&workdays>0?"✓ 入力完了":`残 ${workdays-inputDays}日` },
         ].map(({l,v,c,sub})=>(
           <Card key={l} style={{ padding:"8px 14px" }}>
-            <div style={{ fontSize:11, color:"#9ca3af", marginBottom:2 }}>{l}</div>
+            <div style={{ fontSize:11, color:"#A09AAB", marginBottom:2 }}>{l}</div>
             <div style={{ fontSize:16, fontWeight:700, color:c }}>{v}</div>
             {sub && <div style={{ fontSize:10, color:inputDays===workdays&&workdays>0?"#5E8C68":"#A09AAB", marginTop:2 }}>{sub}</div>}
           </Card>
@@ -3794,7 +3794,7 @@ const DailyInputPage = ({ accent }) => {
                 <td style={{ padding:"7px 10px", textAlign:"right", fontWeight:800, color:monthTotals.sell>0?accent:"#A09AAB", borderLeft:"2px solid #645F6E" }}>{monthTotals.sell>0?fmt(monthTotals.sell):"—"}</td>
                 <td style={{ padding:"7px 10px", textAlign:"right", fontWeight:800, color:monthTotals.pay>0?"#393443":"#A09AAB" }}>{monthTotals.pay>0?fmt(monthTotals.pay):"—"}</td>
                 <td style={{ padding:"7px 10px", textAlign:"right", fontWeight:800, color:(monthTotals.sell>0||monthTotals.pay>0)?(monthTotals.profit<0?"#B05A60":"#5E8C68"):"#A09AAB" }}>{(monthTotals.sell>0||monthTotals.pay>0)?fmt(monthTotals.profit):"—"}</td>
-                <td style={{ borderLeft:"1px solid #94a3b8" }}/>
+                <td style={{ borderLeft:"1px solid #DEDAE5" }}/>
               </tr>
               <tr style={{ background:"#E9E7EE", borderTop:"1px solid #DEDAE5" }}>
                 <td style={{ padding:"6px 12px", fontSize:10, color:"#A09AAB", borderRight:"1px solid #DEDAE5", position:"sticky", left:0, background:"#E9E7EE" }}>ドライバー別売上</td>
@@ -3819,8 +3819,8 @@ const DailyInputPage = ({ accent }) => {
         <div
           style={{ flex:2, padding:"12px", background:saved?"#E6EFE4":"#F2EBDC", color:saved?"#5E8C68":"#8C6A2E", border:`1.5px solid ${saved?"#CECAD5":"#DEDAE5"}`, borderRadius:7, fontWeight:600, fontSize:13, display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
           {saved
-            ? <><Ic name="check" size={16} color="#15803d" strokeWidth={2.5}/> 自動保存済み（Supabase）</>
-            : <><span style={{ display:"inline-block", width:8, height:8, borderRadius:"50%", background:"#f59e0b" }}/> 保存中…</>
+            ? <><Ic name="check" size={16} color="#5E8C68" strokeWidth={2.5}/> 自動保存済み（Supabase）</>
+            : <><span style={{ display:"inline-block", width:8, height:8, borderRadius:"50%", background:"#C39A52" }}/> 保存中…</>
           }
         </div>
         <button onClick={handleCSV}
@@ -3956,14 +3956,14 @@ const Dashboard = ({ accent, setPage }) => {
       <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12, marginBottom:14 }}>
         {[
           { l:`今月売上（${REF_MONTH_LABEL}）`, v:fmt(totalSell),   sub:totalSell>0?"全11荷主合算 → 詳細は収支管理":`実績未入力。最新確定: ${LATEST_MONTH_LABEL} → 収支管理`, c:accent,    pg:"pl" },
-          { l:`今月粗利（${REF_MONTH_LABEL}）`, v:fmt(totalProfit), sub:totalSell>0?`粗利率 ${margin}% → 収支管理`:"— → 収支管理",   c:"#16a34a", pg:"pl" },
+          { l:`今月粗利（${REF_MONTH_LABEL}）`, v:fmt(totalProfit), sub:totalSell>0?`粗利率 ${margin}% → 収支管理`:"— → 収支管理",   c:"#5E8C68", pg:"pl" },
           { l:"未請求（発行前）", v:fmt(pendingInv),  sub:`${pendingList.length}件 → 請求管理`,  c:"#645F6E", pg:"invoice" },
           { l:"入金遅延",         v:fmt(delayedInv),  sub:delayedSub,   c:"#B05A60", pg:"invoice" },
         ].map(({ l,v,sub,c,pg })=>(
           <Card key={l} style={{ padding:"16px 18px", cursor:"pointer" }} onClick={()=>setPage(pg)}
             onMouseEnter={e=>e.currentTarget.style.borderColor=c}
             onMouseLeave={e=>e.currentTarget.style.borderColor="#e8eaed"}>
-            <div style={{ fontSize:11, color:"#9ca3af", marginBottom:6 }}>{l}</div>
+            <div style={{ fontSize:11, color:"#A09AAB", marginBottom:6 }}>{l}</div>
             <div style={{ fontSize:22, fontWeight:700, color:c, lineHeight:1 }}>{v}</div>
             <div style={{ fontSize:11.5, color:"#645F6E", marginTop:5 }}>{sub}</div>
           </Card>
@@ -4036,7 +4036,7 @@ const Dashboard = ({ accent, setPage }) => {
               { id:"faq",         icon:"question", label:"FAQ",               sub:"よくある質問" },
             ].map((item,i)=>(
               <button key={i} onClick={()=>setPage(item.id)}
-                style={{ width:"100%", display:"flex", alignItems:"center", gap:10, padding:"8px 16px", border:"none", background:"none", textAlign:"left", fontSize:13, color:"#374151", borderBottom:"1px solid #94a3b8" }}
+                style={{ width:"100%", display:"flex", alignItems:"center", gap:10, padding:"8px 16px", border:"none", background:"none", textAlign:"left", fontSize:13, color:"#645F6E", borderBottom:"1px solid #DEDAE5" }}
                 onMouseEnter={e=>e.currentTarget.style.background="#f9fafb"}
                 onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
                 <div style={{ width:28, height:28, borderRadius:6, background:accent+"12", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
@@ -4080,20 +4080,20 @@ const Dashboard = ({ accent, setPage }) => {
               { name:"渡辺 翔",   client:"タイヤ配送",   status:"配達中",   done:6,  total:11, time:"16:50" },
             ].map((r,i)=>{
               const pct = r.total>0 ? Math.round(r.done/r.total*100) : 0;
-              const sc = r.status==="完了"?{bg:"#dcfce7",c:"#15803d"}:r.status==="配達中"?{bg:accent+"18",c:accent}:{bg:"#fee2e2",c:"#b91c1c"};
+              const sc = r.status==="完了"?{bg:"#dcfce7",c:"#5E8C68"}:r.status==="配達中"?{bg:accent+"18",c:accent}:{bg:"#fee2e2",c:"#B05A60"};
               return (
                 <div key={i} style={{ display:"flex", alignItems:"center", gap:12, padding:"9px 0", borderBottom:i<5?"1px solid #DEDAE5":"none" }}>
-                  <Avatar name={r.name} size={28} bg="#f3f4f6" color="#374151"/>
+                  <Avatar name={r.name} size={28} bg="#EDEBF1" color="#645F6E"/>
                   <div style={{ flex:1, minWidth:0 }}>
                     <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:4 }}>
-                      <div style={{ fontSize:13, fontWeight:600 }}>{r.name}<span style={{ fontSize:11, color:"#9ca3af", fontWeight:400, marginLeft:6 }}>{r.client}</span></div>
+                      <div style={{ fontSize:13, fontWeight:600 }}>{r.name}<span style={{ fontSize:11, color:"#A09AAB", fontWeight:400, marginLeft:6 }}>{r.client}</span></div>
                       <div style={{ display:"flex", alignItems:"center", gap:6 }}>
-                        <span style={{ fontSize:12, fontWeight:700 }}>{r.done}<span style={{ fontSize:11, color:"#9ca3af", fontWeight:400 }}>/{r.total}件</span></span>
-                        <span style={{ fontSize:10, color:"#9ca3af" }}>{r.time}</span>
+                        <span style={{ fontSize:12, fontWeight:700 }}>{r.done}<span style={{ fontSize:11, color:"#A09AAB", fontWeight:400 }}>/{r.total}件</span></span>
+                        <span style={{ fontSize:10, color:"#A09AAB" }}>{r.time}</span>
                       </div>
                     </div>
                     <div style={{ height:4, background:"#E9E7EE", borderRadius:2 }}>
-                      <div style={{ width:`${pct}%`, height:"100%", background:r.status==="完了"?"#16a34a":r.status==="持戻り"?"#dc2626":accent, borderRadius:2, transition:"width .3s" }}/>
+                      <div style={{ width:`${pct}%`, height:"100%", background:r.status==="完了"?"#5E8C68":r.status==="持戻り"?"#B05A60":accent, borderRadius:2, transition:"width .3s" }}/>
                     </div>
                   </div>
                   <span style={{ padding:"2px 7px", borderRadius:4, fontSize:11, fontWeight:600, background:sc.bg, color:sc.c, flexShrink:0 }}>{r.status}</span>
@@ -4108,17 +4108,17 @@ const Dashboard = ({ accent, setPage }) => {
             <SH title="承認待ち" action="申請→" onAction={()=>setPage("apply")}/>
             <div style={{ padding:"4px 0 8px" }}>
               {pendingApprovals.length===0 && (
-                <div style={{ padding:"14px 20px", fontSize:12, color:"#9ca3af", textAlign:"center" }}>承認待ちの申請はありません</div>
+                <div style={{ padding:"14px 20px", fontSize:12, color:"#A09AAB", textAlign:"center" }}>承認待ちの申請はありません</div>
               )}
               {pendingApprovals.map((a,i)=>(
                 <div key={a.id} style={{ display:"flex", alignItems:"center", gap:10, padding:"9px 20px", borderBottom:i<pendingApprovals.length-1?"1px solid #DEDAE5":"none" }}>
-                  <Avatar name={a.name} size={26} bg="#f3f4f6" color="#374151"/>
+                  <Avatar name={a.name} size={26} bg="#EDEBF1" color="#645F6E"/>
                   <div style={{ flex:1, minWidth:0 }}>
                     <div style={{ fontSize:13, fontWeight:600, display:"flex", alignItems:"center", gap:6 }}>
                       {a.name}
-                      {a.urgent && <span style={{ fontSize:9, fontWeight:700, background:"#fee2e2", color:"#b91c1c", padding:"1px 5px", borderRadius:3 }}>至急</span>}
+                      {a.urgent && <span style={{ fontSize:9, fontWeight:700, background:"#fee2e2", color:"#B05A60", padding:"1px 5px", borderRadius:3 }}>至急</span>}
                     </div>
-                    <div style={{ fontSize:11, color:"#9ca3af" }}>{a.type} · {a.date}</div>
+                    <div style={{ fontSize:11, color:"#A09AAB" }}>{a.type} · {a.date}</div>
                   </div>
                   <button onClick={()=>{
                     if (a.isApp) setApps(s=>s.map(x=>x.id===a.id?{...x,status:"承認済み"}:x));
@@ -4157,7 +4157,7 @@ const Dashboard = ({ accent, setPage }) => {
         <SH title={`ドライバー別 支払サマリー（${totalSell>0?"今月速報":"最新確定 "+LATEST_MONTH_LABEL+" を表示"}）`} action="詳細→" onAction={()=>setPage("driverfinance")}/>
         <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
           <thead>
-            <tr style={{ background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
+            <tr style={{ background:"#f9fafb", borderBottom:"1px solid #DEDAE5" }}>
               {["ドライバー","雇用形態","担当荷主","売上","支払(税抜)","粗利貢献","ステータス"].map(h=>(
                 <th key={h} style={{ padding:"8px 14px", textAlign:"left", color:"#645F6E", fontWeight:500, fontSize:11.5, whiteSpace:"nowrap" }}>{h}</th>
               ))}
@@ -4332,7 +4332,7 @@ const DriversPage = ({ accent, setPage }) => {
         </div>
         <div style={{ display:"flex", gap:8, alignItems:"center" }}>
           <div style={{ position:"relative", display:"flex", alignItems:"center" }}>
-            <div style={{ position:"absolute", left:10, pointerEvents:"none" }}><Ic name="search" size={13} color="#9ca3af"/></div>
+            <div style={{ position:"absolute", left:10, pointerEvents:"none" }}><Ic name="search" size={13} color="#A09AAB"/></div>
             <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="名前・エリア検索"
               style={{ paddingLeft:32, paddingRight:12, height:34, borderRadius:6, border:"1.5px solid #DEDAE5", fontSize:13, fontFamily:"inherit", outline:"none", width:180 }}/>
           </div>
@@ -4347,9 +4347,9 @@ const DriversPage = ({ accent, setPage }) => {
         <Card>
           <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
             <thead>
-              <tr style={{ background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
+              <tr style={{ background:"#f9fafb", borderBottom:"1px solid #DEDAE5" }}>
                 {["氏名","雇用形態","担当エリア","稼働社数","今月売上","今月支払（税込）","粗利"].map(h=>(
-                  <th key={h} style={{ padding:"10px 16px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:12, whiteSpace:"nowrap" }}>{h}</th>
+                  <th key={h} style={{ padding:"10px 16px", textAlign:"left", color:"#645F6E", fontWeight:500, fontSize:12, whiteSpace:"nowrap" }}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -4403,12 +4403,12 @@ const DriversPage = ({ accent, setPage }) => {
               ))}
             </div>
 
-            <div style={{ fontSize:12, color:"#9ca3af", marginBottom:10 }}>今月財務サマリー（実績／{mkLabel(selSummary.mk)}分）</div>
+            <div style={{ fontSize:12, color:"#A09AAB", marginBottom:10 }}>今月財務サマリー（実績／{mkLabel(selSummary.mk)}分）</div>
             <div style={{ background:"#E9E7EE", borderRadius:8, padding:14, marginBottom:16, boxShadow:"inset 3px 3px 7px #CECAD5,inset -3px -3px 7px #FFFFFF" }}>
-              {[["今月売上",fmt(selSummary.totalSell),accent],["今月支払（税込）",fmt(selSummary.grandTotal),"#d97706"],["粗利",fmt(selSummary.totalProfit),"#16a34a"]].map(([l,v,c])=>(
+              {[["今月売上",fmt(selSummary.totalSell),accent],["今月支払（税込）",fmt(selSummary.grandTotal),"#C39A52"],["粗利",fmt(selSummary.totalProfit),"#5E8C68"]].map(([l,v,c])=>(
                 <div key={l} style={{ display:"flex", justifyContent:"space-between", fontSize:13, padding:"6px 0", borderBottom:"1px solid #DEDAE5" }}>
                   <span style={{ color:"#645F6E" }}>{l}</span>
-                  <span style={{ fontWeight:700, color:c===accent?accent:c==="#d97706"?"#C39A52":"#5E8C68" }}>{v}</span>
+                  <span style={{ fontWeight:700, color:c===accent?accent:c==="#C39A52"?"#C39A52":"#5E8C68" }}>{v}</span>
                 </div>
               ))}
             </div>
@@ -4700,19 +4700,19 @@ const FAQPage = ({ accent }) => {
 
       <div style={{ position:"relative", marginBottom:24 }}>
         <div style={{ position:"absolute", left:12, top:"50%", transform:"translateY(-50%)" }}>
-          <Ic name="search" size={15} color="#9ca3af"/>
+          <Ic name="search" size={15} color="#A09AAB"/>
         </div>
         <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="キーワードで検索..."
-          style={{ width:"100%", padding:"10px 12px 10px 36px", border:"1.5px solid #e5e7eb", borderRadius:8, fontSize:13, fontFamily:"inherit", outline:"none", background:"#fff" }}
-          onFocus={e=>e.target.style.borderColor=accent} onBlur={e=>e.target.style.borderColor="#e5e7eb"}/>
-        {search && <button onClick={()=>setSearch("")} style={{ position:"absolute", right:10, top:"50%", transform:"translateY(-50%)", background:"none", border:"none", fontSize:16, color:"#9ca3af", lineHeight:1, cursor:"pointer" }}>×</button>}
+          style={{ width:"100%", padding:"10px 12px 10px 36px", border:"1.5px solid #DEDAE5", borderRadius:8, fontSize:13, fontFamily:"inherit", outline:"none", background:"#fff" }}
+          onFocus={e=>e.target.style.borderColor=accent} onBlur={e=>e.target.style.borderColor="#DEDAE5"}/>
+        {search && <button onClick={()=>setSearch("")} style={{ position:"absolute", right:10, top:"50%", transform:"translateY(-50%)", background:"none", border:"none", fontSize:16, color:"#A09AAB", lineHeight:1, cursor:"pointer" }}>×</button>}
       </div>
 
       {filtered.length===0 && <div style={{ textAlign:"center", padding:"40px 0", color:"#645F6E", fontSize:14 }}>「{search}」に一致するFAQはありません</div>}
 
       {filtered.map((cat,ci)=>(
         <div key={ci} style={{ marginBottom:24 }}>
-          <div style={{ fontSize:12, fontWeight:700, color:"#9ca3af", marginBottom:10 }}>{cat.cat}（{cat.items.length}件）</div>
+          <div style={{ fontSize:12, fontWeight:700, color:"#A09AAB", marginBottom:10 }}>{cat.cat}（{cat.items.length}件）</div>
           <Card>
             {cat.items.map((f,fi)=>{
               const key=`${cat.cat}:${f.q}`; const isOpen=open===key;
@@ -4807,11 +4807,11 @@ const ManualPage = ({ accent }) => {
       <div style={{ display:"flex", gap:10, marginBottom:16, flexWrap:"wrap" }}>
         <div style={{ position:"relative", flex:1, minWidth:200 }}>
           <div style={{ position:"absolute", left:12, top:"50%", transform:"translateY(-50%)" }}>
-            <Ic name="search" size={15} color="#9ca3af"/>
+            <Ic name="search" size={15} color="#A09AAB"/>
           </div>
           <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="マニュアル名で検索..."
             style={{ width:"100%", padding:"9px 12px 9px 36px", border:"1.5px solid #DEDAE5", borderRadius:7, fontSize:13, fontFamily:"inherit", outline:"none", background:"#E9E7EE" }}
-            onFocus={e=>e.target.style.borderColor=accent} onBlur={e=>e.target.style.borderColor="#e5e7eb"}/>
+            onFocus={e=>e.target.style.borderColor=accent} onBlur={e=>e.target.style.borderColor="#DEDAE5"}/>
           {search && <button onClick={()=>setSearch("")} style={{ position:"absolute", right:10, top:"50%", transform:"translateY(-50%)", background:"none", border:"none", fontSize:16, color:"#A09AAB", lineHeight:1, cursor:"pointer" }}>×</button>}
         </div>
         <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
@@ -4828,7 +4828,7 @@ const ManualPage = ({ accent }) => {
 
       {filtered.map((cat,ci)=>(
         <div key={cat.cat} style={{ marginBottom:20 }}>
-          <div style={{ fontSize:12, fontWeight:700, color:"#9ca3af", marginBottom:10 }}>{cat.cat}（{cat.items.length}件）</div>
+          <div style={{ fontSize:12, fontWeight:700, color:"#A09AAB", marginBottom:10 }}>{cat.cat}（{cat.items.length}件）</div>
           <Card>
             {cat.items.map((m,mi)=>(
               <div key={`${cat.cat}:${m.name}`} style={{ display:"flex", alignItems:"center", padding:"13px 20px", borderBottom:mi<cat.items.length-1?"1px solid #DEDAE5":"none", gap:14 }}
@@ -4921,7 +4921,7 @@ const ContactPage = ({ accent }) => {
         <Ic name="check" size={24} color="#5E8C68" strokeWidth={2.5}/>
       </div>
       <div style={{ fontSize:18, fontWeight:700, marginBottom:8 }}>送信しました</div>
-      <div style={{ fontSize:13, color:"#6b7280", marginBottom:24 }}>担当部署より折り返しご連絡いたします</div>
+      <div style={{ fontSize:13, color:"#645F6E", marginBottom:24 }}>担当部署より折り返しご連絡いたします</div>
       <button onClick={()=>{ setSent(false); setForm({ dept:"選択してください", subject:"", body:"", urgency:"通常" }); }} style={{ padding:"10px 24px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:6, fontWeight:700, fontSize:14, boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF,inset 0 1px 0 rgba(255,255,255,.28)" }}>戻る</button>
     </div>
   );
@@ -5051,7 +5051,7 @@ const TodoPage = ({ accent }) => {
         <div>
           <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>概況</div>
           <div style={{ fontSize:28, fontWeight:700, color:"#393443" }}>ToDoリスト</div>
-          <div style={{ fontSize:12, color:"#9ca3af", marginTop:2 }}>未完了 {stats.active}件{stats.overdue>0?` / 期限切れ ${stats.overdue}件`:""}{stats.today>0?` / 本日締切 ${stats.today}件`:""}</div>
+          <div style={{ fontSize:12, color:"#A09AAB", marginTop:2 }}>未完了 {stats.active}件{stats.overdue>0?` / 期限切れ ${stats.overdue}件`:""}{stats.today>0?` / 本日締切 ${stats.today}件`:""}</div>
         </div>
         <div style={{ display:"flex", gap:6 }}>
           {[{k:"active",l:`未完了 ${stats.active}`},{k:"done",l:`完了 ${stats.done}`},{k:"all",l:`すべて ${stats.total}`}].map(({k,l})=>(
@@ -5063,26 +5063,26 @@ const TodoPage = ({ accent }) => {
 
       {/* 新規追加フォーム */}
       <Card style={{ padding:16, marginBottom:16 }}>
-        <div style={{ fontSize:12, fontWeight:700, color:"#6b7280", marginBottom:10 }}>新規タスク追加</div>
+        <div style={{ fontSize:12, fontWeight:700, color:"#645F6E", marginBottom:10 }}>新規タスク追加</div>
         <div style={{ display:"grid", gridTemplateColumns:"2fr 100px 140px 140px auto", gap:8, alignItems:"center", marginBottom:8 }}>
           <input value={draft.title} onChange={e=>setDraft(p=>({...p,title:e.target.value}))}
             onKeyDown={e=>{ if (e.key==='Enter' && !e.isComposing && !e.nativeEvent?.isComposing) add(); }}
             placeholder="タスク内容（必須）"
-            style={{ padding:"8px 12px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, outline:"none" }}/>
+            style={{ padding:"8px 12px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, outline:"none" }}/>
           <select value={draft.priority} onChange={e=>setDraft(p=>({...p,priority:e.target.value}))}
-            style={{ padding:"8px 12px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, background:"#fff" }}>
+            style={{ padding:"8px 12px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, background:"#fff" }}>
             {["高","中","低"].map(p=><option key={p} value={p}>{p}</option>)}
           </select>
           <input type="date" value={draft.due} onChange={e=>setDraft(p=>({...p,due:e.target.value}))}
-            style={{ padding:"8px 12px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13 }}/>
+            style={{ padding:"8px 12px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13 }}/>
           <input value={draft.assignee} onChange={e=>setDraft(p=>({...p,assignee:e.target.value}))}
             placeholder="担当者（任意）"
-            style={{ padding:"8px 12px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, outline:"none" }}/>
+            style={{ padding:"8px 12px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, outline:"none" }}/>
           <button onClick={add} disabled={!draft.title.trim()}
             style={{ padding:"8px 18px", background:draft.title.trim()?"linear-gradient(180deg,#917AA4,#7E6593)":"#CECAD5", color:"#fff", border:"none", borderRadius:6, fontSize:13, fontWeight:600, cursor:draft.title.trim()?"pointer":"not-allowed", whiteSpace:"nowrap", boxShadow:draft.title.trim()?"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF,inset 0 1px 0 rgba(255,255,255,.28)":"none" }}>+ 追加</button>
         </div>
         <textarea value={draft.note} onChange={e=>setDraft(p=>({...p,note:e.target.value}))} placeholder="メモ（任意）"
-          style={{ width:"100%", padding:"8px 12px", border:"1.5px solid #e5e7eb", borderRadius:6, fontSize:13, resize:"vertical", minHeight:50, outline:"none", fontFamily:"inherit", boxSizing:"border-box" }}/>
+          style={{ width:"100%", padding:"8px 12px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, resize:"vertical", minHeight:50, outline:"none", fontFamily:"inherit", boxSizing:"border-box" }}/>
       </Card>
 
       {/* リスト */}
@@ -5096,7 +5096,7 @@ const TodoPage = ({ accent }) => {
             {sorted.map((t, i) => {
               const isEditing = editingId === t.id;
               return (
-                <div key={t.id} style={{ borderBottom: i<sorted.length-1?"1px solid #e5e7eb":"none", padding:"12px 16px", display:"flex", alignItems:"flex-start", gap:12, background:t.done?"#fafafa":"#fff" }}>
+                <div key={t.id} style={{ borderBottom: i<sorted.length-1?"1px solid #DEDAE5":"none", padding:"12px 16px", display:"flex", alignItems:"flex-start", gap:12, background:t.done?"#fafafa":"#fff" }}>
                   <input type="checkbox" checked={t.done} onChange={()=>toggle(t.id)}
                     style={{ marginTop:3, width:18, height:18, accentColor:accent, cursor:"pointer" }}/>
                   <div style={{ flex:1, minWidth:0 }}>
@@ -5106,16 +5106,16 @@ const TodoPage = ({ accent }) => {
                           style={{ width:"100%", padding:"6px 10px", border:"1.5px solid "+accent, borderRadius:4, fontSize:14, fontWeight:600, marginBottom:6, boxSizing:"border-box" }}/>
                         <div style={{ display:"grid", gridTemplateColumns:"100px 140px 140px", gap:6, marginBottom:6 }}>
                           <select value={t.priority} onChange={e=>{ updateTodo(t.id,{priority:e.target.value}); showToast("タスクを更新しました"); }}
-                            style={{ padding:"4px 8px", border:"1px solid #e5e7eb", borderRadius:4, fontSize:12 }}>
+                            style={{ padding:"4px 8px", border:"1px solid #DEDAE5", borderRadius:4, fontSize:12 }}>
                             {["高","中","低"].map(p=><option key={p} value={p}>{p}</option>)}
                           </select>
                           <input type="date" value={t.due||""} onChange={e=>{ updateTodo(t.id,{due:e.target.value||null}); showToast("タスクを更新しました"); }}
-                            style={{ padding:"4px 8px", border:"1px solid #e5e7eb", borderRadius:4, fontSize:12 }}/>
+                            style={{ padding:"4px 8px", border:"1px solid #DEDAE5", borderRadius:4, fontSize:12 }}/>
                           <input value={t.assignee||""} onChange={e=>updateTodo(t.id,{assignee:e.target.value||null})} onBlur={()=>showToast("タスクを更新しました")}
-                            placeholder="担当者" style={{ padding:"4px 8px", border:"1px solid #e5e7eb", borderRadius:4, fontSize:12 }}/>
+                            placeholder="担当者" style={{ padding:"4px 8px", border:"1px solid #DEDAE5", borderRadius:4, fontSize:12 }}/>
                         </div>
                         <textarea value={t.note||""} onChange={e=>updateTodo(t.id,{note:e.target.value})} onBlur={()=>showToast("タスクを更新しました")}
-                          placeholder="メモ" style={{ width:"100%", padding:"6px 10px", border:"1px solid #e5e7eb", borderRadius:4, fontSize:12, resize:"vertical", minHeight:40, fontFamily:"inherit", boxSizing:"border-box", marginBottom:6 }}/>
+                          placeholder="メモ" style={{ width:"100%", padding:"6px 10px", border:"1px solid #DEDAE5", borderRadius:4, fontSize:12, resize:"vertical", minHeight:40, fontFamily:"inherit", boxSizing:"border-box", marginBottom:6 }}/>
                         <div style={{ display:"flex", gap:6 }}>
                           <button onClick={closeEdit} style={{ padding:"5px 14px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:4, fontSize:12, fontWeight:600, cursor:"pointer", boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF,inset 0 1px 0 rgba(255,255,255,.28)" }}>閉じる</button>
                         </div>
@@ -5123,12 +5123,12 @@ const TodoPage = ({ accent }) => {
                     ) : (
                       <div>
                         <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap", marginBottom:t.note?4:0 }}>
-                          <span style={{ fontSize:14, fontWeight:600, color:t.done?"#9ca3af":"#1a1f2e", textDecoration:t.done?"line-through":"none" }}>{t.title}</span>
+                          <span style={{ fontSize:14, fontWeight:600, color:t.done?"#A09AAB":"#1a1f2e", textDecoration:t.done?"line-through":"none" }}>{t.title}</span>
                           <span style={{ fontSize:10, fontWeight:700, color:"#fff", background:priColor(t.priority), padding:"2px 6px", borderRadius:3 }}>優先{t.priority}</span>
                           {t.due && <span style={{ fontSize:11, fontWeight:600, color:dueColor(t.due, t.done) }}>📅 {dueLabel(t.due)}</span>}
-                          {t.assignee && <span style={{ fontSize:11, color:"#6b7280" }}>👤 {t.assignee}</span>}
+                          {t.assignee && <span style={{ fontSize:11, color:"#645F6E" }}>👤 {t.assignee}</span>}
                         </div>
-                        {t.note && <div style={{ fontSize:12, color:"#6b7280", whiteSpace:"pre-wrap" }}>{t.note}</div>}
+                        {t.note && <div style={{ fontSize:12, color:"#645F6E", whiteSpace:"pre-wrap" }}>{t.note}</div>}
                       </div>
                     )}
                   </div>
@@ -5303,7 +5303,7 @@ const ParentClientsPage = ({ accent }) => {
           ) : (
             <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
               <thead>
-                <tr style={{ background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
+                <tr style={{ background:"#f9fafb", borderBottom:"1px solid #DEDAE5" }}>
                   {["上位荷主","担当者","紐付け荷主",`当月売上（${mkLabel(refMonth)}）`,`当月粗利（${mkLabel(refMonth)}）`,"操作"].map(h=>(
                     <th key={h} style={{ padding:"9px 14px", textAlign:"left", color:"#645F6E", fontWeight:500, fontSize:12, whiteSpace:"nowrap" }}>{h}</th>
                   ))}
@@ -5319,7 +5319,7 @@ const ParentClientsPage = ({ accent }) => {
                     </td>
                     <td style={{ padding:"12px 14px", color:"#645F6E" }}>{p.contact||"—"}</td>
                     <td style={{ padding:"12px 14px" }}>
-                      {p.children.length===0 ? <span style={{ color:"#9ca3af", fontSize:12 }}>未紐付け</span> : (
+                      {p.children.length===0 ? <span style={{ color:"#A09AAB", fontSize:12 }}>未紐付け</span> : (
                         <div style={{ display:"flex", flexWrap:"wrap", gap:4 }}>
                           {p.children.map(c=>(
                             <span key={c.id} style={{ fontSize:11, background:"#EFEDF3", color:"#7E6593", padding:"2px 8px", borderRadius:3 }}>{c.name}</span>
@@ -5468,6 +5468,7 @@ function AppearanceSettings() {
 
   return (
     <div style={S.page}>
+      <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>設定</div>
       <h1 style={S.h1}>外観設定（配色テーマ）</h1>
       <div style={S.note}>
         罫線・アクセント・アラート・背景・テキストの各色をカスタマイズできます。
@@ -5508,8 +5509,8 @@ function AppearanceSettings() {
           </React.Fragment>
         ))}
         <div style={S.actions}>
-          <span style={{ display:'inline-flex', alignItems:'center', gap:6, fontSize:12, color:'#16a34a', fontWeight:600 }}>
-            <Ic name="check" size={12} color="#16a34a" strokeWidth={2.5}/>変更は自動保存
+          <span style={{ display:'inline-flex', alignItems:'center', gap:6, fontSize:12, color:'#5E8C68', fontWeight:600 }}>
+            <Ic name="check" size={12} color="#5E8C68" strokeWidth={2.5}/>変更は自動保存
           </span>
           <button type="button" style={S.btn} onClick={onReset}>既定に戻す</button>
         </div>
@@ -5661,7 +5662,7 @@ const VehiclesPage = ({ accent }) => {
         <div>
           <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>荷主・人員管理</div>
           <div style={{ fontSize:28, fontWeight:700, color:"#393443" }}>車両管理</div>
-          <div style={{ fontSize:12, color:"#9ca3af", marginTop:2 }}>全{vehicleMaster.length}台 ／ 車検期限30日以内: {vehicleMaster.filter(v=>{const d=daysUntil(v.inspection); return d>=0 && d<=30;}).length}台 ／ 期限切れ: {vehicleMaster.filter(v=>daysUntil(v.inspection)<0).length}台</div>
+          <div style={{ fontSize:12, color:"#A09AAB", marginTop:2 }}>全{vehicleMaster.length}台 ／ 車検期限30日以内: {vehicleMaster.filter(v=>{const d=daysUntil(v.inspection); return d>=0 && d<=30;}).length}台 ／ 期限切れ: {vehicleMaster.filter(v=>daysUntil(v.inspection)<0).length}台</div>
         </div>
         <div style={{ display:"flex", gap:8 }}>
           {["すべて","稼働中","整備中"].map(s=>(
@@ -5675,9 +5676,9 @@ const VehiclesPage = ({ accent }) => {
         <Card>
           <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
             <thead>
-              <tr style={{ background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
+              <tr style={{ background:"#f9fafb", borderBottom:"1px solid #DEDAE5" }}>
                 {["ナンバー","車種","担当ドライバー","状態","走行距離","車検期限"].map(h=>(
-                  <th key={h} style={{ padding:"10px 16px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:12, whiteSpace:"nowrap" }}>{h}</th>
+                  <th key={h} style={{ padding:"10px 16px", textAlign:"left", color:"#645F6E", fontWeight:500, fontSize:12, whiteSpace:"nowrap" }}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -5700,7 +5701,7 @@ const VehiclesPage = ({ accent }) => {
                       </div>}
                     </td>
                     <td style={{ padding:"12px 16px" }}>
-                      <span style={{ padding:"2px 9px", borderRadius:4, fontSize:11.5, fontWeight:600, background:v.status==="稼働中"?"#f0fdf4":"#fef2f2", color:v.status==="稼働中"?"#16a34a":"#dc2626" }}>{v.status}</span>
+                      <span style={{ padding:"2px 9px", borderRadius:4, fontSize:11.5, fontWeight:600, background:v.status==="稼働中"?"#f0fdf4":"#fef2f2", color:v.status==="稼働中"?"#5E8C68":"#B05A60" }}>{v.status}</span>
                     </td>
                     <td style={{ padding:"12px 16px", color:"#645F6E" }}>{v.mileage.toLocaleString()} km</td>
                     <td style={{ padding:"12px 16px" }}>
@@ -5729,14 +5730,14 @@ const VehiclesPage = ({ accent }) => {
                   <div style={{ fontWeight:700, fontSize:18, color:"#393443" }}>{sel.plate}</div>
                   <div style={{ fontSize:12, color:"#A09AAB", marginTop:2 }}>{sel.type} ／ {sel.id}</div>
                 </div>
-                <span style={{ padding:"2px 9px", borderRadius:4, fontSize:11.5, fontWeight:600, background:sel.status==="稼働中"?"#f0fdf4":"#fef2f2", color:sel.status==="稼働中"?"#16a34a":"#dc2626" }}>{sel.status}</span>
+                <span style={{ padding:"2px 9px", borderRadius:4, fontSize:11.5, fontWeight:600, background:sel.status==="稼働中"?"#f0fdf4":"#fef2f2", color:sel.status==="稼働中"?"#5E8C68":"#B05A60" }}>{sel.status}</span>
               </div>
 
               <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:16 }}>
                 {[["走行距離",sel.mileage.toLocaleString()+" km"],["車検期限",sel.inspection]].map(([l,v])=>(
-                  <div key={l} style={{ background:"#f8fafc", borderRadius:6, padding:"10px 12px" }}>
-                    <div style={{ fontSize:11, color:"#9ca3af" }}>{l}</div>
-                    <div style={{ fontSize:13, fontWeight:700, marginTop:3, color: l==="車検期限"&&urgent?"#dc2626":"#111827" }}>{v}</div>
+                  <div key={l} style={{ background:"#EDEBF1", borderRadius:6, padding:"10px 12px" }}>
+                    <div style={{ fontSize:11, color:"#A09AAB" }}>{l}</div>
+                    <div style={{ fontSize:13, fontWeight:700, marginTop:3, color: l==="車検期限"&&urgent?"#B05A60":"#393443" }}>{v}</div>
                   </div>
                 ))}
               </div>
@@ -5752,15 +5753,15 @@ const VehiclesPage = ({ accent }) => {
                 <Avatar name={d.name} size={32} bg={d.type==="自社"?"#dbeafe":"#ede9fe"} color={d.type==="自社"?"#1e40af":"#5b21b6"}/>
                 <div>
                   <div style={{ fontWeight:600, fontSize:13 }}>{d.name}</div>
-                  <div style={{ fontSize:11, color:"#9ca3af" }}>{d.area}</div>
+                  <div style={{ fontSize:11, color:"#A09AAB" }}>{d.area}</div>
                 </div>
               </div>}
 
               <div style={{ fontSize:12, color:"#A09AAB", marginBottom:8 }}>整備・点検履歴</div>
               {[...(maintExtras[sel.id]||[]), ...sel.maintenance].sort((a,b)=> (b.date||"").localeCompare(a.date||"")).map((m,i)=>(
-                <div key={i} style={{ display:"flex", gap:10, padding:"8px 0", borderBottom:"1px solid #94a3b8", fontSize:13 }}>
-                  <span style={{ color:"#9ca3af", fontSize:12, width:80, flexShrink:0 }}>{m.date}</span>
-                  <span style={{ color:"#374151", flex:1 }}>{m.item}</span>
+                <div key={i} style={{ display:"flex", gap:10, padding:"8px 0", borderBottom:"1px solid #DEDAE5", fontSize:13 }}>
+                  <span style={{ color:"#A09AAB", fontSize:12, width:80, flexShrink:0 }}>{m.date}</span>
+                  <span style={{ color:"#645F6E", flex:1 }}>{m.item}</span>
                   {(maintExtras[sel.id]||[]).includes(m) && <span style={{ fontSize:9, padding:"1px 5px", background:accent+"22", color:accent, borderRadius:3 }}>追記</span>}
                 </div>
               ))}
@@ -6076,12 +6077,12 @@ const DispatchPage = ({ accent, setPage }) => {
   const DriverCell = ({ dr }) => {
     const v = vehByDriver[dr.id];
     return (
-      <td style={{ padding:"8px 12px", borderRight:"1px solid #94a3b8", position:"sticky", left:0, background:"#fff", zIndex:1 }}>
+      <td style={{ padding:"8px 12px", borderRight:"1px solid #DEDAE5", position:"sticky", left:0, background:"#fff", zIndex:1 }}>
         <div style={{ display:"flex", alignItems:"center", gap:8 }}>
           <Avatar name={dr.name} size={26} bg={dr.type==="自社"?"#dbeafe":"#ede9fe"} color={dr.type==="自社"?"#1e40af":"#5b21b6"}/>
           <div style={{ minWidth:0 }}>
             <div style={{ fontWeight:600, fontSize:12, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", maxWidth:130 }}>{dr.name}</div>
-            <div style={{ fontSize:10, color:"#9ca3af" }}>{v ? `${v.id}・${v.type}` : dr.type}</div>
+            <div style={{ fontSize:10, color:"#A09AAB" }}>{v ? `${v.id}・${v.type}` : dr.type}</div>
           </div>
         </div>
       </td>
@@ -6094,7 +6095,7 @@ const DispatchPage = ({ accent, setPage }) => {
         <div>
           <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>荷主・人員管理</div>
           <div style={{ fontSize:27, fontWeight:700, color:"#393443" }}>配車管理</div>
-          <div style={{ fontSize:12, color:"#9ca3af", marginTop:2 }}>ドライバー {drivers.length}名・荷主 {allClientsLive().length}社／週単位で配車とシフトを編集・保存できます</div>
+          <div style={{ fontSize:12, color:"#A09AAB", marginTop:2 }}>ドライバー {drivers.length}名・荷主 {allClientsLive().length}社／週単位で配車とシフトを編集・保存できます</div>
         </div>
       </div>
 
@@ -6103,7 +6104,7 @@ const DispatchPage = ({ accent, setPage }) => {
         {[["dispatch","週間配車表"],["shift","シフト管理"],["bill","請求連動"]].map(([v,l])=>(
           <button key={v} onClick={()=>setTab(v)}
             style={{ padding:"8px 20px", border:"none", background:"transparent", fontWeight:tab===v?700:400,
-              color:tab===v?accent:"#6b7280", fontSize:14, cursor:"pointer",
+              color:tab===v?accent:"#645F6E", fontSize:14, cursor:"pointer",
               borderBottom:tab===v?`2px solid ${accent}`:"2px solid transparent", marginBottom:-2 }}>{l}</button>
         ))}
       </div>
@@ -6147,18 +6148,18 @@ const DispatchPage = ({ accent, setPage }) => {
           { label:todayInWeek?"本日 出勤予定":"シフト設定済み", value: todayInWeek?`${shiftCount(todayDk,["日勤","早番","遅番"])}名`:`${weekDays.filter(wd=>Object.keys(shifts[wd.dk]||{}).length).length}日`, sub: todayInWeek?`休 ${shiftCount(todayDk,["休","有休"])}名`:"今週", color:"#5E8C68" },
         ]).map(k=>(
           <Card key={k.label} style={{ padding:"14px 18px" }}>
-            <div style={{ fontSize:11, color:"#6b7280", marginBottom:6 }}>{k.label}</div>
+            <div style={{ fontSize:11, color:"#645F6E", marginBottom:6 }}>{k.label}</div>
             <div style={{ fontSize:22, fontWeight:700, color:k.color }}>{k.value}</div>
-            <div style={{ fontSize:11, color:"#9ca3af", marginTop:4 }}>{k.sub}</div>
+            <div style={{ fontSize:11, color:"#A09AAB", marginTop:4 }}>{k.sub}</div>
           </Card>
         ))}
       </div>
 
       {/* 凡例 */}
       <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:12, alignItems:"center" }}>
-        <span style={{ fontSize:11, color:"#9ca3af", marginRight:2 }}>{tab==="dispatch"?"荷主:":"区分:"}</span>
+        <span style={{ fontSize:11, color:"#A09AAB", marginRight:2 }}>{tab==="dispatch"?"荷主:":"区分:"}</span>
         {tab==="dispatch"
-          ? allClientsLive().map(c=>{ const col=DISPATCH_CLIENT_COLORS[c.id]||{bg:"#f1f5f9",fg:"#374151"}; const n=clientWeekCount[c.id]||0; return (
+          ? allClientsLive().map(c=>{ const col=DISPATCH_CLIENT_COLORS[c.id]||{bg:"#f1f5f9",fg:"#645F6E"}; const n=clientWeekCount[c.id]||0; return (
               <span key={c.id} style={{ display:"inline-flex", alignItems:"center", gap:4, padding:"2px 8px", borderRadius:4, fontSize:11, fontWeight:600, background:col.bg, color:col.fg }}>
                 {DISPATCH_CLIENT_SHORT[c.id]||c.name}{n>0 && <span style={{ fontSize:10, opacity:.75 }}>×{n}</span>}
               </span>
@@ -6174,12 +6175,12 @@ const DispatchPage = ({ accent, setPage }) => {
       <Card style={{ padding:0 }}>
         <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
           <thead>
-            <tr style={{ background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
-              <th style={{ padding:"10px 12px", textAlign:"left", color:"#6b7280", fontWeight:600, fontSize:11, minWidth:170, borderRight:"1px solid #94a3b8", position:"sticky", left:0, background:"#f9fafb", zIndex:2 }}>ドライバー</th>
+            <tr style={{ background:"#f9fafb", borderBottom:"1px solid #DEDAE5" }}>
+              <th style={{ padding:"10px 12px", textAlign:"left", color:"#645F6E", fontWeight:600, fontSize:11, minWidth:170, borderRight:"1px solid #DEDAE5", position:"sticky", left:0, background:"#f9fafb", zIndex:2 }}>ドライバー</th>
               {weekDays.map((d,i)=>(
                 <th key={i} style={{ padding:"8px 6px", textAlign:"center", minWidth:96,
-                  color:d.isSun?"#dc2626":d.isSat?"#2563eb":d.isToday?accent:"#6b7280", fontWeight:d.isToday?700:600, fontSize:12,
-                  background:d.isToday?accent+"0a":"transparent", borderRight:"1px solid #94a3b8" }}>
+                  color:d.isSun?"#B05A60":d.isSat?"#2563eb":d.isToday?accent:"#645F6E", fontWeight:d.isToday?700:600, fontSize:12,
+                  background:d.isToday?accent+"0a":"transparent", borderRight:"1px solid #DEDAE5" }}>
                   <div>{d.label}</div>
                   <div style={{ fontSize:10 }}>（{d.dayName}）</div>
                   {d.isToday && <div style={{ fontSize:9, background:"#7E6593", color:"#fff", borderRadius:20, padding:"3px 8px", marginTop:2, display:"inline-block", fontWeight:600, fontSize:10 }}>TODAY</div>}
@@ -6192,32 +6193,32 @@ const DispatchPage = ({ accent, setPage }) => {
                   )}
                 </th>
               ))}
-              <th style={{ padding:"8px 8px", textAlign:"center", color:"#6b7280", fontWeight:600, fontSize:11, minWidth:56 }}>{tab==="dispatch"?"配車":"出勤"}<br/>日数</th>
+              <th style={{ padding:"8px 8px", textAlign:"center", color:"#645F6E", fontWeight:600, fontSize:11, minWidth:56 }}>{tab==="dispatch"?"配車":"出勤"}<br/>日数</th>
             </tr>
           </thead>
           <tbody>
             {[["自社",selfDrivers],["協力会社",partnerDrivers]].map(([grpLabel,grpDrivers])=>(
               <React.Fragment key={grpLabel}>
                 <tr>
-                  <td colSpan={9} style={{ padding:"5px 12px", background:"#f1f5f9", fontSize:11, fontWeight:700, color:"#64748b", borderBottom:"1px solid #cbd5e1", position:"sticky", left:0 }}>
+                  <td colSpan={9} style={{ padding:"5px 12px", background:"#f1f5f9", fontSize:11, fontWeight:700, color:"#645F6E", borderBottom:"1px solid #cbd5e1", position:"sticky", left:0 }}>
                     {grpLabel}（{grpDrivers.length}名）
                   </td>
                 </tr>
                 {grpDrivers.map(dr=>{
                   const ac = assignableClients(dr.id);
                   return (
-                    <tr key={dr.id} style={{ borderBottom:"1px solid #e5e7eb" }}>
+                    <tr key={dr.id} style={{ borderBottom:"1px solid #DEDAE5" }}>
                       <DriverCell dr={dr}/>
                       {weekDays.map((wd,i)=>{
                         const cellBg = wd.isToday?accent+"06":wd.isWeekend?"#fafafa":"transparent";
                         if(tab==="dispatch"){
                           const cur = getDisp(wd.dk,dr.id);
-                          const col = cur ? (DISPATCH_CLIENT_COLORS[cur]||{bg:"#f1f5f9",fg:"#374151"}) : null;
+                          const col = cur ? (DISPATCH_CLIENT_COLORS[cur]||{bg:"#f1f5f9",fg:"#645F6E"}) : null;
                           if(isConfirmed(wd.dk)){
-                            if(!cur) return <td key={i} style={{ padding:"4px 5px", textAlign:"center", background:cellBg, borderRight:"1px solid #e5e7eb", color:"#d1d5db", fontSize:11 }}>－</td>;
+                            if(!cur) return <td key={i} style={{ padding:"4px 5px", textAlign:"center", background:cellBg, borderRight:"1px solid #DEDAE5", color:"#d1d5db", fontSize:11 }}>－</td>;
                             const cb = cellBilling(cur,wd.dk,dr.id);
                             return (
-                              <td key={i} style={{ padding:"4px 5px", textAlign:"center", background:cellBg, borderRight:"1px solid #e5e7eb" }}>
+                              <td key={i} style={{ padding:"4px 5px", textAlign:"center", background:cellBg, borderRight:"1px solid #DEDAE5" }}>
                                 <div title="確定済（編集ロック中）／実績と連動" style={{ maxWidth:88, margin:"0 auto", padding:"3px 4px", borderRadius:4,
                                   border:`1px solid ${col.fg}55`, background:col.bg, color:col.fg }}>
                                   <div style={{ fontSize:11, fontWeight:600, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>🔒{DISPATCH_CLIENT_SHORT[cur]||_clientName[cur]||cur}</div>
@@ -6227,11 +6228,11 @@ const DispatchPage = ({ accent, setPage }) => {
                             );
                           }
                           return (
-                            <td key={i} style={{ padding:"4px 5px", textAlign:"center", background:cellBg, borderRight:"1px solid #e5e7eb" }}>
+                            <td key={i} style={{ padding:"4px 5px", textAlign:"center", background:cellBg, borderRight:"1px solid #DEDAE5" }}>
                               <select value={cur} onChange={e=>setDisp(wd.dk,dr.id,e.target.value)}
                                 style={{ width:"100%", maxWidth:88, padding:"4px 4px", borderRadius:4, fontSize:11, fontWeight:cur?600:400, fontFamily:"inherit", cursor:"pointer",
                                   border:cur?`1px solid ${col.fg}33`:"1px dashed #d1d5db",
-                                  background:cur?col.bg:"#fff", color:cur?col.fg:"#9ca3af", textAlignLast:"center", appearance:"none", outline:"none" }}>
+                                  background:cur?col.bg:"#fff", color:cur?col.fg:"#A09AAB", textAlignLast:"center", appearance:"none", outline:"none" }}>
                                 <option value="">－ 空き</option>
                                 {ac.map(c=><option key={c.id} value={c.id}>{DISPATCH_CLIENT_SHORT[c.id]||c.name}</option>)}
                               </select>
@@ -6241,7 +6242,7 @@ const DispatchPage = ({ accent, setPage }) => {
                           const cur = getShift(wd.dk,dr.id);
                           const st = cur ? SHIFT_STYLE[cur] : null;
                           return (
-                            <td key={i} style={{ padding:"4px 5px", textAlign:"center", background:cellBg, borderRight:"1px solid #e5e7eb" }}>
+                            <td key={i} style={{ padding:"4px 5px", textAlign:"center", background:cellBg, borderRight:"1px solid #DEDAE5" }}>
                               <button onClick={()=>cycleShift(wd.dk,dr.id)} title="クリックで切替"
                                 style={{ width:"100%", maxWidth:84, padding:"5px 4px", borderRadius:4, fontSize:11.5, fontWeight:cur?700:400, fontFamily:"inherit", cursor:"pointer",
                                   border:cur?`1px solid ${st.fg}33`:"1px dashed #d1d5db", background:cur?st.bg:"#fff", color:cur?st.fg:"#cbd5e1" }}>
@@ -6251,7 +6252,7 @@ const DispatchPage = ({ accent, setPage }) => {
                           );
                         }
                       })}
-                      <td style={{ padding:"6px 8px", textAlign:"center", fontWeight:700, fontSize:13, color: (tab==="dispatch"?driverWeekDays(dr.id):driverShiftWorkDays(dr.id))>0?"#111827":"#cbd5e1" }}>
+                      <td style={{ padding:"6px 8px", textAlign:"center", fontWeight:700, fontSize:13, color: (tab==="dispatch"?driverWeekDays(dr.id):driverShiftWorkDays(dr.id))>0?"#393443":"#cbd5e1" }}>
                         {tab==="dispatch" ? driverWeekDays(dr.id) : driverShiftWorkDays(dr.id)}
                       </td>
                     </tr>
@@ -6261,14 +6262,14 @@ const DispatchPage = ({ accent, setPage }) => {
             ))}
           </tbody>
           <tfoot>
-            <tr style={{ borderTop:"2px solid #94a3b8", background:"#f9fafb" }}>
-              <td style={{ padding:"8px 12px", fontWeight:700, fontSize:11, color:"#6b7280", borderRight:"1px solid #94a3b8", position:"sticky", left:0, background:"#f9fafb" }}>
+            <tr style={{ borderTop:"2px solid #DEDAE5", background:"#f9fafb" }}>
+              <td style={{ padding:"8px 12px", fontWeight:700, fontSize:11, color:"#645F6E", borderRight:"1px solid #DEDAE5", position:"sticky", left:0, background:"#f9fafb" }}>
                 {tab==="dispatch" ? "配車数 / 日" : "出勤 / 日"}
               </td>
               {weekDays.map((wd,i)=>{
                 const n = tab==="dispatch" ? dispCountFor(wd.dk) : shiftCount(wd.dk,["日勤","早番","遅番"]);
                 return (
-                  <td key={i} style={{ padding:"8px 6px", textAlign:"center", fontWeight:700, fontSize:13, borderRight:"1px solid #94a3b8",
+                  <td key={i} style={{ padding:"8px 6px", textAlign:"center", fontWeight:700, fontSize:13, borderRight:"1px solid #DEDAE5",
                     color:n>0?accent:"#cbd5e1", background:wd.isToday?accent+"0a":"transparent" }}>{n}</td>
                 );
               })}
@@ -6280,7 +6281,7 @@ const DispatchPage = ({ accent, setPage }) => {
         </table>
       </Card>
 
-      <div style={{ fontSize:11, color:"#9ca3af", marginTop:10, lineHeight:1.7 }}>
+      <div style={{ fontSize:11, color:"#A09AAB", marginTop:10, lineHeight:1.7 }}>
         ※ 配車・シフトの変更はブラウザに自動保存され、ページ移動・リロード後も保持されます。<br/>
         ※ 配車先の選択肢は、各ドライバーが担当する荷主（荷主マスタの担当ドライバー設定）に基づいて表示されます。<br/>
         ※「週を確定」または日付ヘッダの「未確定」チップで配車を確定できます。確定した日はロックされ、「請求連動」タブで実績（売上）と突合されます。
@@ -6295,7 +6296,7 @@ const DispatchPage = ({ accent, setPage }) => {
           const profit = v.s - v.p;
           const margin = v.s>0 ? profit/v.s*100 : 0;
           let status, sc, sb;
-          if(di.confirmedDays>0){ status = v.s>0?"連動済":"確定（実績待ち）"; sc=v.s>0?"#15803d":"#b45309"; sb=v.s>0?"#dcfce7":"#fef3c7"; }
+          if(di.confirmedDays>0){ status = v.s>0?"連動済":"確定（実績待ち）"; sc=v.s>0?"#5E8C68":"#b45309"; sb=v.s>0?"#dcfce7":"#fef3c7"; }
           else if(di.count>0){ status="未確定"; sc="#0369a1"; sb="#e0f2fe"; }
           else { status="—"; sc="#cbd5e1"; sb="transparent"; }
           return {c, v, di, profit, margin, status, sc, sb};
@@ -6322,9 +6323,9 @@ const DispatchPage = ({ accent, setPage }) => {
         );
         const kpis = [
           { label:"請求対象 売上", value:fmt(tot.s), sub:mkLabel(billMonth)+"（締め期間ベース）", color:accent },
-          { label:"粗利", value:fmt(totProfit), sub:`粗利率 ${totMargin.toFixed(1)}%`, color:totProfit>=0?"#16a34a":"#dc2626" },
-          { label:"確定配車のべ", value:`${tot.cc}件`, sub:`配車のべ ${tot.count}件中`, color:"#15803d" },
-          { label:"要確認", value:`${needAttention}社`, sub:`連動済 ${linked}社`, color:needAttention>0?"#d97706":"#9ca3af" },
+          { label:"粗利", value:fmt(totProfit), sub:`粗利率 ${totMargin.toFixed(1)}%`, color:totProfit>=0?"#5E8C68":"#B05A60" },
+          { label:"確定配車のべ", value:`${tot.cc}件`, sub:`配車のべ ${tot.count}件中`, color:"#5E8C68" },
+          { label:"要確認", value:`${needAttention}社`, sub:`連動済 ${linked}社`, color:needAttention>0?"#C39A52":"#A09AAB" },
         ];
         return (
           <div>
@@ -6344,9 +6345,9 @@ const DispatchPage = ({ accent, setPage }) => {
             <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12, marginBottom:16 }}>
               {kpis.map(k=>(
                 <Card key={k.label} style={{ padding:"14px 18px" }}>
-                  <div style={{ fontSize:11, color:"#6b7280", marginBottom:6 }}>{k.label}</div>
+                  <div style={{ fontSize:11, color:"#645F6E", marginBottom:6 }}>{k.label}</div>
                   <div style={{ fontSize:21, fontWeight:700, color:k.color }}>{k.value}</div>
-                  <div style={{ fontSize:11, color:"#9ca3af", marginTop:4 }}>{k.sub}</div>
+                  <div style={{ fontSize:11, color:"#A09AAB", marginTop:4 }}>{k.sub}</div>
                 </Card>
               ))}
             </div>
@@ -6355,27 +6356,27 @@ const DispatchPage = ({ accent, setPage }) => {
             <Card style={{ padding:0 }}>
               <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
                 <thead>
-                  <tr style={{ background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
+                  <tr style={{ background:"#f9fafb", borderBottom:"1px solid #DEDAE5" }}>
                     {["荷主","締め","配車のべ","確定日","売上（請求）","支払","粗利","粗利率","連動状態"].map((h,i)=>(
-                      <th key={i} style={{ padding:"9px 12px", textAlign:i===0?"left":(i>=2&&i<=7?"right":"center"), color:"#6b7280", fontWeight:600, fontSize:11, whiteSpace:"nowrap",
-                        position:i===0?"sticky":"static", left:0, background:"#f9fafb", borderRight:i===0?"1px solid #94a3b8":"none", zIndex:i===0?2:1 }}>{h}</th>
+                      <th key={i} style={{ padding:"9px 12px", textAlign:i===0?"left":(i>=2&&i<=7?"right":"center"), color:"#645F6E", fontWeight:600, fontSize:11, whiteSpace:"nowrap",
+                        position:i===0?"sticky":"static", left:0, background:"#f9fafb", borderRight:i===0?"1px solid #DEDAE5":"none", zIndex:i===0?2:1 }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {rows.map(r=>(
-                    <tr key={r.c.id} style={{ borderBottom:"1px solid #e5e7eb" }}>
-                      <td style={{ padding:"8px 12px", borderRight:"1px solid #e5e7eb", position:"sticky", left:0, background:"#fff", zIndex:1 }}>
+                    <tr key={r.c.id} style={{ borderBottom:"1px solid #DEDAE5" }}>
+                      <td style={{ padding:"8px 12px", borderRight:"1px solid #DEDAE5", position:"sticky", left:0, background:"#fff", zIndex:1 }}>
                         <div style={{ fontWeight:600, fontSize:12.5 }}>{DISPATCH_CLIENT_SHORT[r.c.id]||r.c.name}</div>
-                        <div style={{ fontSize:10, color:"#9ca3af" }}>{r.c.id}</div>
+                        <div style={{ fontSize:10, color:"#A09AAB" }}>{r.c.id}</div>
                       </td>
-                      <td style={{ padding:"8px 12px", textAlign:"center", fontSize:11, color:"#6b7280", whiteSpace:"nowrap" }}>{r.c.billingCycle||"—"}</td>
-                      <td style={{ padding:"8px 12px", textAlign:"right", fontWeight:600, color:r.di.count>0?"#111827":"#cbd5e1" }}>{r.di.count||"—"}</td>
-                      <td style={{ padding:"8px 12px", textAlign:"right", fontWeight:600, color:r.di.confirmedDays>0?"#15803d":"#cbd5e1" }}>{r.di.confirmedDays?`${r.di.confirmedDays}日`:"—"}</td>
-                      <td style={{ padding:"8px 12px", textAlign:"right", fontWeight:700, color:r.v.s>0?"#111827":"#cbd5e1" }}>{r.v.s>0?fmt(r.v.s):"—"}</td>
-                      <td style={{ padding:"8px 12px", textAlign:"right", color:r.v.p>0?"#374151":"#cbd5e1" }}>{r.v.p>0?fmt(r.v.p):"—"}</td>
-                      <td style={{ padding:"8px 12px", textAlign:"right", fontWeight:600, color:r.profit>=0?"#16a34a":"#dc2626" }}>{r.v.s>0?fmt(r.profit):"—"}</td>
-                      <td style={{ padding:"8px 12px", textAlign:"right", fontSize:12, color:"#6b7280" }}>{r.v.s>0?r.margin.toFixed(1)+"%":"—"}</td>
+                      <td style={{ padding:"8px 12px", textAlign:"center", fontSize:11, color:"#645F6E", whiteSpace:"nowrap" }}>{r.c.billingCycle||"—"}</td>
+                      <td style={{ padding:"8px 12px", textAlign:"right", fontWeight:600, color:r.di.count>0?"#393443":"#cbd5e1" }}>{r.di.count||"—"}</td>
+                      <td style={{ padding:"8px 12px", textAlign:"right", fontWeight:600, color:r.di.confirmedDays>0?"#5E8C68":"#cbd5e1" }}>{r.di.confirmedDays?`${r.di.confirmedDays}日`:"—"}</td>
+                      <td style={{ padding:"8px 12px", textAlign:"right", fontWeight:700, color:r.v.s>0?"#393443":"#cbd5e1" }}>{r.v.s>0?fmt(r.v.s):"—"}</td>
+                      <td style={{ padding:"8px 12px", textAlign:"right", color:r.v.p>0?"#645F6E":"#cbd5e1" }}>{r.v.p>0?fmt(r.v.p):"—"}</td>
+                      <td style={{ padding:"8px 12px", textAlign:"right", fontWeight:600, color:r.profit>=0?"#5E8C68":"#B05A60" }}>{r.v.s>0?fmt(r.profit):"—"}</td>
+                      <td style={{ padding:"8px 12px", textAlign:"right", fontSize:12, color:"#645F6E" }}>{r.v.s>0?r.margin.toFixed(1)+"%":"—"}</td>
                       <td style={{ padding:"8px 12px", textAlign:"center" }}>
                         <span style={{ fontSize:11, fontWeight:700, padding:"2px 8px", borderRadius:10, color:r.sc, background:r.sb }}>{r.status}</span>
                       </td>
@@ -6383,25 +6384,25 @@ const DispatchPage = ({ accent, setPage }) => {
                   ))}
                 </tbody>
                 <tfoot>
-                  <tr style={{ borderTop:"2px solid #94a3b8", background:"#f9fafb" }}>
-                    <td style={{ padding:"9px 12px", fontWeight:700, fontSize:12, color:"#374151", borderRight:"1px solid #94a3b8", position:"sticky", left:0, background:"#f9fafb", zIndex:1 }}>合計（{rows.length}社）</td>
+                  <tr style={{ borderTop:"2px solid #DEDAE5", background:"#f9fafb" }}>
+                    <td style={{ padding:"9px 12px", fontWeight:700, fontSize:12, color:"#645F6E", borderRight:"1px solid #DEDAE5", position:"sticky", left:0, background:"#f9fafb", zIndex:1 }}>合計（{rows.length}社）</td>
                     <td/>
                     <td style={{ padding:"9px 12px", textAlign:"right", fontWeight:700 }}>{tot.count||"—"}</td>
-                    <td style={{ padding:"9px 12px", textAlign:"right", fontWeight:700, color:"#15803d" }}>{tot.cd?`${tot.cd}日`:"—"}</td>
+                    <td style={{ padding:"9px 12px", textAlign:"right", fontWeight:700, color:"#5E8C68" }}>{tot.cd?`${tot.cd}日`:"—"}</td>
                     <td style={{ padding:"9px 12px", textAlign:"right", fontWeight:700, color:accent }}>{fmt(tot.s)}</td>
                     <td style={{ padding:"9px 12px", textAlign:"right", fontWeight:700 }}>{fmt(tot.p)}</td>
-                    <td style={{ padding:"9px 12px", textAlign:"right", fontWeight:700, color:totProfit>=0?"#16a34a":"#dc2626" }}>{fmt(totProfit)}</td>
-                    <td style={{ padding:"9px 12px", textAlign:"right", fontWeight:700, color:"#6b7280" }}>{totMargin.toFixed(1)}%</td>
+                    <td style={{ padding:"9px 12px", textAlign:"right", fontWeight:700, color:totProfit>=0?"#5E8C68":"#B05A60" }}>{fmt(totProfit)}</td>
+                    <td style={{ padding:"9px 12px", textAlign:"right", fontWeight:700, color:"#645F6E" }}>{totMargin.toFixed(1)}%</td>
                     <td/>
                   </tr>
                 </tfoot>
               </table>
             </Card>
 
-            <div style={{ fontSize:11, color:"#9ca3af", marginTop:10, lineHeight:1.8 }}>
+            <div style={{ fontSize:11, color:"#A09AAB", marginTop:10, lineHeight:1.8 }}>
               ※「請求連動」は確定した配車を実績（日次実績・収支）と<b>読み取り専用</b>で突合する画面です。配車の確定によって請求金額そのものが書き換わることはありません。<br/>
               ※ 売上・支払・粗利は各荷主の<b>締め期間</b>（{mkLabel(billMonth)}）で集計しています（収支管理・請求管理と同一ロジック）。<br/>
-              ※ 連動状態: <b style={{color:"#15803d"}}>連動済</b>=確定配車あり＋実績あり／<b style={{color:"#b45309"}}>確定（実績待ち）</b>=確定済だが実績未入力／<b style={{color:"#0369a1"}}>未確定</b>=配車はあるが未確定／<b style={{color:"#64748b"}}>実績のみ</b>=配車登録なし。<br/>
+              ※ 連動状態: <b style={{color:"#5E8C68"}}>連動済</b>=確定配車あり＋実績あり／<b style={{color:"#b45309"}}>確定（実績待ち）</b>=確定済だが実績未入力／<b style={{color:"#0369a1"}}>未確定</b>=配車はあるが未確定／<b style={{color:"#645F6E"}}>実績のみ</b>=配車登録なし。<br/>
               ※ 実際の請求書発行・入金消込は「請求管理」、金額の修正は「日次実績入力」で行ってください。
             </div>
           </div>
@@ -6419,8 +6420,8 @@ const AttendancePage = ({ accent }) => {
   const [dispatch] = useLocalStorage("jt_dispatch", {});
   const [shifts] = useLocalStorage("jt_shifts", {});
 
-  const stColor = { "出勤":"#16a34a","出勤中":"#2563eb","有給":"#7c3aed","休日":"#9ca3af","欠勤":"#dc2626","公休":"#6b7280","早番":"#0891b2","遅番":"#7c3aed" };
-  const stBg    = { "出勤":"#f0fdf4","出勤中":"#eff6ff","有給":"#f5f3ff","休日":"#f8fafc","欠勤":"#fef2f2","公休":"#f9fafb","早番":"#ecfeff","遅番":"#f5f3ff" };
+  const stColor = { "出勤":"#5E8C68","出勤中":"#2563eb","有給":"#7c3aed","休日":"#A09AAB","欠勤":"#B05A60","公休":"#645F6E","早番":"#0891b2","遅番":"#7c3aed" };
+  const stBg    = { "出勤":"#f0fdf4","出勤中":"#eff6ff","有給":"#f5f3ff","休日":"#EDEBF1","欠勤":"#fef2f2","公休":"#f9fafb","早番":"#ecfeff","遅番":"#f5f3ff" };
 
   const _pad = n => String(n).padStart(2,"0");
   const _now = new Date();
@@ -6526,9 +6527,9 @@ const AttendancePage = ({ accent }) => {
   });
   // 未知の荷主名にも安定した色を割り当てる
   const _colorFor = (name) => {
-    if (clientColor[name] !== undefined) return { bg:clientColor[name], fg:clientTextColor[name]||"#374151" };
+    if (clientColor[name] !== undefined) return { bg:clientColor[name], fg:clientTextColor[name]||"#645F6E" };
     let h=0; for (let i=0;i<name.length;i++) h=(h*31+name.charCodeAt(i))>>>0;
-    return { bg:_palette[h % _palette.length], fg:"#374151" };
+    return { bg:_palette[h % _palette.length], fg:"#645F6E" };
   };
 
   const otLimit = 45*60;
@@ -6543,7 +6544,7 @@ const AttendancePage = ({ accent }) => {
         {[["attendance","勤怠一覧"],["schedule","運行予定"]].map(([v,l])=>(
           <button key={v} onClick={()=>setTab(v)}
             style={{ padding:"8px 20px", border:"none", background:"transparent", fontWeight:tab===v?700:400,
-              color:tab===v?accent:"#6b7280", fontSize:14, cursor:"pointer",
+              color:tab===v?accent:"#645F6E", fontSize:14, cursor:"pointer",
               borderBottom:tab===v?`2px solid ${accent}`:"2px solid transparent", marginBottom:-2 }}>
             {l}
           </button>
@@ -6558,12 +6559,12 @@ const AttendancePage = ({ accent }) => {
               { label:"本日出勤", value:`${driverSummary.filter(d=>["出勤","出勤中","早番","遅番"].includes(d.todaySt)).length}名`, sub:`全${driverSummary.length}名中`, color:"#5E8C68" },
               { label:`${_monthLabel} 配車のべ日数${_isFallback ? ` (${REF_MONTH_LABEL}実績未入力)` : ""}`, value:`${driverSummary.reduce((s,d)=>s+d.workDays,0)}日`, sub:"確定・実績ベース", color:accent },
               { label:"本日有給", value:`${driverSummary.filter(d=>d.todaySt==="有給").length}名`, sub:"取得中", color:"#7c3aed" },
-              { label:"本日休日", value:`${driverSummary.filter(d=>d.todaySt==="休日").length}名`, sub:"シフト", color:"#6b7280" },
+              { label:"本日休日", value:`${driverSummary.filter(d=>d.todaySt==="休日").length}名`, sub:"シフト", color:"#645F6E" },
             ].map(k=>(
               <Card key={k.label} style={{ padding:"14px 18px" }}>
-                <div style={{ fontSize:11, color:"#6b7280", marginBottom:6 }}>{k.label}</div>
+                <div style={{ fontSize:11, color:"#645F6E", marginBottom:6 }}>{k.label}</div>
                 <div style={{ fontSize:22, fontWeight:700, color:k.color }}>{k.value}</div>
-                <div style={{ fontSize:11, color:"#9ca3af", marginTop:4 }}>{k.sub}</div>
+                <div style={{ fontSize:11, color:"#A09AAB", marginTop:4 }}>{k.sub}</div>
               </Card>
             ))}
           </div>
@@ -6572,7 +6573,7 @@ const AttendancePage = ({ accent }) => {
           <Card>
             <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
               <thead>
-                <tr style={{ background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
+                <tr style={{ background:"#f9fafb", borderBottom:"1px solid #DEDAE5" }}>
                   {["ドライバー","種別","今日の状況","当月配車日数","当月休日数","本日担当",""].map(h=>(
                     <th key={h} style={{ padding:"10px 14px", textAlign:"left", color:"#645F6E", fontWeight:500, fontSize:11, whiteSpace:"nowrap" }}>{h}</th>
                   ))}
@@ -6601,7 +6602,7 @@ const AttendancePage = ({ accent }) => {
                           </span>
                         </td>
                         <td style={{ padding:"11px 14px", fontWeight:600 }}>{d.workDays>0?`${d.workDays}日`:"—"}</td>
-                        <td style={{ padding:"11px 14px", color:"#6b7280" }}>{d.restDays>0?`${d.restDays}日`:"—"}</td>
+                        <td style={{ padding:"11px 14px", color:"#645F6E" }}>{d.restDays>0?`${d.restDays}日`:"—"}</td>
                         <td style={{ padding:"11px 14px", color:d.todayClient?"#393443":"#A09AAB", fontSize:12 }}>{d.todayClient||"—"}</td>
                         <td style={{ padding:"11px 14px", color:"#A09AAB", fontSize:12 }}>{isExpanded?"▲":"▼"}</td>
                       </tr>
@@ -6664,7 +6665,7 @@ const AttendancePage = ({ accent }) => {
           <Card style={{ overflowX:"auto" }}>
             <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
               <thead>
-                <tr style={{ background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
+                <tr style={{ background:"#f9fafb", borderBottom:"1px solid #DEDAE5" }}>
                   <th style={{ padding:"10px 14px", textAlign:"left", color:"#645F6E", fontWeight:500, fontSize:11, minWidth:130, borderRight:"1px solid #DEDAE5" }}>ドライバー</th>
                   {weekDays.map((d,i)=>(
                     <th key={i} style={{ padding:"10px 10px", textAlign:"center", color:d.isSun?"#B05A60":d.isSat?"#7E6593":d.isToday?accent:"#645F6E",
@@ -6725,7 +6726,7 @@ const ApplyPage = ({ accent }) => {
     { id:"A-038", type:"備品購入申請", date:"2025-04-15", status:"却下",     approver:"管理部" },
   ]);
 
-  const stC = s => s==="承認待ち"?{bg:"#F2EBDC",c:"#8C6A2E"}:s==="承認済み"?{bg:"#E6EFE4",c:"#5E8C68"}:{bg:"#fee2e2",c:"#b91c1c"};
+  const stC = s => s==="承認待ち"?{bg:"#F2EBDC",c:"#8C6A2E"}:s==="承認済み"?{bg:"#E6EFE4",c:"#5E8C68"}:{bg:"#fee2e2",c:"#B05A60"};
 
   const types = [
     { name:"有給休暇申請",    icon:"calendar",  fields:[
@@ -6791,15 +6792,15 @@ const ApplyPage = ({ accent }) => {
         <Ic name="check" size={28} color="#5E8C68" strokeWidth={2.5}/>
       </div>
       <div style={{ fontSize:18, fontWeight:700, marginBottom:8 }}>申請を送信しました</div>
-      <div style={{ fontSize:13, color:"#6b7280", marginBottom:6 }}>担当者が確認後、承認・却下の通知が届きます</div>
-      <div style={{ fontSize:12, color:"#9ca3af", marginBottom:28 }}>通常2〜3営業日以内に処理されます</div>
+      <div style={{ fontSize:13, color:"#645F6E", marginBottom:6 }}>担当者が確認後、承認・却下の通知が届きます</div>
+      <div style={{ fontSize:12, color:"#A09AAB", marginBottom:28 }}>通常2〜3営業日以内に処理されます</div>
       <button onClick={()=>{ setOk(false); setSel(null); setForm({}); }} style={{ padding:"10px 28px", background:accent, color:"#fff", border:"none", borderRadius:6, fontWeight:600, fontSize:14, cursor:"pointer" }}>申請一覧に戻る</button>
     </div>
   );
 
   if (sel) return (
     <div>
-      <button onClick={()=>{ setSel(null); setForm({}); }} style={{ background:"none", border:"none", fontSize:13, color:"#6b7280", marginBottom:20, cursor:"pointer" }}>← 申請種類を選び直す</button>
+      <button onClick={()=>{ setSel(null); setForm({}); }} style={{ background:"none", border:"none", fontSize:13, color:"#645F6E", marginBottom:20, cursor:"pointer" }}>← 申請種類を選び直す</button>
       <div style={{ display:"grid", gridTemplateColumns:"1fr 280px", gap:20, alignItems:"start" }}>
         <Card style={{ padding:28 }}>
           <div style={{ fontWeight:700, fontSize:16, marginBottom:24, display:"flex", alignItems:"center", gap:10 }}>
@@ -6810,9 +6811,9 @@ const ApplyPage = ({ accent }) => {
           </div>
           {sel.fields.map(f=>(
             <div key={f.k} style={{ marginBottom:18 }}>
-              <label style={{ display:"flex", alignItems:"center", gap:4, fontSize:12.5, fontWeight:600, color:"#374151", marginBottom:6 }}>
+              <label style={{ display:"flex", alignItems:"center", gap:4, fontSize:12.5, fontWeight:600, color:"#645F6E", marginBottom:6 }}>
                 {f.l}
-                {f.required!==false && <span style={{ color:"#dc2626", fontSize:11 }}>*</span>}
+                {f.required!==false && <span style={{ color:"#B05A60", fontSize:11 }}>*</span>}
               </label>
               {iField(f)}
             </div>
@@ -6833,13 +6834,13 @@ const ApplyPage = ({ accent }) => {
             <div key={i} style={{ display:"flex", gap:10, marginBottom:i<3?12:0 }}>
               <div style={{ display:"flex", flexDirection:"column", alignItems:"center" }}>
                 <div style={{ width:22, height:22, borderRadius:"50%", background:i===0?accent:accent+"30", display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:700, color:i===0?"#fff":accent, flexShrink:0 }}>{i+1}</div>
-                {i<3 && <div style={{ width:1, height:20, background:"#e5e7eb", margin:"4px 0" }}/>}
+                {i<3 && <div style={{ width:1, height:20, background:"#DEDAE5", margin:"4px 0" }}/>}
               </div>
-              <div style={{ paddingTop:2, fontSize:12.5, color: i===0?"#111827":"#6b7280", fontWeight:i===0?600:400 }}>{s}</div>
+              <div style={{ paddingTop:2, fontSize:12.5, color: i===0?"#393443":"#645F6E", fontWeight:i===0?600:400 }}>{s}</div>
             </div>
           ))}
-          <div style={{ borderTop:"1px solid #94a3b8", marginTop:16, paddingTop:12 }}>
-            <div style={{ fontSize:11.5, color:"#9ca3af", lineHeight:1.7 }}>通常2〜3営業日<br/>緊急の場合は運行管理（内線301）へ直接連絡してください</div>
+          <div style={{ borderTop:"1px solid #DEDAE5", marginTop:16, paddingTop:12 }}>
+            <div style={{ fontSize:11.5, color:"#A09AAB", lineHeight:1.7 }}>通常2〜3営業日<br/>緊急の場合は運行管理（内線301）へ直接連絡してください</div>
           </div>
         </Card>
       </div>
@@ -6852,7 +6853,7 @@ const ApplyPage = ({ accent }) => {
       <div style={{ fontSize:26, fontWeight:700, color:"#393443", marginBottom:20 }}>各種申請</div>
 
       {/* 申請種別 */}
-      <div style={{ fontSize:12, fontWeight:700, color:"#9ca3af", marginBottom:12 }}>申請種別を選択</div>
+      <div style={{ fontSize:12, fontWeight:700, color:"#A09AAB", marginBottom:12 }}>申請種別を選択</div>
       <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:10, marginBottom:28 }}>
         {types.map(a=>(
           <button key={a.name} onClick={()=>setSel(a)}
@@ -6868,13 +6869,13 @@ const ApplyPage = ({ accent }) => {
       </div>
 
       {/* 申請履歴 */}
-      <div style={{ fontSize:12, fontWeight:700, color:"#9ca3af", marginBottom:12 }}>申請履歴</div>
+      <div style={{ fontSize:12, fontWeight:700, color:"#A09AAB", marginBottom:12 }}>申請履歴</div>
       <Card>
         <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
           <thead>
-            <tr style={{ background:"#f9fafb", borderBottom:"1px solid #94a3b8" }}>
+            <tr style={{ background:"#f9fafb", borderBottom:"1px solid #DEDAE5" }}>
               {["申請番号","申請種別","申請日","承認者","ステータス",""].map(h=>(
-                <th key={h} style={{ padding:"9px 16px", textAlign:"left", color:"#6b7280", fontWeight:500, fontSize:11.5 }}>{h}</th>
+                <th key={h} style={{ padding:"9px 16px", textAlign:"left", color:"#645F6E", fontWeight:500, fontSize:11.5 }}>{h}</th>
               ))}
             </tr>
           </thead>
@@ -6886,15 +6887,15 @@ const ApplyPage = ({ accent }) => {
               return (
                 <React.Fragment key={dk}>
                   <tr style={{ borderBottom:"1px solid #DEDAE5" }}>
-                    <td style={{ padding:"11px 16px", color:"#6b7280", fontSize:12 }}>{p.id}</td>
+                    <td style={{ padding:"11px 16px", color:"#645F6E", fontSize:12 }}>{p.id}</td>
                     <td style={{ padding:"11px 16px", fontWeight:600 }}>{p.type}</td>
-                    <td style={{ padding:"11px 16px", color:"#6b7280" }}>{p.date}</td>
-                    <td style={{ padding:"11px 16px", color:"#6b7280" }}>{p.approver}</td>
+                    <td style={{ padding:"11px 16px", color:"#645F6E" }}>{p.date}</td>
+                    <td style={{ padding:"11px 16px", color:"#645F6E" }}>{p.approver}</td>
                     <td style={{ padding:"11px 16px" }}>
                       <span style={{ padding:"3px 8px", borderRadius:4, fontSize:11.5, fontWeight:600, background:sc.bg, color:sc.c }}>{p.status}</span>
                     </td>
                     <td style={{ padding:"11px 16px" }}>
-                      <button onClick={()=>setOpenDetail(isOpen?null:dk)} style={{ padding:"4px 10px", border:"1px solid #DEDAE5", borderRadius:4, background:isOpen?"#E9E7EE":"#E9E7EE", fontSize:11, color:"#6b7280", cursor:"pointer" }}>{isOpen?"閉じる":"詳細"}</button>
+                      <button onClick={()=>setOpenDetail(isOpen?null:dk)} style={{ padding:"4px 10px", border:"1px solid #DEDAE5", borderRadius:4, background:isOpen?"#E9E7EE":"#E9E7EE", fontSize:11, color:"#645F6E", cursor:"pointer" }}>{isOpen?"閉じる":"詳細"}</button>
                     </td>
                   </tr>
                   {isOpen && (
@@ -6903,11 +6904,11 @@ const ApplyPage = ({ accent }) => {
                         {p.detail && Object.keys(p.detail).length ? (
                           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(240px,1fr))", gap:"6px 20px", fontSize:12.5 }}>
                             {Object.entries(p.detail).map(([k,v])=>(
-                              <div key={k}><span style={{ color:"#9ca3af", marginRight:6 }}>{k}:</span><span style={{ color:"#374151", whiteSpace:"pre-wrap" }}>{v}</span></div>
+                              <div key={k}><span style={{ color:"#A09AAB", marginRight:6 }}>{k}:</span><span style={{ color:"#645F6E", whiteSpace:"pre-wrap" }}>{v}</span></div>
                             ))}
                           </div>
                         ) : (
-                          <div style={{ fontSize:12, color:"#9ca3af" }}>この申請には詳細データがありません</div>
+                          <div style={{ fontSize:12, color:"#A09AAB" }}>この申請には詳細データがありません</div>
                         )}
                       </td>
                     </tr>
@@ -6945,8 +6946,8 @@ const ToastHost = () => {
     <div style={{ position:"fixed", bottom:24, right:24, zIndex:99999, display:"flex", flexDirection:"column", gap:8, alignItems:"flex-end", pointerEvents:"none" }}>
       <style>{`@keyframes jtToastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}`}</style>
       {toasts.map(t => (
-        <div key={t.id} style={{ display:"flex", alignItems:"center", gap:8, background: t.type==="error" ? "#fef2f2" : "#0f172a", color: t.type==="error" ? "#b91c1c" : "#fff", padding:"10px 16px", borderRadius:8, fontSize:13, fontWeight:600, boxShadow:"0 6px 20px rgba(0,0,0,.18)", animation:"jtToastIn .18s ease-out" }}>
-          <Ic name={t.type==="error"?"alert":"check"} size={15} color={t.type==="error"?"#dc2626":"#34d399"} strokeWidth={2.5}/>
+        <div key={t.id} style={{ display:"flex", alignItems:"center", gap:8, background: t.type==="error" ? "#fef2f2" : "#393443", color: t.type==="error" ? "#B05A60" : "#fff", padding:"10px 16px", borderRadius:8, fontSize:13, fontWeight:600, boxShadow:"0 6px 20px rgba(0,0,0,.18)", animation:"jtToastIn .18s ease-out" }}>
+          <Ic name={t.type==="error"?"alert":"check"} size={15} color={t.type==="error"?"#B05A60":"#34d399"} strokeWidth={2.5}/>
           {t.message}
         </div>
       ))}
@@ -6965,8 +6966,8 @@ class ErrorBoundary extends React.Component {
         <div style={{ padding:24, margin:16, border:"1px solid #fecaca", background:"#fef2f2", borderRadius:8, color:"#991b1b" }}>
           <div style={{ fontSize:15, fontWeight:700, marginBottom:6 }}>この画面の表示中にエラーが発生しました</div>
           <div style={{ fontSize:12, color:"#7f1d1d", marginBottom:10 }}>他の画面は引き続きご利用いただけます。お手数ですが、操作内容を控えて管理者にご連絡ください。</div>
-          <button onClick={()=>this.setState({ err:null })} style={{ padding:"6px 14px", border:"none", borderRadius:6, background:"#dc2626", color:"#fff", fontWeight:600, cursor:"pointer" }}>再表示する</button>
-          <pre style={{ marginTop:10, fontSize:10, color:"#9ca3af", whiteSpace:"pre-wrap", overflowX:"auto" }}>{String((this.state.err && this.state.err.message) || this.state.err)}</pre>
+          <button onClick={()=>this.setState({ err:null })} style={{ padding:"6px 14px", border:"none", borderRadius:6, background:"#B05A60", color:"#fff", fontWeight:600, cursor:"pointer" }}>再表示する</button>
+          <pre style={{ marginTop:10, fontSize:10, color:"#A09AAB", whiteSpace:"pre-wrap", overflowX:"auto" }}>{String((this.state.err && this.state.err.message) || this.state.err)}</pre>
         </div>
       );
     }
