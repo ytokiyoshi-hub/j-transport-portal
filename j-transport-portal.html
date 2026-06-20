@@ -5605,10 +5605,23 @@ function AppearanceSettings() {
           </span>
         </div>
         <div style={{ display:'flex', gap:8, marginTop:6, flexWrap:'wrap' }}>
-          {['#7E6593','#3F6CB0','#2E8B8B','#3F8A57','#B0622E','#9A3B5A','#5B5B66','#1F2937'].map(c=>(
+          {['#7E6593','#3F5C8A','#2E8B8B','#3F8A57','#9A3B5A','#B0772E','#5B5B66','#1F2937'].map(c=>(
             <button key={c} type="button" onClick={()=>setThemeColor(c)} title={c}
-              style={{ width:26, height:26, borderRadius:8, border:(draft.accent||'').toLowerCase()===c.toLowerCase()?`2px solid ${draft.text}`:`1px solid ${draft.lineDk}`, background:c, cursor:'pointer', padding:0 }} />
+              style={{ width:26, height:26, borderRadius:8, border:((draft.accentSeed||draft.accent)||'').toLowerCase()===c.toLowerCase()?`2px solid ${draft.text}`:`1px solid ${draft.lineDk}`, background:c, cursor:'pointer', padding:0 }} />
           ))}
+        </div>
+        <div style={S.row}>
+          <span style={S.label}>色の濃さ<small style={S.hint}>濃い⇄薄い（種色から調整・accentTone）</small></span>
+          <span style={{ display:'flex', alignItems:'center', gap:10, flex:1, minWidth:0 }}>
+            <span style={{ fontSize:11, color:draft.textMute }}>濃い</span>
+            <input type="range" min="-1" max="1" step="0.05" value={draft.accentTone ?? 0}
+              onChange={(e)=>setAccentTone(parseFloat(e.target.value))}
+              onMouseUp={()=>{ setTheme(draft); showToast('テーマカラーを保存しました'); }}
+              onTouchEnd={()=>{ setTheme(draft); showToast('テーマカラーを保存しました'); }}
+              style={{ flex:1, accentColor:draft.accent, cursor:'pointer' }} />
+            <span style={{ fontSize:11, color:draft.textMute }}>薄い</span>
+            <button type="button" onClick={()=>setAccentTone(0)} title="中央へ" style={{ fontFamily:'monospace', fontSize:12, color:draft.textSub, cursor:'pointer', background:'none', border:'none', textDecoration:'underline', padding:0 }}>0</button>
+          </span>
         </div>
         <div style={{ display:'flex', alignItems:'center', gap:12, marginTop:14, paddingTop:12, borderTop:`1px solid ${draft.line}`, flexWrap:'wrap' }}>
           <span style={{ padding:'8px 16px', borderRadius:13, background:draft.accent, color:'#fff', fontSize:12, fontWeight:700, boxShadow:'var(--jt-raised-sm)' }}>主アクション</span>
