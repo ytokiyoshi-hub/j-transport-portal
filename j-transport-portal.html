@@ -5704,6 +5704,13 @@ const vehicleMaster = [
   { id:"V-10", plate:"江東 580 こ 7788", driverId:"DR-10", type:"軽バン",     status:"稼働中",  inspection:"2027-02-28", mileage:29300,
     maintenance:[{date:"2025-04-05",item:"オイル交換"}] },
 ];
+// 追加(jt_extra_vehicles)・編集(jt_vehicle_overrides)を反映した実効車両一覧。driversLiveと同じ方式。
+const vehiclesLive = (extra, ov) => {
+  if (extra === undefined) extra = _lsGet('jt_extra_vehicles', []);
+  if (ov === undefined) ov = _lsGet('jt_vehicle_overrides', {});
+  const base = Array.isArray(extra) && extra.length ? [...vehicleMaster, ...extra] : vehicleMaster;
+  return (ov && Object.keys(ov).length) ? base.map(v => ov[v.id] ? { ...v, ...ov[v.id] } : v) : base;
+};
 
 const VehiclesPage = ({ accent }) => {
   const drivers = driversLive();
