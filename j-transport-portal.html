@@ -5505,10 +5505,17 @@ function AppearanceSettings() {
   const _hexRgb = (h) => { h=String(h).replace('#',''); if(h.length===3) h=h.split('').map(c=>c+c).join(''); return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]; };
   const _toHex = (r,g,b) => '#'+[r,g,b].map(x=>Math.max(0,Math.min(255,Math.round(x))).toString(16).padStart(2,'0')).join('');
   const _mix = (hex, target, t) => { const [r,g,b]=_hexRgb(hex), [tr,tg,tb]=_hexRgb(target); return _toHex(r+(tr-r)*t, g+(tg-g)*t, b+(tb-b)*t); };
-  // テーマカラー（主色）: アクセントを選ぶと 濃(hover)・薄(active背景) を自動で導出
+  // テーマカラー（主色）: 種色を選ぶと 濃(hover)・薄(active背景) を自動導出。濃淡スライダー(tone)は種色から再計算。
+  const _deriveAccent = (accent) => ({ accent, accentDk: _mix(accent,'#000000',0.22), accentLt: _mix(accent,'#FFFFFF',0.86) });
+  const _toneApply = (seed, tone) => _deriveAccent(tone < 0 ? _mix(seed,'#000000', -tone*0.45) : tone > 0 ? _mix(seed,'#FFFFFF', tone*0.40) : seed);
   const setThemeColor = (hex) => {
-    const next = { ...draft, accent: hex, accentDk: _mix(hex,'#000000',0.22), accentLt: _mix(hex,'#FFFFFF',0.86) };
+    const next = { ...draft, accentSeed: hex, accentTone: 0, ..._deriveAccent(hex) };
     setDraft(next); setTheme(next);
+  };
+  const setAccentTone = (v) => {
+    const seed = draft.accentSeed || draft.accent || '#7E6593';
+    const next = { ...draft, accentTone: v, ..._toneApply(seed, v) };
+    setDraft(next); previewTheme(next);
   };
   // 立体感（凹凸・影/光）だけ既定へ戻す（配色はそのまま）
   const resetDepth = () => {
