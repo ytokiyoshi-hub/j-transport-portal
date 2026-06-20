@@ -127,6 +127,11 @@
   .jt-content td input:focus, .jt-content th input:focus { box-shadow: inset 0 0 0 2px rgba(126,101,147,.55) !important; }
   /* 罫線をニュートラルグレーに */
   table td, table th { border-color: var(--nm-dark) !important; }
+  /* ボタン=ソフトに浮く（角丸＋控えめ二重シャドウ）。表セル内の極小ボタンは除外 */
+  .jt-content button:not(td button):not(th button), .jt-main-header button {
+    border-radius: var(--radius-md) !important; box-shadow: var(--elev-raised-sm);
+  }
+  .jt-content button:not(td button):not(th button):active, .jt-main-header button:active { box-shadow: var(--elev-inset-sm); }
 </style>
 </head>
 <body>
