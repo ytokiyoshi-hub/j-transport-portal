@@ -5819,6 +5819,8 @@ const DispatchPage = ({ accent, setPage }) => {
   const [dispatch, setDispatch] = useLocalStorage("jt_dispatch", {});
   const [shifts, setShifts] = useLocalStorage("jt_shifts", {});
   const [confirmed, setConfirmed] = useLocalStorage("jt_dispatch_confirmed", {});
+  const [plan, setPlan] = useLocalStorage("jt_dispatch_plan", {}); // 自動配車ルール: { priority:[cid...], perDay:{cid:n} }
+  const [showRules, setShowRules] = React.useState(false);
   const [dailyEdits] = useLocalStorage("jt_daily_edits", {});
   const [billMonth, setBillMonth] = React.useState(REF_MONTH);
   const [saved, setSaved] = React.useState(true);
@@ -6132,7 +6134,7 @@ const DispatchPage = ({ accent, setPage }) => {
       <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:12, alignItems:"center" }}>
         <span style={{ fontSize:11, color:"var(--jt-text-mute)", marginRight:2 }}>{tab==="dispatch"?"荷主:":"区分:"}</span>
         {tab==="dispatch"
-          ? allClientsLive().map(c=>{ const col=DISPATCH_CLIENT_COLORS[c.id]||{bg:"#f1f5f9",fg:"#645F6E"}; const n=clientWeekCount[c.id]||0; return (
+          ? allClientsLive().map(c=>{ const col=DISPATCH_CLIENT_COLORS[c.id]||DISPATCH_CLIENT_COLOR; const n=clientWeekCount[c.id]||0; return (
               <span key={c.id} style={{ display:"inline-flex", alignItems:"center", gap:4, padding:"2px 8px", borderRadius:4, fontSize:11, fontWeight:600, background:col.bg, color:col.fg }}>
                 {DISPATCH_CLIENT_SHORT[c.id]||c.name}{n>0 && <span style={{ fontSize:10, opacity:.75 }}>×{n}</span>}
               </span>
@@ -6186,7 +6188,7 @@ const DispatchPage = ({ accent, setPage }) => {
                         const cellBg = wd.isToday?accent+"06":wd.isWeekend?"#EDEBF1":"transparent";
                         if(tab==="dispatch"){
                           const cur = getDisp(wd.dk,dr.id);
-                          const col = cur ? (DISPATCH_CLIENT_COLORS[cur]||{bg:"#f1f5f9",fg:"#645F6E"}) : null;
+                          const col = cur ? (DISPATCH_CLIENT_COLORS[cur]||DISPATCH_CLIENT_COLOR) : null;
                           if(isConfirmed(wd.dk)){
                             if(!cur) return <td key={i} style={{ padding:"4px 5px", textAlign:"center", background:cellBg, borderRight:"1px solid #DEDAE5", color:"#d1d5db", fontSize:11 }}>－</td>;
                             const cb = cellBilling(cur,wd.dk,dr.id);
