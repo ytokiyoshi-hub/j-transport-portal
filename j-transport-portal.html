@@ -961,6 +961,13 @@ const JtWordmark = ({ height=28 }) => (
     <text x="3" y="42" fontFamily="'Plus Jakarta Sans','Noto Sans JP',sans-serif" fontSize="40" fontStyle="italic" fontWeight="800" letterSpacing="-1.2" fill={JT_BLUE}>[J transport]</text>
   </svg>
 );
+// ── 実ロゴ画像（トラ＋ワードマーク）。jt-logo.png をプロジェクト直下に置くと自動表示、無ければワードマークにフォールバック ──
+const LOGO_SRC = "jt-logo.png";
+const JtMascotLogo = ({ height=42, fbHeight }) => {
+  const [ok, setOk] = React.useState(true);
+  if (!ok) return <JtWordmark height={fbHeight || Math.round(height*0.56)} />;
+  return <img src={LOGO_SRC} alt="J transport" onError={()=>setOk(false)} style={{ height, width:"auto", maxWidth:"100%", display:"block", objectFit:"contain" }} />;
+};
 // ── 社印（角印・朱色）。請求書に押印 ──
 const JtSeal = ({ size=58 }) => (
   <svg width={size} height={size} viewBox="0 0 72 72" style={{ flexShrink:0 }} role="img" aria-label="J transport株式会社神戸 社印">
