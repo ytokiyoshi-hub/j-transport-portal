@@ -3685,8 +3685,8 @@ const DailyInputPage = ({ accent }) => {
                     <td style={{ padding:"0 12px", borderRight:"1px solid #DEDAE5", fontWeight:500, position:"sticky", left:0, background:rowBg, zIndex:1, minWidth:96, width:96, whiteSpace:"nowrap",
                       borderLeft:isActiveRow?`3px solid ${accent}`:isToday?`3px solid ${accent}80`:"3px solid transparent" }}>
                       <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:4, whiteSpace:"nowrap" }}>
-                        <span style={{ fontSize:13, fontWeight:700, color:day.isSun?"#B05A60":day.dow===6?"#2563eb":"#393443", display:"inline-block", width:18, textAlign:"right" }}>{day.d}</span>
-                        <span style={{ fontSize:10.5, color:day.isSun?"#B05A60":day.dow===6?"#2563eb":"#A09AAB", flexShrink:0 }}>（{day.dayName}）</span>
+                        <span style={{ fontSize:13, fontWeight:700, color:day.isSun?"#B05A60":day.dow===6?"#7E6593":"#393443", display:"inline-block", width:18, textAlign:"right" }}>{day.d}</span>
+                        <span style={{ fontSize:10.5, color:day.isSun?"#B05A60":day.dow===6?"#7E6593":"#A09AAB", flexShrink:0 }}>（{day.dayName}）</span>
                         {isToday&&<span style={{ fontSize:9, fontWeight:700, background:accent, color:"#fff", padding:"1px 5px", borderRadius:3, flexShrink:0, marginLeft:2 }}>TODAY</span>}
                       </div>
                     </td>
