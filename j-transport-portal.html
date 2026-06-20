@@ -1003,6 +1003,13 @@ const prevMonthKey = (mk) => {
 const _lsGet = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
 // 追加荷主(jt_extra_clients)込みの全クライアント
 const allClientsLive = () => { const ex = _lsGet('jt_extra_clients', []); return Array.isArray(ex) && ex.length ? [...clients, ...ex] : clients; };
+// 追加ドライバー(jt_extra_drivers)＋編集上書き(jt_driver_overrides)を反映した実効ドライバー一覧（全画面共通）
+const driversLive = () => {
+  const extra = _lsGet('jt_extra_drivers', []);
+  const ov = _lsGet('jt_driver_overrides', {});
+  const base = Array.isArray(extra) && extra.length ? [...drivers, ...extra] : drivers;
+  return (ov && Object.keys(ov).length) ? base.map(d => ov[d.id] ? { ...d, ...ov[d.id] } : d) : base;
+};
 // 担当ドライバー編集(jt_client_driver_overrides)を適用した実効担当ドライバー
 const driversOfClient = (c) => (_lsGet("jt_client_driver_overrides",{})[c.id]) || c.drivers || [];
 // 単価編集(jt_rate_overrides) / 締日編集(jt_cycle_overrides) を適用した実効クライアント
