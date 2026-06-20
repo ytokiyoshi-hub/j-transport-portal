@@ -4324,20 +4324,27 @@ const DriversPage = ({ accent, setPage }) => {
   const [sel, setSel] = React.useState(null);
   const [search, setSearch] = React.useState("");
   const [typeFilter, setTypeFilter] = React.useState("すべて");
-  const [slipDriver, setSlipDriver] = React.useState(null);
-  const [dailyEdits] = useLocalStorage("jt_daily_edits", {});
+  const [clientDriverOverrides] = useLocalStorage("jt_client_driver_overrides", {});
 
-  // ドライバー別の今月財務サマリー（日次実績にもとづく実数。按分ではない）
-  const _displayMonth = displayMonthForPay(dailyEdits);
-  const driverSummary = drivers.map(d => buildDriverStatement(d, dailyEdits, _displayMonth));
+  // ドライバー情報の管理画面（売上・支払・粗利は「ドライバー別収支」へ）
+  const vehByDriver = {}; vehicleMaster.forEach(v => { if (v.driverId) vehByDriver[v.driverId] = v; });
+  // 担当荷主＝単価マスタの担当ドライバー設定を反映した実効値
+  const driverClients = (did) => allClientsLive().filter(c => ((clientDriverOverrides[c.id]) || c.drivers || []).includes(did)).map(c => c.name);
+  const driverStatus = (d) => { const v = vehByDriver[d.id]; return v && v.status === "整備中" ? "整備中" : "稼働中"; };
 
-  const list = driverSummary.filter(d => {
-    const matchSearch = d.name.includes(search) || d.area.includes(search);
+  const list = drivers.filter(d => {
+    const matchSearch = d.name.includes(search) || (d.area || "").includes(search);
     const matchType = typeFilter === "すべて" || d.type === typeFilter;
     return matchSearch && matchType;
   });
+  const inhouse = drivers.filter(d => d.type === "自社").length;
+  const partner = drivers.filter(d => d.type === "協力会社").length;
 
-  const selSummary = sel ? driverSummary.find(d => d.id === sel.id) : null;
+  const selDriver = sel ? drivers.find(d => d.id === sel.id) : null;
+  const selVeh = selDriver ? vehByDriver[selDriver.id] : null;
+  const selClients = selDriver ? driverClients(selDriver.id) : [];
+
+  const labelStyle = { fontSize:12, color:"var(--jt-text-sub)", marginBottom:4 };
 
   return (
     <div>
@@ -4345,7 +4352,7 @@ const DriversPage = ({ accent, setPage }) => {
         <div>
           <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>荷主・人員管理</div>
           <div style={{ fontSize:28, fontWeight:700, color:"#393443" }}>ドライバー管理</div>
-          <div style={{ fontSize:11.5, color:"#645F6E", marginTop:3 }}>対象月: {mkLabel(_displayMonth)}{_displayMonth!==REF_MONTH && `（${REF_MONTH_LABEL}実績未入力のため最新確定月を表示）`}</div>
+          <div style={{ fontSize:11.5, color:"#645F6E", marginTop:3 }}>自社 {inhouse}名・協力会社 {partner}名／雇用形態・担当エリア・担当荷主・担当車両を管理（月次の売上・支払・粗利は「ドライバー別収支」へ）</div>
         </div>
         <div style={{ display:"flex", gap:8, alignItems:"center" }}>
           <div style={{ position:"relative", display:"flex", alignItems:"center" }}>
@@ -4360,98 +4367,87 @@ const DriversPage = ({ accent, setPage }) => {
         </div>
       </div>
 
-      <div style={{ display:"grid", gridTemplateColumns: sel?"1fr 320px":"1fr", gap:16 }}>
+      <div style={{ display:"grid", gridTemplateColumns: sel?"1fr 340px":"1fr", gap:16 }}>
         <Card>
           <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
             <thead>
               <tr style={{ background:"var(--jt-accent-lt)", borderBottom:"1px solid #DEDAE5" }}>
-                {["氏名","雇用形態","担当エリア","稼働社数","今月売上","今月支払（税込）","粗利"].map(h=>(
+                {["氏名","雇用形態","担当エリア","担当荷主","担当車両","状態"].map(h=>(
                   <th key={h} style={{ padding:"10px 16px", textAlign:"left", color:"#645F6E", fontWeight:500, fontSize:12, whiteSpace:"nowrap" }}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {list.map((d,i)=>(
-                <tr key={d.id} onClick={()=>setSel(sel?.id===d.id?null:d)}
-                  style={{ borderBottom:"1px solid var(--jt-line)", cursor:"pointer", background:sel?.id===d.id?accent+"0d":"transparent", transition:"background .1s" }}>
-                  <td style={{ padding:"12px 16px", borderLeft:sel?.id===d.id?`3px solid ${accent}`:"3px solid transparent", transition:"border-color .1s" }}>
-                    <div style={{ display:"flex", gap:10, alignItems:"center" }}>
-                      <Avatar name={d.name} size={32} bg={d.type==="自社"?"#dbeafe":"#ede9fe"} color={d.type==="自社"?"#1e40af":"#5b21b6"}/>
-                      <span style={{ fontWeight:600 }}>{d.name}</span>
-                    </div>
-                  </td>
-                  <td style={{ padding:"12px 16px" }}><StatusBadge label={d.type}/></td>
-                  <td style={{ padding:"12px 16px", color:"var(--jt-text-sub)", fontSize:12 }}>{d.area}</td>
-                  <td style={{ padding:"12px 16px", textAlign:"center" }}>{d.clientRows.length>0?`${d.clientRows.length}社`:"—"}</td>
-                  <td style={{ padding:"12px 16px", fontWeight:700, color:accent }}>{d.totalSell>0?fmt(d.totalSell):"—"}</td>
-                  <td style={{ padding:"12px 16px", fontWeight:600 }}>{d.grandTotal>0?fmt(d.grandTotal):"—"}</td>
-                  <td style={{ padding:"12px 16px", fontWeight:600, color:d.totalProfit<0?"#B05A60":"#5E8C68" }}>{d.workDays>0?fmt(d.totalProfit):"—"}</td>
-                </tr>
-              ))}
+              {list.map((d)=>{
+                const veh = vehByDriver[d.id];
+                const cl = driverClients(d.id);
+                return (
+                  <tr key={d.id} onClick={()=>setSel(sel?.id===d.id?null:d)}
+                    style={{ borderBottom:"1px solid var(--jt-line)", cursor:"pointer", background:sel?.id===d.id?accent+"0d":"transparent", transition:"background .1s" }}>
+                    <td style={{ padding:"12px 16px", fontWeight:600, borderLeft:sel?.id===d.id?`3px solid ${accent}`:"3px solid transparent", transition:"border-color .1s" }}>{d.name}</td>
+                    <td style={{ padding:"12px 16px" }}><StatusBadge label={d.type}/></td>
+                    <td style={{ padding:"12px 16px", color:"var(--jt-text-sub)", fontSize:12 }}>{d.area||"—"}</td>
+                    <td style={{ padding:"12px 16px", color:"var(--jt-text-sub)", fontSize:12 }}>{cl.length>0?`${cl.length}社`:"—"}</td>
+                    <td style={{ padding:"12px 16px", color:"var(--jt-text-sub)", fontSize:12, whiteSpace:"nowrap" }}>{veh?`${veh.plate}`:<span style={{ color:"var(--jt-text-mute)" }}>—（自車）</span>}</td>
+                    <td style={{ padding:"12px 16px" }}><StatusBadge label={driverStatus(d)}/></td>
+                  </tr>
+                );
+              })}
             </tbody>
             <tfoot>
-              <tr style={{ background:"var(--jt-accent-lt)", borderTop:"2px solid #475569" }}>
-                <td colSpan={4} style={{ padding:"10px 16px", fontWeight:700 }}>合計（{list.length}名）</td>
-                <td style={{ padding:"10px 16px", fontWeight:700, color:accent }}>{fmt(list.reduce((s,d)=>s+d.totalSell,0))}</td>
-                <td style={{ padding:"10px 16px", fontWeight:700 }}>{fmt(list.reduce((s,d)=>s+d.grandTotal,0))}</td>
-                <td style={{ padding:"10px 16px", fontWeight:700, color:(() => { const sum = list.reduce((s,d)=>s+d.totalProfit,0); return sum<0?"#B05A60":"#5E8C68"; })() }}>{fmt(list.reduce((s,d)=>s+d.totalProfit,0))}</td>
+              <tr style={{ background:"var(--jt-accent-lt)", borderTop:"1px solid var(--jt-line-dk)" }}>
+                <td colSpan={6} style={{ padding:"10px 16px", fontWeight:700, color:"var(--jt-text-sub)", fontSize:12 }}>計 {list.length}名（自社 {list.filter(d=>d.type==="自社").length}・協力会社 {list.filter(d=>d.type==="協力会社").length}）</td>
               </tr>
             </tfoot>
           </table>
         </Card>
 
-        {sel && selSummary && (
+        {sel && selDriver && (
           <Card style={{ padding:20, alignSelf:"start" }}>
-            <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:20 }}>
-              <Avatar name={sel.name} size={44} bg={sel.type==="自社"?"#dbeafe":"#ede9fe"} color={sel.type==="自社"?"#1e40af":"#5b21b6"}/>
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:18 }}>
               <div>
-                <div style={{ fontWeight:700, fontSize:16 }}>{sel.name}</div>
-                <div style={{ marginTop:4 }}><StatusBadge label={sel.type}/></div>
+                <div style={{ fontWeight:700, fontSize:17 }}>{selDriver.name}</div>
+                <div style={{ marginTop:5, display:"flex", gap:6 }}><StatusBadge label={selDriver.type}/><StatusBadge label={driverStatus(selDriver)}/></div>
               </div>
+              <button onClick={()=>setSel(null)} style={{ background:"none", border:"none", fontSize:18, color:"var(--jt-text-mute)", cursor:"pointer", lineHeight:1 }}>×</button>
             </div>
 
-            <div style={{ fontSize:12, color:"var(--jt-text-sub)", marginBottom:6 }}>担当エリア</div>
-            <div style={{ fontSize:13, fontWeight:500, marginBottom:16 }}>{sel.area}</div>
-
-            <div style={{ fontSize:12, color:"#645F6E", marginBottom:8 }}>担当荷主</div>
-            <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:20 }}>
-              {sel.clients.map(name=>(
-                <span key={name} style={{ padding:"3px 10px", background:"var(--jt-base)", color:"var(--jt-accent)", borderRadius:99, fontSize:12, fontWeight:600, boxShadow:"var(--jt-raised-sm)" }}>{name}</span>
-              ))}
-            </div>
-
-            <div style={{ fontSize:12, color:"var(--jt-text-mute)", marginBottom:10 }}>今月財務サマリー（実績／{mkLabel(selSummary.mk)}分）</div>
-            <div style={{ background:"var(--jt-base)", borderRadius:13, padding:14, marginBottom:16, boxShadow:"var(--jt-inset)" }}>
-              {[["今月売上",fmt(selSummary.totalSell),accent],["今月支払（税込）",fmt(selSummary.grandTotal),"#C39A52"],["粗利",fmt(selSummary.totalProfit),"#5E8C68"]].map(([l,v,c])=>(
-                <div key={l} style={{ display:"flex", justifyContent:"space-between", fontSize:13, padding:"6px 0", borderBottom:"1px solid var(--jt-line)" }}>
-                  <span style={{ color:"#645F6E" }}>{l}</span>
-                  <span style={{ fontWeight:700, color:c===accent?accent:c==="#C39A52"?"#C39A52":"#5E8C68" }}>{v}</span>
+            <div style={{ background:"var(--jt-base)", borderRadius:13, padding:"12px 14px", marginBottom:16, boxShadow:"var(--jt-inset)" }}>
+              {[["社員番号",selDriver.id],["雇用形態",selDriver.type],["担当エリア",selDriver.area||"—"]].map(([l,v])=>(
+                <div key={l} style={{ display:"flex", justifyContent:"space-between", fontSize:13, padding:"5px 0" }}>
+                  <span style={{ color:"#645F6E" }}>{l}</span><span style={{ fontWeight:600 }}>{v}</span>
                 </div>
               ))}
             </div>
 
-            <div style={{ fontSize:12, color:"#645F6E", marginBottom:8 }}>荷主別 支払内訳（実数）</div>
-            {selSummary.clientRows.length === 0 ? (
-              <div style={{ fontSize:12.5, color:"var(--jt-text-sub)", padding:"6px 0" }}>当月の運行実績なし</div>
-            ) : selSummary.clientRows.map((c,i)=>(
-              <div key={i} style={{ display:"flex", justifyContent:"space-between", fontSize:12.5, padding:"6px 0", borderBottom:"1px solid var(--jt-line)" }}>
-                <span style={{ color:"var(--jt-text-sub)" }}>{c.name}<span style={{ fontSize:11, color:"var(--jt-text-mute)", marginLeft:6 }}>{c.days}日</span></span>
-                <span style={{ fontWeight:600 }}>{fmt(c.pay)}</span>
-              </div>
-            ))}
-
-            <div style={{ display:"flex", gap:8, marginTop:20 }}>
-              <button onClick={()=>setSlipDriver(selSummary)} disabled={selSummary.grandTotal<=0}
-                style={{ flex:1, padding:"9px", background:selSummary.grandTotal>0?"linear-gradient(180deg,#917AA4,#7E6593)":"var(--jt-base)", color:selSummary.grandTotal>0?"#fff":"var(--jt-text-mute)", border:"none", borderRadius:13, fontWeight:selSummary.grandTotal>0?700:600, fontSize:13, cursor:selSummary.grandTotal>0?"pointer":"default", boxShadow:selSummary.grandTotal>0?"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)":"none" }}>支払明細書を発行</button>
-              <button onClick={()=>setSel(null)}
-                style={{ padding:"9px 14px", border:"none", background:"var(--jt-base)", color:"var(--jt-text-sub)", borderRadius:13, fontSize:13, fontWeight:600, boxShadow:"var(--jt-raised-sm)" }}>閉じる</button>
+            <div style={labelStyle}>担当荷主（{selClients.length}社）</div>
+            <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:18 }}>
+              {selClients.length>0 ? selClients.map(name=>(
+                <span key={name} style={{ padding:"3px 10px", background:"var(--jt-base)", color:"var(--jt-accent)", borderRadius:99, fontSize:12, fontWeight:600, boxShadow:"var(--jt-raised-sm)" }}>{name}</span>
+              )) : <span style={{ fontSize:12.5, color:"var(--jt-text-mute)" }}>担当荷主の登録なし</span>}
             </div>
+
+            <div style={labelStyle}>担当車両</div>
+            {selVeh ? (
+              <div style={{ background:"var(--jt-base)", borderRadius:13, padding:"12px 14px", marginBottom:18, boxShadow:"var(--jt-inset)" }}>
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+                  <span style={{ fontWeight:700, fontSize:13 }}>{selVeh.plate}</span><StatusBadge label={selVeh.status}/>
+                </div>
+                {[["車種",selVeh.type],["走行距離",`${Number(selVeh.mileage).toLocaleString()} km`],["次回車検",selVeh.inspection]].map(([l,v])=>(
+                  <div key={l} style={{ display:"flex", justifyContent:"space-between", fontSize:12.5, padding:"3px 0" }}>
+                    <span style={{ color:"var(--jt-text-sub)" }}>{l}</span><span style={{ fontWeight:600 }}>{v}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div style={{ fontSize:12.5, color:"var(--jt-text-mute)", marginBottom:18 }}>自社車両の割当なし（協力会社・自車運行）</div>
+            )}
+
+            <button onClick={()=>setPage("driverfinance")}
+              style={{ width:"100%", padding:"10px", background:"var(--jt-base)", color:"var(--jt-accent)", border:"none", borderRadius:13, fontWeight:600, fontSize:13, cursor:"pointer", boxShadow:"var(--jt-raised-sm)" }}>月次の売上・支払・粗利を見る（ドライバー別収支）→</button>
           </Card>
         )}
       </div>
-
-      {/* 支払明細書モーダル（その場で発行・ドライバー別収支と同一） */}
-      <DriverSlipModal driver={slipDriver} accent={accent} onClose={()=>setSlipDriver(null)} />
     </div>
   );
 };
