@@ -3375,6 +3375,9 @@ const DailyInputPage = ({ accent }) => {
           .eq("entry_date", dateStr).eq("client_id", selClient.id)
           .eq("driver_id", dId).eq("rate_label", rLabel));
       } else {
+        // FK(jt_daily_entries.driver_id → jt_drivers.id)を満たすため、未登録ドライバーは先に追加（既存は変更しない）
+        const _drv = driverSrc.find(d => d.id === dId);
+        if (_drv) { try { await window.sb.from("jt_drivers").upsert({ id:_drv.id, name:_drv.name, type:_drv.type, area:_drv.area, status:"稼働中" }, { onConflict:"id", ignoreDuplicates:true }); } catch(e){} }
         ({ error } = await window.sb.from("jt_daily_entries").upsert({
           entry_date: dateStr, client_id: selClient.id,
           driver_id: dId, rate_label: rLabel, value: numV,
