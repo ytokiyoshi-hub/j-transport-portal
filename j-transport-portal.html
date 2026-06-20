@@ -5688,6 +5688,7 @@ function AppearanceSettings() {
           <div style={{ width:90, height:52, borderRadius:14, background:'var(--jt-base)', boxShadow:'var(--jt-raised)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, color:draft.textSub }}>浮き出し</div>
           <div style={{ width:90, height:52, borderRadius:14, background:'var(--jt-base)', boxShadow:'var(--jt-inset)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, color:draft.textSub }}>くぼみ</div>
           <button type="button" style={{ padding:'9px 16px', border:'none', borderRadius:13, background:'var(--jt-base)', boxShadow:'var(--jt-raised-sm)', color:draft.text, fontSize:12, fontWeight:600, cursor:'pointer' }}>ボタン</button>
+          <button type="button" style={{ ...S.btn, marginLeft:'auto' }} onClick={resetDepth}>立体感を既定に戻す</button>
         </div>
       </div>
       <div style={S.card}>
