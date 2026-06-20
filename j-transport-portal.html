@@ -945,21 +945,17 @@ const announces = [
 
 // ── Shared UI ──────────────────────────────────────────────────────────────
 const StatusBadge = ({ label }) => {
+  const D=["#F3E6E3","#B05A60"], S=["#E6EFE4","#5E8C68"], W=["#F2EBDC","#8C6A2E"], A=["#EFEDF3","#7E6593"], N=["#ECEAF0","#645F6E"];
   const map = {
-    重要:["#fef2f2","#B05A60"], 請求:["#eff6ff","#2563eb"], 運行:["#f0fdf4","#5E8C68"],
-    支払:["#fffbeb","#C39A52"], 人事:["#faf5ff","#7c3aed"], 規程:["#EDEBF1","#645F6E"],
-    入金済:["#f0fdf4","#5E8C68"], 請求済:["#eff6ff","#2563eb"],
-    未請求:["#EDEBF1","#645F6E"], 遅延:["#fef2f2","#B05A60"],
-    自社:["#eff6ff","#2563eb"], 協力会社:["#faf5ff","#7c3aed"],
-    稼働中:["#f0fdf4","#5E8C68"], 個建て:["#eff6ff","#2563eb"],
-    "固定（日額）":["#fffbeb","#C39A52"], "固定＋変動":["#fdf4ff","#9333ea"],
-    "個建て（2区分）":["#eff6ff","#2563eb"], "個建て（3区分）":["#eff6ff","#2563eb"],
-    スポット:["#EDEBF1","#645F6E"],
-    出勤中:["#eff6ff","#2563eb"], 休日:["#EDEBF1","#A09AAB"], 出勤:["#f0fdf4","#5E8C68"], 有給:["#faf5ff","#7c3aed"],
-    承認済:["#f0fdf4","#5E8C68"],
+    重要:D, 遅延:D,
+    運行:S, 入金済:S, 稼働中:S, 出勤:S, 承認済:S,
+    支払:W,
+    請求:A, 請求済:A, 出勤中:A, 自社:A, 有給:A,
+    人事:N, 規程:N, 協力会社:N, 未請求:N, スポット:N, 休日:N,
+    個建て:N, "個建て（2区分）":N, "個建て（3区分）":N, "固定（日額）":N, "固定＋変動":N,
   };
-  const [bg,fg]=map[label]||["#f1f5f9","#475569"];
-  return <span style={{ display:"inline-block", padding:"2px 9px", borderRadius:4, fontSize:11.5, fontWeight:600, background:bg, color:fg, letterSpacing:0.2 }}>{label}</span>;
+  const [bg,fg]=map[label]||N;
+  return <span style={{ display:"inline-block", padding:"3px 10px", borderRadius:20, fontSize:10.5, fontWeight:600, background:bg, color:fg, letterSpacing:0.2 }}>{label}</span>;
 };
 const Avatar = ({ name, size=32, bg="#DEDAE5", color="#645F6E" }) => (
   <div style={{ width:size, height:size, borderRadius:"50%", background:bg, color, display:"flex", alignItems:"center", justifyContent:"center", fontSize:size*0.38, fontWeight:700, flexShrink:0 }}>{name[0]}</div>
