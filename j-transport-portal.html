@@ -968,7 +968,7 @@ const Avatar = ({ name, size=32, bg="#DEDAE5", color="#645F6E" }) => (
 const Card = ({ children, style={}, onClick, onMouseEnter, onMouseLeave, title, flush, className }) => (
   <div onClick={onClick} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} title={title}
     className={[flush ? "jt-card jt-card--flush" : "jt-card", className].filter(Boolean).join(" ")}
-    style={{ background:"#fff", borderRadius:8, border:"1px solid var(--jt-line-dk, #94a3b8)", ...(flush ? { overflow:"hidden" } : {}), ...style }}>{children}</div>
+    style={{ background:"var(--jt-base)", borderRadius:18, border:"none", boxShadow:"var(--jt-raised)", ...(flush ? { overflow:"hidden" } : {}), ...style }}>{children}</div>
 );
 const SH = ({ title, action, onAction }) => (
   <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"14px 20px", borderBottom:"1px solid var(--jt-line-dk, #94a3b8)" }}>
