@@ -5623,18 +5623,23 @@ function AppearanceSettings() {
       </div>
       <div style={S.card}>
         <div style={S.cardHead}>テーマプリセット（全色一括）</div>
-        <div style={S.presetWrap}>
-          {Object.keys(presets).map(key => {
-            const p = presets[key];
-            const swatches = [p.accent, p.accentDk, p.accentLt, p.base];
-            return (
-              <button key={key} type="button" style={S.preset} onClick={() => applyPreset(p)}>
-                <span style={S.swatchSet}>{swatches.map((c, i) => <span key={i} style={S.swatch(c)} />)}</span>
-                {presetLabels[key] || key}
-              </button>
-            );
-          })}
-        </div>
+        {THEME_PRESET_GROUPS.map(grp => (
+          <React.Fragment key={grp.title}>
+            <div style={S.sectionH}>{grp.title}</div>
+            <div style={{ ...S.presetWrap, marginBottom: 8 }}>
+              {grp.keys.map(key => {
+                const p = presets[key]; if (!p) return null;
+                const swatches = [p.accent, p.lineDk, p.alert, p.bg];
+                return (
+                  <button key={key} type="button" style={S.preset} onClick={() => applyPreset(p)}>
+                    <span style={S.swatchSet}>{swatches.map((c, i) => <span key={i} style={S.swatch(c)} />)}</span>
+                    {presetLabels[key] || key}
+                  </button>
+                );
+              })}
+            </div>
+          </React.Fragment>
+        ))}
       </div>
       <div style={S.card}>
         <div style={S.cardHead}>テーマカラー（主色）</div>
