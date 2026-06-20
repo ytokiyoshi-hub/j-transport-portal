@@ -932,6 +932,36 @@ const StatusBadge = ({ label }) => {
 };
 // ドライバー氏名前のイニシャル丸マークは廃止（全ページ）。フルネーム表示で十分なため非表示。
 const Avatar = () => null;
+// ── 自社情報（請求書等で使用） ──
+const COMPANY = {
+  name: "J transport株式会社",
+  zip: "〒650-0025",
+  addr1: "兵庫県神戸市中央区相生町5丁目",
+  addr2: "10-18 シティビル神戸3F",
+  tel: "078-515-6705",
+  fax: "078-515-6706",
+  invoiceNo: "T1140001112960",
+  bankLine: "みなと銀行 神戸駅前支店 普通 1698568",
+  bankHolder: "J transport株式会社（ジェイトランスポートカブシキガイシャ）",
+};
+// ── ロゴ（このサイトに合わせたラベンダー版） ──
+const JtLogo = ({ size=32, radius }) => (
+  <div style={{ width:size, height:size, borderRadius: radius!=null?radius:Math.round(size*0.28), background:"linear-gradient(150deg,#917AA4,#6A5280)", boxShadow:"var(--jt-raised-sm), inset 0 1px 0 rgba(255,255,255,.35)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+    <svg width={Math.round(size*0.66)} height={Math.round(size*0.66)} viewBox="0 0 24 24" fill="none">
+      <path d="M16 4.5 V13.5 a4.5 4.5 0 0 1 -9 0" stroke="#fff" strokeWidth="2.6" strokeLinecap="round"/>
+      <path d="M3.6 7.6 h4.4 M2.6 12 h3.2 M4.1 16.4 h3.3" stroke="#fff" strokeWidth="1.7" strokeLinecap="round" opacity="0.8"/>
+    </svg>
+  </div>
+);
+// ── 社印（角印・朱色）。請求書に押印 ──
+const JtSeal = ({ size=58 }) => (
+  <svg width={size} height={size} viewBox="0 0 72 72" style={{ flexShrink:0 }} role="img" aria-label="J transport株式会社神戸 社印">
+    <rect x="2.6" y="2.6" width="66.8" height="66.8" rx="8" fill="none" stroke="#C5402F" strokeWidth="2.8"/>
+    <text x="36" y="30" textAnchor="middle" textLength="52" lengthAdjust="spacingAndGlyphs" fontFamily="'Plus Jakarta Sans','Noto Sans JP',sans-serif" fontSize="13" fontStyle="italic" fontWeight="800" fill="#C5402F">J transport</text>
+    <line x1="13" y1="39" x2="59" y2="39" stroke="#C5402F" strokeWidth="1.1"/>
+    <text x="36" y="57" textAnchor="middle" textLength="52" lengthAdjust="spacingAndGlyphs" fontFamily="'Noto Sans JP',sans-serif" fontSize="13" fontWeight="800" fill="#C5402F">株式会社神戸</text>
+  </svg>
+);
 const Card = ({ children, style={}, onClick, onMouseEnter, onMouseLeave, title, flush, className }) => (
   <div onClick={onClick} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} title={title}
     className={[flush ? "jt-card jt-card--flush" : "jt-card", className].filter(Boolean).join(" ")}
