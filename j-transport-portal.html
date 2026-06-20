@@ -7180,12 +7180,9 @@ const App = () => {
       {/* Sidebar */}
       <div className={"jt-sidebar"+(navOpen?" jt-open":"")} style={{ width:220, background:theme.base, borderRight:`1px solid ${theme.line}`, display:"flex", flexDirection:"column", flexShrink:0 }}>
         <div style={{ padding:"18px 20px 14px", borderBottom:`1px solid ${theme.line}` }}>
-          <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-            <JtLogo size={34} />
-            <div>
-              <div style={{ fontWeight:800, fontSize:14, color:theme.text, lineHeight:1.2, letterSpacing:-0.3 }}>J transport</div>
-              <div style={{ fontSize:10, color:theme.textMute, marginTop:1 }}>社内ポータル</div>
-            </div>
+          <div style={{ display:"flex", flexDirection:"column", gap:3 }}>
+            <JtWordmark height={24} />
+            <div style={{ fontSize:10, color:theme.textMute, marginLeft:4 }}>社内ポータル</div>
           </div>
         </div>
         <nav style={{ flex:1, padding:"8px 8px", overflowY:"auto" }}>
