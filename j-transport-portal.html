@@ -954,14 +954,6 @@ const JtLogo = ({ size=32, radius }) => (
   </div>
 );
 // ── 社印（角印・朱色）。請求書に押印 ──
-const JtSeal = ({ size=58 }) => (
-  <svg width={size} height={size} viewBox="0 0 72 72" style={{ flexShrink:0 }} role="img" aria-label="J transport株式会社神戸 社印">
-    <rect x="2.6" y="2.6" width="66.8" height="66.8" rx="8" fill="none" stroke="#C5402F" strokeWidth="2.8"/>
-    <text x="36" y="30" textAnchor="middle" textLength="52" lengthAdjust="spacingAndGlyphs" fontFamily="'Plus Jakarta Sans','Noto Sans JP',sans-serif" fontSize="13" fontStyle="italic" fontWeight="800" fill="#C5402F">J transport</text>
-    <line x1="13" y1="39" x2="59" y2="39" stroke="#C5402F" strokeWidth="1.1"/>
-    <text x="36" y="57" textAnchor="middle" textLength="52" lengthAdjust="spacingAndGlyphs" fontFamily="'Noto Sans JP',sans-serif" fontSize="13" fontWeight="800" fill="#C5402F">株式会社神戸</text>
-  </svg>
-);
 const Card = ({ children, style={}, onClick, onMouseEnter, onMouseLeave, title, flush, className }) => (
   <div onClick={onClick} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} title={title}
     className={[flush ? "jt-card jt-card--flush" : "jt-card", className].filter(Boolean).join(" ")}
