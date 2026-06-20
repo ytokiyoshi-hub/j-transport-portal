@@ -2946,11 +2946,16 @@ const InvoicePage = ({ accent }) => {
                     <div style={{ display:"flex", justifyContent:"space-between", marginBottom:3 }}><span style={{ color:"#645F6E" }}>請求書番号</span><b>{preview.id}</b></div>
                     <div style={{ display:"flex", justifyContent:"space-between", marginBottom:3 }}><span style={{ color:"#645F6E" }}>発行日</span><span>{m.issueDate}</span></div>
                     <div style={{ display:"flex", justifyContent:"space-between", marginBottom:3 }}><span style={{ color:"#645F6E" }}>支払期限</span><span>{m.dueDate}</span></div>
-                    <div style={{ marginTop:14, border:"1px solid #DEDAE5", borderRadius:4, padding:"10px 12px" }}>
-                      <div style={{ fontWeight:700, fontSize:13, marginBottom:4 }}>J transport株式会社</div>
-                      <div>〒XXX-XXXX 東京都〇〇区〇〇 1-2-3</div>
-                      <div>TEL: 03-XXXX-XXXX</div>
-                      <div style={{ marginTop:4 }}>登録番号: T1234567890123</div>
+                    <div style={{ marginTop:14, border:"1px solid #DEDAE5", borderRadius:4, padding:"10px 12px", position:"relative", overflow:"visible" }}>
+                      <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:5 }}>
+                        <JtLogo size={20} />
+                        <div style={{ fontWeight:700, fontSize:13 }}>{COMPANY.name}</div>
+                      </div>
+                      <div>{COMPANY.zip} {COMPANY.addr1}</div>
+                      <div>{COMPANY.addr2}</div>
+                      <div>TEL: {COMPANY.tel}　FAX: {COMPANY.fax}</div>
+                      <div style={{ marginTop:4 }}>登録番号: {COMPANY.invoiceNo}</div>
+                      <div style={{ position:"absolute", right:-10, bottom:-16 }}><JtSeal size={56} /></div>
                     </div>
                   </div>
                 </div>
