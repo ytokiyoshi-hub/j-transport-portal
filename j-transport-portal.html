@@ -5520,6 +5520,22 @@ function AppearanceSettings() {
   const applyPreset = (preset) => { setDraft(preset); setTheme(preset); showToast('テーマを適用しました'); };
   const onReset = () => { resetTheme(); setDraft(presets.default); showToast('既定値に戻しました'); };
 
+  // 色ユーティリティ: hex を target 方向へ t(0-1) 混ぜる
+  const _hexRgb = (h) => { h=String(h).replace('#',''); if(h.length===3) h=h.split('').map(c=>c+c).join(''); return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]; };
+  const _toHex = (r,g,b) => '#'+[r,g,b].map(x=>Math.max(0,Math.min(255,Math.round(x))).toString(16).padStart(2,'0')).join('');
+  const _mix = (hex, target, t) => { const [r,g,b]=_hexRgb(hex), [tr,tg,tb]=_hexRgb(target); return _toHex(r+(tr-r)*t, g+(tg-g)*t, b+(tb-b)*t); };
+  // テーマカラー（主色）: アクセントを選ぶと 濃(hover)・薄(active背景) を自動で導出
+  const setThemeColor = (hex) => {
+    const next = { ...draft, accent: hex, accentDk: _mix(hex,'#000000',0.22), accentLt: _mix(hex,'#FFFFFF',0.86) };
+    setDraft(next); setTheme(next);
+  };
+  // 立体感（凹凸・影/光）だけ既定へ戻す（配色はそのまま）
+  const resetDepth = () => {
+    const d = presets.default;
+    const next = { ...draft, depth: d.depth, shadowDark: d.shadowDark, shadowLight: d.shadowLight };
+    setDraft(next); setTheme(next); showToast('立体感を既定に戻しました');
+  };
+
   const fields = [
     { group: '罫線', items: [
       { key: 'line',     label: '薄罫',         hint: 'body の罫線' },
