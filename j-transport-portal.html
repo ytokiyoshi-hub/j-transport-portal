@@ -953,7 +953,6 @@ const JtLogo = ({ size=32, radius }) => (
     </svg>
   </div>
 );
-// ── 社印（角印・朱色）。請求書に押印 ──
 const Card = ({ children, style={}, onClick, onMouseEnter, onMouseLeave, title, flush, className }) => (
   <div onClick={onClick} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} title={title}
     className={[flush ? "jt-card jt-card--flush" : "jt-card", className].filter(Boolean).join(" ")}
