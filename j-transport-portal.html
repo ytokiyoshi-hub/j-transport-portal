@@ -5578,7 +5578,7 @@ function AppearanceSettings() {
         <div style={S.presetWrap}>
           {Object.keys(presets).map(key => {
             const p = presets[key];
-            const swatches = [p.accent, p.lineDk, p.alert, p.bg];
+            const swatches = [p.accent, p.accentDk, p.accentLt, p.base];
             return (
               <button key={key} type="button" style={S.preset} onClick={() => applyPreset(p)}>
                 <span style={S.swatchSet}>{swatches.map((c, i) => <span key={i} style={S.swatch(c)} />)}</span>
