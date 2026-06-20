@@ -6137,6 +6137,32 @@ const DispatchPage = ({ accent, setPage }) => {
         )}
       </div>
 
+      {/* 自動配車ルール */}
+      {tab==="dispatch" && showRules && (
+        <Card style={{ marginBottom:16, padding:"14px 16px" }}>
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:4 }}>
+            <div style={{ fontSize:13, fontWeight:700 }}>自動配車ルール（優先順位 × 必要便数/日）</div>
+            <button onClick={resetPlan} style={{ background:"transparent", border:"none", color:"var(--jt-text-mute)", fontSize:11, cursor:"pointer", textDecoration:"underline" }}>初期値に戻す</button>
+          </div>
+          <div style={{ fontSize:11, color:"var(--jt-text-mute)", marginBottom:10 }}>上の案件から優先して埋めます。固定運行は必要便数を設定、スポットは0のままで普段は自動配車されません（受注時に数値を入れる）。1人=1案件/日。</div>
+          <div style={{ display:"grid", gridTemplateColumns:"30px 1fr 76px 64px 96px", gap:8, padding:"0 4px 6px", fontSize:10.5, fontWeight:700, color:"var(--jt-text-mute)", borderBottom:"1px solid var(--jt-line-dk)" }}>
+            <span>順位</span><span>案件</span><span>運行</span><span style={{ textAlign:"center" }}>担当D</span><span style={{ textAlign:"center" }}>必要便数/日</span>
+          </div>
+          {planOrder().map((cid,idx,arr)=>{ const c=clientById(cid); if(!c) return null; const spot=isSpotClient(c); const eligN=driversOfClient(c).length; return (
+            <div key={cid} style={{ display:"grid", gridTemplateColumns:"30px 1fr 76px 64px 96px", gap:8, alignItems:"center", padding:"7px 4px", borderBottom:"1px solid var(--jt-line)" }}>
+              <div style={{ display:"flex", flexDirection:"column", gap:2 }}>
+                <button onClick={()=>movePriority(cid,-1)} disabled={idx===0} style={miniBtn(idx===0)}>▲</button>
+                <button onClick={()=>movePriority(cid,1)} disabled={idx===arr.length-1} style={miniBtn(idx===arr.length-1)}>▼</button>
+              </div>
+              <span style={{ fontSize:12.5, fontWeight:600 }}>{idx+1}. {c.name}</span>
+              <span><span style={{ fontSize:10, fontWeight:600, padding:"2px 8px", borderRadius:20, background: spot?"#ECEAF0":"#EFEDF3", color: spot?"#645F6E":"#7E6593" }}>{spot?"スポット":"固定"}</span></span>
+              <span style={{ textAlign:"center", fontSize:12, color:"var(--jt-text-sub)" }}>{eligN}名</span>
+              <span style={{ textAlign:"center" }}><input type="number" min="0" value={demandFor(cid)} onChange={e=>setDemand(cid,e.target.value)} style={{ width:62, padding:"6px 8px", textAlign:"center", border:"none", background:"var(--jt-base)", boxShadow:"var(--jt-inset)", borderRadius:10, fontSize:13, outline:"none", fontFamily:"inherit", boxSizing:"border-box" }}/></span>
+            </div>
+          ); })}
+        </Card>
+      )}
+
       {/* KPI */}
       <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12, marginBottom:16 }}>
         {(tab==="dispatch" ? [
