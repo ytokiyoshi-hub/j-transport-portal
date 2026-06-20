@@ -1368,15 +1368,20 @@ const PLPage = ({ accent, setPage }) => {
         <Card style={{ marginBottom:14 }}>
           <SH title={`経営アラート（${alerts.length}件）`}/>
           <div style={{ padding:"10px 16px" }}>
-            {alerts.map((a,i)=>(
-              <div key={i} style={{ display:"flex", gap:10, padding:"9px 10px", marginBottom:6, background:alertBg(a.level), borderLeft:`4px solid ${alertColor(a.level)}`, borderRadius:4 }}>
-                <span style={{ fontSize:11, fontWeight:700, color:alertColor(a.level), minWidth:36, textTransform:"uppercase" }}>{a.level==="high"?"高":a.level==="mid"?"中":"情報"}</span>
-                <div style={{ flex:1 }}>
-                  <div style={{ fontSize:13, fontWeight:700, color:"#393443" }}>{a.title}</div>
-                  <div style={{ fontSize:11.5, color:"#645F6E", marginTop:2 }}>{a.desc}</div>
+            {alerts.map((a,i)=>{
+              const sev = a.level==="high" ? {bg:"#F3E6E3",fg:"#B05A60",label:"高"}
+                        : a.level==="mid"  ? {bg:"#F2EBDC",fg:"#8C6A2E",label:"中"}
+                        :                     {bg:"#EFEDF3",fg:"#7E6593",label:"情報"};
+              return (
+                <div key={i} style={{ display:"flex", gap:10, alignItems:"flex-start", padding:"10px 12px", marginBottom:8, background:"var(--jt-base)", borderRadius:10, boxShadow:"var(--jt-raised-sm)" }}>
+                  <span style={{ flexShrink:0, marginTop:1, fontSize:10.5, fontWeight:600, color:sev.fg, background:sev.bg, padding:"3px 10px", borderRadius:20 }}>{sev.label}</span>
+                  <div style={{ flex:1 }}>
+                    <div style={{ fontSize:13, fontWeight:700, color:"var(--jt-text)" }}>{a.title}</div>
+                    <div style={{ fontSize:11.5, color:"var(--jt-text-sub)", marginTop:2 }}>{a.desc}</div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </Card>
       )}
