@@ -4488,6 +4488,10 @@ const DriversPage = ({ accent, setPage }) => {
               <div style={{ fontSize:12.5, color:"var(--jt-text-mute)", marginBottom:18 }}>自社車両の割当なし（協力会社・自車運行）</div>
             )}
 
+            <div style={{ display:"flex", gap:8, marginBottom:8 }}>
+              <button onClick={()=>openEdit(selDriver)} style={{ flex:1, padding:"10px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:13, fontWeight:700, fontSize:13, cursor:"pointer", boxShadow:"var(--jt-raised-sm), inset 0 1px 0 rgba(255,255,255,.28)" }}>情報を編集</button>
+              {isExtra(selDriver.id) && <button onClick={()=>deleteExtraDriver(selDriver.id)} style={{ padding:"10px 14px", background:"transparent", color:"var(--jt-alert)", border:"none", borderRadius:13, fontWeight:600, fontSize:13, cursor:"pointer" }}>削除</button>}
+            </div>
             <button onClick={()=>setPage("driverfinance")}
               style={{ width:"100%", padding:"10px", background:"var(--jt-base)", color:"var(--jt-accent)", border:"none", borderRadius:13, fontWeight:600, fontSize:13, cursor:"pointer", boxShadow:"var(--jt-raised-sm)" }}>月次の売上・支払・粗利を見る（ドライバー別収支）→</button>
           </Card>
