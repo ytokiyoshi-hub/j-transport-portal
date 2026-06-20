@@ -930,9 +930,8 @@ const StatusBadge = ({ label }) => {
   const [bg,fg]=map[label]||N;
   return <span style={{ display:"inline-block", padding:"3px 10px", borderRadius:20, fontSize:10.5, fontWeight:600, background:bg, color:fg, letterSpacing:0.2 }}>{label}</span>;
 };
-const Avatar = ({ name, size=32, bg="#DEDAE5", color="#645F6E" }) => (
-  <div style={{ width:size, height:size, borderRadius:"50%", background:bg, color, display:"flex", alignItems:"center", justifyContent:"center", fontSize:size*0.38, fontWeight:700, flexShrink:0 }}>{name[0]}</div>
-);
+// ドライバー氏名前のイニシャル丸マークは廃止（全ページ）。フルネーム表示で十分なため非表示。
+const Avatar = () => null;
 const Card = ({ children, style={}, onClick, onMouseEnter, onMouseLeave, title, flush, className }) => (
   <div onClick={onClick} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} title={title}
     className={[flush ? "jt-card jt-card--flush" : "jt-card", className].filter(Boolean).join(" ")}
