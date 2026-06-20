@@ -4497,6 +4497,39 @@ const DriversPage = ({ accent, setPage }) => {
           </Card>
         )}
       </div>
+
+      {form && (
+        <div onClick={()=>setForm(null)} style={{ position:"fixed", inset:0, background:"rgba(60,55,75,.32)", display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"60px 16px", zIndex:1000, overflowY:"auto" }}>
+          <div onClick={(e)=>e.stopPropagation()} style={{ width:440, maxWidth:"calc(100vw - 32px)", background:"var(--jt-base)", borderRadius:18, boxShadow:"0 20px 50px rgba(35,28,50,.30)", padding:22, overflowX:"hidden", boxSizing:"border-box" }}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:18 }}>
+              <h3 style={{ margin:0, fontSize:17, fontWeight:700, color:"var(--jt-text)" }}>{form.mode==="add"?"ドライバー追加":"ドライバー情報の編集"}</h3>
+              <button onClick={()=>setForm(null)} style={{ width:30, height:30, borderRadius:9, border:"none", background:"var(--jt-base)", color:"var(--jt-text-sub)", cursor:"pointer", boxShadow:"var(--jt-raised-sm)", fontSize:16, lineHeight:1 }}>×</button>
+            </div>
+            <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+              <label style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                <span style={{ fontSize:12, fontWeight:600, color:"var(--jt-text-sub)" }}>氏名 <span style={{ color:"var(--jt-alert)" }}>*</span></span>
+                <input value={form.name} onChange={(e)=>setForm({...form, name:e.target.value})} placeholder="例：山田 太郎" style={{ width:"100%", boxSizing:"border-box", padding:"11px 14px", border:"none", borderRadius:11, background:"var(--jt-base)", boxShadow:"var(--jt-inset)", color:"var(--jt-text)", fontSize:14, outline:"none" }} />
+              </label>
+              <label style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                <span style={{ fontSize:12, fontWeight:600, color:"var(--jt-text-sub)" }}>雇用形態</span>
+                <select value={form.type} onChange={(e)=>setForm({...form, type:e.target.value})} style={{ width:"100%", boxSizing:"border-box", padding:"11px 14px", border:"none", borderRadius:11, background:"var(--jt-base)", boxShadow:"var(--jt-inset)", color:"var(--jt-text)", fontSize:14, outline:"none", cursor:"pointer" }}>
+                  <option value="自社">自社</option>
+                  <option value="協力会社">協力会社</option>
+                </select>
+              </label>
+              <label style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                <span style={{ fontSize:12, fontWeight:600, color:"var(--jt-text-sub)" }}>担当エリア</span>
+                <input value={form.area} onChange={(e)=>setForm({...form, area:e.target.value})} placeholder="例：神戸市・阪神間" style={{ width:"100%", boxSizing:"border-box", padding:"11px 14px", border:"none", borderRadius:11, background:"var(--jt-base)", boxShadow:"var(--jt-inset)", color:"var(--jt-text)", fontSize:14, outline:"none" }} />
+              </label>
+              <p style={{ margin:0, fontSize:11.5, color:"var(--jt-text-mute)", lineHeight:1.6 }}>担当荷主・担当車両は、単価マスタ管理／車両管理の各画面で割り当てます。</p>
+            </div>
+            <div style={{ display:"flex", gap:10, marginTop:22 }}>
+              <button onClick={()=>setForm(null)} style={{ flex:"0 0 auto", padding:"11px 18px", background:"transparent", color:"var(--jt-text-sub)", border:"none", borderRadius:12, fontWeight:600, fontSize:14, cursor:"pointer" }}>キャンセル</button>
+              <button onClick={saveDriver} style={{ flex:1, padding:"11px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:12, fontWeight:700, fontSize:14, cursor:"pointer", boxShadow:"var(--jt-raised-sm), inset 0 1px 0 rgba(255,255,255,.28)" }}>{form.mode==="add"?"追加する":"更新する"}</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
