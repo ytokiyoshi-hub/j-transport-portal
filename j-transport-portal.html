@@ -2969,9 +2969,9 @@ const InvoicePage = ({ accent }) => {
                     <div style={{ display:"flex", justifyContent:"space-between", marginBottom:3 }}><span style={{ color:"#645F6E" }}>発行日</span><span>{m.issueDate}</span></div>
                     <div style={{ display:"flex", justifyContent:"space-between", marginBottom:3 }}><span style={{ color:"#645F6E" }}>支払期限</span><span>{m.dueDate}</span></div>
                     <div style={{ marginTop:14, border:"1px solid #DEDAE5", borderRadius:4, padding:"10px 12px", position:"relative", overflow:"visible", fontSize:10.5, lineHeight:1.55 }}>
-                      <div style={{ display:"flex", alignItems:"center", gap:5, marginBottom:5 }}>
-                        <JtWordmark height={17} />
-                        <div style={{ fontWeight:700, fontSize:12 }}>株式会社</div>
+                      <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:5 }}>
+                        <JtLogo size={20} />
+                        <div style={{ fontWeight:700, fontSize:12.5 }}>{COMPANY.name}</div>
                       </div>
                       <div>{COMPANY.zip}</div>
                       <div>{COMPANY.addr1}</div>
