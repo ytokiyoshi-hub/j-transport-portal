@@ -714,6 +714,11 @@ function ThemeProvider({ children }) {
     r.setProperty('--jt-text', theme.text);
     r.setProperty('--jt-text-sub', theme.textSub);
     r.setProperty('--jt-text-mute', theme.textMute);
+    // Soft UI 影トークン（参照サイト準拠の確定値・面色に対する明暗ペア）
+    r.setProperty('--jt-raised', '8px 8px 18px #CECAD5, -8px -8px 18px #FFFFFF');
+    r.setProperty('--jt-raised-sm', '4px 4px 9px #CECAD5, -4px -4px 9px #FFFFFF');
+    r.setProperty('--jt-inset', 'inset 3px 3px 7px #CECAD5, inset -3px -3px 7px #FFFFFF');
+    r.setProperty('--jt-inset-sm', 'inset 2px 2px 5px #CECAD5, inset -2px -2px 5px #FFFFFF');
   }, [theme]);
   const setTheme = React.useCallback((next) => {
     setThemeState(next);
