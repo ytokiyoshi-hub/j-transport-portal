@@ -5762,7 +5762,7 @@ const VehiclesPage = ({ accent }) => {
         <div style={{ display:"flex", gap:8 }}>
           {["すべて","稼働中","整備中"].map(s=>(
             <button key={s} onClick={()=>setStatusFilter(s)}
-              style={{ padding:"5px 14px", borderRadius:20, border:"none", background:"var(--jt-base)", color:statusFilter===s?"var(--jt-accent)":"var(--jt-text-sub)", fontSize:13, fontWeight:statusFilter===s?700:600, boxShadow:statusFilter===s?"var(--jt-inset)":"var(--jt-raised-sm)", cursor:"pointer" }}>{s}</button>
+              style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", height:34, padding:"0 15px", borderRadius:13, border:"none", cursor:"pointer", whiteSpace:"nowrap", fontFamily:"inherit", fontSize:13, lineHeight:1, letterSpacing:.2, color:statusFilter===s?"var(--jt-accent)":"var(--jt-text-sub)", fontWeight:statusFilter===s?600:500, background:"var(--jt-base)", boxShadow:statusFilter===s?"var(--jt-inset-sm)":"var(--jt-raised-sm)" }}>{s}</button>
           ))}
         </div>
       </div>
