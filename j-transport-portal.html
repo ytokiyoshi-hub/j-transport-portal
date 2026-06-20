@@ -5037,7 +5037,7 @@ const TodoPage = ({ accent }) => {
           <input value={draft.title} onChange={e=>setDraft(p=>({...p,title:e.target.value}))}
             onKeyDown={e=>{ if (e.key==='Enter' && !e.isComposing && !e.nativeEvent?.isComposing) add(); }}
             placeholder="タスク内容（必須）"
-            style={{ padding:"8px 12px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, outline:"none" }}/>
+            style={{ padding:"8px 12px", border:"none", background:"var(--jt-base)", boxShadow:"var(--jt-inset)", borderRadius:13, fontSize:13, outline:"none" }}/>
           <select value={draft.priority} onChange={e=>setDraft(p=>({...p,priority:e.target.value}))}
             style={{ padding:"8px 12px", background:"var(--jt-base)", border:"none", boxShadow:"var(--jt-inset)", borderRadius:13, fontSize:13 }}>
             {["高","中","低"].map(p=><option key={p} value={p}>{p}</option>)}
@@ -5046,7 +5046,7 @@ const TodoPage = ({ accent }) => {
             style={{ padding:"8px 12px", background:"var(--jt-base)", border:"none", boxShadow:"var(--jt-inset)", borderRadius:13, fontSize:13 }}/>
           <input value={draft.assignee} onChange={e=>setDraft(p=>({...p,assignee:e.target.value}))}
             placeholder="担当者（任意）"
-            style={{ padding:"8px 12px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, outline:"none" }}/>
+            style={{ padding:"8px 12px", border:"none", background:"var(--jt-base)", boxShadow:"var(--jt-inset)", borderRadius:13, fontSize:13, outline:"none" }}/>
           <button onClick={add} disabled={!draft.title.trim()}
             style={{ padding:"8px 18px", background:draft.title.trim()?"linear-gradient(180deg,#917AA4,#7E6593)":"var(--jt-line)", color:"#fff", border:"none", borderRadius:13, fontSize:13, fontWeight:600, cursor:draft.title.trim()?"pointer":"not-allowed", whiteSpace:"nowrap", boxShadow:draft.title.trim()?"var(--jt-raised-sm),4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF,inset 0 1px 0 rgba(255,255,255,.28)":"none" }}>+ 追加</button>
         </div>
