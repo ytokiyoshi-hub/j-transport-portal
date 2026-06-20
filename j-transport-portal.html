@@ -643,11 +643,11 @@ const _SOFT_BASE = {
 const THEME_PRESETS = {
   // ① 既定の色違い（Soft UI ベース・アクセント色だけ違う）
   default: { ..._SOFT_BASE, accentSeed: '#7E6593', accentTone: 0, accent: '#7E6593', accentDk: '#6A5280', accentLt: '#EFEDF3' },
-  sv_navy:  { ..._SOFT_BASE, ..._accentSet('#3F5C8A') },
-  sv_teal:  { ..._SOFT_BASE, ..._accentSet('#2E8B8B') },
-  sv_green: { ..._SOFT_BASE, ..._accentSet('#3F8A57') },
-  sv_rose:  { ..._SOFT_BASE, ..._accentSet('#9A3B5A') },
-  sv_amber: { ..._SOFT_BASE, ..._accentSet('#B0772E') },
+  sv_navy:  _softTheme('#3F5C8A'),
+  sv_teal:  _softTheme('#2E8B8B'),
+  sv_green: _softTheme('#3F8A57'),
+  sv_rose:  _softTheme('#9A3B5A'),
+  sv_amber: _softTheme('#B0772E'),
   // ② その他のテーマ（旧テイスト・そのまま据え置き）
   navy_strong: {
     line: '#bcc7d6', lineDk: '#6b7d96',
