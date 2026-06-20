@@ -3756,7 +3756,7 @@ const DailyInputPage = ({ accent }) => {
                         const dt2=dailyTargets[r.label];
                         const isAnomaly=!day.isWeekend&&val!==""&&(numVal===0||(dt2>0&&numVal>dt2*3));
                         return (
-                          <td key={ci} style={{ padding:0, textAlign:"center", borderRight: ri===nR-1?"2px solid #645F6E":"1px solid #DEDAE5" }}>
+                          <td key={ci} style={{ padding:0, textAlign:"center", borderRight: ri===nR-1?"1px solid #C9C0D6":"1px solid #DEDAE5" }}>
                             <input
                               ref={el=>inputRefs.current[`${di}-${ci}`]=el}
                               type="number" min="0"
