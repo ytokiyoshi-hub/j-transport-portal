@@ -2872,7 +2872,8 @@ const InvoicePage = ({ accent }) => {
             {/* 印刷時のみ: 振込先・備考 */}
             <div className="invoice-print-footer" style={{ display:"none", marginTop:18, paddingTop:12, borderTop:"1px solid #DEDAE5", fontSize:11 }}>
               <div style={{ fontWeight:700, marginBottom:4 }}>お振込先</div>
-              <div>〇〇銀行 〇〇支店 普通 1234567 J transport株式会社</div>
+              <div>{COMPANY.bankLine}</div>
+              <div>口座名義: {COMPANY.bankHolder}</div>
               <div style={{ marginTop:10, fontSize:10, color:"var(--jt-text-sub)" }}>※ 恐れ入りますが、振込手数料は貴社にてご負担くださいますようお願い申し上げます。</div>
             </div>
 
