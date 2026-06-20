@@ -620,6 +620,18 @@ const _mixHex = (hex, target, t) => {
 };
 // アクセント1色 → 濃(hover)・薄(active背景) を導出
 const _accentSet = (hex) => ({ accentSeed: hex, accentTone: 0, accent: hex, accentDk: _mixHex(hex,'#000000',0.22), accentLt: _mixHex(hex,'#FFFFFF',0.86) });
+// 既定の色違い1テーマ: アクセント色から 面色(base/bg)・罫線・影まで淡く色づけして生成（Soft UI のまま色だけ替える）
+const _softTheme = (accent) => {
+  const base = _mixHex(accent, '#EFEEF2', 0.88); // 面色＝アクセントを12%だけ淡く乗せた明るいグレー
+  return {
+    line: _mixHex(base,'#000000',0.07), lineDk: _mixHex(base,'#000000',0.14),
+    alert: '#B05A60', alertLt: '#F3E6E3',
+    base, bg: base,
+    text: '#393443', textSub: '#645F6E', textMute: '#A09AAB',
+    shadowDark: _mixHex(base,'#000000',0.13), shadowLight: '#FFFFFF', depth: 1,
+    ..._accentSet(accent),
+  };
+};
 // Soft UI 共通ベース（面色・影・本文・罫線は固定。プリセットはアクセント色だけ差し替える＝「既定の色違い」）
 const _SOFT_BASE = {
   line: '#DEDAE5', lineDk: '#DBD6E2',
