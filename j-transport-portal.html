@@ -1799,7 +1799,7 @@ const RateMasterPage = ({ accent, setPage }) => {
                             <input value={r.sell} type="number" min="0"
                               onChange={e=>updateRate(ri, "sell", e.target.value)}
                               onBlur={()=>showToast("単価を保存しました")}
-                              style={{ width:90, padding:"4px 8px", border:"1.5px solid "+accent, borderRadius:4, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
+                              style={{ width:96, padding:"6px 10px", background:"var(--jt-base)", border:"none", boxShadow:"var(--jt-inset)", borderRadius:10, fontSize:13, fontFamily:"inherit", outline:"none", color:"var(--jt-text)" }}/>
                             {(r.label.includes("日額") || r.label.includes("1日")) ? "/日" : r.label.includes("km") ? "/km" : sel.billing.includes("固定") && ri===0 ? "/日" : sel.billing !== "スポット" && r.sell > 0 ? "/個" : ""}
                           </td>
                           <td style={{ padding:"10px 12px" }}>
