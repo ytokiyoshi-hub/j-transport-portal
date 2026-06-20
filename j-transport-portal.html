@@ -100,7 +100,7 @@
   /* ── 基盤フレームのみ。カード/入力/ボタン/タブ/進捗などコンポーネントの見た目は
      各JSXのインラインstyle + ThemeProvider が documentElement に設定する --jt-* トークンが持つ
      （旧: クラスセレクタ依存の !important 一括上書き＝まだらの原因 は廃止） ── */
-  html, body { background:#E9E7EE; }
+  html, body { background:var(--jt-bg, #E9E7EE); }
   body { font-family:'Plus Jakarta Sans','Noto Sans JP',system-ui,-apple-system,sans-serif; color:#393443; font-variant-numeric:tabular-nums; -webkit-font-smoothing:antialiased; }
   /* フレーム要素（単一）の方向性フロート影 */
   .jt-sidebar { box-shadow:8px 0 26px rgba(128,122,140,.16); }
@@ -1396,7 +1396,7 @@ const PLPage = ({ accent, setPage }) => {
       {/* ── ヘッダ ── */}
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:18 }}>
         <div>
-          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>財務・請求管理</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"var(--jt-accent)",background:"var(--jt-base)",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>財務・請求管理</div>
           <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", display:"flex", alignItems:"center", gap:10, color:"var(--jt-text)" }}>
             収支管理 <span style={{ fontSize:11, padding:"2px 8px", background:accent+"22", color:accent, borderRadius:99, fontWeight:600 }}>経営分析室</span>
           </div>
@@ -1606,14 +1606,14 @@ const PLPage = ({ accent, setPage }) => {
           <div style={{ padding:"14px 18px" }}>
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:14 }}>
               <div style={{ padding:"10px 12px", background:"#EFEDF3", borderRadius:4 }}>
-                <div style={{ fontSize:11, color:"#7E6593" }}>自社ドライバー {inhouseDrivers.length}名</div>
-                <div style={{ fontSize:16, fontWeight:800, color:"#7E6593", marginTop:3 }}>{fmt(Math.round(inhousePayEst))}</div>
-                <div style={{ fontSize:10, color:"#7E6593", opacity:0.8, marginTop:2 }}>当月支払 推定（{(inhouseRatio*100).toFixed(0)}%）</div>
+                <div style={{ fontSize:11, color:"var(--jt-accent)" }}>自社ドライバー {inhouseDrivers.length}名</div>
+                <div style={{ fontSize:16, fontWeight:800, color:"var(--jt-accent)", marginTop:3 }}>{fmt(Math.round(inhousePayEst))}</div>
+                <div style={{ fontSize:10, color:"var(--jt-accent)", opacity:0.8, marginTop:2 }}>当月支払 推定（{(inhouseRatio*100).toFixed(0)}%）</div>
               </div>
               <div style={{ padding:"10px 12px", background:"var(--jt-base)", borderRadius:4, boxShadow:"var(--jt-inset)" }}>
                 <div style={{ fontSize:11, color:"var(--jt-accent)" }}>協力会社 {coopDrivers.length}名</div>
-                <div style={{ fontSize:16, fontWeight:800, color:"#7E6593", marginTop:3 }}>{fmt(Math.round(coopPayEst))}</div>
-                <div style={{ fontSize:10, color:"#7E6593", opacity:0.8, marginTop:2 }}>当月支払 推定（{((1-inhouseRatio)*100).toFixed(0)}%）</div>
+                <div style={{ fontSize:16, fontWeight:800, color:"var(--jt-accent)", marginTop:3 }}>{fmt(Math.round(coopPayEst))}</div>
+                <div style={{ fontSize:10, color:"var(--jt-accent)", opacity:0.8, marginTop:2 }}>当月支払 推定（{((1-inhouseRatio)*100).toFixed(0)}%）</div>
               </div>
             </div>
             <div style={{ padding:"10px 12px", border:"none", borderRadius:4, marginBottom:8, background:"var(--jt-base)", boxShadow:"var(--jt-inset)" }}>
@@ -1772,7 +1772,7 @@ const RateMasterPage = ({ accent, setPage }) => {
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
         <div>
-          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>財務・請求管理</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"var(--jt-accent)",background:"var(--jt-base)",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>財務・請求管理</div>
           <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", color:"#393443" }}>単価マスタ管理</div>
           <div style={{ fontSize:12, color:"#A09AAB", marginTop:2 }}>荷主ごとの売単価・支払単価を一元管理</div>
         </div>
@@ -1892,7 +1892,7 @@ const RateMasterPage = ({ accent, setPage }) => {
                     ) : null;
                   })}
                   <div style={{ position:"relative" }}>
-                    <button onClick={()=>setShowDrvPicker(s=>!s)} style={{ padding:"6px 12px", border:"1.5px dashed #7E6593", borderRadius:6, background:"transparent", color:"#7E6593", fontSize:12, fontWeight:600, cursor:"pointer" }}>+ ドライバー追加</button>
+                    <button onClick={()=>setShowDrvPicker(s=>!s)} style={{ padding:"6px 12px", border:"1.5px dashed #7E6593", borderRadius:6, background:"transparent", color:"var(--jt-accent)", fontSize:12, fontWeight:600, cursor:"pointer" }}>+ ドライバー追加</button>
                     {showDrvPicker && (
                       <div style={{ position:"absolute", top:"110%", left:0, background:"var(--jt-base)", border:"none", borderRadius:6, padding:6, minWidth:200, maxHeight:280, overflowY:"auto", zIndex:20, boxShadow:"var(--jt-raised)" }}>
                         {drivers.filter(d => !driversFor(sel).includes(d.id)).map(d=>(
@@ -1902,7 +1902,7 @@ const RateMasterPage = ({ accent, setPage }) => {
                             setShowDrvPicker(false);
                             showToast("担当ドライバーを更新しました");
                           }} style={{ display:"block", width:"100%", padding:"6px 10px", background:"transparent", border:"none", textAlign:"left", fontSize:12, cursor:"pointer", borderRadius:4 }}
-                            onMouseEnter={e=>e.currentTarget.style.background="#E9E7EE"}
+                            onMouseEnter={e=>e.currentTarget.style.background="var(--jt-base)"}
                             onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
                             {d.name}
                             <span style={{ color:"#A09AAB", marginLeft:6, fontSize:10 }}>{d.type}</span>
@@ -1977,7 +1977,7 @@ const RateMasterPage = ({ accent, setPage }) => {
                 return (<><div style={{ fontSize:13, fontWeight:700, marginBottom:14 }}>今月実績（速報）<span style={{ fontWeight:600, color:"#645F6E", marginLeft:6, fontSize:11 }}>{isCur ? REF_MONTH_LABEL : "最新確定 "+LATEST_MONTH_LABEL}</span></div>
                 {!(act.sell>0) ? <div style={{ color:"#A09AAB", fontSize:13 }}>実績なし</div> : (
                   <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:16 }}>
-                    {[["売上",fmt(act.sell),"#7E6593"],["支払",fmt(act.pay),"#C39A52"],["粗利",fmt(act.profit),act.profit<0?"#B05A60":"#6E9E78"]].map(([l,v,c])=>(
+                    {[["売上",fmt(act.sell),"var(--jt-accent)"],["支払",fmt(act.pay),"#C39A52"],["粗利",fmt(act.profit),act.profit<0?"#B05A60":"#6E9E78"]].map(([l,v,c])=>(
                       <div key={l} style={{ textAlign:"center", padding:"12px", background:"var(--jt-base)", borderRadius:6, boxShadow:"var(--jt-inset)" }}>
                         <div style={{ fontSize:11, color:"#A09AAB" }}>{l}</div>
                         <div style={{ fontSize:18, fontWeight:700, color:c, marginTop:4 }}>{v}</div>
@@ -2376,7 +2376,7 @@ const DriverFinancePage = ({ accent }) => {
 
   return (
     <div>
-      <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>財務・請求管理</div>
+      <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"var(--jt-accent)",background:"var(--jt-base)",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>財務・請求管理</div>
       <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", marginBottom:4, color:"var(--jt-text)" }}>ドライバー別収支</div>
       <div style={{ fontSize:12, color:"#A09AAB", marginBottom:20 }}>{_monthLabel}分 ／ 日次実績にもとづく実支払額（按分ではなく実数集計）</div>
 
@@ -2707,7 +2707,7 @@ const InvoicePage = ({ accent }) => {
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
         <div>
-          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>財務・請求管理</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"var(--jt-accent)",background:"var(--jt-base)",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>財務・請求管理</div>
           <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", color:"#393443" }}>請求管理</div>
         </div>
         <button onClick={()=>{ const ids=invoices.filter(i=>effStatus(i)==="未請求").map(i=>i.id); if(ids.length===0){ showToast("発行対象の請求書はありません"); return; } markIssued(ids); showToast(ids.length+"件の請求書を発行しました"); }} style={{ padding:"7px 16px", background:"var(--jt-accent-grad)", color:"#fff", fontWeight:700, border:"none", borderRadius:6, fontSize:13, cursor:"pointer", boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>+ 請求書を一括作成</button>
@@ -3134,7 +3134,7 @@ const ClientPage = ({ accent, setPage }) => {
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
         <div>
-          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>荷主・人員管理</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"var(--jt-accent)",background:"var(--jt-base)",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>荷主・人員管理</div>
           <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", color:"#393443" }}>案件管理</div>
           <div style={{ fontSize:12, color:"#A09AAB", marginTop:2 }}>全{clients.length + extraClients.length}社（自社{clients.length}＋追加{extraClients.length}）{search && `／該当${list.length}社`}</div>
         </div>
@@ -3207,7 +3207,7 @@ const ClientPage = ({ accent, setPage }) => {
             <div style={{ fontSize:12, color:"#A09AAB", marginBottom:16 }}>{sel.area}</div>
 
             {/* 上位荷主 */}
-            <div style={{ background:"#E9E7EE", borderRadius:6, padding:12, marginBottom:14, border:"1px solid #DEDAE5" }}>
+            <div style={{ background:"var(--jt-base)", borderRadius:6, padding:12, marginBottom:14, border:"1px solid #DEDAE5" }}>
               <div style={{ fontSize:11, fontWeight:700, color:"#645F6E", marginBottom:6 }}>上位荷主（発注元・親会社）</div>
               <select value={parentMap[sel.id] || ""} onChange={e=>assignParent(sel.id, e.target.value)}
                 style={{ width:"100%", padding:"7px 10px", border:"none", borderRadius:13, fontSize:13, background:"var(--jt-base)", color:parentMap[sel.id]?"var(--jt-accent)":"var(--jt-text-sub)", fontWeight:600, cursor:"pointer", boxShadow:"var(--jt-inset-sm)" }}>
@@ -3232,7 +3232,7 @@ const ClientPage = ({ accent, setPage }) => {
             </div>
 
             {/* 締め日（請求サイクル） */}
-            <div style={{ background:"#E9E7EE", borderRadius:6, padding:12, marginBottom:14, border:"1px solid #DEDAE5" }}>
+            <div style={{ background:"var(--jt-base)", borderRadius:6, padding:12, marginBottom:14, border:"1px solid #DEDAE5" }}>
               <div style={{ fontSize:11, fontWeight:700, color:"#645F6E", marginBottom:6 }}>締め日（請求サイクル）</div>
               <select value={cycleFor(sel)} onChange={e=>{ setCycleOverrides({ ...cycleOverrides, [sel.id]: e.target.value }); showToast("締め日を保存しました"); }}
                 style={{ width:"100%", padding:"7px 10px", border:"none", borderRadius:13, fontSize:13, background:"var(--jt-base)", color:"var(--jt-text-sub)", fontWeight:600, cursor:"pointer", boxShadow:"var(--jt-inset-sm)" }}>
@@ -3258,7 +3258,7 @@ const ClientPage = ({ accent, setPage }) => {
               return (
                 <div style={{ marginTop:16, background:"var(--jt-base)", borderRadius:13, padding:14, boxShadow:"var(--jt-inset-sm)" }}>
                   <div style={{ fontSize:11, color:"var(--jt-text-mute)", marginBottom:8 }}>実績（{mkLabel(dispMonth)}）{dispMonth!==REF_MONTH && `／今月（${mkLabel(REF_MONTH)}）実績未入力のため最新確定月を表示`}</div>
-                  {[["売上",fmt(act.sell),"#7E6593"],["支払",fmt(act.pay),"#645F6E"],["粗利",fmt(act.profit)+" ("+(act.sell>0?(act.profit/act.sell*100).toFixed(1):0)+"%)","#6E9E78"]].map(([l,v,c])=>(
+                  {[["売上",fmt(act.sell),"var(--jt-accent)"],["支払",fmt(act.pay),"#645F6E"],["粗利",fmt(act.profit)+" ("+(act.sell>0?(act.profit/act.sell*100).toFixed(1):0)+"%)","#6E9E78"]].map(([l,v,c])=>(
                     <div key={l} style={{ display:"flex", justifyContent:"space-between", fontSize:13, marginBottom:5 }}>
                       <span style={{ color:"#645F6E" }}>{l}</span>
                       <span style={{ fontWeight:600, color:c }}>{v}</span>
@@ -3649,7 +3649,7 @@ const DailyInputPage = ({ accent }) => {
       {/* ヘッダー */}
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:8, gap:12, flexWrap:"wrap" }}>
         <div>
-          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>財務・請求管理</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"var(--jt-accent)",background:"var(--jt-base)",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>財務・請求管理</div>
           <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", color:"var(--jt-text)" }}>日次実績入力</div>
           <div style={{ fontSize:12, color:"var(--jt-text-sub)", marginTop:2 }}>月次一覧・スプレッドシート形式</div>
         </div>
@@ -3738,7 +3738,7 @@ const DailyInputPage = ({ accent }) => {
               <col style={{ width:48 }} />
             </colgroup>
             <thead style={{ position:"sticky", top:0, zIndex:10 }}>
-              <tr style={{ background:"#E9E7EE" }}>
+              <tr style={{ background:"var(--jt-base)" }}>
                 <th style={{ padding:"7px 12px", textAlign:"center", color:"var(--jt-text)", fontWeight:700, fontSize:12, minWidth:96, width:96, position:"sticky", left:0, top:0, background:"var(--jt-base)", zIndex:13 }}>日付</th>
                 {assignedDrivers.map((d,dri)=>(
                   <th key={d.id} colSpan={nR}
@@ -3753,7 +3753,7 @@ const DailyInputPage = ({ accent }) => {
                 <th colSpan={3} style={{ padding:"7px 12px", textAlign:"center", color:"var(--jt-text-sub)", fontWeight:600, fontSize:11, background:"var(--jt-base)", position:"sticky", top:0, zIndex:11 }}>日次合計</th>
                 <th style={{ padding:"7px 8px", textAlign:"center", color:"var(--jt-text)", fontWeight:700, fontSize:12, minWidth:40, background:"var(--jt-base)", position:"sticky", top:0, zIndex:11 }}>状態</th>
               </tr>
-              <tr style={{ background:"#E9E7EE" }}>
+              <tr style={{ background:"var(--jt-base)" }}>
                 <th style={{ padding:"4px 8px", textAlign:"center", color:"var(--jt-text-mute)", fontWeight:500, fontSize:10, position:"sticky", left:0, top:32, background:"var(--jt-base)", zIndex:12 }}>&nbsp;</th>
                 {assignedDrivers.map((d,dri)=>
                   rates.map((r,ri)=>{
@@ -4015,7 +4015,7 @@ const Dashboard = ({ accent, setPage }) => {
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:20 }}>
         <div>
           <div style={{ fontSize:12, color:"#645F6E", marginBottom:3 }}>{dateStr}</div>
-          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>概況</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"var(--jt-accent)",background:"var(--jt-base)",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>概況</div>
           <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", color:"#393443" }}>経営ダッシュボード</div>
           <div style={{ fontSize:11.5, color:"#645F6E", marginTop:3 }}>業務の全体把握・通知ボード ／ 経営判断は <span style={{ color:accent, fontWeight:600, cursor:"pointer", textDecoration:"underline" }} onClick={()=>setPage("pl")}>収支管理</span> へ</div>
         </div>
@@ -4059,7 +4059,7 @@ const Dashboard = ({ accent, setPage }) => {
                       <span style={{ fontWeight:500 }}>{r.name}</span>
                       <span style={{ fontWeight:700 }}>{fmt(r.sell)}</span>
                     </div>
-                    <div style={{ height:3, background:"#E9E7EE", borderRadius:2 }}>
+                    <div style={{ height:3, background:"var(--jt-base)", borderRadius:2 }}>
                       <div style={{ width: dispTotalSell>0 ? `${(r.sell/dispTotalSell)*100}%` : 0, height:"100%", background:accent+"80", borderRadius:2 }}/>
                     </div>
                   </div>
@@ -4079,7 +4079,7 @@ const Dashboard = ({ accent, setPage }) => {
               return (
               <div key={a.id} style={{ display:"flex", gap:8, padding:"9px 20px", cursor:"pointer" }}
                 onClick={()=>setPage("announce")}
-                onMouseEnter={e=>e.currentTarget.style.background="#E9E7EE"}
+                onMouseEnter={e=>e.currentTarget.style.background="var(--jt-base)"}
                 onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
                 {unread && <div style={{ width:5, height:5, borderRadius:"50%", background:accent, marginTop:6, flexShrink:0 }}/>}
                 {!unread && <div style={{ width:5, flexShrink:0 }}/>}
@@ -4438,7 +4438,7 @@ const DriversPage = ({ accent, setPage }) => {
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
         <div>
-          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>荷主・人員管理</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"var(--jt-accent)",background:"var(--jt-base)",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>荷主・人員管理</div>
           <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", color:"#393443" }}>ドライバー管理</div>
           <div style={{ fontSize:11.5, color:"#645F6E", marginTop:3 }}>自社 {inhouse}名・協力会社 {partner}名／雇用形態・担当エリア・担当荷主・担当車両を管理（月次の売上・支払・粗利は「ドライバー別収支」へ）</div>
         </div>
@@ -4632,7 +4632,7 @@ const SafetyPage = ({ accent }) => {
 
   return (
     <div>
-      <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>荷主・人員管理</div>
+      <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"var(--jt-accent)",background:"var(--jt-base)",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>荷主・人員管理</div>
       <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", color:"var(--jt-text)", marginBottom:20 }}>安全管理</div>
 
       {/* KPIカード */}
@@ -4833,7 +4833,7 @@ const FAQPage = ({ accent }) => {
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
         <div>
-          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>業務支援</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"var(--jt-accent)",background:"var(--jt-base)",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>業務支援</div>
           <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", color:"#393443" }}>FAQ（よくある質問）</div>
         </div>
         <div style={{ fontSize:12, color:"#645F6E" }}>{kw ? `該当${filtered.flatMap(c=>c.items).length}件 / 全${faqs.flatMap(c=>c.items).length}件` : `全${faqs.flatMap(c=>c.items).length}件`}</div>
@@ -4939,7 +4939,7 @@ const ManualPage = ({ accent }) => {
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16 }}>
         <div>
-          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>業務支援</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"var(--jt-accent)",background:"var(--jt-base)",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>業務支援</div>
           <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", color:"#393443" }}>業務マニュアル</div>
         </div>
         <div style={{ fontSize:12, color:"#A09AAB" }}>{isFiltered ? `該当${filteredCount}件 / 全${totalCount}件` : `全${totalCount}件`}</div>
@@ -5069,7 +5069,7 @@ const ContactPage = ({ accent }) => {
   return (
     <div>
       <div>
-        <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>業務支援</div>
+        <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"var(--jt-accent)",background:"var(--jt-base)",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>業務支援</div>
         <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", marginBottom:20, color:"var(--jt-text)" }}>問い合わせフォーム</div>
       </div>
       <div style={{ display:"grid", gridTemplateColumns:"1fr 300px", gap:20, alignItems:"start" }}>
@@ -5190,7 +5190,7 @@ const TodoPage = ({ accent }) => {
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
         <div>
-          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>概況</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"var(--jt-accent)",background:"var(--jt-base)",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>概況</div>
           <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", color:"#393443" }}>ToDoリスト</div>
           <div style={{ fontSize:12, color:"#A09AAB", marginTop:2 }}>未完了 {stats.active}件{stats.overdue>0?` / 期限切れ ${stats.overdue}件`:""}{stats.today>0?` / 本日締切 ${stats.today}件`:""}</div>
         </div>
@@ -5366,7 +5366,7 @@ const ParentClientsPage = ({ accent }) => {
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
         <div>
-          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>荷主・人員管理</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"var(--jt-accent)",background:"var(--jt-base)",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>荷主・人員管理</div>
           <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", color:"var(--jt-text)" }}>荷主管理</div>
           <div style={{ fontSize:12, color:"var(--jt-text-sub)", marginTop:2 }}>発注元・元請け・親会社など、現在の荷主の上位にあたる取引先を登録</div>
         </div>
@@ -5527,7 +5527,7 @@ const ParentClientsPage = ({ accent }) => {
       {/* 未紐付けリスト */}
       {unassignedClients.length>0 && (
         <Card style={{ padding:16, marginTop:16 }}>
-          <div style={{ fontSize:12, fontWeight:700, color:"var(--jt-alert-lt)", marginBottom:10 }}>⚠ 上位荷主が未設定の荷主 ({unassignedClients.length}件)</div>
+          <div style={{ fontSize:12, fontWeight:700, color:"var(--jt-alert)", marginBottom:10 }}>⚠ 上位荷主が未設定の荷主 ({unassignedClients.length}件)</div>
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(220px, 1fr))", gap:8 }}>
             {unassignedClients.map(c=>(
               <div key={c.id} style={{ display:"flex", gap:6, alignItems:"center", padding:"6px 8px", background:"var(--jt-base)", boxShadow:"var(--jt-raised-sm)", borderRadius:13 }}>
@@ -5632,7 +5632,7 @@ function AppearanceSettings() {
 
   return (
     <div style={S.page}>
-      <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>設定</div>
+      <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"var(--jt-accent)",background:"var(--jt-base)",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>設定</div>
       <h1 style={S.h1}>外観設定（配色テーマ）</h1>
       <div style={S.note}>
         罫線・アクセント・アラート・背景・テキストの各色をカスタマイズできます。
@@ -5935,7 +5935,7 @@ const VehiclesPage = ({ accent }) => {
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
         <div>
-          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>荷主・人員管理</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"var(--jt-accent)",background:"var(--jt-base)",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>荷主・人員管理</div>
           <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", color:"#393443" }}>車両管理</div>
           <div style={{ fontSize:12, color:"#A09AAB", marginTop:2 }}>全{vehicleMaster.length}台 ／ 車検期限30日以内: {vehicleMaster.filter(v=>{const d=daysUntil(v.inspection); return d>=0 && d<=30;}).length}台 ／ 期限切れ: {vehicleMaster.filter(v=>daysUntil(v.inspection)<0).length}台</div>
         </div>
@@ -6060,7 +6060,7 @@ const VehiclesPage = ({ accent }) => {
               </div>
 
               {showResForm && (
-                <div style={{ marginTop:10, padding:12, background:"#E9E7EE", borderRadius:6, border:"1px solid #DEDAE5" }}>
+                <div style={{ marginTop:10, padding:12, background:"var(--jt-base)", borderRadius:6, border:"1px solid #DEDAE5" }}>
                   <div style={{ fontSize:11, color:"var(--jt-text-sub)", marginBottom:4 }}>予約日</div>
                   <input type="date" value={resDraft.date} onChange={e=>onResDate(e.target.value)}
                     style={{ width:"100%", padding:"6px 10px", border:"1px solid #DEDAE5", borderRadius:4, fontSize:13, marginBottom:6, boxShadow:"inset 2px 2px 4px #CECAD5" }}/>
@@ -6077,7 +6077,7 @@ const VehiclesPage = ({ accent }) => {
               )}
 
               {showMaintForm && (
-                <div onBlur={e=>{ if(!e.currentTarget.contains(e.relatedTarget)) commitMaint(); }} style={{ marginTop:10, padding:12, background:"#E9E7EE", borderRadius:6, border:"1px solid #DEDAE5" }}>
+                <div onBlur={e=>{ if(!e.currentTarget.contains(e.relatedTarget)) commitMaint(); }} style={{ marginTop:10, padding:12, background:"var(--jt-base)", borderRadius:6, border:"1px solid #DEDAE5" }}>
                   <div style={{ fontSize:11, color:"var(--jt-text-sub)", marginBottom:4 }}>整備日</div>
                   <input type="date" value={maintDraft.date} onChange={e=>setMaintDraft({...maintDraft, date:e.target.value})}
                     style={{ width:"100%", padding:"6px 10px", border:"1px solid #DEDAE5", borderRadius:4, fontSize:13, marginBottom:6, boxShadow:"inset 2px 2px 4px #CECAD5" }}/>
@@ -6463,7 +6463,7 @@ const DispatchPage = ({ accent, setPage }) => {
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-end", marginBottom:14 }}>
         <div>
-          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>荷主・人員管理</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"var(--jt-accent)",background:"var(--jt-base)",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>荷主・人員管理</div>
           <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", color:"var(--jt-text)" }}>配車管理</div>
           <div style={{ fontSize:12, color:"var(--jt-text-mute)", marginTop:2 }}>ドライバー {drivers.length}名・荷主 {allClientsLive().length}社／週単位で配車とシフトを編集・保存できます</div>
         </div>
@@ -6539,9 +6539,9 @@ const DispatchPage = ({ accent, setPage }) => {
           { label:"稼働ドライバー", value:`${activeDriverIds.size}名`, sub:`全${drivers.length}名中`, color:"#6E9E78" },
           { label:"空き枠（平日）", value:`${openSlots}`, sub:"未配車セル", color:openSlots>0?"#C39A52":"#A09AAB" },
         ] : [
-          { label:"今週のべ出勤", value:`${weekWork}件`, sub:"日勤+早番+遅番", color:"#7E6593" },
+          { label:"今週のべ出勤", value:`${weekWork}件`, sub:"日勤+早番+遅番", color:"var(--jt-accent)" },
           { label:"今週のべ休", value:`${weekOff}件`, sub:"公休等", color:"#A09AAB" },
-          { label:"今週のべ有休", value:`${weekPaid}件`, sub:"有給取得", color:"#7E6593" },
+          { label:"今週のべ有休", value:`${weekPaid}件`, sub:"有給取得", color:"var(--jt-accent)" },
           { label:todayInWeek?"本日 出勤予定":"シフト設定済み", value: todayInWeek?`${shiftCount(todayDk,["日勤","早番","遅番"])}名`:`${weekDays.filter(wd=>Object.keys(shifts[wd.dk]||{}).length).length}日`, sub: todayInWeek?`休 ${shiftCount(todayDk,["休","有休"])}名`:"今週", color:"#6E9E78" },
         ]).map(k=>(
           <Card key={k.label} style={{ padding:"14px 18px" }}>
@@ -6934,7 +6934,7 @@ const AttendancePage = ({ accent }) => {
 
   return (
     <div>
-      <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>荷主・人員管理</div>
+      <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"var(--jt-accent)",background:"var(--jt-base)",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>荷主・人員管理</div>
       <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", marginBottom:16, color:"#393443" }}>勤怠管理</div>
 
       {/* タブ */}
@@ -6956,7 +6956,7 @@ const AttendancePage = ({ accent }) => {
             {[
               { label:"本日出勤", value:`${driverSummary.filter(d=>["出勤","出勤中","早番","遅番"].includes(d.todaySt)).length}名`, sub:`全${driverSummary.length}名中`, color:"#6E9E78" },
               { label:`${_monthLabel} 配車のべ日数${_isFallback ? ` (${REF_MONTH_LABEL}実績未入力)` : ""}`, value:`${driverSummary.reduce((s,d)=>s+d.workDays,0)}日`, sub:"確定・実績ベース", color:accent },
-              { label:"本日有給", value:`${driverSummary.filter(d=>d.todaySt==="有給").length}名`, sub:"取得中", color:"#7E6593" },
+              { label:"本日有給", value:`${driverSummary.filter(d=>d.todaySt==="有給").length}名`, sub:"取得中", color:"var(--jt-accent)" },
               { label:"本日休日", value:`${driverSummary.filter(d=>d.todaySt==="休日").length}名`, sub:"シフト", color:"#645F6E" },
             ].map(k=>(
               <Card key={k.label} style={{ padding:"14px 18px" }}>
@@ -7014,7 +7014,7 @@ const AttendancePage = ({ accent }) => {
                               ) : (
                               <table style={{ width:"100%", borderCollapse:"collapse", fontSize:12 }}>
                                 <thead>
-                                  <tr style={{ background:"#E9E7EE" }}>
+                                  <tr style={{ background:"var(--jt-base)" }}>
                                     {["日付","状態","担当荷主"].map(h=>(
                                       <th key={h} style={{ padding:"6px 12px", textAlign:"left", color:"var(--jt-text-sub)", fontWeight:500 }}>{h}</th>
                                     ))}
@@ -7052,10 +7052,10 @@ const AttendancePage = ({ accent }) => {
           {/* 週ナビ */}
           <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:16 }}>
             <button onClick={()=>setWeekOffset(w=>w-1)}
-              style={{ padding:"5px 12px", border:"1.5px solid #DEDAE5", borderRadius:4, background:"#E9E7EE", cursor:"pointer", fontSize:13, color:"#645F6E" }}>＜ 前週</button>
+              style={{ padding:"5px 12px", border:"1.5px solid #DEDAE5", borderRadius:4, background:"var(--jt-base)", cursor:"pointer", fontSize:13, color:"#645F6E" }}>＜ 前週</button>
             <span style={{ fontWeight:600, fontSize:14 }}>{weekLabel}</span>
             <button onClick={()=>setWeekOffset(w=>w+1)}
-              style={{ padding:"5px 12px", border:"1.5px solid #DEDAE5", borderRadius:4, background:"#E9E7EE", cursor:"pointer", fontSize:13, color:"#645F6E" }}>次週 ＞</button>
+              style={{ padding:"5px 12px", border:"1.5px solid #DEDAE5", borderRadius:4, background:"var(--jt-base)", cursor:"pointer", fontSize:13, color:"#645F6E" }}>次週 ＞</button>
             {weekOffset!==0&&<button onClick={()=>setWeekOffset(0)}
               style={{ padding:"5px 12px", border:"none", borderRadius:13, background:"var(--jt-base)", color:accent, cursor:"pointer", fontSize:12, fontWeight:600, boxShadow:"var(--jt-inset)" }}>今週</button>}
           </div>
@@ -7247,7 +7247,7 @@ const ApplyPage = ({ accent }) => {
 
   return (
     <div>
-      <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>荷主・人員管理</div>
+      <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"var(--jt-accent)",background:"var(--jt-base)",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>荷主・人員管理</div>
       <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", color:"#393443", marginBottom:20 }}>各種申請</div>
 
       {/* 申請種別 */}
