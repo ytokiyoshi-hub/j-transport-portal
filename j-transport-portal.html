@@ -97,22 +97,29 @@
     .jt-content [style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
   }
 
-  /* ════════ Soft UI（ニューモーフィズム）＋ 抑えめラベンダー テーマ（全体スキン） ════════ */
+  /* ════════ Soft UI（ニューモーフィズム）＋ 抑えめラベンダー ＝ reference-site 準拠の確定値 ════════ */
   :root {
-    --surface:#E9E7EC; --surface-2:#EFEEF2; --nm-light:#FFFFFF; --nm-dark:#C9C6D0;
-    --text-strong:#2F2B36; --text:#3C3845; --text-secondary:#615C6E; --text-muted:#948FA0;
-    --accent:#7E6593; --accent-strong:#6A5280; --accent-tint:#ECE6F1;
-    --success:#4F8A63; --warning:#94701F; --danger:#A94E55;
-    --radius-sm:10px; --radius-md:14px; --radius-lg:18px; --radius-xl:22px;
-    --elev-raised:6px 6px 14px var(--nm-dark), -6px -6px 14px var(--nm-light);
+    --surface:#E9E7EE; --surface-2:#EFEDF3; --surface-well:#EDEBF1; --nm-light:#FFFFFF; --nm-dark:#CECAD5;
+    --text-strong:#393443; --text:#393443; --text-secondary:#645F6E; --text-muted:#A09AAB; --text-nav:#5C5766;
+    --accent:#7E6593; --accent-strong:#6A5280; --accent-grad-top:#917AA4; --accent-tint:#EFEDF3;
+    --success:#5E8C68; --success-bg:#E6EFE4; --warning:#8C6A2E; --warning-bg:#F2EBDC; --warning-num:#C39A52;
+    --danger:#B05A60; --danger-bg:#F3E6E3; --neutral-bg:#ECEAF0;
+    --row-border:#DEDAE5; --head-border:#DBD6E2;
+    --radius-sm:11px; --radius-md:13px; --radius-lg:18px; --radius-xl:22px; --radius-pill:20px;
+    --elev-raised:8px 8px 18px var(--nm-dark), -8px -8px 18px var(--nm-light);
     --elev-raised-sm:4px 4px 9px var(--nm-dark), -4px -4px 9px var(--nm-light);
+    --elev-raised-xs:3px 3px 7px var(--nm-dark), -3px -3px 7px var(--nm-light);
     --elev-inset:inset 3px 3px 7px var(--nm-dark), inset -3px -3px 7px var(--nm-light);
     --elev-inset-sm:inset 2px 2px 5px var(--nm-dark), inset -2px -2px 5px var(--nm-light);
+    --elev-nav:inset 4px 4px 8px var(--nm-dark), inset -4px -4px 8px var(--nm-light);
     --elev-float:0 18px 50px rgba(60,55,75,.18);
     --font-sans:'Plus Jakarta Sans','Noto Sans JP',system-ui,-apple-system,sans-serif;
   }
   html, body, .jt-shell, .jt-main, .jt-content, .jt-sidebar, .jt-main-header { background: var(--surface) !important; }
-  body { font-family: var(--font-sans) !important; color: var(--text) !important; }
+  body { font-family: var(--font-sans) !important; color: var(--text) !important; font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; }
+  /* サイドバー/ヘッダーは方向性のフロート影（参照サイト準拠） */
+  .jt-sidebar { box-shadow: 8px 0 26px rgba(128,122,140,.16); }
+  .jt-main-header { box-shadow: 0 6px 18px rgba(128,122,140,.14); position: relative; z-index: 5; }
   /* カード=浮き（白カードを面色＋二重シャドウへ、定義用1pxボーダー削除） */
   .jt-card { background: var(--surface) !important; border: none !important; box-shadow: var(--elev-raised); border-radius: var(--radius-lg) !important; }
   .jt-card .jt-card { box-shadow: var(--elev-raised-sm); }
@@ -120,18 +127,22 @@
   .jt-content input:not([type="color"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]),
   .jt-content select, .jt-content textarea {
     background: var(--surface) !important; border: none !important;
-    box-shadow: var(--elev-inset-sm); border-radius: var(--radius-sm) !important; color: var(--text) !important;
+    box-shadow: var(--elev-inset-sm); border-radius: var(--radius-md) !important; color: var(--text) !important;
   }
   .jt-content td input, .jt-content th input, .jt-content td select { box-shadow: none !important; background: transparent !important; border-radius: 0 !important; }
   .jt-content input:focus, .jt-content select:focus, .jt-content textarea:focus { outline: none !important; box-shadow: var(--elev-inset-sm), 0 0 0 2px rgba(126,101,147,.55) !important; }
   .jt-content td input:focus, .jt-content th input:focus { box-shadow: inset 0 0 0 2px rgba(126,101,147,.55) !important; }
-  /* 罫線をニュートラルグレーに */
-  table td, table th { border-color: var(--nm-dark) !important; }
+  /* 罫線を参照サイトのグレーに */
+  table td, table th { border-color: var(--row-border) !important; }
   /* ボタン=ソフトに浮く（角丸＋控えめ二重シャドウ）。表セル内の極小ボタンは除外 */
   .jt-content button:not(td button):not(th button), .jt-main-header button {
     border-radius: var(--radius-md) !important; box-shadow: var(--elev-raised-sm);
   }
   .jt-content button:not(td button):not(th button):active, .jt-main-header button:active { box-shadow: var(--elev-inset-sm); }
+  /* スクロールバー（参照サイト準拠） */
+  ::-webkit-scrollbar { width:9px; height:9px; }
+  ::-webkit-scrollbar-thumb { background:#CECAD5; border-radius:11px; }
+  ::-webkit-scrollbar-track { background:transparent; }
 </style>
 </head>
 <body>
