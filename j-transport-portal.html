@@ -1357,7 +1357,7 @@ const PLPage = ({ accent, setPage }) => {
       {/* ── ヘッダ ── */}
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:18 }}>
         <div>
-          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>財務・請求管理</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>財務・請求管理</div>
           <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", display:"flex", alignItems:"center", gap:10, color:"var(--jt-text)" }}>
             収支管理 <span style={{ fontSize:11, padding:"2px 8px", background:accent+"22", color:accent, borderRadius:99, fontWeight:600 }}>経営分析室</span>
           </div>
@@ -1733,7 +1733,7 @@ const RateMasterPage = ({ accent, setPage }) => {
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
         <div>
-          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>財務・請求管理</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>財務・請求管理</div>
           <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", color:"#393443" }}>単価マスタ管理</div>
           <div style={{ fontSize:12, color:"#A09AAB", marginTop:2 }}>荷主ごとの売単価・支払単価を一元管理</div>
         </div>
@@ -1748,7 +1748,7 @@ const RateMasterPage = ({ accent, setPage }) => {
             }} style={{ padding:"7px 16px", background:"var(--jt-base)", color:"var(--jt-text-sub)", border:"none", borderRadius:6, fontSize:13, fontWeight:600, cursor:"pointer", boxShadow:"var(--jt-raised-sm)" }}>
             CSVエクスポート
           </button>
-          <button onClick={()=>{ setForm({ ...blankForm, code: nextCode() }); addCommittedRef.current = false; setShowAdd(true); }} style={{ padding:"7px 16px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:6, fontSize:13, fontWeight:700, cursor:"pointer", boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF,inset 0 1px 0 rgba(255,255,255,.28)" }}>
+          <button onClick={()=>{ setForm({ ...blankForm, code: nextCode() }); addCommittedRef.current = false; setShowAdd(true); }} style={{ padding:"7px 16px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:6, fontSize:13, fontWeight:700, cursor:"pointer", boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>
             + 荷主追加
           </button>
         </div>
@@ -2052,7 +2052,7 @@ const RateMasterPage = ({ accent, setPage }) => {
                 荷主コードと荷主名を入力すると自動登録
               </span>
               <button onClick={closeAdd}
-                style={{ padding:"11px 28px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:6, fontWeight:700, fontSize:13, cursor:"pointer", boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF,inset 0 1px 0 rgba(255,255,255,.28)" }}>完了</button>
+                style={{ padding:"11px 28px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:6, fontWeight:700, fontSize:13, cursor:"pointer", boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>完了</button>
             </div>
           </div>
         </div>
@@ -2337,7 +2337,7 @@ const DriverFinancePage = ({ accent }) => {
 
   return (
     <div>
-      <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>財務・請求管理</div>
+      <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>財務・請求管理</div>
       <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", marginBottom:4, color:"var(--jt-text)" }}>ドライバー別収支</div>
       <div style={{ fontSize:12, color:"#A09AAB", marginBottom:20 }}>{_monthLabel}分 ／ 日次実績にもとづく実支払額（按分ではなく実数集計）</div>
 
@@ -2434,7 +2434,7 @@ const DriverFinancePage = ({ accent }) => {
 
             <div style={{ marginTop:14, display:"flex", gap:8 }}>
               <button onClick={()=>setSlipDriver(selSummary)}
-                style={{ flex:1, padding:"9px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:13, fontWeight:700, fontSize:13, cursor:"pointer", boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF,inset 0 1px 0 rgba(255,255,255,.28)" }}>支払明細書を発行</button>
+                style={{ flex:1, padding:"9px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:13, fontWeight:700, fontSize:13, cursor:"pointer", boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>支払明細書を発行</button>
               <button onClick={()=>exportCSV(selSummary)}
                 style={{ flex:1, padding:"9px", border:"none", background:"var(--jt-base)", color:"var(--jt-text-sub)", borderRadius:13, fontSize:13, cursor:"pointer", fontWeight:600, boxShadow:"var(--jt-raised-sm)" }}>CSV出力</button>
             </div>
@@ -2668,10 +2668,10 @@ const InvoicePage = ({ accent }) => {
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
         <div>
-          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>財務・請求管理</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>財務・請求管理</div>
           <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", color:"#393443" }}>請求管理</div>
         </div>
-        <button onClick={()=>{ const ids=invoices.filter(i=>effStatus(i)==="未請求").map(i=>i.id); if(ids.length===0){ showToast("発行対象の請求書はありません"); return; } markIssued(ids); showToast(ids.length+"件の請求書を発行しました"); }} style={{ padding:"7px 16px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", fontWeight:700, border:"none", borderRadius:6, fontSize:13, cursor:"pointer", boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF,inset 0 1px 0 rgba(255,255,255,.28)" }}>+ 請求書を一括作成</button>
+        <button onClick={()=>{ const ids=invoices.filter(i=>effStatus(i)==="未請求").map(i=>i.id); if(ids.length===0){ showToast("発行対象の請求書はありません"); return; } markIssued(ids); showToast(ids.length+"件の請求書を発行しました"); }} style={{ padding:"7px 16px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", fontWeight:700, border:"none", borderRadius:6, fontSize:13, cursor:"pointer", boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>+ 請求書を一括作成</button>
       </div>
       <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12, marginBottom:16 }}>
         {[
@@ -2721,7 +2721,7 @@ const InvoicePage = ({ accent }) => {
                     <div style={{ display:"flex", gap:6 }} onClick={e=>e.stopPropagation()}>
                       {effStatus(inv)==="未請求" && (
                         <button onClick={()=>{ markIssued([inv.id]); showToast("請求書を発行しました"); }}
-                          style={{ padding:"4px 10px", border:"none", borderRadius:4, background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", fontSize:11, fontWeight:700, cursor:"pointer", boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF,inset 0 1px 0 rgba(255,255,255,.28)" }}>発行</button>
+                          style={{ padding:"4px 10px", border:"none", borderRadius:4, background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", fontSize:11, fontWeight:700, cursor:"pointer", boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>発行</button>
                       )}
                       {issuedSet.has(inv.id) && <span style={{ fontSize:11, color:"#6E9E78", fontWeight:600 }}>発行済</span>}
                       {effStatus(inv)==="遅延" && !remindedSet.has(inv.id) && (
@@ -2896,13 +2896,13 @@ const InvoicePage = ({ accent }) => {
             <div className="no-print" style={{ display:"flex", flexDirection:"column", gap:8 }}>
               {effStatus(sel)==="未請求" && (
                 <button onClick={()=>{ markIssued([sel.id]); showToast("請求書を発行しました"); }}
-                  style={{ padding:"10px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:6, fontWeight:700, cursor:"pointer", boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF,inset 0 1px 0 rgba(255,255,255,.28)", fontSize:13 }}>
+                  style={{ padding:"10px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:6, fontWeight:700, cursor:"pointer", boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)", fontSize:13 }}>
                   請求書を発行する
                 </button>
               )}
               {(effStatus(sel)==="請求済" || effStatus(sel)==="遅延") && (
                 <button onClick={()=>{ setPaidSet(s=>new Set([...s,sel.id])); showToast("入金済にしました"); }}
-                  style={{ padding:"10px", background:"#6E9E78", color:"#fff", border:"none", borderRadius:6, fontWeight:600, fontSize:13, cursor:"pointer", boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF,inset 0 1px 0 rgba(255,255,255,.28)" }}>
+                  style={{ padding:"10px", background:"#6E9E78", color:"#fff", border:"none", borderRadius:6, fontWeight:600, fontSize:13, cursor:"pointer", boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>
                   入金済にする
                 </button>
               )}
@@ -2913,7 +2913,7 @@ const InvoicePage = ({ accent }) => {
                 </button>
               )}
               <button onClick={()=>setPreview(sel)}
-                style={{ padding:"10px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:6, fontWeight:700, cursor:"pointer", boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF,inset 0 1px 0 rgba(255,255,255,.28)", fontSize:13 }}>
+                style={{ padding:"10px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:6, fontWeight:700, cursor:"pointer", boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)", fontSize:13 }}>
                 請求書プレビュー / 印刷・PDF保存
               </button>
             </div>
@@ -2936,7 +2936,7 @@ const InvoicePage = ({ accent }) => {
                 <div style={{ fontWeight:700, fontSize:13, color:"#393443" }}>請求書プレビュー — {preview.id}</div>
                 <div style={{ display:"flex", gap:8 }}>
                   <button onClick={()=>printPaper(preview)}
-                    style={{ padding:"7px 16px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:6, fontWeight:700, cursor:"pointer", boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF,inset 0 1px 0 rgba(255,255,255,.28)", fontSize:12.5 }}>印刷 / PDF保存</button>
+                    style={{ padding:"7px 16px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:6, fontWeight:700, cursor:"pointer", boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)", fontSize:12.5 }}>印刷 / PDF保存</button>
                   <button onClick={()=>setPreview(null)}
                     style={{ padding:"7px 14px", background:"var(--jt-base)", color:"var(--jt-text-sub)", border:"none", borderRadius:6, fontWeight:600, fontSize:12.5, cursor:"pointer", boxShadow:"var(--jt-raised-sm)" }}>閉じる</button>
                 </div>
@@ -3095,7 +3095,7 @@ const ClientPage = ({ accent, setPage }) => {
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
         <div>
-          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>荷主・人員管理</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>荷主・人員管理</div>
           <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", color:"#393443" }}>案件管理</div>
           <div style={{ fontSize:12, color:"#A09AAB", marginTop:2 }}>全{clients.length + extraClients.length}社（自社{clients.length}＋追加{extraClients.length}）{search && `／該当${list.length}社`}</div>
         </div>
@@ -3610,7 +3610,7 @@ const DailyInputPage = ({ accent }) => {
       {/* ヘッダー */}
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:8, gap:12, flexWrap:"wrap" }}>
         <div>
-          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>財務・請求管理</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>財務・請求管理</div>
           <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", color:"var(--jt-text)" }}>日次実績入力</div>
           <div style={{ fontSize:12, color:"var(--jt-text-sub)", marginTop:2 }}>月次一覧・スプレッドシート形式</div>
         </div>
@@ -3976,7 +3976,7 @@ const Dashboard = ({ accent, setPage }) => {
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:20 }}>
         <div>
           <div style={{ fontSize:12, color:"#645F6E", marginBottom:3 }}>{dateStr}</div>
-          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>概況</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>概況</div>
           <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", color:"#393443" }}>経営ダッシュボード</div>
           <div style={{ fontSize:11.5, color:"#645F6E", marginTop:3 }}>業務の全体把握・通知ボード ／ 経営判断は <span style={{ color:accent, fontWeight:600, cursor:"pointer", textDecoration:"underline" }} onClick={()=>setPage("pl")}>収支管理</span> へ</div>
         </div>
@@ -4399,7 +4399,7 @@ const DriversPage = ({ accent, setPage }) => {
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
         <div>
-          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>荷主・人員管理</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>荷主・人員管理</div>
           <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", color:"#393443" }}>ドライバー管理</div>
           <div style={{ fontSize:11.5, color:"#645F6E", marginTop:3 }}>自社 {inhouse}名・協力会社 {partner}名／雇用形態・担当エリア・担当荷主・担当車両を管理（月次の売上・支払・粗利は「ドライバー別収支」へ）</div>
         </div>
@@ -4593,7 +4593,7 @@ const SafetyPage = ({ accent }) => {
 
   return (
     <div>
-      <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>荷主・人員管理</div>
+      <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>荷主・人員管理</div>
       <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", color:"var(--jt-text)", marginBottom:20 }}>安全管理</div>
 
       {/* KPIカード */}
@@ -4794,7 +4794,7 @@ const FAQPage = ({ accent }) => {
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
         <div>
-          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>業務支援</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>業務支援</div>
           <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", color:"#393443" }}>FAQ（よくある質問）</div>
         </div>
         <div style={{ fontSize:12, color:"#645F6E" }}>{kw ? `該当${filtered.flatMap(c=>c.items).length}件 / 全${faqs.flatMap(c=>c.items).length}件` : `全${faqs.flatMap(c=>c.items).length}件`}</div>
@@ -4900,7 +4900,7 @@ const ManualPage = ({ accent }) => {
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16 }}>
         <div>
-          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>業務支援</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>業務支援</div>
           <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", color:"#393443" }}>業務マニュアル</div>
         </div>
         <div style={{ fontSize:12, color:"#A09AAB" }}>{isFiltered ? `該当${filteredCount}件 / 全${totalCount}件` : `全${totalCount}件`}</div>
@@ -5024,13 +5024,13 @@ const ContactPage = ({ accent }) => {
       </div>
       <div style={{ fontSize:18, fontWeight:700, marginBottom:8 }}>送信しました</div>
       <div style={{ fontSize:13, color:"var(--jt-text-sub)", marginBottom:24 }}>担当部署より折り返しご連絡いたします</div>
-      <button onClick={()=>{ setSent(false); setForm({ dept:"選択してください", subject:"", body:"", urgency:"通常" }); }} style={{ padding:"10px 24px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:6, fontWeight:700, fontSize:14, boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF,inset 0 1px 0 rgba(255,255,255,.28)" }}>戻る</button>
+      <button onClick={()=>{ setSent(false); setForm({ dept:"選択してください", subject:"", body:"", urgency:"通常" }); }} style={{ padding:"10px 24px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:6, fontWeight:700, fontSize:14, boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>戻る</button>
     </div>
   );
   return (
     <div>
       <div>
-        <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>業務支援</div>
+        <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>業務支援</div>
         <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", marginBottom:20, color:"var(--jt-text)" }}>問い合わせフォーム</div>
       </div>
       <div style={{ display:"grid", gridTemplateColumns:"1fr 300px", gap:20, alignItems:"start" }}>
@@ -5060,7 +5060,7 @@ const ContactPage = ({ accent }) => {
               }
             </div>
           ))}
-          <button onClick={()=>{ const ok = depts.some(d=>d.name===form.dept) && form.subject.trim() && form.body.trim(); if(!ok){ showToast("問い合わせ先・件名・内容を入力してください","error"); return; } setSent(true); }} style={{ width:"100%", padding:13, background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:6, fontWeight:700, fontSize:14, boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF,inset 0 1px 0 rgba(255,255,255,.28)" }}>送信する</button>
+          <button onClick={()=>{ const ok = depts.some(d=>d.name===form.dept) && form.subject.trim() && form.body.trim(); if(!ok){ showToast("問い合わせ先・件名・内容を入力してください","error"); return; } setSent(true); }} style={{ width:"100%", padding:13, background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:6, fontWeight:700, fontSize:14, boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>送信する</button>
         </Card>
         <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
           {depts.map((d,i)=>(
@@ -5151,7 +5151,7 @@ const TodoPage = ({ accent }) => {
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
         <div>
-          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>概況</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>概況</div>
           <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", color:"#393443" }}>ToDoリスト</div>
           <div style={{ fontSize:12, color:"#A09AAB", marginTop:2 }}>未完了 {stats.active}件{stats.overdue>0?` / 期限切れ ${stats.overdue}件`:""}{stats.today>0?` / 本日締切 ${stats.today}件`:""}</div>
         </div>
@@ -5181,7 +5181,7 @@ const TodoPage = ({ accent }) => {
             placeholder="担当者（任意）"
             style={{ padding:"8px 12px", border:"none", background:"var(--jt-base)", boxShadow:"var(--jt-inset)", borderRadius:13, fontSize:13, outline:"none" }}/>
           <button onClick={add} disabled={!draft.title.trim()}
-            style={{ padding:"8px 18px", background:draft.title.trim()?"linear-gradient(180deg,#917AA4,#7E6593)":"var(--jt-line)", color:"#fff", border:"none", borderRadius:13, fontSize:13, fontWeight:600, cursor:draft.title.trim()?"pointer":"not-allowed", whiteSpace:"nowrap", boxShadow:draft.title.trim()?"var(--jt-raised-sm),4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF,inset 0 1px 0 rgba(255,255,255,.28)":"none" }}>+ 追加</button>
+            style={{ padding:"8px 18px", background:draft.title.trim()?"linear-gradient(180deg,#917AA4,#7E6593)":"var(--jt-line)", color:"#fff", border:"none", borderRadius:13, fontSize:13, fontWeight:600, cursor:draft.title.trim()?"pointer":"not-allowed", whiteSpace:"nowrap", boxShadow:draft.title.trim()?"var(--jt-raised-sm),var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)":"none" }}>+ 追加</button>
         </div>
         <textarea value={draft.note} onChange={e=>setDraft(p=>({...p,note:e.target.value}))} placeholder="メモ（任意）"
           style={{ width:"100%", padding:"8px 12px", background:"var(--jt-base)", border:"none", boxShadow:"var(--jt-inset)", borderRadius:13, fontSize:13, resize:"vertical", minHeight:50, outline:"none", fontFamily:"inherit", boxSizing:"border-box" }}/>
@@ -5219,7 +5219,7 @@ const TodoPage = ({ accent }) => {
                         <textarea value={t.note||""} onChange={e=>updateTodo(t.id,{note:e.target.value})} onBlur={()=>showToast("タスクを更新しました")}
                           placeholder="メモ" style={{ width:"100%", padding:"6px 10px", background:"var(--jt-base)", border:"none", boxShadow:"var(--jt-inset-sm)", borderRadius:13, fontSize:12, resize:"vertical", minHeight:40, fontFamily:"inherit", boxSizing:"border-box", marginBottom:6 }}/>
                         <div style={{ display:"flex", gap:6 }}>
-                          <button onClick={closeEdit} style={{ padding:"5px 14px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:4, fontSize:12, fontWeight:600, cursor:"pointer", boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF,inset 0 1px 0 rgba(255,255,255,.28)" }}>閉じる</button>
+                          <button onClick={closeEdit} style={{ padding:"5px 14px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:4, fontSize:12, fontWeight:600, cursor:"pointer", boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>閉じる</button>
                         </div>
                       </div>
                     ) : (
@@ -5327,7 +5327,7 @@ const ParentClientsPage = ({ accent }) => {
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
         <div>
-          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>荷主・人員管理</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>荷主・人員管理</div>
           <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", color:"var(--jt-text)" }}>荷主管理</div>
           <div style={{ fontSize:12, color:"var(--jt-text-sub)", marginTop:2 }}>発注元・元請け・親会社など、現在の荷主の上位にあたる取引先を登録</div>
         </div>
@@ -5509,7 +5509,7 @@ const ParentClientsPage = ({ accent }) => {
 
 // ── AppearanceSettings（配色テーマ設定画面） ─────────────────────────────
 function AppearanceSettings() {
-  const { theme, setTheme, resetTheme, presets } = useTheme();
+  const { theme, setTheme, previewTheme, resetTheme, presets } = useTheme();
   const [draft, setDraft] = React.useState(theme);
   React.useEffect(() => { setDraft(theme); }, [theme]);
 
@@ -5570,7 +5570,7 @@ function AppearanceSettings() {
 
   return (
     <div style={S.page}>
-      <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>設定</div>
+      <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>設定</div>
       <h1 style={S.h1}>外観設定（配色テーマ）</h1>
       <div style={S.note}>
         罫線・アクセント・アラート・背景・テキストの各色をカスタマイズできます。
@@ -5797,7 +5797,7 @@ const VehiclesPage = ({ accent }) => {
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
         <div>
-          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>荷主・人員管理</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>荷主・人員管理</div>
           <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", color:"#393443" }}>車両管理</div>
           <div style={{ fontSize:12, color:"#A09AAB", marginTop:2 }}>全{vehicleMaster.length}台 ／ 車検期限30日以内: {vehicleMaster.filter(v=>{const d=daysUntil(v.inspection); return d>=0 && d<=30;}).length}台 ／ 期限切れ: {vehicleMaster.filter(v=>daysUntil(v.inspection)<0).length}台</div>
         </div>
@@ -5915,7 +5915,7 @@ const VehiclesPage = ({ accent }) => {
               )}
 
               <div style={{ display:"flex", gap:8, marginTop:16 }}>
-                <button onClick={()=>{ const open=!showResForm; if(open) setResDraft(reservations[sel.id]||{date:"",note:""}); setShowResForm(open); }} style={{ flex:1, padding:"9px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:13, fontWeight:700, fontSize:13, cursor:"pointer", boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF,inset 0 1px 0 rgba(255,255,255,.28)" }}>
+                <button onClick={()=>{ const open=!showResForm; if(open) setResDraft(reservations[sel.id]||{date:"",note:""}); setShowResForm(open); }} style={{ flex:1, padding:"9px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:13, fontWeight:700, fontSize:13, cursor:"pointer", boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>
                   {reservations[sel.id]?"予約変更":"車検予約"}
                 </button>
                 <button onClick={()=>{ const open=!showMaintForm; if(open){ maintCommittedRef.current=false; setMaintDraft({date:"",item:""}); } setShowMaintForm(open); }} style={{ flex:1, padding:"9px", border:"none", background:"var(--jt-base)", color:"var(--jt-text-sub)", borderRadius:13, fontSize:13, cursor:"pointer", fontWeight:600, boxShadow:"var(--jt-raised-sm)" }}>整備記録を追加</button>
@@ -6304,7 +6304,7 @@ const DispatchPage = ({ accent, setPage }) => {
   weekDays.forEach(wd=>{ const day=dispatch[wd.dk]||{}; Object.values(day).forEach(cid=>{ if(cid) clientWeekCount[cid]=(clientWeekCount[cid]||0)+1; }); });
 
   const navBtn = { padding:"5px 12px", border:"none", borderRadius:4, background:"var(--jt-base)", cursor:"pointer", fontSize:13, color:"var(--jt-text-sub)", boxShadow:"var(--jt-raised-sm)" };
-  const actBtn = (primary)=>({ padding:"6px 12px", borderRadius:13, border:"none", background:primary?"linear-gradient(180deg,#917AA4,#7E6593)":"var(--jt-base)", color:primary?"#fff":"var(--jt-text-sub)", fontSize:12, fontWeight:primary?700:600, cursor:"pointer", boxShadow:primary?"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF,inset 0 1px 0 rgba(255,255,255,.28)":"var(--jt-raised-sm)" });
+  const actBtn = (primary)=>({ padding:"6px 12px", borderRadius:13, border:"none", background:primary?"linear-gradient(180deg,#917AA4,#7E6593)":"var(--jt-base)", color:primary?"#fff":"var(--jt-text-sub)", fontSize:12, fontWeight:primary?700:600, cursor:"pointer", boxShadow:primary?"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)":"var(--jt-raised-sm)" });
 
   const DriverCell = ({ dr }) => {
     const v = vehByDriver[dr.id];
@@ -6325,7 +6325,7 @@ const DispatchPage = ({ accent, setPage }) => {
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-end", marginBottom:14 }}>
         <div>
-          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>荷主・人員管理</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>荷主・人員管理</div>
           <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", color:"var(--jt-text)" }}>配車管理</div>
           <div style={{ fontSize:12, color:"var(--jt-text-mute)", marginTop:2 }}>ドライバー {drivers.length}名・荷主 {allClientsLive().length}社／週単位で配車とシフトを編集・保存できます</div>
         </div>
@@ -6796,7 +6796,7 @@ const AttendancePage = ({ accent }) => {
 
   return (
     <div>
-      <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>荷主・人員管理</div>
+      <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>荷主・人員管理</div>
       <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", marginBottom:16, color:"#393443" }}>勤怠管理</div>
 
       {/* タブ */}
@@ -7109,7 +7109,7 @@ const ApplyPage = ({ accent }) => {
 
   return (
     <div>
-      <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>荷主・人員管理</div>
+      <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>荷主・人員管理</div>
       <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", color:"#393443", marginBottom:20 }}>各種申請</div>
 
       {/* 申請種別 */}
@@ -7376,7 +7376,7 @@ const App = () => {
                 const active=page===item.id;
                 return (
                   <button key={item.id} onClick={()=>{ setPage(item.id); setNavOpen(false); }}
-                    style={{ width:"100%", display:"flex", alignItems:"center", gap:9, padding:"7px 10px", borderRadius:10, border:"none", outline:"none", background:active?theme.base:"transparent", boxShadow:active?"inset 4px 4px 8px #CECAD5, inset -4px -4px 8px #FFFFFF":"none", color:active?accent:theme.text, cursor:"pointer", fontFamily:"inherit", fontSize:12.5, fontWeight:active?700:400, marginBottom:1, transition:"all .1s", textAlign:"left" }}
+                    style={{ width:"100%", display:"flex", alignItems:"center", gap:9, padding:"7px 10px", borderRadius:10, border:"none", outline:"none", background:active?theme.base:"transparent", boxShadow:active?"var(--jt-inset)":"none", color:active?accent:theme.text, cursor:"pointer", fontFamily:"inherit", fontSize:12.5, fontWeight:active?700:400, marginBottom:1, transition:"all .1s", textAlign:"left" }}
                     onMouseEnter={e=>{ if(!active) e.currentTarget.style.background=theme.accentLt; }}
                     onMouseLeave={e=>{ if(!active) e.currentTarget.style.background="transparent"; }}>
                     <Ic name={item.icon} size={14} color={active?accent:theme.textSub}/>
