@@ -4407,6 +4407,8 @@ const DriversPage = ({ accent, setPage }) => {
             <button key={t} onClick={()=>setTypeFilter(t)}
               style={{ padding:"5px 14px", borderRadius:13, border:"none", background:"var(--jt-base)", color:typeFilter===t?"var(--jt-accent)":"var(--jt-text-sub)", fontSize:13, fontWeight:typeFilter===t?600:400, boxShadow:typeFilter===t?"var(--jt-inset)":"var(--jt-raised-sm)" }}>{t}</button>
           ))}
+          <button onClick={openAdd}
+            style={{ padding:"7px 16px", marginLeft:4, background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:13, fontSize:13, fontWeight:700, cursor:"pointer", boxShadow:"var(--jt-raised-sm), inset 0 1px 0 rgba(255,255,255,.28)", whiteSpace:"nowrap" }}>＋ ドライバー追加</button>
         </div>
       </div>
 
