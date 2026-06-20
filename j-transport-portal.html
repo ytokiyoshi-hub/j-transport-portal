@@ -3119,7 +3119,7 @@ const ClientPage = ({ accent, setPage }) => {
               </select>
               {parents.length === 0 && (
                 <div style={{ fontSize:11, color:"#645F6E", marginTop:6 }}>
-                  ⚠ 上位荷主が未登録です。先に <button onClick={()=>setPage("parentclients")} style={{ background:"none", border:"none", color:"var(--jt-accent)", textDecoration:"underline", cursor:"pointer", padding:0, fontSize:11, fontWeight:600, boxShadow:"none" }}>上位荷主管理</button> で登録してください。
+                  ⚠ 上位荷主が未登録です。先に <button onClick={()=>setPage("parentclients")} style={{ background:"none", border:"none", color:"var(--jt-accent)", textDecoration:"underline", cursor:"pointer", padding:0, fontSize:11, fontWeight:600, boxShadow:"none" }}>荷主管理</button> で登録してください。
                 </div>
               )}
               {parentMap[sel.id] && (() => {
