@@ -4343,7 +4343,7 @@ const DriversPage = ({ accent, setPage }) => {
   const [form, setForm] = React.useState(null); // null=閉 / {mode,id?,name,type,area}
   useEscapeToClose(!!form, ()=>setForm(null));
 
-  const drivers = driversLive(); // 追加・編集を反映した実効ドライバー一覧
+  const drivers = driversLive(extraDrivers, driverOverrides); // 追加・編集を反映した実効ドライバー一覧（自stateで即時反映）
   // ドライバー情報の管理画面（売上・支払・粗利は「ドライバー別収支」へ）
   const vehByDriver = {}; vehicleMaster.forEach(v => { if (v.driverId) vehByDriver[v.driverId] = v; });
   // 担当荷主＝単価マスタの担当ドライバー設定を反映した実効値
