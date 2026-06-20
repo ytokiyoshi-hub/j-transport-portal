@@ -711,6 +711,10 @@ function ThemeProvider({ children }) {
     r.setProperty('--jt-accent', theme.accent);
     r.setProperty('--jt-accent-dk', theme.accentDk);
     r.setProperty('--jt-accent-lt', theme.accentLt);
+    // アクセントのグラデーション（ボタン・ロゴ）。テーマ色に連動。
+    const _accLt = _mixHex(theme.accent, '#FFFFFF', 0.16);
+    r.setProperty('--jt-accent-grad', `linear-gradient(180deg, ${_accLt}, ${theme.accent})`);
+    r.setProperty('--jt-logo-grad', `linear-gradient(150deg, ${_accLt}, ${theme.accentDk || theme.accent})`);
     r.setProperty('--jt-alert', theme.alert);
     r.setProperty('--jt-alert-lt', theme.alertLt);
     r.setProperty('--jt-base', theme.base);
