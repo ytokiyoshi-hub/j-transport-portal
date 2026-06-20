@@ -2762,10 +2762,10 @@ const InvoicePage = ({ accent }) => {
                   <div>発行日: {_issueDate}</div>
                   <div>支払期限: {_fmtDate(sel.due)}</div>
                   <div>対象期間: {_periodLabel}</div>
-                  <div style={{ marginTop:14, border:"1px solid #DEDAE5", padding:10, textAlign:"left", position:"relative", overflow:"visible" }}>
+                  <div style={{ marginTop:14, border:"1px solid #DEDAE5", padding:10, textAlign:"left", position:"relative", overflow:"visible", fontSize:10.5, lineHeight:1.55 }}>
                     <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:4 }}>
                       <JtLogo size={18} />
-                      <div style={{ fontWeight:700, fontSize:13 }}>{COMPANY.name}</div>
+                      <div style={{ fontWeight:700, fontSize:12.5 }}>{COMPANY.name}</div>
                     </div>
                     <div>{COMPANY.zip} {COMPANY.addr1}</div>
                     <div>{COMPANY.addr2}</div>
