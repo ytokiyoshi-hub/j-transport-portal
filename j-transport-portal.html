@@ -1356,7 +1356,8 @@ const PLPage = ({ accent, setPage }) => {
       {/* ── ヘッダ ── */}
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:18 }}>
         <div>
-          <div style={{ fontSize:20, fontWeight:700, display:"flex", alignItems:"center", gap:10 }}>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>財務・請求管理</div>
+          <div style={{ fontSize:28, fontWeight:700, display:"flex", alignItems:"center", gap:10, color:"#393443" }}>
             収支管理 <span style={{ fontSize:11, padding:"2px 8px", background:accent+"22", color:accent, borderRadius:99, fontWeight:600 }}>経営分析室</span>
           </div>
           <div style={{ fontSize:12, color:"#9ca3af", marginTop:3 }}>
@@ -1725,7 +1726,8 @@ const RateMasterPage = ({ accent, setPage }) => {
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
         <div>
-          <div style={{ fontSize:20, fontWeight:700 }}>単価マスタ管理</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>財務・請求管理</div>
+          <div style={{ fontSize:26, fontWeight:700, color:"#393443" }}>単価マスタ管理</div>
           <div style={{ fontSize:12, color:"#9ca3af", marginTop:2 }}>荷主ごとの売単価・支払単価を一元管理</div>
         </div>
         <div style={{ display:"flex", gap:8 }}>
@@ -1961,18 +1963,18 @@ const RateMasterPage = ({ accent, setPage }) => {
                 <label style={{ flex:"0 0 132px", display:"flex", flexDirection:"column", gap:5 }}>
                   <span style={{ fontSize:12, fontWeight:600, color:"#374151" }}>荷主コード</span>
                   <input value={form.code} onChange={e=>setForm({ ...form, code:e.target.value })} placeholder="C-12"
-                    style={{ padding:"9px 12px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"ui-monospace, monospace", outline:"none" }}>
+                    style={{ padding:"9px 12px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"ui-monospace, monospace", outline:"none" }}/>
                 </label>
                 <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5 }}>
                   <span style={{ fontSize:12, fontWeight:600, color:"#374151" }}>荷主名</span>
                   <input value={form.name} onChange={e=>setForm({ ...form, name:e.target.value })} placeholder="例）新規物流株式会社"
-                    style={{ padding:"9px 12px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}>
+                    style={{ padding:"9px 12px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
                 </label>
               </div>
               <label style={{ display:"flex", flexDirection:"column", gap:5 }}>
                 <span style={{ fontSize:12, fontWeight:600, color:"#374151" }}>エリア</span>
                 <input value={form.area} onChange={e=>setForm({ ...form, area:e.target.value })} placeholder="例）東京西部・多摩"
-                  style={{ padding:"9px 12px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}>
+                  style={{ padding:"9px 12px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
               </label>
 
               <div style={{ display:"flex", gap:12 }}>
@@ -1999,18 +2001,18 @@ const RateMasterPage = ({ accent, setPage }) => {
                     <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5 }}>
                       <span style={{ fontSize:11, color:"#6b7280" }}>担当者</span>
                       <input value={form.person} onChange={e=>setForm({ ...form, person:e.target.value })} placeholder="例）物流管理部 田中様"
-                        style={{ padding:"8px 10px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}>
+                        style={{ padding:"8px 10px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
                     </label>
                     <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5 }}>
                       <span style={{ fontSize:11, color:"#6b7280" }}>電話</span>
                       <input value={form.tel} onChange={e=>setForm({ ...form, tel:e.target.value })} placeholder="例）03-1234-5678"
-                        style={{ padding:"8px 10px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}>
+                        style={{ padding:"8px 10px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
                     </label>
                   </div>
                   <label style={{ display:"flex", flexDirection:"column", gap:5 }}>
                     <span style={{ fontSize:11, color:"#6b7280" }}>請求先住所</span>
                     <input value={form.address} onChange={e=>setForm({ ...form, address:e.target.value })} placeholder="例）東京都〇〇区〇〇 1-2-3"
-                      style={{ padding:"8px 10px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}>
+                      style={{ padding:"8px 10px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
                   </label>
                 </div>
               </div>
@@ -2021,17 +2023,17 @@ const RateMasterPage = ({ accent, setPage }) => {
                   <label style={{ flex:1.4, display:"flex", flexDirection:"column", gap:5 }}>
                     <span style={{ fontSize:11, color:"#6b7280" }}>業務区分</span>
                     <input value={form.rateLabel} onChange={e=>setForm({ ...form, rateLabel:e.target.value })}
-                      style={{ padding:"8px 10px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}>
+                      style={{ padding:"8px 10px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
                   </label>
                   <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5 }}>
                     <span style={{ fontSize:11, color:"#6b7280" }}>売単価</span>
                     <input value={form.sell} onChange={e=>setForm({ ...form, sell:e.target.value })} type="number" placeholder="0"
-                      style={{ padding:"8px 10px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}>
+                      style={{ padding:"8px 10px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
                   </label>
                   <label style={{ flex:1, display:"flex", flexDirection:"column", gap:5 }}>
                     <span style={{ fontSize:11, color:"#6b7280" }}>支払単価</span>
                     <input value={form.pay} onChange={e=>setForm({ ...form, pay:e.target.value })} type="number" placeholder="0"
-                      style={{ padding:"8px 10px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}>
+                      style={{ padding:"8px 10px", border:"1.5px solid #DEDAE5", borderRadius:6, fontSize:13, fontFamily:"inherit", outline:"none" }}/>
                   </label>
                 </div>
               </div>
@@ -2319,7 +2321,8 @@ const DriverFinancePage = ({ accent }) => {
 
   return (
     <div>
-      <div style={{ fontSize:20, fontWeight:700, marginBottom:4 }}>ドライバー別収支</div>
+      <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>財務・請求管理</div>
+      <div style={{ fontSize:27, fontWeight:700, marginBottom:4, color:"#393443" }}>ドライバー別収支</div>
       <div style={{ fontSize:12, color:"#9ca3af", marginBottom:20 }}>{_monthLabel}分 ／ 日次実績にもとづく実支払額（按分ではなく実数集計）</div>
 
       <div style={{ display:"grid", gridTemplateColumns: sel?"1fr 380px":"1fr", gap:16 }}>
@@ -2648,7 +2651,10 @@ const InvoicePage = ({ accent }) => {
   return (
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
-        <div style={{ fontSize:20, fontWeight:700 }}>請求管理</div>
+        <div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>財務・請求管理</div>
+          <div style={{ fontSize:28, fontWeight:700, color:"#393443" }}>請求管理</div>
+        </div>
         <button onClick={()=>{ const ids=invoices.filter(i=>effStatus(i)==="未請求").map(i=>i.id); if(ids.length===0){ showToast("発行対象の請求書はありません"); return; } markIssued(ids); showToast(ids.length+"件の請求書を発行しました"); }} style={{ padding:"7px 16px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", fontWeight:700, border:"none", borderRadius:6, fontSize:13, cursor:"pointer", boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF,inset 0 1px 0 rgba(255,255,255,.28)" }}>+ 請求書を一括作成</button>
       </div>
       <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12, marginBottom:16 }}>
@@ -3060,7 +3066,8 @@ const ClientPage = ({ accent, setPage }) => {
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
         <div>
-          <div style={{ fontSize:20, fontWeight:700 }}>荷主管理</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>荷主・人員管理</div>
+          <div style={{ fontSize:28, fontWeight:700, color:"#393443" }}>荷主管理</div>
           <div style={{ fontSize:12, color:"#9ca3af", marginTop:2 }}>全{clients.length + extraClients.length}社（自社{clients.length}＋追加{extraClients.length}）{search && `／該当${list.length}社`}</div>
         </div>
         <div style={{ display:"flex", gap:10 }}>
@@ -3571,8 +3578,9 @@ const DailyInputPage = ({ accent }) => {
       {/* ヘッダー */}
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:8, gap:12, flexWrap:"wrap" }}>
         <div>
-          <div style={{ fontSize:20, fontWeight:700 }}>日次実績入力</div>
-          <div style={{ fontSize:12, color:"#9ca3af", marginTop:2 }}>月次一覧・スプレッドシート形式</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>財務・請求管理</div>
+          <div style={{ fontSize:28, fontWeight:700, color:"#393443" }}>日次実績入力</div>
+          <div style={{ fontSize:12, color:"#645F6E", marginTop:2 }}>月次一覧・スプレッドシート形式</div>
         </div>
         <div style={{ display:"flex", alignItems:"center", gap:8 }}>
           <span style={{ fontSize:11, color:"#9ca3af", flexShrink:0 }}>対象月</span>
@@ -3934,7 +3942,8 @@ const Dashboard = ({ accent, setPage }) => {
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:20 }}>
         <div>
           <div style={{ fontSize:12, color:"#645F6E", marginBottom:3 }}>{dateStr}</div>
-          <div style={{ fontSize:20, fontWeight:700 }}>経営ダッシュボード</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>概況</div>
+          <div style={{ fontSize:26, fontWeight:700, color:"#393443" }}>経営ダッシュボード</div>
           <div style={{ fontSize:11.5, color:"#645F6E", marginTop:3 }}>業務の全体把握・通知ボード ／ 経営判断は <span style={{ color:accent, fontWeight:600, cursor:"pointer", textDecoration:"underline" }} onClick={()=>setPage("pl")}>収支管理</span> へ</div>
         </div>
         <div style={{ textAlign:"right" }}>
@@ -4056,7 +4065,7 @@ const Dashboard = ({ accent, setPage }) => {
                 { l:"配達完了", v:7, c:accent, bg:"#E9E7EE" },
                 { l:"持戻り", v:2, c:"#B05A60", bg:"#E9E7EE" },
               ].map(s=>(
-                <div key={s.l} style={{ background:s.bg, borderRadius:8, padding:"12px", textAlign:"center" }}>
+                <div key={s.l} style={{ background:s.bg, borderRadius:8, padding:"12px", textAlign:"center", boxShadow:"inset 3px 3px 7px #CECAD5,inset -3px -3px 7px #FFFFFF" }}>
                   <div style={{ fontSize:22, fontWeight:700, color:s.c }}>{s.v}</div>
                   <div style={{ fontSize:11, color:s.c, fontWeight:500, marginTop:2 }}>{s.l}</div>
                 </div>
@@ -4222,7 +4231,10 @@ const AnnouncePage = ({ accent }) => {
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
         <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-          <div style={{ fontSize:20, fontWeight:700 }}>お知らせ</div>
+          <div>
+            <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>概況</div>
+            <div style={{ fontSize:26, fontWeight:700, color:"#393443" }}>お知らせ</div>
+          </div>
           {unreadCount>0 && <span style={{ background:"#7E6593", color:"#fff", borderRadius:99, fontSize:11, padding:"2px 8px", fontWeight:700 }}>未読 {unreadCount}</span>}
         </div>
         <button onClick={()=>setShowForm(!showForm)}
@@ -4314,7 +4326,8 @@ const DriversPage = ({ accent, setPage }) => {
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
         <div>
-          <div style={{ fontSize:20, fontWeight:700 }}>ドライバー管理</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>荷主・人員管理</div>
+          <div style={{ fontSize:28, fontWeight:700, color:"#393443" }}>ドライバー管理</div>
           <div style={{ fontSize:11.5, color:"#645F6E", marginTop:3 }}>対象月: {mkLabel(_displayMonth)}{_displayMonth!==REF_MONTH && `（${REF_MONTH_LABEL}実績未入力のため最新確定月を表示）`}</div>
         </div>
         <div style={{ display:"flex", gap:8, alignItems:"center" }}>
@@ -4478,7 +4491,8 @@ const SafetyPage = ({ accent }) => {
 
   return (
     <div>
-      <div style={{ fontSize:20, fontWeight:700, marginBottom:20 }}>安全管理</div>
+      <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>荷主・人員管理</div>
+      <div style={{ fontSize:26, fontWeight:700, color:"#393443", marginBottom:20 }}>安全管理</div>
 
       {/* KPIカード */}
       <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14, marginBottom:20 }}>
@@ -4677,7 +4691,10 @@ const FAQPage = ({ accent }) => {
   return (
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
-        <div style={{ fontSize:20, fontWeight:700 }}>FAQ（よくある質問）</div>
+        <div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>業務支援</div>
+          <div style={{ fontSize:28, fontWeight:700, color:"#393443" }}>FAQ（よくある質問）</div>
+        </div>
         <div style={{ fontSize:12, color:"#645F6E" }}>{kw ? `該当${filtered.flatMap(c=>c.items).length}件 / 全${faqs.flatMap(c=>c.items).length}件` : `全${faqs.flatMap(c=>c.items).length}件`}</div>
       </div>
 
@@ -4780,7 +4797,10 @@ const ManualPage = ({ accent }) => {
   return (
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16 }}>
-        <div style={{ fontSize:20, fontWeight:700 }}>業務マニュアル</div>
+        <div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>業務支援</div>
+          <div style={{ fontSize:28, fontWeight:700, color:"#393443" }}>業務マニュアル</div>
+        </div>
         <div style={{ fontSize:12, color:"#A09AAB" }}>{isFiltered ? `該当${filteredCount}件 / 全${totalCount}件` : `全${totalCount}件`}</div>
       </div>
 
@@ -4797,7 +4817,7 @@ const ManualPage = ({ accent }) => {
         <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
           {cats.map(c=>(
             <button key={c} onClick={()=>setCatFilter(c)}
-              style={{ padding:"6px 12px", borderRadius:20, border:`1.5px solid ${catFilter===c?accent:"#e5e7eb"}`, background:catFilter===c?accent+"14":"#fff", color:catFilter===c?accent:"#6b7280", fontSize:12, fontWeight:catFilter===c?700:400, cursor:"pointer" }}>
+              style={{ padding:"6px 12px", borderRadius:20, border:"none", background:"#E9E7EE", color:catFilter===c?"#7E6593":"#645F6E", fontSize:12, fontWeight:catFilter===c?600:400, cursor:"pointer", boxShadow:catFilter===c?"inset 2px 2px 5px #CECAD5,inset -2px -2px 5px #FFFFFF":"none" }}>
               {c}
             </button>
           ))}
@@ -4876,7 +4896,7 @@ const ManualPage = ({ accent }) => {
             </div>
             <div className="no-print" style={{ display:"flex", gap:8, marginTop:18, justifyContent:"flex-end" }}>
               <button onClick={()=>window.print()} style={{ padding:"8px 16px", border:"1px solid #DEDAE5", background:"#E9E7EE", borderRadius:6, fontSize:12, cursor:"pointer", color:"#5C5766", fontWeight:600 }}>印刷</button>
-              <button onClick={()=>setOpenManual(null)} style={{ padding:"8px 16px", background:accent, color:"#fff", border:"none", borderRadius:6, fontSize:12, fontWeight:600, cursor:"pointer" }}>閉じる</button>
+              <button onClick={()=>setOpenManual(null)} style={{ padding:"8px 16px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:6, fontSize:12, fontWeight:700, cursor:"pointer", boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF,inset 0 1px 0 rgba(255,255,255,.28)" }}>閉じる</button>
             </div>
           </div>
         </div>
@@ -4907,7 +4927,10 @@ const ContactPage = ({ accent }) => {
   );
   return (
     <div>
-      <div style={{ fontSize:20, fontWeight:700, marginBottom:20 }}>問い合わせフォーム</div>
+      <div>
+        <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>業務支援</div>
+        <div style={{ fontSize:28, fontWeight:700, marginBottom:20, color:"#393443" }}>問い合わせフォーム</div>
+      </div>
       <div style={{ display:"grid", gridTemplateColumns:"1fr 300px", gap:20, alignItems:"start" }}>
         <Card style={{ padding:28 }}>
           {[
@@ -5026,7 +5049,8 @@ const TodoPage = ({ accent }) => {
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
         <div>
-          <div style={{ fontSize:20, fontWeight:700 }}>ToDoリスト</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>概況</div>
+          <div style={{ fontSize:28, fontWeight:700, color:"#393443" }}>ToDoリスト</div>
           <div style={{ fontSize:12, color:"#9ca3af", marginTop:2 }}>未完了 {stats.active}件{stats.overdue>0?` / 期限切れ ${stats.overdue}件`:""}{stats.today>0?` / 本日締切 ${stats.today}件`:""}</div>
         </div>
         <div style={{ display:"flex", gap:6 }}>
@@ -5201,8 +5225,9 @@ const ParentClientsPage = ({ accent }) => {
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
         <div>
-          <div style={{ fontSize:20, fontWeight:700 }}>上位荷主管理</div>
-          <div style={{ fontSize:12, color:"#9ca3af", marginTop:2 }}>発注元・元請け・親会社など、現在の荷主の上位にあたる取引先を登録</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>荷主・人員管理</div>
+          <div style={{ fontSize:28, fontWeight:700, color:"#393443" }}>上位荷主管理</div>
+          <div style={{ fontSize:12, color:"#645F6E", marginTop:2 }}>発注元・元請け・親会社など、現在の荷主の上位にあたる取引先を登録</div>
         </div>
         <button onClick={()=>{ committedIdRef.current = null; setShowForm(!showForm); setEditingId(null); setDraft({ name:"", contact:"", tel:"", address:"", email:"", note:"" }); }}
           style={{ padding:"7px 16px", background:showForm?"#E9E7EE":"linear-gradient(180deg,#917AA4,#7E6593)", color:showForm?"#645F6E":"#fff", fontWeight:showForm?600:700, border:"none", borderRadius:13, fontSize:13, cursor:"pointer", boxShadow:showForm?"none":"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF,inset 0 1px 0 rgba(255,255,255,.28)" }}>
@@ -5634,13 +5659,14 @@ const VehiclesPage = ({ accent }) => {
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
         <div>
-          <div style={{ fontSize:20, fontWeight:700 }}>車両管理</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>荷主・人員管理</div>
+          <div style={{ fontSize:28, fontWeight:700, color:"#393443" }}>車両管理</div>
           <div style={{ fontSize:12, color:"#9ca3af", marginTop:2 }}>全{vehicleMaster.length}台 ／ 車検期限30日以内: {vehicleMaster.filter(v=>{const d=daysUntil(v.inspection); return d>=0 && d<=30;}).length}台 ／ 期限切れ: {vehicleMaster.filter(v=>daysUntil(v.inspection)<0).length}台</div>
         </div>
         <div style={{ display:"flex", gap:8 }}>
           {["すべて","稼働中","整備中"].map(s=>(
             <button key={s} onClick={()=>setStatusFilter(s)}
-              style={{ padding:"5px 14px", borderRadius:4, border:`1.5px solid ${statusFilter===s?accent:"#e5e7eb"}`, background:statusFilter===s?accent:"#fff", color:statusFilter===s?"#fff":"#374151", fontSize:13, fontWeight:statusFilter===s?600:400 }}>{s}</button>
+              style={{ padding:"5px 14px", borderRadius:20, border:"none", background:statusFilter===s?"#E9E7EE":"#E9E7EE", color:statusFilter===s?"#7E6593":"#645F6E", fontSize:13, fontWeight:statusFilter===s?700:600, boxShadow:statusFilter===s?"inset 2px 2px 5px #CECAD5,inset -2px -2px 5px #FFFFFF":"none", cursor:"pointer" }}>{s}</button>
           ))}
         </div>
       </div>
@@ -6066,7 +6092,8 @@ const DispatchPage = ({ accent, setPage }) => {
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-end", marginBottom:14 }}>
         <div>
-          <div style={{ fontSize:20, fontWeight:700 }}>配車管理</div>
+          <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>荷主・人員管理</div>
+          <div style={{ fontSize:27, fontWeight:700, color:"#393443" }}>配車管理</div>
           <div style={{ fontSize:12, color:"#9ca3af", marginTop:2 }}>ドライバー {drivers.length}名・荷主 {allClientsLive().length}社／週単位で配車とシフトを編集・保存できます</div>
         </div>
       </div>
@@ -6088,20 +6115,20 @@ const DispatchPage = ({ accent, setPage }) => {
         <button onClick={()=>setWeekOffset(w=>w-1)} style={navBtn}>＜ 前週</button>
         <span style={{ fontWeight:700, fontSize:14, minWidth:170, textAlign:"center" }}>{weekLabel}</span>
         <button onClick={()=>setWeekOffset(w=>w+1)} style={navBtn}>次週 ＞</button>
-        {weekOffset!==0 && <button onClick={()=>setWeekOffset(0)} style={{ ...navBtn, border:`1.5px solid ${accent}`, background:accent+"10", color:accent, fontWeight:600 }}>今週</button>}
+        {weekOffset!==0 && <button onClick={()=>setWeekOffset(0)} style={{ ...navBtn, border:"1.5px solid #7E6593", background:"#EFEDF3", color:"#7E6593", fontWeight:600 }}>今週</button>}
         <div style={{ flex:1 }}/>
         {tab==="dispatch" ? (
           <>
             <button onClick={autoFillWeek} style={actBtn(true)}>平日を自動配車</button>
             <button onClick={copyPrevWeek} style={actBtn(false)}>先週をコピー</button>
-            <button onClick={confirmWeek} style={{ ...actBtn(false), color:"#15803d", border:"1.5px solid #86efac", background:"#f0fdf4" }}>週を確定</button>
-            {weekConfirmedDays>0 && <button onClick={unconfirmWeek} style={{ ...actBtn(false), color:"#b45309", border:"1.5px solid #fed7aa" }}>確定解除</button>}
-            <button onClick={clearWeekDisp} style={{ ...actBtn(false), color:"#dc2626", border:"1.5px solid #fecaca" }}>週をクリア</button>
+            <button onClick={confirmWeek} style={{ ...actBtn(false), color:"#7E6593", border:"1.5px solid #DEDAE5", background:"#E9E7EE" }}>週を確定</button>
+            {weekConfirmedDays>0 && <button onClick={unconfirmWeek} style={{ ...actBtn(false), color:"#C39A52", border:"1.5px solid #DEDAE5", background:"#E9E7EE" }}>確定解除</button>}
+            <button onClick={clearWeekDisp} style={{ background:"transparent", color:"#B05A60", border:"none", padding:"6px 12px", borderRadius:13, fontSize:12, fontWeight:600, cursor:"pointer" }}>週をクリア</button>
           </>
         ) : (
           <>
             <button onClick={fillShiftWeek} style={actBtn(true)}>平日=日勤/土日=休</button>
-            <button onClick={clearShiftWeek} style={{ ...actBtn(false), color:"#dc2626", border:"1.5px solid #fecaca" }}>週をクリア</button>
+            <button onClick={clearShiftWeek} style={{ background:"transparent", color:"#B05A60", border:"none", padding:"6px 12px", borderRadius:13, fontSize:12, fontWeight:600, cursor:"pointer" }}>週をクリア</button>
           </>
         )}
       </div>
@@ -6155,11 +6182,11 @@ const DispatchPage = ({ accent, setPage }) => {
                   background:d.isToday?accent+"0a":"transparent", borderRight:"1px solid #94a3b8" }}>
                   <div>{d.label}</div>
                   <div style={{ fontSize:10 }}>（{d.dayName}）</div>
-                  {d.isToday && <div style={{ fontSize:9, background:accent, color:"#fff", borderRadius:2, padding:"1px 4px", marginTop:2, display:"inline-block" }}>TODAY</div>}
+                  {d.isToday && <div style={{ fontSize:9, background:"#7E6593", color:"#fff", borderRadius:20, padding:"3px 8px", marginTop:2, display:"inline-block", fontWeight:600, fontSize:10 }}>TODAY</div>}
                   {tab==="dispatch" && dispCountFor(d.dk)>0 && (
                     <div onClick={()=>toggleConfirmDay(d.dk)} title={isConfirmed(d.dk)?"クリックで確定解除":"クリックでこの日を確定"}
-                      style={{ marginTop:3, fontSize:9, fontWeight:700, borderRadius:3, padding:"1px 5px", cursor:"pointer", display:"block", marginLeft:"auto", marginRight:"auto", width:"fit-content",
-                        background:isConfirmed(d.dk)?"#dcfce7":"#fef3c7", color:isConfirmed(d.dk)?"#15803d":"#b45309", border:`1px solid ${isConfirmed(d.dk)?"#86efac":"#fde68a"}` }}>
+                      style={{ marginTop:3, fontSize:10, fontWeight:700, borderRadius:20, padding:"3px 10px", cursor:"pointer", display:"block", marginLeft:"auto", marginRight:"auto", width:"fit-content",
+                        background:isConfirmed(d.dk)?"#E6EFE4":"#F2EBDC", color:isConfirmed(d.dk)?"#5E8C68":"#8C6A2E", border:"none" }}>
                       {isConfirmed(d.dk)?"確定済":"未確定"}
                     </div>
                   )}
@@ -6306,7 +6333,7 @@ const DispatchPage = ({ accent, setPage }) => {
               <button onClick={()=>shiftMonth(-1)} style={navBtn}>＜ 前月</button>
               <span style={{ fontWeight:700, fontSize:15, minWidth:130, textAlign:"center" }}>{mkLabel(billMonth)}</span>
               <button onClick={()=>shiftMonth(1)} style={navBtn}>翌月 ＞</button>
-              {billMonth!==REF_MONTH && <button onClick={()=>setBillMonth(REF_MONTH)} style={{ ...navBtn, border:`1.5px solid ${accent}`, background:accent+"10", color:accent, fontWeight:600 }}>今月</button>}
+              {billMonth!==REF_MONTH && <button onClick={()=>setBillMonth(REF_MONTH)} style={{ ...navBtn, border:"1.5px solid #7E6593", background:"#EFEDF3", color:"#7E6593", fontWeight:600 }}>今月</button>}
               <div style={{ flex:1 }}/>
               {navLink("収支管理","pl","#2563eb")}
               {navLink("請求管理","invoice","#7c3aed")}
@@ -6508,7 +6535,8 @@ const AttendancePage = ({ accent }) => {
 
   return (
     <div>
-      <div style={{ fontSize:20, fontWeight:700, marginBottom:16 }}>勤怠管理</div>
+      <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>荷主・人員管理</div>
+      <div style={{ fontSize:28, fontWeight:700, marginBottom:16, color:"#393443" }}>勤怠管理</div>
 
       {/* タブ */}
       <div style={{ display:"flex", gap:4, marginBottom:16, borderBottom:"2px solid #A09AAB", paddingBottom:0 }}>
@@ -6820,7 +6848,8 @@ const ApplyPage = ({ accent }) => {
 
   return (
     <div>
-      <div style={{ fontSize:20, fontWeight:700, marginBottom:20 }}>各種申請</div>
+      <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"4px 4px 9px #CECAD5,-4px -4px 9px #FFFFFF"}}>荷主・人員管理</div>
+      <div style={{ fontSize:26, fontWeight:700, color:"#393443", marginBottom:20 }}>各種申請</div>
 
       {/* 申請種別 */}
       <div style={{ fontSize:12, fontWeight:700, color:"#9ca3af", marginBottom:12 }}>申請種別を選択</div>
