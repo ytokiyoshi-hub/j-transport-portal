@@ -683,11 +683,17 @@ function ThemeProvider({ children }) {
     r.setProperty('--jt-text', theme.text);
     r.setProperty('--jt-text-sub', theme.textSub);
     r.setProperty('--jt-text-mute', theme.textMute);
-    // Soft UI 影トークン（参照サイト準拠の確定値・面色に対する明暗ペア）
-    r.setProperty('--jt-raised', '8px 8px 18px #CECAD5, -8px -8px 18px #FFFFFF');
-    r.setProperty('--jt-raised-sm', '4px 4px 9px #CECAD5, -4px -4px 9px #FFFFFF');
-    r.setProperty('--jt-inset', 'inset 3px 3px 7px #CECAD5, inset -3px -3px 7px #FFFFFF');
-    r.setProperty('--jt-inset-sm', 'inset 2px 2px 5px #CECAD5, inset -2px -2px 5px #FFFFFF');
+    // Soft UI 影トークン（外観設定で 凹凸の強さ depth・影/光の色 を可変）。depth=1・#CECAD5/#FFFFFF が参照確定値。
+    const d = Number(theme.depth) > 0 ? Number(theme.depth) : 1;
+    const sd = theme.shadowDark || '#CECAD5';
+    const sl = theme.shadowLight || '#FFFFFF';
+    const rnd = (n) => Math.round(n * d * 10) / 10;
+    const raised = (o, b) => `${rnd(o)}px ${rnd(o)}px ${rnd(b)}px ${sd}, -${rnd(o)}px -${rnd(o)}px ${rnd(b)}px ${sl}`;
+    const inset  = (o, b) => `inset ${rnd(o)}px ${rnd(o)}px ${rnd(b)}px ${sd}, inset -${rnd(o)}px -${rnd(o)}px ${rnd(b)}px ${sl}`;
+    r.setProperty('--jt-raised', raised(8, 18));
+    r.setProperty('--jt-raised-sm', raised(4, 9));
+    r.setProperty('--jt-inset', inset(3, 7));
+    r.setProperty('--jt-inset-sm', inset(2, 5));
   }, [theme]);
   const setTheme = React.useCallback((next) => {
     setThemeState(next);
