@@ -109,8 +109,8 @@
   .jt-content input:focus, .jt-content select:focus, .jt-content textarea:focus { outline:none; box-shadow: var(--jt-inset), 0 0 0 2px rgba(126,101,147,.55); }
   .jt-content td input:focus, .jt-content th input:focus { box-shadow: inset 0 0 0 2px rgba(126,101,147,.55); }
   ::-webkit-scrollbar { width:9px; height:9px; }
-  ::-webkit-scrollbar-thumb { background: var(--jt-line-dk); background: color-mix(in srgb, var(--jt-accent) 48%, var(--jt-line-dk)); border-radius:11px; }
-  ::-webkit-scrollbar-thumb:hover { background: var(--jt-accent); }
+  ::-webkit-scrollbar-thumb { background: var(--jt-line-dk); border-radius:11px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--jt-line-dk); background: color-mix(in srgb, var(--jt-accent) 30%, var(--jt-line-dk)); }
   ::-webkit-scrollbar-track { background:transparent; }
 </style>
 </head>
@@ -992,7 +992,7 @@ const COMPANY = {
 };
 // ── ロゴ（このサイトに合わせたラベンダー版） ──
 const JtLogo = ({ size=32, radius }) => (
-  <div style={{ width:size, height:size, borderRadius: radius!=null?radius:Math.round(size*0.28), background:"linear-gradient(150deg,#917AA4,#6A5280)", boxShadow:"var(--jt-raised-sm), inset 0 1px 0 rgba(255,255,255,.35)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+  <div style={{ width:size, height:size, borderRadius: radius!=null?radius:Math.round(size*0.28), background:"var(--jt-logo-grad)", boxShadow:"var(--jt-raised-sm), inset 0 1px 0 rgba(255,255,255,.35)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
     <svg width={Math.round(size*0.66)} height={Math.round(size*0.66)} viewBox="0 0 24 24" fill="none">
       <path d="M16 4.5 V13.5 a4.5 4.5 0 0 1 -9 0" stroke="#fff" strokeWidth="2.6" strokeLinecap="round"/>
       <path d="M3.6 7.6 h4.4 M2.6 12 h3.2 M4.1 16.4 h3.3" stroke="#fff" strokeWidth="1.7" strokeLinecap="round" opacity="0.8"/>
@@ -1787,7 +1787,7 @@ const RateMasterPage = ({ accent, setPage }) => {
             }} style={{ padding:"7px 16px", background:"var(--jt-base)", color:"var(--jt-text-sub)", border:"none", borderRadius:6, fontSize:13, fontWeight:600, cursor:"pointer", boxShadow:"var(--jt-raised-sm)" }}>
             CSVエクスポート
           </button>
-          <button onClick={()=>{ setForm({ ...blankForm, code: nextCode() }); addCommittedRef.current = false; setShowAdd(true); }} style={{ padding:"7px 16px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:6, fontSize:13, fontWeight:700, cursor:"pointer", boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>
+          <button onClick={()=>{ setForm({ ...blankForm, code: nextCode() }); addCommittedRef.current = false; setShowAdd(true); }} style={{ padding:"7px 16px", background:"var(--jt-accent-grad)", color:"#fff", border:"none", borderRadius:6, fontSize:13, fontWeight:700, cursor:"pointer", boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>
             + 荷主追加
           </button>
         </div>
@@ -2091,7 +2091,7 @@ const RateMasterPage = ({ accent, setPage }) => {
                 荷主コードと荷主名を入力すると自動登録
               </span>
               <button onClick={closeAdd}
-                style={{ padding:"11px 28px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:6, fontWeight:700, fontSize:13, cursor:"pointer", boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>完了</button>
+                style={{ padding:"11px 28px", background:"var(--jt-accent-grad)", color:"#fff", border:"none", borderRadius:6, fontWeight:700, fontSize:13, cursor:"pointer", boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>完了</button>
             </div>
           </div>
         </div>
@@ -2473,7 +2473,7 @@ const DriverFinancePage = ({ accent }) => {
 
             <div style={{ marginTop:14, display:"flex", gap:8 }}>
               <button onClick={()=>setSlipDriver(selSummary)}
-                style={{ flex:1, padding:"9px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:13, fontWeight:700, fontSize:13, cursor:"pointer", boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>支払明細書を発行</button>
+                style={{ flex:1, padding:"9px", background:"var(--jt-accent-grad)", color:"#fff", border:"none", borderRadius:13, fontWeight:700, fontSize:13, cursor:"pointer", boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>支払明細書を発行</button>
               <button onClick={()=>exportCSV(selSummary)}
                 style={{ flex:1, padding:"9px", border:"none", background:"var(--jt-base)", color:"var(--jt-text-sub)", borderRadius:13, fontSize:13, cursor:"pointer", fontWeight:600, boxShadow:"var(--jt-raised-sm)" }}>CSV出力</button>
             </div>
@@ -2710,7 +2710,7 @@ const InvoicePage = ({ accent }) => {
           <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"#7E6593",background:"#E9E7EE",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>財務・請求管理</div>
           <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", color:"#393443" }}>請求管理</div>
         </div>
-        <button onClick={()=>{ const ids=invoices.filter(i=>effStatus(i)==="未請求").map(i=>i.id); if(ids.length===0){ showToast("発行対象の請求書はありません"); return; } markIssued(ids); showToast(ids.length+"件の請求書を発行しました"); }} style={{ padding:"7px 16px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", fontWeight:700, border:"none", borderRadius:6, fontSize:13, cursor:"pointer", boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>+ 請求書を一括作成</button>
+        <button onClick={()=>{ const ids=invoices.filter(i=>effStatus(i)==="未請求").map(i=>i.id); if(ids.length===0){ showToast("発行対象の請求書はありません"); return; } markIssued(ids); showToast(ids.length+"件の請求書を発行しました"); }} style={{ padding:"7px 16px", background:"var(--jt-accent-grad)", color:"#fff", fontWeight:700, border:"none", borderRadius:6, fontSize:13, cursor:"pointer", boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>+ 請求書を一括作成</button>
       </div>
       <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12, marginBottom:16 }}>
         {[
@@ -2760,7 +2760,7 @@ const InvoicePage = ({ accent }) => {
                     <div style={{ display:"flex", gap:6 }} onClick={e=>e.stopPropagation()}>
                       {effStatus(inv)==="未請求" && (
                         <button onClick={()=>{ markIssued([inv.id]); showToast("請求書を発行しました"); }}
-                          style={{ padding:"4px 10px", border:"none", borderRadius:4, background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", fontSize:11, fontWeight:700, cursor:"pointer", boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>発行</button>
+                          style={{ padding:"4px 10px", border:"none", borderRadius:4, background:"var(--jt-accent-grad)", color:"#fff", fontSize:11, fontWeight:700, cursor:"pointer", boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>発行</button>
                       )}
                       {issuedSet.has(inv.id) && <span style={{ fontSize:11, color:"#6E9E78", fontWeight:600 }}>発行済</span>}
                       {effStatus(inv)==="遅延" && !remindedSet.has(inv.id) && (
@@ -2935,7 +2935,7 @@ const InvoicePage = ({ accent }) => {
             <div className="no-print" style={{ display:"flex", flexDirection:"column", gap:8 }}>
               {effStatus(sel)==="未請求" && (
                 <button onClick={()=>{ markIssued([sel.id]); showToast("請求書を発行しました"); }}
-                  style={{ padding:"10px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:6, fontWeight:700, cursor:"pointer", boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)", fontSize:13 }}>
+                  style={{ padding:"10px", background:"var(--jt-accent-grad)", color:"#fff", border:"none", borderRadius:6, fontWeight:700, cursor:"pointer", boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)", fontSize:13 }}>
                   請求書を発行する
                 </button>
               )}
@@ -2952,7 +2952,7 @@ const InvoicePage = ({ accent }) => {
                 </button>
               )}
               <button onClick={()=>setPreview(sel)}
-                style={{ padding:"10px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:6, fontWeight:700, cursor:"pointer", boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)", fontSize:13 }}>
+                style={{ padding:"10px", background:"var(--jt-accent-grad)", color:"#fff", border:"none", borderRadius:6, fontWeight:700, cursor:"pointer", boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)", fontSize:13 }}>
                 請求書プレビュー / 印刷・PDF保存
               </button>
             </div>
@@ -2975,7 +2975,7 @@ const InvoicePage = ({ accent }) => {
                 <div style={{ fontWeight:700, fontSize:13, color:"#393443" }}>請求書プレビュー — {preview.id}</div>
                 <div style={{ display:"flex", gap:8 }}>
                   <button onClick={()=>printPaper(preview)}
-                    style={{ padding:"7px 16px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:6, fontWeight:700, cursor:"pointer", boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)", fontSize:12.5 }}>印刷 / PDF保存</button>
+                    style={{ padding:"7px 16px", background:"var(--jt-accent-grad)", color:"#fff", border:"none", borderRadius:6, fontWeight:700, cursor:"pointer", boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)", fontSize:12.5 }}>印刷 / PDF保存</button>
                   <button onClick={()=>setPreview(null)}
                     style={{ padding:"7px 14px", background:"var(--jt-base)", color:"var(--jt-text-sub)", border:"none", borderRadius:6, fontWeight:600, fontSize:12.5, cursor:"pointer", boxShadow:"var(--jt-raised-sm)" }}>閉じる</button>
                 </div>
@@ -3146,7 +3146,7 @@ const ClientPage = ({ accent, setPage }) => {
           </div>
           <button onClick={()=>setPage("ratemaster")} style={{ padding:"7px 14px", border:"none", background:"var(--jt-base)", color:"var(--jt-text-sub)", borderRadius:13, fontSize:13, fontWeight:600, cursor:"pointer", boxShadow:"var(--jt-raised-sm)" }}>単価マスタ</button>
           <button onClick={()=>{ try { sessionStorage.setItem("jt_open_add_client","1"); } catch(e){} setPage("ratemaster"); }}
-            style={{ padding:"7px 16px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:13, fontSize:13, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", gap:4, boxShadow:"var(--jt-raised-sm), inset 0 1px 0 rgba(255,255,255,.28)" }}>
+            style={{ padding:"7px 16px", background:"var(--jt-accent-grad)", color:"#fff", border:"none", borderRadius:13, fontSize:13, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", gap:4, boxShadow:"var(--jt-raised-sm), inset 0 1px 0 rgba(255,255,255,.28)" }}>
             <span style={{ fontSize:15, lineHeight:1 }}>＋</span> 新規荷主追加
           </button>
         </div>
@@ -3268,7 +3268,7 @@ const ClientPage = ({ accent, setPage }) => {
               );
             })()}
             <div style={{ marginTop:14, display:"flex", gap:8 }}>
-              <button onClick={()=>setPage("invoice")} style={{ flex:1, padding:"9px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:13, fontWeight:700, fontSize:13, boxShadow:"var(--jt-raised-sm), inset 0 1px 0 rgba(255,255,255,.28)" }}>請求書作成</button>
+              <button onClick={()=>setPage("invoice")} style={{ flex:1, padding:"9px", background:"var(--jt-accent-grad)", color:"#fff", border:"none", borderRadius:13, fontWeight:700, fontSize:13, boxShadow:"var(--jt-raised-sm), inset 0 1px 0 rgba(255,255,255,.28)" }}>請求書作成</button>
               <button onClick={()=>setPage("ratemaster")} style={{ flex:1, padding:"9px", border:"none", background:"var(--jt-base)", color:"var(--jt-text-sub)", borderRadius:13, fontSize:13, fontWeight:600, boxShadow:"var(--jt-raised-sm)" }}>単価編集</button>
             </div>
           </Card>
@@ -4311,7 +4311,7 @@ const AnnouncePage = ({ accent }) => {
           {unreadCount>0 && <span style={{ background:"var(--jt-accent)", color:"#fff", borderRadius:99, fontSize:11, padding:"2px 8px", fontWeight:700 }}>未読 {unreadCount}</span>}
         </div>
         <button onClick={()=>setShowForm(!showForm)}
-          style={{ padding:"7px 16px", background:showForm?"var(--jt-base)":"linear-gradient(180deg,#917AA4,#7E6593)", color:showForm?"var(--jt-text-sub)":"#fff", border:"none", borderRadius:13, fontSize:13, fontWeight:showForm?600:700, display:"flex", alignItems:"center", gap:6, boxShadow:showForm?"none":"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>
+          style={{ padding:"7px 16px", background:showForm?"var(--jt-base)":"var(--jt-accent-grad)", color:showForm?"var(--jt-text-sub)":"#fff", border:"none", borderRadius:13, fontSize:13, fontWeight:showForm?600:700, display:"flex", alignItems:"center", gap:6, boxShadow:showForm?"none":"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>
           <Ic name="plus" size={13} color={showForm?"#5C5766":"#fff"}/>{showForm?"キャンセル":"新規投稿"}
         </button>
       </div>
@@ -4330,7 +4330,7 @@ const AnnouncePage = ({ accent }) => {
           <textarea value={newPost.body} onChange={e=>setNewPost(p=>({...p,body:e.target.value}))} placeholder="本文（任意）"
             style={{ width:"100%", padding:"8px 12px", border:"none", background:"var(--jt-base)", boxShadow:"var(--jt-inset-sm)", borderRadius:13, fontSize:13, fontFamily:"inherit", resize:"vertical", minHeight:80, outline:"none", marginBottom:12 }}/>
           <button onClick={submitPost}
-            style={{ padding:"8px 20px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:13, fontSize:13, fontWeight:700, boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>投稿する</button>
+            style={{ padding:"8px 20px", background:"var(--jt-accent-grad)", color:"#fff", border:"none", borderRadius:13, fontSize:13, fontWeight:700, boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>投稿する</button>
         </Card>
       )}
 
@@ -4453,7 +4453,7 @@ const DriversPage = ({ accent, setPage }) => {
               style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", height:34, padding:"0 15px", borderRadius:13, border:"none", cursor:"pointer", whiteSpace:"nowrap", fontFamily:"inherit", fontSize:13, lineHeight:1, letterSpacing:.2, color:typeFilter===t?"var(--jt-accent)":"var(--jt-text-sub)", fontWeight:typeFilter===t?600:500, background:"var(--jt-base)", boxShadow:typeFilter===t?"var(--jt-inset-sm)":"var(--jt-raised-sm)" }}>{t}</button>
           ))}
           <button onClick={openAdd}
-            style={{ padding:"7px 16px", marginLeft:4, background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:13, fontSize:13, fontWeight:700, cursor:"pointer", boxShadow:"var(--jt-raised-sm), inset 0 1px 0 rgba(255,255,255,.28)", whiteSpace:"nowrap" }}>＋ ドライバー追加</button>
+            style={{ padding:"7px 16px", marginLeft:4, background:"var(--jt-accent-grad)", color:"#fff", border:"none", borderRadius:13, fontSize:13, fontWeight:700, cursor:"pointer", boxShadow:"var(--jt-raised-sm), inset 0 1px 0 rgba(255,255,255,.28)", whiteSpace:"nowrap" }}>＋ ドライバー追加</button>
         </div>
       </div>
 
@@ -4534,7 +4534,7 @@ const DriversPage = ({ accent, setPage }) => {
             )}
 
             <div style={{ display:"flex", gap:8, marginBottom:8 }}>
-              <button onClick={()=>openEdit(selDriver)} style={{ flex:1, padding:"10px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:13, fontWeight:700, fontSize:13, cursor:"pointer", boxShadow:"var(--jt-raised-sm), inset 0 1px 0 rgba(255,255,255,.28)" }}>情報を編集</button>
+              <button onClick={()=>openEdit(selDriver)} style={{ flex:1, padding:"10px", background:"var(--jt-accent-grad)", color:"#fff", border:"none", borderRadius:13, fontWeight:700, fontSize:13, cursor:"pointer", boxShadow:"var(--jt-raised-sm), inset 0 1px 0 rgba(255,255,255,.28)" }}>情報を編集</button>
               {isExtra(selDriver.id) && <button onClick={()=>deleteExtraDriver(selDriver.id)} style={{ padding:"10px 14px", background:"transparent", color:"var(--jt-alert)", border:"none", borderRadius:13, fontWeight:600, fontSize:13, cursor:"pointer" }}>削除</button>}
             </div>
             <button onClick={()=>setPage("driverfinance")}
@@ -4570,7 +4570,7 @@ const DriversPage = ({ accent, setPage }) => {
             </div>
             <div style={{ display:"flex", gap:10, marginTop:22 }}>
               <button onClick={()=>setForm(null)} style={{ flex:"0 0 auto", padding:"11px 18px", background:"transparent", color:"var(--jt-text-sub)", border:"none", borderRadius:12, fontWeight:600, fontSize:14, cursor:"pointer" }}>キャンセル</button>
-              <button onClick={saveDriver} style={{ flex:1, padding:"11px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:12, fontWeight:700, fontSize:14, cursor:"pointer", boxShadow:"var(--jt-raised-sm), inset 0 1px 0 rgba(255,255,255,.28)" }}>{form.mode==="add"?"追加する":"更新する"}</button>
+              <button onClick={saveDriver} style={{ flex:1, padding:"11px", background:"var(--jt-accent-grad)", color:"#fff", border:"none", borderRadius:12, fontWeight:700, fontSize:14, cursor:"pointer", boxShadow:"var(--jt-raised-sm), inset 0 1px 0 rgba(255,255,255,.28)" }}>{form.mode==="add"?"追加する":"更新する"}</button>
             </div>
           </div>
         </div>
@@ -4706,7 +4706,7 @@ const SafetyPage = ({ accent }) => {
                       style={{ width:"100%", padding:"6px 8px", border:"none", borderRadius:13, fontSize:12, fontFamily:"inherit", resize:"vertical", minHeight:60, outline:"none", background:"var(--jt-base)", boxShadow:"var(--jt-inset)" }}/>
                   </div>
                   <button onClick={submitIncident}
-                    style={{ padding:"8px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:13, fontSize:13, fontWeight:700, boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>報告する</button>
+                    style={{ padding:"8px", background:"var(--jt-accent-grad)", color:"#fff", border:"none", borderRadius:13, fontSize:13, fontWeight:700, boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>報告する</button>
                 </div>
               )}
             </div>
@@ -5037,7 +5037,7 @@ const ManualPage = ({ accent }) => {
             </div>
             <div className="no-print" style={{ display:"flex", gap:8, marginTop:18, justifyContent:"flex-end" }}>
               <button onClick={()=>window.print()} style={{ padding:"8px 16px", border:"none", background:"var(--jt-base)", borderRadius:13, fontSize:12, cursor:"pointer", color:"var(--jt-text-sub)", fontWeight:600, boxShadow:"var(--jt-raised-sm)" }}>印刷</button>
-              <button onClick={()=>setOpenManual(null)} style={{ padding:"8px 16px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:13, fontSize:12, fontWeight:700, cursor:"pointer", boxShadow:"var(--jt-raised-sm), inset 0 1px 0 rgba(255,255,255,.28)" }}>閉じる</button>
+              <button onClick={()=>setOpenManual(null)} style={{ padding:"8px 16px", background:"var(--jt-accent-grad)", color:"#fff", border:"none", borderRadius:13, fontSize:12, fontWeight:700, cursor:"pointer", boxShadow:"var(--jt-raised-sm), inset 0 1px 0 rgba(255,255,255,.28)" }}>閉じる</button>
             </div>
           </div>
         </div>
@@ -5063,7 +5063,7 @@ const ContactPage = ({ accent }) => {
       </div>
       <div style={{ fontSize:18, fontWeight:700, marginBottom:8 }}>送信しました</div>
       <div style={{ fontSize:13, color:"var(--jt-text-sub)", marginBottom:24 }}>担当部署より折り返しご連絡いたします</div>
-      <button onClick={()=>{ setSent(false); setForm({ dept:"選択してください", subject:"", body:"", urgency:"通常" }); }} style={{ padding:"10px 24px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:6, fontWeight:700, fontSize:14, boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>戻る</button>
+      <button onClick={()=>{ setSent(false); setForm({ dept:"選択してください", subject:"", body:"", urgency:"通常" }); }} style={{ padding:"10px 24px", background:"var(--jt-accent-grad)", color:"#fff", border:"none", borderRadius:6, fontWeight:700, fontSize:14, boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>戻る</button>
     </div>
   );
   return (
@@ -5099,7 +5099,7 @@ const ContactPage = ({ accent }) => {
               }
             </div>
           ))}
-          <button onClick={()=>{ const ok = depts.some(d=>d.name===form.dept) && form.subject.trim() && form.body.trim(); if(!ok){ showToast("問い合わせ先・件名・内容を入力してください","error"); return; } setSent(true); }} style={{ width:"100%", padding:13, background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:6, fontWeight:700, fontSize:14, boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>送信する</button>
+          <button onClick={()=>{ const ok = depts.some(d=>d.name===form.dept) && form.subject.trim() && form.body.trim(); if(!ok){ showToast("問い合わせ先・件名・内容を入力してください","error"); return; } setSent(true); }} style={{ width:"100%", padding:13, background:"var(--jt-accent-grad)", color:"#fff", border:"none", borderRadius:6, fontWeight:700, fontSize:14, boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>送信する</button>
         </Card>
         <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
           {depts.map((d,i)=>(
@@ -5220,7 +5220,7 @@ const TodoPage = ({ accent }) => {
             placeholder="担当者（任意）"
             style={{ padding:"8px 12px", border:"none", background:"var(--jt-base)", boxShadow:"var(--jt-inset)", borderRadius:13, fontSize:13, outline:"none" }}/>
           <button onClick={add} disabled={!draft.title.trim()}
-            style={{ padding:"8px 18px", background:draft.title.trim()?"linear-gradient(180deg,#917AA4,#7E6593)":"var(--jt-line)", color:"#fff", border:"none", borderRadius:13, fontSize:13, fontWeight:600, cursor:draft.title.trim()?"pointer":"not-allowed", whiteSpace:"nowrap", boxShadow:draft.title.trim()?"var(--jt-raised-sm),var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)":"none" }}>+ 追加</button>
+            style={{ padding:"8px 18px", background:draft.title.trim()?"var(--jt-accent-grad)":"var(--jt-line)", color:"#fff", border:"none", borderRadius:13, fontSize:13, fontWeight:600, cursor:draft.title.trim()?"pointer":"not-allowed", whiteSpace:"nowrap", boxShadow:draft.title.trim()?"var(--jt-raised-sm),var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)":"none" }}>+ 追加</button>
         </div>
         <textarea value={draft.note} onChange={e=>setDraft(p=>({...p,note:e.target.value}))} placeholder="メモ（任意）"
           style={{ width:"100%", padding:"8px 12px", background:"var(--jt-base)", border:"none", boxShadow:"var(--jt-inset)", borderRadius:13, fontSize:13, resize:"vertical", minHeight:50, outline:"none", fontFamily:"inherit", boxSizing:"border-box" }}/>
@@ -5258,7 +5258,7 @@ const TodoPage = ({ accent }) => {
                         <textarea value={t.note||""} onChange={e=>updateTodo(t.id,{note:e.target.value})} onBlur={()=>showToast("タスクを更新しました")}
                           placeholder="メモ" style={{ width:"100%", padding:"6px 10px", background:"var(--jt-base)", border:"none", boxShadow:"var(--jt-inset-sm)", borderRadius:13, fontSize:12, resize:"vertical", minHeight:40, fontFamily:"inherit", boxSizing:"border-box", marginBottom:6 }}/>
                         <div style={{ display:"flex", gap:6 }}>
-                          <button onClick={closeEdit} style={{ padding:"5px 14px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:4, fontSize:12, fontWeight:600, cursor:"pointer", boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>閉じる</button>
+                          <button onClick={closeEdit} style={{ padding:"5px 14px", background:"var(--jt-accent-grad)", color:"#fff", border:"none", borderRadius:4, fontSize:12, fontWeight:600, cursor:"pointer", boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>閉じる</button>
                         </div>
                       </div>
                     ) : (
@@ -5371,7 +5371,7 @@ const ParentClientsPage = ({ accent }) => {
           <div style={{ fontSize:12, color:"var(--jt-text-sub)", marginTop:2 }}>発注元・元請け・親会社など、現在の荷主の上位にあたる取引先を登録</div>
         </div>
         <button onClick={()=>{ committedIdRef.current = null; setShowForm(!showForm); setEditingId(null); setDraft({ name:"", contact:"", tel:"", address:"", email:"", note:"" }); }}
-          style={{ padding:"7px 16px", background:showForm?"var(--jt-base)":"linear-gradient(180deg,#917AA4,#7E6593)", color:showForm?"var(--jt-text-sub)":"#fff", fontWeight:showForm?600:700, border:"none", borderRadius:13, fontSize:13, cursor:"pointer", boxShadow:"var(--jt-raised-sm)" }}>
+          style={{ padding:"7px 16px", background:showForm?"var(--jt-base)":"var(--jt-accent-grad)", color:showForm?"var(--jt-text-sub)":"#fff", fontWeight:showForm?600:700, border:"none", borderRadius:13, fontSize:13, cursor:"pointer", boxShadow:"var(--jt-raised-sm)" }}>
           {showForm?"閉じる":"+ 新規上位荷主を登録"}
         </button>
       </div>
@@ -5945,7 +5945,7 @@ const VehiclesPage = ({ accent }) => {
               style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", height:34, padding:"0 15px", borderRadius:13, border:"none", cursor:"pointer", whiteSpace:"nowrap", fontFamily:"inherit", fontSize:13, lineHeight:1, letterSpacing:.2, color:statusFilter===s?"var(--jt-accent)":"var(--jt-text-sub)", fontWeight:statusFilter===s?600:500, background:"var(--jt-base)", boxShadow:statusFilter===s?"var(--jt-inset-sm)":"var(--jt-raised-sm)" }}>{s}</button>
           ))}
           <button onClick={openAdd}
-            style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", height:34, padding:"0 16px", marginLeft:4, background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:13, fontSize:13, fontWeight:700, cursor:"pointer", whiteSpace:"nowrap", boxShadow:"var(--jt-raised-sm), inset 0 1px 0 rgba(255,255,255,.28)" }}>＋ 車両追加</button>
+            style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", height:34, padding:"0 16px", marginLeft:4, background:"var(--jt-accent-grad)", color:"#fff", border:"none", borderRadius:13, fontSize:13, fontWeight:700, cursor:"pointer", whiteSpace:"nowrap", boxShadow:"var(--jt-raised-sm), inset 0 1px 0 rgba(255,255,255,.28)" }}>＋ 車両追加</button>
         </div>
       </div>
 
@@ -6053,7 +6053,7 @@ const VehiclesPage = ({ accent }) => {
               )}
 
               <div style={{ display:"flex", gap:8, marginTop:16 }}>
-                <button onClick={()=>{ const open=!showResForm; if(open) setResDraft(reservations[sel.id]||{date:"",note:""}); setShowResForm(open); }} style={{ flex:1, padding:"9px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:13, fontWeight:700, fontSize:13, cursor:"pointer", boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>
+                <button onClick={()=>{ const open=!showResForm; if(open) setResDraft(reservations[sel.id]||{date:"",note:""}); setShowResForm(open); }} style={{ flex:1, padding:"9px", background:"var(--jt-accent-grad)", color:"#fff", border:"none", borderRadius:13, fontWeight:700, fontSize:13, cursor:"pointer", boxShadow:"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)" }}>
                   {reservations[sel.id]?"予約変更":"車検予約"}
                 </button>
                 <button onClick={()=>{ const open=!showMaintForm; if(open){ maintCommittedRef.current=false; setMaintDraft({date:"",item:""}); } setShowMaintForm(open); }} style={{ flex:1, padding:"9px", border:"none", background:"var(--jt-base)", color:"var(--jt-text-sub)", borderRadius:13, fontSize:13, cursor:"pointer", fontWeight:600, boxShadow:"var(--jt-raised-sm)" }}>整備記録を追加</button>
@@ -6151,7 +6151,7 @@ const VehiclesPage = ({ accent }) => {
             </div>
             <div style={{ display:"flex", gap:10, marginTop:22 }}>
               <button onClick={()=>setForm(null)} style={{ flex:"0 0 auto", padding:"11px 18px", background:"transparent", color:"var(--jt-text-sub)", border:"none", borderRadius:12, fontWeight:600, fontSize:14, cursor:"pointer" }}>キャンセル</button>
-              <button onClick={saveVehicle} style={{ flex:1, padding:"11px", background:"linear-gradient(180deg,#917AA4,#7E6593)", color:"#fff", border:"none", borderRadius:12, fontWeight:700, fontSize:14, cursor:"pointer", boxShadow:"var(--jt-raised-sm), inset 0 1px 0 rgba(255,255,255,.28)" }}>{form.mode==="add"?"追加する":"更新する"}</button>
+              <button onClick={saveVehicle} style={{ flex:1, padding:"11px", background:"var(--jt-accent-grad)", color:"#fff", border:"none", borderRadius:12, fontWeight:700, fontSize:14, cursor:"pointer", boxShadow:"var(--jt-raised-sm), inset 0 1px 0 rgba(255,255,255,.28)" }}>{form.mode==="add"?"追加する":"更新する"}</button>
             </div>
           </div>
         </div>
@@ -6442,7 +6442,7 @@ const DispatchPage = ({ accent, setPage }) => {
   weekDays.forEach(wd=>{ const day=dispatch[wd.dk]||{}; Object.values(day).forEach(cid=>{ if(cid) clientWeekCount[cid]=(clientWeekCount[cid]||0)+1; }); });
 
   const navBtn = { padding:"5px 12px", border:"none", borderRadius:4, background:"var(--jt-base)", cursor:"pointer", fontSize:13, color:"var(--jt-text-sub)", boxShadow:"var(--jt-raised-sm)" };
-  const actBtn = (primary)=>({ padding:"6px 12px", borderRadius:13, border:"none", background:primary?"linear-gradient(180deg,#917AA4,#7E6593)":"var(--jt-base)", color:primary?"#fff":"var(--jt-text-sub)", fontSize:12, fontWeight:primary?700:600, cursor:"pointer", boxShadow:primary?"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)":"var(--jt-raised-sm)" });
+  const actBtn = (primary)=>({ padding:"6px 12px", borderRadius:13, border:"none", background:primary?"var(--jt-accent-grad)":"var(--jt-base)", color:primary?"#fff":"var(--jt-text-sub)", fontSize:12, fontWeight:primary?700:600, cursor:"pointer", boxShadow:primary?"var(--jt-raised-sm),inset 0 1px 0 rgba(255,255,255,.28)":"var(--jt-raised-sm)" });
 
   const DriverCell = ({ dr }) => {
     const v = vehByDriver[dr.id];
