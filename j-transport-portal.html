@@ -5718,6 +5718,33 @@ const VehiclesPage = ({ accent }) => {
   const [statusFilter, setStatusFilter] = React.useState("すべて");
   const today = new Date(); today.setHours(0,0,0,0);
   const daysUntil = (dateStr) => { const [y,m,d] = String(dateStr).split("-").map(Number); return Math.ceil((new Date(y, m-1, d) - today) / 86400000); };
+  // 車両の追加・編集（driversLive/DriversPage と同じ方式）
+  const [extraVehicles, setExtraVehicles] = useLocalStorage("jt_extra_vehicles", []);
+  const [vehicleOverrides, setVehicleOverrides] = useLocalStorage("jt_vehicle_overrides", {});
+  const [form, setForm] = React.useState(null); // null=閉 / {mode,id?,plate,type,driverId,status,mileage,inspection}
+  useEscapeToClose(!!form, ()=>setForm(null));
+  const vehicleMaster = vehiclesLive(extraVehicles, vehicleOverrides); // 自stateで即時反映
+  const isExtra = (id) => (extraVehicles||[]).some(v => v.id === id);
+  const nextVehicleId = () => { const nums = vehicleMaster.map(v => parseInt((String(v.id).match(/\d+/)||["0"])[0],10)||0); return "V-" + String(Math.max(0,...nums) + 1).padStart(2,"0"); };
+  const openAdd = () => setForm({ mode:"add", plate:"", type:"軽バン", driverId:"", status:"稼働中", mileage:"", inspection:"" });
+  const openEdit = (v) => setForm({ mode:"edit", id:v.id, plate:v.plate, type:v.type, driverId:v.driverId||"", status:v.status, mileage:String(v.mileage??""), inspection:v.inspection||"" });
+  const saveVehicle = () => {
+    const plate = (form.plate||"").trim();
+    if (!plate) { showToast("ナンバーを入力してください", "error"); return; }
+    const rec = { plate, type:form.type, driverId:form.driverId||"", status:form.status, mileage:Number(String(form.mileage).replace(/[^0-9.]/g,""))||0, inspection:(form.inspection||"").trim() };
+    if (form.mode === "add") {
+      const id = nextVehicleId();
+      setExtraVehicles([ ...(extraVehicles||[]), { id, maintenance:[], ...rec } ]);
+      showToast("車両を追加しました");
+    } else {
+      if (isExtra(form.id)) setExtraVehicles((extraVehicles||[]).map(v => v.id===form.id ? { ...v, ...rec } : v));
+      else setVehicleOverrides({ ...vehicleOverrides, [form.id]: rec });
+      setSel(s => (s && s.id===form.id) ? { ...s, ...rec } : s);
+      showToast("車両情報を更新しました");
+    }
+    setForm(null);
+  };
+  const deleteExtraVehicle = (id) => { if (!confirm("この追加車両を削除しますか？")) return; setExtraVehicles((extraVehicles||[]).filter(v => v.id !== id)); setSel(null); showToast("削除しました"); };
   // 整備記録／車検予約は localStorage に追記保存
   const [maintExtras, setMaintExtras] = useLocalStorage("jt_vehicle_maintenance", {});
   const [reservations, setReservations] = useLocalStorage("jt_vehicle_reservations", {});
