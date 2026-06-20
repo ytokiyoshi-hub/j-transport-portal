@@ -5795,11 +5795,13 @@ const VehiclesPage = ({ accent }) => {
 };
 
 // ── 配車管理（DispatchPage）: 週間配車表 + シフト管理 ─────────────────────
+// 全荷主・案件で共通のチップ色（アクセント点使い・荷主ごとの色分けはしない）
+const DISPATCH_CLIENT_COLOR = { bg:"#EFEDF3", fg:"#7E6593" };
 const DISPATCH_CLIENT_COLORS = {
-  "C-01":{bg:"#dbeafe",fg:"#1e40af"}, "C-02":{bg:"#fce7f3",fg:"#9d174d"}, "C-03":{bg:"#d1fae5",fg:"#065f46"},
-  "C-04":{bg:"#fef9c3",fg:"#854d0e"}, "C-05":{bg:"#ede9fe",fg:"#5b21b6"}, "C-06":{bg:"#e2e8f0",fg:"#334155"},
-  "C-07":{bg:"#dcfce7",fg:"#14532d"}, "C-08":{bg:"#fee2e2",fg:"#991b1b"}, "C-09":{bg:"#e0e7ff",fg:"#3730a3"},
-  "C-10":{bg:"#ffedd5",fg:"#9a3412"}, "C-11":{bg:"#fef3c7",fg:"#92400e"},
+  "C-01":DISPATCH_CLIENT_COLOR, "C-02":DISPATCH_CLIENT_COLOR, "C-03":DISPATCH_CLIENT_COLOR,
+  "C-04":DISPATCH_CLIENT_COLOR, "C-05":DISPATCH_CLIENT_COLOR, "C-06":DISPATCH_CLIENT_COLOR,
+  "C-07":DISPATCH_CLIENT_COLOR, "C-08":DISPATCH_CLIENT_COLOR, "C-09":DISPATCH_CLIENT_COLOR,
+  "C-10":DISPATCH_CLIENT_COLOR, "C-11":DISPATCH_CLIENT_COLOR,
 };
 const DISPATCH_CLIENT_SHORT = {
   "C-01":"ASKUL","C-02":"Bloomee","C-03":"アクア","C-04":"カウネット","C-05":"サーガ","C-06":"スポット",
