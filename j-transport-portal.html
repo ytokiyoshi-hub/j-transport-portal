@@ -678,7 +678,8 @@ function ThemeProvider({ children }) {
       const raw = localStorage.getItem(THEME_KEY);
       if (raw) {
         const saved = JSON.parse(raw);
-        if (saved && typeof saved === 'object') return { ...THEME_PRESETS.default, ...saved };
+        // Soft UI 全体適用: 旧テーマ(base が新サーフェス色でない)は無視して新デフォルトへ移行
+        if (saved && typeof saved === 'object' && saved.base === '#E9E7EC') return { ...THEME_PRESETS.default, ...saved };
       }
     } catch {}
     return THEME_PRESETS.default;
