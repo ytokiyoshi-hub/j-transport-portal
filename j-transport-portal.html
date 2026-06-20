@@ -3724,7 +3724,8 @@ const DailyInputPage = ({ accent }) => {
                 const dt = dayTotals[di];
                 const isActiveRow = focusedCell?.di===di;
                 const isToday = day.dateStr===todayStr&&isCurrentMonth;
-                const rowBg = isActiveRow?accent+"08":isToday?accent+"06":day.isWeekend?"#EDEBF1":"var(--jt-base)";
+                // 選択中/TODAY行は不透明色にする（半透明だと sticky の日付列が横スクロールで透ける）
+                const rowBg = isActiveRow?"#E2DCEA":isToday?"#E8E4ED":day.isWeekend?"#EDEBF1":"var(--jt-base)";
                 const rowFilled = !day.isWeekend&&assignedDrivers.every(d=>rates.every(r=>getVal(day.dateStr,d.id,r.label)!==""));
                 const rowPartial = !rowFilled&&!day.isWeekend&&assignedDrivers.some(d=>rates.some(r=>getVal(day.dateStr,d.id,r.label)!==""));
                 return (
