@@ -7087,8 +7087,8 @@ const App = () => {
                 const active=page===item.id;
                 return (
                   <button key={item.id} onClick={()=>{ setPage(item.id); setNavOpen(false); }}
-                    style={{ width:"100%", display:"flex", alignItems:"center", gap:9, padding:"7px 10px", borderRadius:6, border:"none", background:active?theme.accentLt:"transparent", color:active?accent:theme.text, cursor:"pointer", fontFamily:"inherit", fontSize:12.5, fontWeight:active?600:400, marginBottom:1, transition:"all .1s", textAlign:"left" }}
-                    onMouseEnter={e=>{ if(!active) e.currentTarget.style.background=theme.bg; }}
+                    style={{ width:"100%", display:"flex", alignItems:"center", gap:9, padding:"7px 10px", borderRadius:10, border:"none", outline:"none", background:active?theme.base:"transparent", boxShadow:active?"inset 4px 4px 8px #CECAD5, inset -4px -4px 8px #FFFFFF":"none", color:active?accent:theme.text, cursor:"pointer", fontFamily:"inherit", fontSize:12.5, fontWeight:active?700:400, marginBottom:1, transition:"all .1s", textAlign:"left" }}
+                    onMouseEnter={e=>{ if(!active) e.currentTarget.style.background=theme.accentLt; }}
                     onMouseLeave={e=>{ if(!active) e.currentTarget.style.background="transparent"; }}>
                     <Ic name={item.icon} size={14} color={active?accent:theme.textSub}/>
                     <span style={{ flex:1 }}>{item.label}</span>
