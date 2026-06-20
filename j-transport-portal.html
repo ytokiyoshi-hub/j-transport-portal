@@ -5618,6 +5618,42 @@ function AppearanceSettings() {
         </div>
       </div>
       <div style={S.card}>
+        <div style={S.cardHead}>立体感（ニューモーフィズム）</div>
+        <div style={S.row}>
+          <span style={S.label}>凹凸の強さ<small style={S.hint}>影の深さ・距離（depth）</small></span>
+          <span style={{ display:'flex', alignItems:'center', gap:10, flex:1, minWidth:0 }}>
+            <span style={{ fontSize:11, color:draft.textMute }}>弱</span>
+            <input type="range" min="0.3" max="1.8" step="0.05" value={draft.depth ?? 1}
+              onChange={(e)=>{ const next={ ...draft, depth:parseFloat(e.target.value) }; setDraft(next); previewTheme(next); }}
+              onMouseUp={()=>{ setTheme(draft); showToast('立体感を保存しました'); }}
+              onTouchEnd={()=>{ setTheme(draft); showToast('立体感を保存しました'); }}
+              style={{ flex:1, accentColor:draft.accent, cursor:'pointer' }} />
+            <span style={{ fontSize:11, color:draft.textMute }}>強</span>
+            <span style={{ ...S.hex, width:42, textAlign:'right' }}>{(draft.depth ?? 1).toFixed(2)}×</span>
+          </span>
+        </div>
+        <div style={S.row}>
+          <span style={S.label}>影の色<small style={S.hint}>暗い側・凹凸の濃さ（shadowDark）</small></span>
+          <span style={S.picker}>
+            <input type="color" style={S.color} value={draft.shadowDark || '#CECAD5'} onChange={(e)=>onChange('shadowDark', e.target.value)} onBlur={()=>showToast('影の色を保存しました')} />
+            <span style={S.hex}>{draft.shadowDark || '#CECAD5'}</span>
+          </span>
+        </div>
+        <div style={S.row}>
+          <span style={S.label}>光の色<small style={S.hint}>明るい側・ハイライト（shadowLight）</small></span>
+          <span style={S.picker}>
+            <input type="color" style={S.color} value={draft.shadowLight || '#FFFFFF'} onChange={(e)=>onChange('shadowLight', e.target.value)} onBlur={()=>showToast('光の色を保存しました')} />
+            <span style={S.hex}>{draft.shadowLight || '#FFFFFF'}</span>
+          </span>
+        </div>
+        <div style={{ display:'flex', gap:14, marginTop:14, paddingTop:14, borderTop:`1px solid ${draft.line}`, alignItems:'center', flexWrap:'wrap' }}>
+          <small style={{ fontSize:11, color:draft.textMute, width:200 }}>ライブプレビュー（ドラッグで変化）</small>
+          <div style={{ width:90, height:52, borderRadius:14, background:'var(--jt-base)', boxShadow:'var(--jt-raised)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, color:draft.textSub }}>浮き出し</div>
+          <div style={{ width:90, height:52, borderRadius:14, background:'var(--jt-base)', boxShadow:'var(--jt-inset)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, color:draft.textSub }}>くぼみ</div>
+          <button type="button" style={{ padding:'9px 16px', border:'none', borderRadius:13, background:'var(--jt-base)', boxShadow:'var(--jt-raised-sm)', color:draft.text, fontSize:12, fontWeight:600, cursor:'pointer' }}>ボタン</button>
+        </div>
+      </div>
+      <div style={S.card}>
         <div style={S.cardHead}>プレビュー</div>
         <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
           <button style={S.btnPrimary}>主アクション</button>
