@@ -6923,7 +6923,7 @@ const DispatchPage = ({ accent, setPage }) => {
       <div style={{ background:"var(--jt-base)", boxShadow:"var(--jt-inset-sm)", borderRadius:10, padding:"10px 14px", marginBottom:16 }}>
         <div style={{ fontSize:12, color:"var(--jt-text-sub)", lineHeight:1.75 }}>
           <span style={{ fontWeight:700, color:"var(--jt-accent)", marginRight:8 }}>使い方</span>
-          {tab==="board" && <><b style={{color:"var(--jt-text)"}}>当日ボード（毎日ここ）</b>：今日 誰が・どの仕事を・何時〜何時 やっているかを管理。仕事を <b>予定→実施中→完了</b> でクリック更新（<b>稼働＝実施中</b>）。突発依頼は上の「<b>今すぐ動ける人</b>」で空きを確認。</>}
+          {tab==="board" && <><b style={{color:"var(--jt-text)"}}>当日ボード（毎日ここ・手入力ほぼ不要）</b>：<b>週間配車表から自動表示</b>され、<b>時計で 予定→実施中→完了 が自動進行</b>します（稼働＝実施中）。触るのは例外だけ：実態が違えばジョブをクリック（実施中→完了→欠勤）、突発は「突発を追加」。空きは「<b>今すぐ動ける人</b>」で即確認。</>}
           {tab==="dispatch" && <><b style={{color:"var(--jt-text)"}}>週間配車表（先の計画）</b>：1週間分、各ドライバーがどの案件を担当するかを割り当て（予定）。「平日を自動配車」で一括、セルのプルダウンで個別調整、「週を確定」でロック。</>}
           {tab==="shift" && <><b style={{color:"var(--jt-text)"}}>シフト管理（勤務）</b>：各ドライバーの勤務（日勤/早番/遅番/有休/休）を1週間分。セルをクリックで切替、「平日=日勤/土日=休」で一括。休・有休は勤怠と当日ボードに反映。</>}
           {tab==="bill" && <><b style={{color:"var(--jt-text)"}}>請求連動（あとで確認）</b>：確定した配車を実績（売上）と突合し、案件別に 売上・粗利・連動状態 を表示。</>}
