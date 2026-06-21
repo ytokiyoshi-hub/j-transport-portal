@@ -4277,9 +4277,9 @@ const Dashboard = ({ accent, setPage }) => {
       {/* Row 2 */}
       <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:14, marginBottom:14 }}>
 
-        {/* 荷主別売上 */}
+        {/* 案件別売上 */}
         <Card>
-          <SH title={`荷主別 今月売上（${totalSell>0?REF_MONTH_LABEL:"最新確定 "+LATEST_MONTH_LABEL+" を表示"}）`} action="収支詳細→" onAction={()=>setPage("pl")}/>
+          <SH title={`案件別 今月売上（${totalSell>0?REF_MONTH_LABEL:"最新確定 "+LATEST_MONTH_LABEL+" を表示"}）`} action="収支詳細→" onAction={()=>setPage("pl")}/>
           <div style={{ padding:"12px 20px" }}>
             {[...monthlyDisplay].filter(r=>r.sell>0).sort((a,b)=>b.sell-a.sell).map((r,i)=>{
               const rate = r.sell>0?(r.profit/r.sell*100).toFixed(0):0;
