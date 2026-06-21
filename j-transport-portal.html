@@ -4792,26 +4792,34 @@ const SafetyPage = ({ accent }) => {
   ]);
   const [submittedIncident, setSubmittedIncident] = React.useState(false);
 
-  const educationData = [
-    { name:"田中 一郎",  done:5, total:6 },
-    { name:"佐藤 次郎",  done:6, total:6 },
-    { name:"鈴木 三郎",  done:4, total:6 },
-    { name:"高橋 四郎",  done:6, total:6 },
-    { name:"伊藤 五郎",  done:5, total:6 },
-    { name:"渡辺 六郎",  done:3, total:6 },
-    { name:"中村 七郎",  done:6, total:6 },
-    { name:"小林 八郎",  done:4, total:6 },
-    { name:"加藤 九郎",  done:5, total:6 },
-    { name:"吉田 十郎",  done:6, total:6 },
-  ];
-
-  const alcoholHistory = [
-    { date:"04/30（水）", results:"10/10名 異常なし" },
-    { date:"04/29（火）", results:"9/9名 異常なし（田中ドライバー休日）" },
-    { date:"04/28（月）", results:"10/10名 異常なし" },
-    { date:"04/25（金）", results:"10/10名 異常なし" },
-    { date:"04/24（木）", results:"10/10名 異常なし" },
-  ];
+  // 安全教育 受講記録（実ドライバー基準・実データ）: jt_safety_education = { [driverId]: { done, total } }
+  const [eduRecords, setEduRecords] = useLocalStorage("jt_safety_education", {});
+  const EDU_TOTAL = 6; // 「全6科目」表記と一致
+  const educationData = drivers.map(d => {
+    const r = eduRecords[d.id] || {};
+    const total = (typeof r.total === "number" && r.total > 0) ? r.total : EDU_TOTAL;
+    const done = Math.max(0, Math.min(total, typeof r.done === "number" ? r.done : 0));
+    return { id:d.id, name:d.name, done, total };
+  });
+  const _eduHasRecord = Object.keys(eduRecords).length > 0;
+  // アルコール検査 記録（実データ）: jt_alcohol_checks = { [YYYY-MM-DD]: { done, total, note } }
+  const [alcoholChecks, setAlcoholChecks] = useLocalStorage("jt_alcohol_checks", {});
+  const _alcToday = todayLocal();
+  const _alcTotal = drivers.length;
+  const _alcDone = (alcoholChecks[_alcToday] && typeof alcoholChecks[_alcToday].done === "number") ? alcoholChecks[_alcToday].done : 0;
+  const _alcPct = _alcTotal>0 ? Math.round(_alcDone/_alcTotal*100) : 0;
+  const _alcWd = "日月火水木金土";
+  const alcoholHistory = Object.keys(alcoholChecks).sort().reverse().slice(0,6).map(dt => {
+    const r = alcoholChecks[dt] || {}; const w = _alcWd[new Date(dt+"T00:00:00").getDay()] || "";
+    return { date:`${dt.slice(5).replace("-","/")}（${w}）`, results: (r.total>0 ? `${r.done}/${r.total}名 ${r.note||"異常なし"}` : "記録なし") };
+  });
+  // 法令遵守チェック（実データ・期限超過は実機日付から動的判定・チェックは編集可）: jt_compliance
+  const [compliance, setCompliance] = useLocalStorage("jt_compliance", [
+    { name:"軽貨物運送業 届出", deadline:"2026-09-30", done:true },
+    { name:"ドライバー健康診断", deadline:"2026-10-31", done:true },
+    { name:"フリーランス保護新法 対応", deadline:"2025-05-31", done:false },
+    { name:"アルコール検査記録保存", deadline:"随時", done:true },
+  ]);
 
   const submitIncident = () => {
     if (!incident.driver || !incident.detail) return;
