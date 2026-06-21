@@ -1398,8 +1398,8 @@ const PLPage = ({ accent, setPage }) => {
   // === YTD（年計）===
   // 最後の12ヶ月（またはそれ以下）の合計で年計と予測を算出
   const curYear = selectedMonth.slice(0,4);
-  const selectedIdx = ALL_MONTH_KEYS.indexOf(selectedMonth);
-  const ytdMonths = selectedIdx>=0 ? ALL_MONTH_KEYS.slice(Math.max(0, selectedIdx-11), selectedIdx+1) : [];
+  const selectedIdx = ALL_MONTH_KEYS_LIVE.indexOf(selectedMonth);
+  const ytdMonths = selectedIdx>=0 ? ALL_MONTH_KEYS_LIVE.slice(Math.max(0, selectedIdx-11), selectedIdx+1) : [];
   const ytdData = ytdMonths.reduce((acc,mk)=>{
     const m = monthAgg(mk, dailyEdits); acc.sell+=m.sell; acc.pay+=m.pay; return acc;
   }, {sell:0,pay:0});
