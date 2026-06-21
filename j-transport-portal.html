@@ -4387,8 +4387,7 @@ const Dashboard = ({ accent, setPage }) => {
                     <div style={{ fontSize:11, color:"#A09AAB" }}>{a.type} · {a.date}</div>
                   </div>
                   <button onClick={()=>{
-                    if (a.isApp) setApps(s=>s.map(x=>x.id===a.id?{...x,status:"承認済み"}:x));
-                    else setDemoApproved(p=>p.includes(a.id)?p:[...p,a.id]);
+                    setApps(s=>s.map(x=>x.id===a.id?{...x,status:"承認済み"}:x));
                     showToast(a.name+" の「"+a.type+"」を承認しました");
                   }} style={{ padding:"5px 10px", border:"none", borderRadius:13, background:"var(--jt-base)", color:"var(--jt-accent)", fontSize:11, fontWeight:600, cursor:"pointer", boxShadow:"var(--jt-raised-sm)" }}>確認</button>
                 </div>
