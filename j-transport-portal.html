@@ -1336,7 +1336,7 @@ const PLPage = ({ accent, setPage }) => {
   const yoyMonths = []; // 当年の実データ月だけ {m, cs(当年売上), ps(前年売上), pct(前年比%)}
   for (let m=1; m<=12; m++) {
     const cmk = `${_curY}-${String(m).padStart(2,'0')}`;
-    if (!ALL_MONTH_KEYS.includes(cmk)) continue; // 実データ月のみ（締め按分の端数月を除外）
+    if (!ALL_MONTH_KEYS_LIVE.includes(cmk)) continue; // 実データ月のみ（締め按分の端数月を除外）
     const cs = monthAgg(cmk, dailyEdits).sell;
     if (cs<=0) continue;
     const ps = monthAgg(`${_curY-1}-${String(m).padStart(2,'0')}`, dailyEdits).sell;
