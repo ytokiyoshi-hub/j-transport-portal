@@ -4052,7 +4052,7 @@ const Dashboard = ({ accent, setPage }) => {
         <Card>
           <SH title={`荷主別 今月売上（${totalSell>0?REF_MONTH_LABEL:"最新確定 "+LATEST_MONTH_LABEL+" を表示"}）`} action="収支詳細→" onAction={()=>setPage("pl")}/>
           <div style={{ padding:"12px 20px" }}>
-            {[...monthlyDisplay].filter(r=>r.sell>0).sort((a,b)=>b.sell-a.sell).slice(0,7).map((r,i)=>{
+            {[...monthlyDisplay].filter(r=>r.sell>0).sort((a,b)=>b.sell-a.sell).map((r,i)=>{
               const rate = r.sell>0?(r.profit/r.sell*100).toFixed(0):0;
               return (
                 <div key={i} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:8, fontSize:13 }}>
