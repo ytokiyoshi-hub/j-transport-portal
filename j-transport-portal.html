@@ -3947,14 +3947,21 @@ const DailyInputPage = ({ accent }) => {
 };
 
 // ── ダッシュボード ─────────────────────────────────────────────────────────
-// 月次売上推移チャート（Chart.js）。データは実データ monthAgg（収支管理と同じ集計）を使用。
+// 月次売上推移チャート（Chart.js）。データは実データ monthAgg（収支管理と同じ集計）。
+// 【規約】チャートの色は必ずテーマ連動（useTheme の theme.accent/line/textSub）にする。色をハードコードしない。
 const SalesTrendChart = ({ dailyEdits }) => {
+  const { theme } = useTheme();
   const ref = React.useRef(null);
   const chartRef = React.useRef(null);
   React.useEffect(() => {
     if (!window.Chart || !ref.current) return;
+    // テーマ連動の色（ハードコード禁止）。theme変更でこのeffectが再実行され再描画される。
+    const line = theme.accent || '#7E6593';
+    const grid = theme.line || '#DEDAE5';
+    const txt  = theme.textSub || '#645F6E';
+    const _rgba = (hex, a) => { const h=String(hex).replace('#',''); const n=h.length===3?h.split('').map(c=>c+c).join(''):h; return `rgba(${parseInt(n.slice(0,2),16)||126},${parseInt(n.slice(2,4),16)||101},${parseInt(n.slice(4,6),16)||147},${a})`; };
     window.Chart.defaults.font.family = "'Plus Jakarta Sans','Noto Sans JP',sans-serif";
-    window.Chart.defaults.color = '#645F6E';
+    window.Chart.defaults.color = txt;
     // REF_MONTH を末尾とする直近12ヶ月（連続）
     const [yy, mm] = REF_MONTH.split('-').map(Number);
     const months = [];
@@ -3963,14 +3970,14 @@ const SalesTrendChart = ({ dailyEdits }) => {
     const data = months.map(mk => monthAgg(mk, dailyEdits).sell);
     chartRef.current = new window.Chart(ref.current, {
       type: 'line',
-      data: { labels, datasets: [{ label: '売上', data, borderColor: '#7E6593', backgroundColor: 'rgba(126,101,147,.15)', borderWidth: 2.5, fill: true, tension: .4, pointRadius: 0, pointHoverRadius: 4 }] },
+      data: { labels, datasets: [{ label: '売上', data, borderColor: line, backgroundColor: _rgba(line, 0.15), borderWidth: 2.5, fill: true, tension: .4, pointRadius: 0, pointHoverRadius: 4 }] },
       options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
         plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => '売上 ¥' + Number(c.raw).toLocaleString('ja-JP') } } },
-        scales: { y: { grid: { color: '#DEDAE5' }, ticks: { font: { size: 10 }, callback: v => (v/10000).toLocaleString('ja-JP') + '万' } },
-          x: { grid: { display: false }, ticks: { font: { size: 10 } } } } }
+        scales: { y: { grid: { color: grid }, ticks: { color: txt, font: { size: 10 }, callback: v => (v/10000).toLocaleString('ja-JP') + '万' } },
+          x: { grid: { display: false }, ticks: { color: txt, font: { size: 10 } } } } }
     });
     return () => { if (chartRef.current) { chartRef.current.destroy(); chartRef.current = null; } };
-  }, [dailyEdits]);
+  }, [dailyEdits, theme]);
   return <div style={{ height: 220 }}><canvas ref={ref} /></div>;
 };
 
