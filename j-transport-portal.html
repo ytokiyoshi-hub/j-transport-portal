@@ -3975,15 +3975,16 @@ const PLCompositeChart = ({ dailyEdits }) => {
   const ref = React.useRef(null); const chartRef = React.useRef(null);
   React.useEffect(() => {
     if (!window.Chart || !ref.current) return;
-    const acc = theme.accent || '#7E6593', accLt = theme.accentLt || '#C9C0D6', grid = theme.line || '#DEDAE5', txt = theme.textSub || '#645F6E', green = '#6E9E78';
+    const acc = theme.accent || '#7E6593', grid = theme.line || '#DEDAE5', txt = theme.textSub || '#645F6E', green = '#5C9168';
     window.Chart.defaults.font.family = "'Plus Jakarta Sans','Noto Sans JP',sans-serif"; window.Chart.defaults.color = txt;
     const months = _chartMonths12(); const labels = months.map(mk=>Number(mk.split('-')[1])+'月');
     const sell = months.map(mk=>monthAgg(mk,dailyEdits).sell), pay = months.map(mk=>monthAgg(mk,dailyEdits).pay), profit = months.map(mk=>monthAgg(mk,dailyEdits).profit);
     chartRef.current = new window.Chart(ref.current, { type:'bar',
       data:{ labels, datasets:[
-        { label:'売上', data:sell, backgroundColor:acc, borderRadius:4, barPercentage:.64, categoryPercentage:.74, order:2 },
-        { label:'支払', data:pay, backgroundColor:_rgbaHex(accLt,.95), borderRadius:4, barPercentage:.64, categoryPercentage:.74, order:3 },
-        { label:'粗利', type:'line', data:profit, borderColor:green, borderWidth:2, tension:.35, pointRadius:0, pointHoverRadius:4, fill:false, order:1 } ] },
+        // 売上=濃いアクセント / 支払=薄いアクセント（=白で消えていたのを視認可能に） / 粗利=緑の太線＋点で識別性UP
+        { label:'売上', data:sell, backgroundColor:acc, borderRadius:4, barPercentage:.66, categoryPercentage:.72, order:3 },
+        { label:'支払', data:pay, backgroundColor:_rgbaHex(acc,.34), borderRadius:4, barPercentage:.66, categoryPercentage:.72, order:4 },
+        { label:'粗利', type:'line', data:profit, borderColor:green, backgroundColor:green, borderWidth:3, tension:.35, pointRadius:3, pointBackgroundColor:green, pointBorderColor:'#fff', pointBorderWidth:1.5, pointHoverRadius:5, fill:false, order:1 } ] },
       options:{ responsive:true, maintainAspectRatio:false, interaction:{mode:'index',intersect:false},
         plugins:{ legend:{position:'bottom', labels:{usePointStyle:true, boxWidth:10, font:{size:11}, padding:14}}, tooltip:{ callbacks:{ label:c=>c.dataset.label+' ¥'+Number(c.raw).toLocaleString('ja-JP') } } },
         scales:{ y:{ grid:{color:grid}, ticks:{ color:txt, font:{size:10}, callback:v=>(v/10000).toLocaleString('ja-JP')+'万' } }, x:{ grid:{display:false}, ticks:{ color:txt, font:{size:10} } } } } });
