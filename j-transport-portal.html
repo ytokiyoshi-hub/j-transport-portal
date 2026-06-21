@@ -4836,8 +4836,8 @@ const SafetyPage = ({ accent }) => {
   // 連続無事故日数: 当日(実機日付)起点、物損事故・人身事故の記録でリセット。今月ヒヤリハットと時間基準を統一
   const _safetyToday = (()=>{ const d = new Date(); d.setHours(0,0,0,0); return d.getTime(); })();
   const _accTs = incidents.filter(i=>i.type==="物損事故"||i.type==="人身事故").map(i=>new Date(i.date+"T00:00:00").getTime()).filter(t=>!isNaN(t));
-  const _lastAccTs = _accTs.length ? Math.max(..._accTs) : (_safetyToday - 45*86400000); /* 事故記録が無い場合の既定=45日 */
-  const noAccidentDays = Math.max(0, Math.floor((_safetyToday - _lastAccTs) / 86400000));
+  const _lastAccTs = _accTs.length ? Math.max(..._accTs) : null; // 事故記録が無ければ日数を捏造しない
+  const noAccidentDays = _lastAccTs===null ? null : Math.max(0, Math.floor((_safetyToday - _lastAccTs) / 86400000));
 
   return (
     <div>
