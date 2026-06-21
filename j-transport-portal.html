@@ -1442,7 +1442,7 @@ const PLPage = ({ accent, setPage }) => {
           <label style={{ fontSize:12, color:"#645F6E" }}>対象月：</label>
           <select value={selectedMonth} onChange={e=>setSelectedMonth(e.target.value)}
             style={{ padding:"7px 14px", border:"none", borderRadius:13, background:"var(--jt-base)", fontSize:13, fontWeight:600, color:"var(--jt-text)", cursor:"pointer", fontFamily:"inherit", outline:"none", boxShadow:"var(--jt-inset)", borderLeft:`5px solid ${accent}` }}>
-            {ALL_MONTH_KEYS.slice().reverse().map(mk=>(
+            {ALL_MONTH_KEYS_LIVE.slice().filter(mk=>ALL_MONTH_KEYS.includes(mk)||monthAgg(mk,dailyEdits).sell>0).reverse().map(mk=>(
               <option key={mk} value={mk}>{mkLabel(mk)}</option>
             ))}
           </select>
