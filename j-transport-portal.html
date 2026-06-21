@@ -5528,7 +5528,7 @@ const ParentClientsPage = ({ accent }) => {
       {unassignedClients.length>0 && (
         <Card style={{ padding:16, marginTop:16 }}>
           <div style={{ fontSize:12, fontWeight:700, color:"var(--jt-alert)", marginBottom:10 }}>⚠ 荷主が未設定の案件 ({unassignedClients.length}件)</div>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(220px, 1fr))", gap:8 }}>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(300px, 1fr))", gap:8 }}>
             {unassignedClients.map(c=>(
               <div key={c.id} style={{ display:"flex", gap:6, alignItems:"center", padding:"6px 8px", background:"var(--jt-base)", boxShadow:"var(--jt-raised-sm)", borderRadius:13 }}>
                 <span style={{ fontSize:12, fontWeight:600, flex:1, minWidth:0, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }} title={c.name}>{c.name}</span>
