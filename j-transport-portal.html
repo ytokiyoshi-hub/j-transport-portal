@@ -6412,11 +6412,21 @@ const JOB_STYLE = {
   active: { bg:"#E6EFE4",        fg:"#4F7A58",             bd:"1px solid #6E9E78",            mk:"● " },
   done:   { bg:"var(--jt-base)", fg:"var(--jt-text-mute)", bd:"1px solid var(--jt-line)",     mk:"✓ " },
 };
-// 当日ボードの実稼働ドライバーID集合（稼働＝実施中ジョブを持つ・休/有休でない）。ダッシュボードと共有。
-const activeJobDriverIds = (jobs, shifts, dateStr) => {
-  const off = (did)=>{ const s=(shifts[dateStr]&&shifts[dateStr][did])||""; return s==="休"||s==="有休"; };
+// 当日ボードの実稼働ドライバーID集合（稼働＝今この時刻に「実施中」のジョブを持つ・休/有休でない）。ダッシュボードと共有。
+// 当日ボードと同じ自動生成ロジック：週間配車表(dispatch)を案件標準時間で展開 ＋ 突発(jobs)、状態は override優先→時計。
+const activeJobDriverIds = (dispatch, jobs, caseHours, statusOv, shifts, dateStr, nowMin) => {
+  const off = did => { const s=(shifts[dateStr]&&shifts[dateStr][did])||""; return s==="休"||s==="有休"; };
+  const hoursOf = cid => (caseHours&&caseHours[cid]) || { start:"08:00", end:"17:00" };
+  const base = Object.entries((dispatch&&dispatch[dateStr])||{}).filter(([,cid])=>cid).map(([did,cid])=>{ const h=hoursOf(cid); return { id:"base|"+did+"|"+cid, driverId:did, start:h.start, end:h.end }; });
+  const spot = ((jobs&&jobs[dateStr])||[]);
+  const ov = (statusOv&&statusOv[dateStr]) || {};
   const set = new Set();
-  (jobs[dateStr]||[]).forEach(j=>{ if(j.status==="active" && j.driverId && !off(j.driverId)) set.add(j.driverId); });
+  [...base, ...spot].forEach(j => {
+    if (!j.driverId || off(j.driverId)) return;
+    const o = ov[j.id]; let st;
+    if (o) st = o; else { const s=_jbToMin(j.start), e=_jbToMin(j.end); st = nowMin<s?"予定":nowMin>=e?"完了":"実施中"; }
+    if (st === "実施中") set.add(j.driverId);
+  });
   return set;
 };
 const STAT_STYLE = {
