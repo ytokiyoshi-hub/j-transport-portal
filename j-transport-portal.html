@@ -4025,7 +4025,8 @@ const YoYSalesChart = ({ dailyEdits }) => {
     const labels = []; for (let m=1;m<=12;m++) labels.push(m+'月');
     const _mk = (y,m)=>`${y}-${String(m).padStart(2,'0')}`;
     const prev = [], cur = [];
-    for (let m=1;m<=12;m++){ prev.push(monthAgg(_mk(prevY,m),dailyEdits).sell||0); const c=monthAgg(_mk(curY,m),dailyEdits).sell; cur.push(c>0?c:null); }
+    // 当年は「実データ月（monthlyHistory に存在 or 当月）」のみ採用。締め日越えの按分で生じる端数月（例: 1月の数日分）を誤表示しない。
+    for (let m=1;m<=12;m++){ prev.push(monthAgg(_mk(prevY,m),dailyEdits).sell||0); const ck=_mk(curY,m); const c=ALL_MONTH_KEYS.includes(ck)?monthAgg(ck,dailyEdits).sell:0; cur.push(c>0?c:null); }
     chartRef.current = new window.Chart(ref.current, { type:'line',
       data:{ labels, datasets:[
         { label:prevY+'年（前年）', data:prev, borderColor:_rgbaHex(mute,.9), backgroundColor:'transparent', borderWidth:2, borderDash:[5,4], tension:.35, pointRadius:0, pointHoverRadius:4, order:2 },
