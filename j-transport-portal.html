@@ -1316,6 +1316,7 @@ const PLPage = ({ accent, setPage }) => {
   let yoyBaseMonth = null, yoyDelta = null;
   for (let m=12; m>=1; m--) {
     const cmk = `${_curY}-${String(m).padStart(2,'0')}`;
+    if (!ALL_MONTH_KEYS.includes(cmk)) continue; // 実データ月のみ（端数月を除外）
     const cs = monthAgg(cmk, dailyEdits).sell;
     if (cs>0) {
       const ps = monthAgg(`${_curY-1}-${String(m).padStart(2,'0')}`, dailyEdits).sell;
