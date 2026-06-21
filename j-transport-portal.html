@@ -1200,11 +1200,12 @@ const ParentClientSummaryBlock = ({ accent, selectedMonth, dailyEdits }) => {
 };
 
 const PLPage = ({ accent, setPage }) => {
-  const [selectedMonth, setSelectedMonth] = React.useState(LATEST_DATA_MONTH);
-  const [graphRange, setGraphRange] = React.useState("year"); // year | half
-  const [tblSort, setTblSort] = React.useState({key:"sell", dir:"desc"});
   // 日次入力ページからの編集を反映するために localStorage 経由で購読
   const [dailyEdits] = useLocalStorage("jt_daily_edits", {});
+  // 既定月: 今月（REF_MONTH）に日次実績があれば今月を、無ければ最新確定月を表示（ダッシュボードと一致させる）
+  const [selectedMonth, setSelectedMonth] = React.useState(() => monthAgg(REF_MONTH, dailyEdits).sell > 0 ? REF_MONTH : LATEST_DATA_MONTH);
+  const [graphRange, setGraphRange] = React.useState("year"); // year | half
+  const [tblSort, setTblSort] = React.useState({key:"sell", dir:"desc"});
   // 請求金額は請求管理/ダッシュボードと同じく「実効ステータス＋日次実績優先」で算出し、3画面の数値を一致させる
   const [issuedArr] = useLocalStorage("jt_issued", []);
   const [paidArr] = useLocalStorage("jt_paid", []);
