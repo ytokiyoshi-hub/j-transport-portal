@@ -4161,10 +4161,10 @@ const Dashboard = ({ accent, setPage }) => {
           <div style={{ padding:"0 20px 16px" }}>
             <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:10, marginBottom:16 }}>
               {[
-                { l:"稼働中", v:9, c:"#6E9E78", bg:"#E9E7EE" },
-                { l:"整備中", v:1, c:"#C39A52", bg:"#E9E7EE" },
-                { l:"配達完了", v:7, c:accent, bg:"#E9E7EE" },
-                { l:"持戻り", v:2, c:"#B05A60", bg:"#E9E7EE" },
+                { l:"稼働車両", v:activeVeh, c:"#6E9E78" },
+                { l:"整備中",   v:maintVeh,  c:"#C39A52" },
+                { l:"本日 配完", v:todayOps.haikan, c:accent },
+                { l:"本日 持戻", v:todayOps.modori, c:"#B05A60" },
               ].map(s=>(
                 <div key={s.l} style={{ background:"var(--jt-base)", borderRadius:8, padding:"12px", textAlign:"center", boxShadow:"var(--jt-inset)" }}>
                   <div style={{ fontSize:22, fontWeight:700, letterSpacing:"-0.01em", color:s.c }}>{s.v}</div>
@@ -4172,35 +4172,17 @@ const Dashboard = ({ accent, setPage }) => {
                 </div>
               ))}
             </div>
-            {[
-              { name:"田中 一郎", client:"ASKUL",       status:"配達中",   done:34, total:41, time:"16:20" },
-              { name:"鈴木 健太", client:"アクアクララ", status:"完了",     done:22, total:22, time:"15:45" },
-              { name:"佐藤 大輔", client:"Bloomee",      status:"配達中",   done:18, total:25, time:"16:35" },
-              { name:"山田 浩二", client:"カウネット",   status:"持戻り",   done:16, total:19, time:"16:10" },
-              { name:"伊藤 誠",   client:"ASKUL",        status:"完了",     done:38, total:38, time:"14:30" },
-              { name:"渡辺 翔",   client:"タイヤ配送",   status:"配達中",   done:6,  total:11, time:"16:50" },
-            ].map((r,i)=>{
-              const pct = r.total>0 ? Math.round(r.done/r.total*100) : 0;
-              const sc = r.status==="完了"?{bg:"#dcfce7",c:"#6E9E78"}:r.status==="配達中"?{bg:accent+"18",c:accent}:{bg:"#fee2e2",c:"#B05A60"};
-              return (
-                <div key={i} style={{ display:"flex", alignItems:"center", gap:12, padding:"9px 0", borderBottom:i<5?"1px solid #DEDAE5":"none" }}>
-                  <Avatar name={r.name} size={28} bg="#EDEBF1" color="#645F6E"/>
-                  <div style={{ flex:1, minWidth:0 }}>
-                    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:4 }}>
-                      <div style={{ fontSize:13, fontWeight:600 }}>{r.name}<span style={{ fontSize:11, color:"#A09AAB", fontWeight:400, marginLeft:6 }}>{r.client}</span></div>
-                      <div style={{ display:"flex", alignItems:"center", gap:6 }}>
-                        <span style={{ fontSize:12, fontWeight:700 }}>{r.done}<span style={{ fontSize:11, color:"#A09AAB", fontWeight:400 }}>/{r.total}件</span></span>
-                        <span style={{ fontSize:10, color:"#A09AAB" }}>{r.time}</span>
-                      </div>
-                    </div>
-                    <div style={{ height:4, background:"var(--jt-base)", borderRadius:2, boxShadow:"var(--jt-inset-sm)" }}>
-                      <div style={{ width:`${pct}%`, height:"100%", background:r.status==="完了"?"#6E9E78":r.status==="持戻り"?"#B05A60":accent, borderRadius:2, transition:"width .3s" }}/>
-                    </div>
-                  </div>
-                  <span style={{ padding:"2px 7px", borderRadius:4, fontSize:11, fontWeight:600, background:sc.bg, color:sc.c, flexShrink:0 }}>{r.status}</span>
+            {todayDriverRows.length===0 ? (
+              <div style={{ padding:"18px 0", textAlign:"center", fontSize:12, color:"var(--jt-text-mute)" }}>本日（{TODAY_STR}）の運行データはまだありません</div>
+            ) : todayDriverRows.map((r,i)=>(
+              <div key={r.id} style={{ display:"flex", alignItems:"center", gap:12, padding:"9px 0", borderBottom:i<todayDriverRows.length-1?"1px solid #DEDAE5":"none" }}>
+                <div style={{ flex:1, minWidth:0 }}>
+                  <div style={{ fontSize:13, fontWeight:600 }}>{r.name}<span style={{ fontSize:11, color:"#A09AAB", fontWeight:400, marginLeft:6 }}>{r.clients}</span></div>
                 </div>
-              );
-            })}
+                {r.modori>0 && <span style={{ padding:"2px 7px", borderRadius:4, fontSize:11, fontWeight:600, background:"#F3E6E3", color:"#B05A60", flexShrink:0 }}>持戻 {r.modori}</span>}
+                <span style={{ fontSize:13, fontWeight:700, flexShrink:0 }}>{r.cnt}<span style={{ fontSize:11, color:"#A09AAB", fontWeight:400 }}> 件</span></span>
+              </div>
+            ))}
           </div>
         </Card>
 
