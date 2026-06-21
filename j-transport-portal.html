@@ -4269,7 +4269,7 @@ const Dashboard = ({ accent, setPage }) => {
           <div style={{ padding:"4px 16px 16px" }}><SalesTrendChart dailyEdits={dailyEdits}/></div>
         </Card>
         <Card>
-          <SH title={`荷主別 粗利貢献（${totalSell>0?REF_MONTH_LABEL:"最新確定 "+LATEST_MONTH_LABEL}）`} action="収支詳細→" onAction={()=>setPage("pl")}/>
+          <SH title={`案件別 粗利貢献（${totalSell>0?REF_MONTH_LABEL:"最新確定 "+LATEST_MONTH_LABEL}）`} action="収支詳細→" onAction={()=>setPage("pl")}/>
           <div style={{ padding:"4px 16px 16px" }}><ClientProfitChart dailyEdits={dailyEdits}/></div>
         </Card>
       </div>
