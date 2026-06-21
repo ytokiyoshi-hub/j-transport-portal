@@ -7334,12 +7334,6 @@ const ApplyPage = ({ accent }) => {
   const [form, setForm] = React.useState({});
   const [openDetail, setOpenDetail] = React.useState(null);
   const [submitted, setSubmitted] = useLocalStorage("jt_applications", []);
-  const [pendingList] = React.useState([
-    { id:"A-042", type:"有給休暇申請", date:"2025-04-25", status:"承認待ち", approver:"田中 部長" },
-    { id:"A-041", type:"残業申請",     date:"2025-04-22", status:"承認済み", approver:"田中 部長" },
-    { id:"A-039", type:"交通費精算",   date:"2025-04-18", status:"承認済み", approver:"管理部" },
-    { id:"A-038", type:"備品購入申請", date:"2025-04-15", status:"却下",     approver:"管理部" },
-  ]);
 
   const stC = s => s==="承認待ち"?{bg:"#F2EBDC",c:"#8C6A2E"}:s==="承認済み"?{bg:"#E6EFE4",c:"#6E9E78"}:{bg:"#fee2e2",c:"#B05A60"};
 
