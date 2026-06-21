@@ -4011,6 +4011,36 @@ const ClientProfitChart = ({ dailyEdits }) => {
   return <div style={{ height: 220 }}><canvas ref={ref} /></div>;
 };
 
+// 前年同月比（当年 vs 前年・売上）。暦月(1〜12月)で2年分を重ねる。当年=REF_MONTHの年、前年=その1年前。
+// データ=実データ monthAgg（前年は monthlyHistory、当年は日次ライブ）。色=テーマ連動。
+// 当年データの無い月は null でギャップ表示（0で底打ちさせない）。前年比%はツールチップに表示。
+const YoYSalesChart = ({ dailyEdits }) => {
+  const { theme } = useTheme();
+  const ref = React.useRef(null); const chartRef = React.useRef(null);
+  React.useEffect(() => {
+    if (!window.Chart || !ref.current) return;
+    const acc = theme.accent || '#7E6593', grid = theme.line || '#DEDAE5', txt = theme.textSub || '#645F6E', mute = theme.textMute || '#A09AAB';
+    window.Chart.defaults.font.family = "'Plus Jakarta Sans','Noto Sans JP',sans-serif"; window.Chart.defaults.color = txt;
+    const curY = Number(REF_MONTH.split('-')[0]), prevY = curY - 1;
+    const labels = []; for (let m=1;m<=12;m++) labels.push(m+'月');
+    const _mk = (y,m)=>`${y}-${String(m).padStart(2,'0')}`;
+    const prev = [], cur = [];
+    for (let m=1;m<=12;m++){ prev.push(monthAgg(_mk(prevY,m),dailyEdits).sell||0); const c=monthAgg(_mk(curY,m),dailyEdits).sell; cur.push(c>0?c:null); }
+    chartRef.current = new window.Chart(ref.current, { type:'line',
+      data:{ labels, datasets:[
+        { label:prevY+'年（前年）', data:prev, borderColor:_rgbaHex(mute,.9), backgroundColor:'transparent', borderWidth:2, borderDash:[5,4], tension:.35, pointRadius:0, pointHoverRadius:4, order:2 },
+        { label:curY+'年（当年）', data:cur, borderColor:acc, backgroundColor:_rgbaHex(acc,.12), borderWidth:2.75, tension:.3, fill:true, spanGaps:false, pointRadius:4, pointBackgroundColor:acc, pointHoverRadius:6, order:1 } ] },
+      options:{ responsive:true, maintainAspectRatio:false, interaction:{mode:'index',intersect:false},
+        plugins:{ legend:{position:'bottom', labels:{usePointStyle:true, boxWidth:10, font:{size:11}, padding:14}},
+          tooltip:{ callbacks:{
+            label:c=>c.dataset.label+(c.raw==null?' データなし':' ¥'+Number(c.raw).toLocaleString('ja-JP')),
+            afterBody:(items)=>{ const ci=items.find(i=>i.datasetIndex===1 && i.raw!=null); if(!ci) return ''; const pv=prev[ci.dataIndex]; if(!pv) return ''; const d=(ci.raw-pv)/pv*100; return '前年同月比 '+(d>=0?'+':'')+d.toFixed(1)+'%'; } } } },
+        scales:{ y:{ grid:{color:grid}, ticks:{ color:txt, font:{size:10}, callback:v=>(v/10000).toLocaleString('ja-JP')+'万' } }, x:{ grid:{display:false}, ticks:{ color:txt, font:{size:10} } } } } });
+    return ()=>{ if(chartRef.current){ chartRef.current.destroy(); chartRef.current=null; } };
+  }, [dailyEdits, theme]);
+  return <div style={{ height: 220 }}><canvas ref={ref} /></div>;
+};
+
 const Dashboard = ({ accent, setPage }) => {
   const drivers = driversLive();
   // 「自動更新」表示の通り、時計を30秒ごとに更新する
