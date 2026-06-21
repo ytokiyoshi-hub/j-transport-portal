@@ -4099,6 +4099,14 @@ const Dashboard = ({ accent, setPage }) => {
         ))}
       </div>
 
+      {/* 月次売上推移（実データ） */}
+      <Card style={{ marginBottom:14 }}>
+        <SH title="月次売上推移（直近12ヶ月）" action="収支詳細→" onAction={()=>setPage("pl")}/>
+        <div style={{ padding:"4px 16px 16px" }}>
+          <SalesTrendChart dailyEdits={dailyEdits}/>
+        </div>
+      </Card>
+
       {/* Row 2 */}
       <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:14, marginBottom:14 }}>
 
