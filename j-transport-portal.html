@@ -7091,7 +7091,7 @@ const AttendancePage = ({ accent }) => {
       const sh = shifts[wd.dk] && shifts[wd.dk][d.id];
       const st = _resolveState(cid, sh);
       if (st === "有給") return "有給";
-      if (st === "休") return "休";
+      if (st === "休日") return "休";
       if (st === "出勤") return _clientName[cid] || cid;
       return "—";
     });
