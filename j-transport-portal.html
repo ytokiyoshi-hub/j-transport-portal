@@ -1129,6 +1129,9 @@ const computeLiveSum = (cid, mk, dailyEdits) => {
         const baseV = baseDrv[lbl];
         const v = editV !== undefined ? editV : baseV;
         const cnt = Number(v) || 0;
+        // 期間内にユーザーの編集があれば（"" や 0 でも）「当期は確定入力済み」とみなす。
+        // → 全セルを0/空にクリアした荷主が、cm() で古い monthlyHistory シードに復活しない。
+        if (editV !== undefined) edited = true;
         const r = c.rates.find(rr => rr.label === lbl);
         if (!r || cnt === 0) continue;
         sell += cnt * r.sell;
@@ -1137,7 +1140,8 @@ const computeLiveSum = (cid, mk, dailyEdits) => {
       }
     }
   }
-  return hasAny ? { s: sell, p: pay } : null;
+  // hasAny: 1セルでも実数あり / edited: ユーザーが当期を明示入力（全0含む）。どちらかあれば確定値を返しシードに戻さない。
+  return (hasAny || edited) ? { s: sell, p: pay } : null;
 };
 
 // クライアント×月の値取得（live edits を優先、なければ monthlyHistory フォールバック）
