@@ -3981,6 +3981,72 @@ const SalesTrendChart = ({ dailyEdits }) => {
   return <div style={{ height: 220 }}><canvas ref={ref} /></div>;
 };
 
+// hex -> rgba（チャートの面塗り用）
+const _rgbaHex = (hex, a) => { const h=String(hex||'#7E6593').replace('#',''); const n=h.length===3?h.split('').map(c=>c+c).join(''):h; return `rgba(${parseInt(n.slice(0,2),16)||126},${parseInt(n.slice(2,4),16)||101},${parseInt(n.slice(4,6),16)||147},${a})`; };
+const _chartMonths12 = () => { const [y,m]=REF_MONTH.split('-').map(Number); const out=[]; for(let i=11;i>=0;i--){ const d=new Date(y,m-1-i,1); out.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`); } return out; };
+
+// 粗利率の推移（折れ線）。データ=実データ monthAgg。色=テーマ連動。
+const ProfitMarginChart = ({ dailyEdits }) => {
+  const { theme } = useTheme();
+  const ref = React.useRef(null); const chartRef = React.useRef(null);
+  React.useEffect(() => {
+    if (!window.Chart || !ref.current) return;
+    const acc = theme.accent || '#7E6593', grid = theme.line || '#DEDAE5', txt = theme.textSub || '#645F6E';
+    window.Chart.defaults.font.family = "'Plus Jakarta Sans','Noto Sans JP',sans-serif"; window.Chart.defaults.color = txt;
+    const months = _chartMonths12(); const labels = months.map(mk=>Number(mk.split('-')[1])+'月');
+    const data = months.map(mk=>{ const a=monthAgg(mk,dailyEdits); return a.sell>0 ? Math.round(a.profit/a.sell*1000)/10 : 0; });
+    chartRef.current = new window.Chart(ref.current, { type:'line',
+      data:{ labels, datasets:[{ label:'粗利率', data, borderColor:acc, backgroundColor:_rgbaHex(acc,.12), borderWidth:2.5, fill:true, tension:.35, pointRadius:0, pointHoverRadius:4 }] },
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label:c=>'粗利率 '+c.raw+'%' } } },
+        scales:{ y:{ grid:{color:grid}, ticks:{ color:txt, font:{size:10}, callback:v=>v+'%' } }, x:{ grid:{display:false}, ticks:{ color:txt, font:{size:10} } } } } });
+    return ()=>{ if(chartRef.current){ chartRef.current.destroy(); chartRef.current=null; } };
+  }, [dailyEdits, theme]);
+  return <div style={{ height: 220 }}><canvas ref={ref} /></div>;
+};
+
+// 売上・支払・粗利 複合（棒+棒+線）。データ=実データ monthAgg。色=テーマ連動（粗利線は緑＝意味色）。
+const PLCompositeChart = ({ dailyEdits }) => {
+  const { theme } = useTheme();
+  const ref = React.useRef(null); const chartRef = React.useRef(null);
+  React.useEffect(() => {
+    if (!window.Chart || !ref.current) return;
+    const acc = theme.accent || '#7E6593', accLt = theme.accentLt || '#C9C0D6', grid = theme.line || '#DEDAE5', txt = theme.textSub || '#645F6E', green = '#6E9E78';
+    window.Chart.defaults.font.family = "'Plus Jakarta Sans','Noto Sans JP',sans-serif"; window.Chart.defaults.color = txt;
+    const months = _chartMonths12(); const labels = months.map(mk=>Number(mk.split('-')[1])+'月');
+    const sell = months.map(mk=>monthAgg(mk,dailyEdits).sell), pay = months.map(mk=>monthAgg(mk,dailyEdits).pay), profit = months.map(mk=>monthAgg(mk,dailyEdits).profit);
+    chartRef.current = new window.Chart(ref.current, { type:'bar',
+      data:{ labels, datasets:[
+        { label:'売上', data:sell, backgroundColor:acc, borderRadius:4, barPercentage:.64, categoryPercentage:.74, order:2 },
+        { label:'支払', data:pay, backgroundColor:_rgbaHex(accLt,.95), borderRadius:4, barPercentage:.64, categoryPercentage:.74, order:3 },
+        { label:'粗利', type:'line', data:profit, borderColor:green, borderWidth:2, tension:.35, pointRadius:0, pointHoverRadius:4, fill:false, order:1 } ] },
+      options:{ responsive:true, maintainAspectRatio:false, interaction:{mode:'index',intersect:false},
+        plugins:{ legend:{position:'bottom', labels:{usePointStyle:true, boxWidth:10, font:{size:11}, padding:14}}, tooltip:{ callbacks:{ label:c=>c.dataset.label+' ¥'+Number(c.raw).toLocaleString('ja-JP') } } },
+        scales:{ y:{ grid:{color:grid}, ticks:{ color:txt, font:{size:10}, callback:v=>(v/10000).toLocaleString('ja-JP')+'万' } }, x:{ grid:{display:false}, ticks:{ color:txt, font:{size:10} } } } } });
+    return ()=>{ if(chartRef.current){ chartRef.current.destroy(); chartRef.current=null; } };
+  }, [dailyEdits, theme]);
+  return <div style={{ height: 260 }}><canvas ref={ref} /></div>;
+};
+
+// 荷主別 粗利貢献ランキング（横棒）。データ=実データ cm（表示月）。色=テーマ連動。
+const ClientProfitChart = ({ dailyEdits }) => {
+  const { theme } = useTheme();
+  const ref = React.useRef(null); const chartRef = React.useRef(null);
+  React.useEffect(() => {
+    if (!window.Chart || !ref.current) return;
+    const acc = theme.accent || '#7E6593', grid = theme.line || '#DEDAE5', txt = theme.textSub || '#645F6E';
+    window.Chart.defaults.font.family = "'Plus Jakarta Sans','Noto Sans JP',sans-serif"; window.Chart.defaults.color = txt;
+    const mk = monthAgg(REF_MONTH, dailyEdits).sell>0 ? REF_MONTH : LATEST_DATA_MONTH;
+    const rows = allClientsLive().map(c=>{ const h=cm(c.id, mk, dailyEdits); return { name:c.name, profit:h.s-h.p }; }).filter(r=>r.profit>0).sort((a,b)=>b.profit-a.profit);
+    chartRef.current = new window.Chart(ref.current, { type:'bar',
+      data:{ labels:rows.map(r=>r.name), datasets:[{ data:rows.map(r=>r.profit), backgroundColor:acc, borderRadius:5, barThickness:13 }] },
+      options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label:c=>'粗利 ¥'+Number(c.raw).toLocaleString('ja-JP') } } },
+        scales:{ x:{ grid:{color:grid}, ticks:{ color:txt, font:{size:10}, callback:v=>(v/10000).toLocaleString('ja-JP')+'万' } }, y:{ grid:{display:false}, ticks:{ color:txt, font:{size:11} } } } } });
+    return ()=>{ if(chartRef.current){ chartRef.current.destroy(); chartRef.current=null; } };
+  }, [dailyEdits, theme]);
+  return <div style={{ height: 220 }}><canvas ref={ref} /></div>;
+};
+
 const Dashboard = ({ accent, setPage }) => {
   const drivers = driversLive();
   // 「自動更新」表示の通り、時計を30秒ごとに更新する
