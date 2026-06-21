@@ -4156,7 +4156,6 @@ const Dashboard = ({ accent, setPage }) => {
   const vehicleMaster = vehiclesLive();
   const _pad2 = (n)=>String(n).padStart(2,"0");
   const TODAY_STR = `${now.getFullYear()}-${_pad2(now.getMonth()+1)}-${_pad2(now.getDate())}`;
-  const activeVeh = vehicleMaster.filter(v=>v.status==="稼働中").length;
   const maintVeh  = vehicleMaster.filter(v=>v.status==="整備中").length;
   const todayOps = (()=>{
     let haikan=0, modori=0; const byDriver={};
