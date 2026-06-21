@@ -4093,8 +4093,9 @@ const YoYSalesChart = ({ dailyEdits }) => {
     const labels = []; for (let m=1;m<=12;m++) labels.push(m+'月');
     const _mk = (y,m)=>`${y}-${String(m).padStart(2,'0')}`;
     const prev = [], cur = [];
-    // 当年は「実データ月（monthlyHistory に存在 or 当月）」のみ採用。締め日越えの按分で生じる端数月（例: 1月の数日分）を誤表示しない。
-    for (let m=1;m<=12;m++){ prev.push(monthAgg(_mk(prevY,m),dailyEdits).sell||0); const ck=_mk(curY,m); const c=ALL_MONTH_KEYS.includes(ck)?monthAgg(ck,dailyEdits).sell:0; cur.push(c>0?c:null); }
+    // 当年は「実データ月（monthlyHistory に存在 or 当月 or 日次入力あり）」のみ採用。締め日越えの按分で生じる端数月は誤表示しない。
+    const _liveKeys = allMonthKeysLive(dailyEdits);
+    for (let m=1;m<=12;m++){ prev.push(monthAgg(_mk(prevY,m),dailyEdits).sell||0); const ck=_mk(curY,m); const c=_liveKeys.includes(ck)?monthAgg(ck,dailyEdits).sell:0; cur.push(c>0?c:null); }
     // 当年の実データ点に金額ラベルを直接描画（どの線が当年かを一目で識別できるように）
     const curLabelPlugin = { id:'yoyCurLabels', afterDatasetsDraw(chart){
       const meta = chart.getDatasetMeta(1); if(!meta) return; const ct = chart.ctx; ct.save();
