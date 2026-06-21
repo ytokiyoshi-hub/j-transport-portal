@@ -1113,7 +1113,7 @@ const computeLiveSum = (cid, mk, dailyEdits) => {
   const baseDA = (typeof dailyActuals !== 'undefined' && dailyActuals[cid]) || {};
   const editsDA = (dailyEdits && dailyEdits[cid]) || {};
   const dateSet = new Set([...Object.keys(baseDA), ...Object.keys(editsDA)]);
-  let sell=0, pay=0, hasAny=false;
+  let sell=0, pay=0, hasAny=false, edited=false;
   for (const date of dateSet) {
     if (date < bp.start || date > bp.end) continue;
     const baseDay = baseDA[date] || {};
