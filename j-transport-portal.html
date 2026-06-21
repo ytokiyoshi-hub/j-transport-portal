@@ -1025,6 +1025,24 @@ const ALL_MONTH_KEYS = (()=>{
   return Array.from(s).sort();
 })();
 
+// シード月（ALL_MONTH_KEYS）に加え、日次入力(dailyEdits)が存在する月も含めた“実データのある全月キー”。
+// シードに無い過去月/翌月以降へ日次入力しても、収支の対象月ドロップダウン・YTD・前年比に反映させるため。
+// 締め越え荷主の月境界ズレを安全側でカバーするため、各入力日の「当月」と「翌月」の両方を候補に入れる（空月は monthAgg が0を返すだけで無害）。
+const allMonthKeysLive = (dailyEdits) => {
+  const s = new Set(ALL_MONTH_KEYS);
+  Object.values(dailyEdits || {}).forEach(clientDays =>
+    Object.keys(clientDays || {}).forEach(dateStr => {
+      const ym = (dateStr||"").slice(0,7);
+      if (!/^\d{4}-\d{2}$/.test(ym)) return;
+      s.add(ym);
+      const [y,m] = ym.split('-').map(Number);
+      const nx = new Date(y, m, 1);
+      s.add(`${nx.getFullYear()}-${String(nx.getMonth()+1).padStart(2,'0')}`);
+    })
+  );
+  return Array.from(s).sort();
+};
+
 // 月キー操作（前月が data に無い場合は直近実在月にフォールバック）
 const prevMonthKey = (mk) => {
   const [y,m] = mk.split('-').map(Number);
