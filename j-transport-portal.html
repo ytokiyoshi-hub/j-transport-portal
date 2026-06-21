@@ -4411,18 +4411,14 @@ const Dashboard = ({ accent, setPage }) => {
           <Card>
             <SH title="今月のアクション" />
             <div style={{ padding:"8px 20px 16px" }}>
-              {[
-                { done:true,  label:`${_refMonthNum}月分請求書 発行（ASKUL）` },
-                { done:true,  label:`${_refMonthNum}月分請求書 発行（Bloomee）` },
-                { done:false, label:`${_refMonthNum}月分請求書 発行（タイヤ配送）` },
-                { done:false, label:"ドライバー支払明細 作成" },
-                { done:false, label:"月次収支レポート 提出" },
-              ].map((t,i)=>(
-                <div key={i} style={{ display:"flex", alignItems:"center", gap:10, padding:"7px 0", borderBottom:i<4?"1px solid #DEDAE5":"none" }}>
+              {monthActions.map((t,i)=>(
+                <div key={t.key} onClick={t.auto?undefined:()=>setActionFlags(p=>({...p,[t.key]:!p[t.key]}))}
+                  style={{ display:"flex", alignItems:"center", gap:10, padding:"7px 0", borderBottom:i<monthActions.length-1?"1px solid #DEDAE5":"none", cursor:t.auto?"default":"pointer" }}>
                   <div style={{ width:18, height:18, borderRadius:4, border:`1.5px solid ${t.done?"var(--jt-accent)":"var(--jt-line-dk)"}`, background:t.done?"var(--jt-accent)":"var(--jt-base)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
                     {t.done && <Ic name="check" size={11} color="#fff" strokeWidth={3}/>}
                   </div>
                   <span style={{ fontSize:12.5, color:t.done?"#645F6E":"#393443", textDecoration:t.done?"line-through":"none" }}>{t.label}</span>
+                  {t.auto && <span style={{ marginLeft:"auto", fontSize:9.5, color:"#A09AAB" }}>請求連動</span>}
                 </div>
               ))}
             </div>
