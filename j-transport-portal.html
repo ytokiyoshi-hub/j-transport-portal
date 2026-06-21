@@ -5531,9 +5531,9 @@ const ParentClientsPage = ({ accent }) => {
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(220px, 1fr))", gap:8 }}>
             {unassignedClients.map(c=>(
               <div key={c.id} style={{ display:"flex", gap:6, alignItems:"center", padding:"6px 8px", background:"var(--jt-base)", boxShadow:"var(--jt-raised-sm)", borderRadius:13 }}>
-                <span style={{ fontSize:12, fontWeight:600, flexShrink:0 }}>{c.name}</span>
+                <span style={{ fontSize:12, fontWeight:600, flex:1, minWidth:0, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }} title={c.name}>{c.name}</span>
                 <select onChange={e=>assignChild(c.id, e.target.value)} defaultValue=""
-                  style={{ flex:1, padding:"4px 6px", border:"none", borderRadius:13, fontSize:11, background:"var(--jt-base)", boxShadow:"var(--jt-inset)" }}>
+                  style={{ width:150, flexShrink:0, padding:"4px 6px", border:"none", borderRadius:13, fontSize:11, background:"var(--jt-base)", boxShadow:"var(--jt-inset)" }}>
                   <option value="">— 荷主に紐付け —</option>
                   {parents.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}
                 </select>
