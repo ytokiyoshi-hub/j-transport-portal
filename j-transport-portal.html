@@ -1832,9 +1832,9 @@ const RateMasterPage = ({ accent, setPage }) => {
       </div>
 
       <div style={{ display:"grid", gridTemplateColumns:"280px 1fr", gap:16, alignItems:"start" }}>
-        {/* 荷主リスト */}
+        {/* 案件リスト */}
         <Card>
-          <SH title="荷主一覧"/>
+          <SH title="案件一覧"/>
           <div style={{ padding:"8px 0" }}>
             {allClients.map((c,i)=>(
               <button key={i} onClick={()=>setSel(c)}
