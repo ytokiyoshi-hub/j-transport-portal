@@ -1136,12 +1136,12 @@ const monthAgg = (mk, dailyEdits) => {
 const mkLabel = (mk) => mk ? `${mk.slice(0,4)}年${parseInt(mk.slice(5,7))}月` : "—";
 const mkShort = (mk) => mk ? `${mk.slice(2,4)}/${parseInt(mk.slice(5,7))}` : "—";
 
-// 収支管理ページの上位荷主別サマリブロック
+// 収支管理ページの荷主別サマリブロック
 const ParentClientSummaryBlock = ({ accent, selectedMonth, dailyEdits }) => {
   const [parents] = useLocalStorage("jt_parent_clients", []);
   const [parentMap] = useLocalStorage("jt_client_parent_map", {});
   if (parents.length === 0) return null;
-  // 上位荷主ごとに集計、未紐付け分も「未設定」グループに
+  // 荷主ごとに集計、未紐付け分も「未設定」グループに
   const groups = parents.map(p => {
     const childIds = Object.keys(parentMap).filter(cid => parentMap[cid] === p.id);
     let sell=0, pay=0;
@@ -1158,14 +1158,14 @@ const ParentClientSummaryBlock = ({ accent, selectedMonth, dailyEdits }) => {
   return (
     <Card style={{ marginBottom:14, padding:0 }}>
       <div style={{ padding:"12px 16px", borderBottom:"1px solid #DEDAE5", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-        <div style={{ fontSize:14, fontWeight:700 }}>上位荷主別 月次サマリ（{mkLabel(selectedMonth)}）</div>
-        <div style={{ fontSize:11, color:"#A09AAB" }}>下位荷主の合算を発注元単位で表示</div>
+        <div style={{ fontSize:14, fontWeight:700 }}>荷主別 月次サマリ（{mkLabel(selectedMonth)}）</div>
+        <div style={{ fontSize:11, color:"#A09AAB" }}>案件の合算を発注元単位で表示</div>
       </div>
       <table style={{ width:"100%", borderCollapse:"collapse", fontSize:12.5 }}>
         <thead>
           <tr style={{ background:"var(--jt-accent-lt)", borderBottom:"1px solid #DEDAE5" }}>
-            {["上位荷主","紐付け件数","売上","支払","粗利","粗利率","構成比"].map(h=>(
-              <th key={h} style={{ padding:"8px 14px", textAlign:h==="上位荷主"?"left":"right", color:"#645F6E", fontWeight:500, fontSize:11.5 }}>{h}</th>
+            {["荷主","紐付け件数","売上","支払","粗利","粗利率","構成比"].map(h=>(
+              <th key={h} style={{ padding:"8px 14px", textAlign:h==="荷主"?"left":"right", color:"#645F6E", fontWeight:500, fontSize:11.5 }}>{h}</th>
             ))}
           </tr>
         </thead>
@@ -1519,7 +1519,7 @@ const PLPage = ({ accent, setPage }) => {
         </Card>
       </div>
 
-      {/* ── 上位荷主別サマリ ── */}
+      {/* ── 荷主別サマリ ── */}
       <ParentClientSummaryBlock accent={accent} selectedMonth={selectedMonth} dailyEdits={dailyEdits}/>
 
       {/* ── 荷主別 詳細表（拡張） ── */}
@@ -3118,7 +3118,7 @@ const ClientPage = ({ accent, setPage }) => {
   // 表示対象月: 今月（REF_MONTH）に実績が無ければ最新確定月へフォールバック（ダッシュボードと同方式）
   const liveTotal = monthAgg(REF_MONTH, dailyEdits);
   const dispMonth = liveTotal.sell > 0 ? REF_MONTH : LATEST_DATA_MONTH;
-  // 上位荷主マスタ & 紐付けマップ
+  // 荷主マスタ & 紐付けマップ
   const [parents] = useLocalStorage("jt_parent_clients", []);
   const [parentMap, setParentMap] = useLocalStorage("jt_client_parent_map", {});
   const assignParent = (clientId, parentId) => {
@@ -3126,7 +3126,7 @@ const ClientPage = ({ accent, setPage }) => {
     if (!parentId) delete next[clientId];
     else next[clientId] = parentId;
     setParentMap(next);
-    showToast(parentId ? "上位荷主を設定しました" : "上位荷主を解除しました");
+    showToast(parentId ? "荷主を設定しました" : "荷主を解除しました");
   };
   const list = [...clients, ...extraClients].filter(c=>c.name.includes(search)||c.area.includes(search));
 
@@ -3157,7 +3157,7 @@ const ClientPage = ({ accent, setPage }) => {
           <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
             <thead>
               <tr style={{ background:"var(--jt-accent-lt)", borderBottom:"1px solid #DEDAE5" }}>
-                {["荷主","上位荷主","エリア","請求体系","担当ドライバー",`売上（${mkLabel(dispMonth)}）`,`粗利（${mkLabel(dispMonth)}）`,"状態"].map(h=>(
+                {["案件","荷主","エリア","請求体系","担当ドライバー",`売上（${mkLabel(dispMonth)}）`,`粗利（${mkLabel(dispMonth)}）`,"状態"].map(h=>(
                   <th key={h} style={{ padding:"9px 14px", textAlign:"left", color:"#645F6E", fontWeight:500, fontSize:12, whiteSpace:"nowrap" }}>{h}</th>
                 ))}
               </tr>
@@ -3206,9 +3206,9 @@ const ClientPage = ({ accent, setPage }) => {
             <div style={{ fontWeight:700, fontSize:16, marginBottom:4 }}>{sel.name}</div>
             <div style={{ fontSize:12, color:"#A09AAB", marginBottom:16 }}>{sel.area}</div>
 
-            {/* 上位荷主 */}
+            {/* 荷主 */}
             <div style={{ background:"var(--jt-base)", borderRadius:6, padding:12, marginBottom:14, border:"1px solid #DEDAE5" }}>
-              <div style={{ fontSize:11, fontWeight:700, color:"#645F6E", marginBottom:6 }}>上位荷主（発注元・親会社）</div>
+              <div style={{ fontSize:11, fontWeight:700, color:"#645F6E", marginBottom:6 }}>荷主（発注元・親会社）</div>
               <select value={parentMap[sel.id] || ""} onChange={e=>assignParent(sel.id, e.target.value)}
                 style={{ width:"100%", padding:"7px 10px", border:"none", borderRadius:13, fontSize:13, background:"var(--jt-base)", color:parentMap[sel.id]?"var(--jt-accent)":"var(--jt-text-sub)", fontWeight:600, cursor:"pointer", boxShadow:"var(--jt-inset-sm)" }}>
                 <option value="">— 未設定 —</option>
@@ -3216,7 +3216,7 @@ const ClientPage = ({ accent, setPage }) => {
               </select>
               {parents.length === 0 && (
                 <div style={{ fontSize:11, color:"#645F6E", marginTop:6 }}>
-                  ⚠ 上位荷主が未登録です。先に <button onClick={()=>setPage("parentclients")} style={{ background:"none", border:"none", color:"var(--jt-accent)", textDecoration:"underline", cursor:"pointer", padding:0, fontSize:11, fontWeight:600, boxShadow:"none" }}>荷主管理</button> で登録してください。
+                  ⚠ 荷主が未登録です。先に <button onClick={()=>setPage("parentclients")} style={{ background:"none", border:"none", color:"var(--jt-accent)", textDecoration:"underline", cursor:"pointer", padding:0, fontSize:11, fontWeight:600, boxShadow:"none" }}>荷主管理</button> で登録してください。
                 </div>
               )}
               {parentMap[sel.id] && (() => {
@@ -5291,8 +5291,8 @@ const TodoPage = ({ accent }) => {
   );
 };
 
-// ── ParentClientsPage（上位荷主管理）─────────────────────────────────────
-// 上位荷主 = ASKUL等の上にいる発注元/元請け/親会社。下位荷主(現clients)を束ねて管理する。
+// ── ParentClientsPage（荷主管理）─────────────────────────────────────
+// 荷主 = ASKUL等(現案件)の上にいる発注元/元請け/親会社。案件を束ねて管理する。
 // データ: jt_parent_clients = [{id, name, contact, tel, address, email, note, createdAt}]
 // 紐付け: jt_client_parent_map = {clientId: parentId}
 const ParentClientsPage = ({ accent }) => {
@@ -5304,7 +5304,7 @@ const ParentClientsPage = ({ accent }) => {
   const [editingId, setEditingId] = React.useState(null);
   const [sel, setSel] = React.useState(null);
 
-  // 各上位荷主に紐付く下位荷主の一覧と当月集計（今月実績が無ければ最新確定月へフォールバック）
+  // 各荷主に紐付く案件の一覧と当月集計（今月実績が無ければ最新確定月へフォールバック）
   const refMonth = displayMonthForPay(dailyEdits);
   const parentSummaries = parents.map(p => {
     const childIds = Object.keys(parentMap).filter(cid => parentMap[cid] === p.id);
@@ -5335,7 +5335,7 @@ const ParentClientsPage = ({ accent }) => {
       const id = "PC-" + String(Date.now()).slice(-8);
       committedIdRef.current = id;
       setParents(prev => [...prev, { id, ...draft, name, createdAt: Date.now() }]);
-      showToast("上位荷主を登録しました");
+      showToast("荷主を登録しました");
     }
   };
   const startEdit = (p) => {
@@ -5345,7 +5345,7 @@ const ParentClientsPage = ({ accent }) => {
     setShowForm(true);
   };
   const remove = (id) => {
-    if (!confirm("この上位荷主を削除しますか？\n紐付いている荷主は「未設定」に戻ります。")) return;
+    if (!confirm("この荷主を削除しますか？\n紐付いている案件は「未設定」に戻ります。")) return;
     setParents(prev => prev.filter(p => p.id !== id));
     const nextMap = { ...parentMap };
     Object.keys(nextMap).forEach(cid => { if (nextMap[cid] === id) delete nextMap[cid]; });
@@ -5368,18 +5368,18 @@ const ParentClientsPage = ({ accent }) => {
         <div>
           <div style={{display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:".08em",color:"var(--jt-accent)",background:"var(--jt-base)",padding:"6px 14px",borderRadius:20,marginBottom:11,boxShadow:"var(--jt-raised-sm)"}}>荷主・人員管理</div>
           <div style={{ fontSize:30, fontWeight:700, letterSpacing:"-0.01em", color:"var(--jt-text)" }}>荷主管理</div>
-          <div style={{ fontSize:12, color:"var(--jt-text-sub)", marginTop:2 }}>発注元・元請け・親会社など、現在の荷主の上位にあたる取引先を登録</div>
+          <div style={{ fontSize:12, color:"var(--jt-text-sub)", marginTop:2 }}>発注元・元請け・親会社など、現在の案件の上位にあたる取引先を登録</div>
         </div>
         <button onClick={()=>{ committedIdRef.current = null; setShowForm(!showForm); setEditingId(null); setDraft({ name:"", contact:"", tel:"", address:"", email:"", note:"" }); }}
           style={{ padding:"7px 16px", background:showForm?"var(--jt-base)":"var(--jt-accent-grad)", color:showForm?"var(--jt-text-sub)":"#fff", fontWeight:showForm?600:700, border:"none", borderRadius:13, fontSize:13, cursor:"pointer", boxShadow:"var(--jt-raised-sm)" }}>
-          {showForm?"閉じる":"+ 新規上位荷主を登録"}
+          {showForm?"閉じる":"+ 新規荷主を登録"}
         </button>
       </div>
 
       {showForm && (
         <Card style={{ padding:20, marginBottom:20, border:`1.5px solid ${accent}30` }}>
           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:14 }}>
-            <div style={{ fontSize:13, fontWeight:700 }}>{editingId?"上位荷主を編集":"新規上位荷主登録"}</div>
+            <div style={{ fontSize:13, fontWeight:700 }}>{editingId?"荷主を編集":"新規荷主登録"}</div>
             <span style={{ display:"inline-flex", alignItems:"center", gap:6, fontSize:11, color:"#6E9E78", fontWeight:600 }}>
               <Ic name="check" size={11} color="#6E9E78" strokeWidth={2.5}/>入力すると自動保存
             </span>
@@ -5422,15 +5422,15 @@ const ParentClientsPage = ({ accent }) => {
       {/* サマリ */}
       <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:12, marginBottom:16 }}>
         <Card style={{ padding:"16px 20px" }}>
-          <div style={{ fontSize:11, color:"var(--jt-text-mute)", marginBottom:6 }}>登録上位荷主</div>
+          <div style={{ fontSize:11, color:"var(--jt-text-mute)", marginBottom:6 }}>登録荷主</div>
           <div style={{ fontSize:20, fontWeight:700, letterSpacing:"-0.01em", color:"var(--jt-accent)" }}>{parents.length}社</div>
         </Card>
         <Card style={{ padding:"16px 20px" }}>
-          <div style={{ fontSize:11, color:"#A09AAB", marginBottom:6 }}>紐付け済 荷主</div>
+          <div style={{ fontSize:11, color:"#A09AAB", marginBottom:6 }}>紐付け済 案件</div>
           <div style={{ fontSize:20, fontWeight:700, letterSpacing:"-0.01em", color:"#6E9E78" }}>{Object.keys(parentMap).length} / {allClientsLive().length}件</div>
         </Card>
         <Card style={{ padding:"16px 20px" }}>
-          <div style={{ fontSize:11, color:"#A09AAB", marginBottom:6 }}>未紐付け 荷主</div>
+          <div style={{ fontSize:11, color:"#A09AAB", marginBottom:6 }}>未紐付け 案件</div>
           <div style={{ fontSize:20, fontWeight:700, letterSpacing:"-0.01em", color:unassignedClients.length>0?"#C39A52":"#A09AAB" }}>{unassignedClients.length}件</div>
         </Card>
       </div>
@@ -5439,13 +5439,13 @@ const ParentClientsPage = ({ accent }) => {
         <Card>
           {parents.length === 0 ? (
             <div style={{ padding:40, textAlign:"center", color:"#A09AAB", fontSize:13 }}>
-              上位荷主が未登録です。「+ 新規上位荷主を登録」から追加してください。
+              荷主が未登録です。「+ 新規荷主を登録」から追加してください。
             </div>
           ) : (
             <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
               <thead>
                 <tr style={{ background:"var(--jt-accent-lt)", borderBottom:"1px solid #DEDAE5" }}>
-                  {["上位荷主","担当者","紐付け荷主",`当月売上（${mkLabel(refMonth)}）`,`当月粗利（${mkLabel(refMonth)}）`,"操作"].map(h=>(
+                  {["荷主","担当者","紐付け案件",`当月売上（${mkLabel(refMonth)}）`,`当月粗利（${mkLabel(refMonth)}）`,"操作"].map(h=>(
                     <th key={h} style={{ padding:"9px 14px", textAlign:"left", color:"#645F6E", fontWeight:500, fontSize:12, whiteSpace:"nowrap" }}>{h}</th>
                   ))}
                 </tr>
@@ -5499,7 +5499,7 @@ const ParentClientsPage = ({ accent }) => {
             {sel.note && <div style={{ fontSize:12, color:"var(--jt-text-sub)", background:"var(--jt-base)", boxShadow:"var(--jt-inset-sm)", padding:8, borderRadius:13, whiteSpace:"pre-wrap", marginBottom:12 }}>{sel.note}</div>}
 
             <div style={{ borderTop:"1px solid var(--jt-line)", paddingTop:14, marginTop:8 }}>
-              <div style={{ fontSize:12, fontWeight:700, color:"var(--jt-text-sub)", marginBottom:8 }}>紐付け荷主の管理</div>
+              <div style={{ fontSize:12, fontWeight:700, color:"var(--jt-text-sub)", marginBottom:8 }}>紐付け案件の管理</div>
               <div style={{ marginBottom:10 }}>
                 {sel.children.length>0 ? sel.children.map(c=>(
                   <div key={c.id} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"6px 8px", background:"var(--jt-base)", boxShadow:"var(--jt-raised-sm)", borderRadius:13, marginBottom:4 }}>
@@ -5509,12 +5509,12 @@ const ParentClientsPage = ({ accent }) => {
                     </div>
                     <button onClick={()=>assignChild(c.id, "")} style={{ padding:"2px 8px", background:"transparent", color:"var(--jt-alert)", border:"none", borderRadius:13, fontSize:10, cursor:"pointer" }}>解除</button>
                   </div>
-                )) : <div style={{ fontSize:11, color:"var(--jt-text-mute)", padding:6 }}>紐付けされた荷主はまだありません</div>}
+                )) : <div style={{ fontSize:11, color:"var(--jt-text-mute)", padding:6 }}>紐付けされた案件はまだありません</div>}
               </div>
-              <div style={{ fontSize:11, fontWeight:600, color:"var(--jt-text-sub)", marginBottom:4 }}>＋ 荷主を紐付ける</div>
+              <div style={{ fontSize:11, fontWeight:600, color:"var(--jt-text-sub)", marginBottom:4 }}>＋ 案件を紐付ける</div>
               <select onChange={e=>{ if (e.target.value) { assignChild(e.target.value, sel.id); e.target.value=""; } }}
                 style={{ width:"100%", padding:"6px 10px", border:"none", borderRadius:13, fontSize:12, background:"var(--jt-base)", cursor:"pointer", boxShadow:"var(--jt-inset)" }}>
-                <option value="">— 荷主を選択 —</option>
+                <option value="">— 案件を選択 —</option>
                 {allClientsLive().filter(c => !parentMap[c.id] || parentMap[c.id]===sel.id).filter(c => !sel.children.some(ch=>ch.id===c.id)).map(c=>(
                   <option key={c.id} value={c.id}>{c.name}（{c.id}）</option>
                 ))}
@@ -5527,14 +5527,14 @@ const ParentClientsPage = ({ accent }) => {
       {/* 未紐付けリスト */}
       {unassignedClients.length>0 && (
         <Card style={{ padding:16, marginTop:16 }}>
-          <div style={{ fontSize:12, fontWeight:700, color:"var(--jt-alert)", marginBottom:10 }}>⚠ 上位荷主が未設定の荷主 ({unassignedClients.length}件)</div>
+          <div style={{ fontSize:12, fontWeight:700, color:"var(--jt-alert)", marginBottom:10 }}>⚠ 荷主が未設定の案件 ({unassignedClients.length}件)</div>
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(220px, 1fr))", gap:8 }}>
             {unassignedClients.map(c=>(
               <div key={c.id} style={{ display:"flex", gap:6, alignItems:"center", padding:"6px 8px", background:"var(--jt-base)", boxShadow:"var(--jt-raised-sm)", borderRadius:13 }}>
                 <span style={{ fontSize:12, fontWeight:600, flexShrink:0 }}>{c.name}</span>
                 <select onChange={e=>assignChild(c.id, e.target.value)} defaultValue=""
                   style={{ flex:1, padding:"4px 6px", border:"none", borderRadius:13, fontSize:11, background:"var(--jt-base)", boxShadow:"var(--jt-inset)" }}>
-                  <option value="">— 上位荷主に紐付け —</option>
+                  <option value="">— 荷主に紐付け —</option>
                   {parents.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}
                 </select>
               </div>
