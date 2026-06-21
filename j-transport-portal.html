@@ -4202,17 +4202,11 @@ const Dashboard = ({ accent, setPage }) => {
   const [extraAnnounces] = useLocalStorage("jt_extra_announces", []);
   const dashAnnounces = [...extraAnnounces, ...announces];
 
-  // 承認待ちカード: 実申請（jt_applications・ApplyPageと共有）と静的デモを統合。「確認」で承認済みへ更新
+  // 承認待ちカード: 実申請（jt_applications・ApplyPageと共有）のみ。「確認」で承認済みへ更新（固定デモ行は撤去＝実態反映）
   const [apps, setApps] = useLocalStorage("jt_applications", []);
-  const [demoApproved, setDemoApproved] = useLocalStorage("jt_demo_approved", []);
   const _refMonthNum = Number(REF_MONTH.split("-")[1]);
   const pendingApprovals = [
-    ...apps.filter(a=>a.status==="承認待ち").map(a=>{ const p=(a.date||"").split("-"); return { id:a.id, name:TWEAK_DEFAULTS.userName, type:a.type, date:p.length===3?`${Number(p[1])}/${Number(p[2])}`:a.date, urgent:false, isApp:true }; }),
-    ...[
-      { id:"demo-1", name:"田中 一郎", type:"有給申請",     date:`${_refMonthNum}/25`, urgent:false },
-      { id:"demo-2", name:"鈴木 健太", type:"残業申請",     date:`${_refMonthNum}/28`, urgent:true },
-      { id:"demo-3", name:"外部協力", type:"ドライバー追加", date:`${_refMonthNum}/29`, urgent:false },
-    ].filter(a=>!demoApproved.includes(a.id)),
+    ...apps.filter(a=>a.status==="承認待ち").map(a=>{ const p=(a.date||"").split("-"); return { id:a.id, name:a.applicant||TWEAK_DEFAULTS.userName, type:a.type, date:p.length===3?`${Number(p[1])}/${Number(p[2])}`:a.date, urgent:false, isApp:true }; }),
   ];
 
   return (
