@@ -4443,7 +4443,7 @@ const Dashboard = ({ accent, setPage }) => {
                     </div>
                   </td>
                   <td style={{ padding:"10px 14px" }}><StatusBadge label={d.type}/></td>
-                  <td style={{ padding:"10px 14px", fontSize:12, color:"#645F6E" }}>{d.clients.slice(0,2).join(", ")}{d.clients.length>2?` 他${d.clients.length-2}社`:""}  </td>
+                  <td style={{ padding:"10px 14px", fontSize:12, color:"#645F6E" }}>{(()=>{ const cl=driverClientsLive(d.id); return cl.length ? cl.slice(0,2).join(", ")+(cl.length>2?` 他${cl.length-2}社`:"") : "—"; })()}</td>
                   <td style={{ padding:"10px 14px", fontWeight:600, color:accent }}>{sellD>0?fmt(sellD):"—"}</td>
                   <td style={{ padding:"10px 14px", fontWeight:600 }}>{payD>0?fmt(payD):"—"}</td>
                   <td style={{ padding:"10px 14px", color:"#6E9E78", fontWeight:600 }}>{sellD>0?fmt(sellD-payD):"—"}</td>
