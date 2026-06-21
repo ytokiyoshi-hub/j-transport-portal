@@ -4182,7 +4182,7 @@ const Dashboard = ({ accent, setPage }) => {
   // 稼働車両 = 本日「売上のある仕事」をした車両（稼働＝仕事をしている＝売上がある）。
   // = 担当ドライバーが本日 配完（請求対象の計上 cnt>0）を持つ車両。持戻のみ・未入力・整備中は非稼働。
   // 稼働車両 = 当日ボードで「実施中」のジョブを持つドライバーの車両（稼働＝実稼働＝実施中。予定でも売上でもない）。整備中は除外。
-  const _workingDriverIds = activeJobDriverIds(boardJobs, boardShifts, TODAY_STR);
+  const _workingDriverIds = activeJobDriverIds(boardDispatch, boardJobs, boardCaseHours, boardStatusOv, boardShifts, TODAY_STR, now.getHours()*60+now.getMinutes());
   const activeVeh = vehicleMaster.filter(v=>v.status!=="整備中" && v.driverId && _workingDriverIds.has(v.driverId)).length;
   const todayDriverRows = Object.entries(todayOps.byDriver).map(([drv,x])=>{
     const d=drivers.find(dr=>dr.id===drv)||{}; return { id:drv, name:d.name||drv, clients:[...x.clients].join("・")||"—", cnt:x.cnt, modori:x.modori };
