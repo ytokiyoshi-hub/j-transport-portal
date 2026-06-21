@@ -1020,6 +1020,7 @@ const ALERT_DROP_PCT = 20;    // 前月比急減アラート閾値 (%)
 const ALL_MONTH_KEYS = (()=>{
   const s = new Set();
   Object.values(monthlyHistory).forEach(m => Object.keys(m).forEach(k => s.add(k)));
+  s.add(REF_MONTH); // 当月（今日の月）を常に選択肢に含める：日次実績入力で当月の実績が入るため
   return Array.from(s).sort();
 })();
 
