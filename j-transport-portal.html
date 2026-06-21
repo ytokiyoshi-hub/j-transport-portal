@@ -1311,37 +1311,19 @@ const PLPage = ({ accent, setPage }) => {
     });
   }
 
-  // === 12ヶ月推移 ===
-  const trend = ALL_MONTH_KEYS.map(mk => ({...monthAgg(mk, dailyEdits), mk}));
-  let recentTrend = graphRange==="half" ? trend.slice(-6) : trend.slice(-12);
-  // 月ギャップを補完（欠損月を0で埋める）
-  const fillMissingMonths = (arr) => {
-    if (arr.length < 2) return arr;
-    const filled = [];
-    for (let i = 0; i < arr.length; i++) {
-      filled.push(arr[i]);
-      if (i < arr.length - 1) {
-        const [cy, cm] = arr[i].mk.split('-').map(Number);
-        const [ny, nm] = arr[i+1].mk.split('-').map(Number);
-        const currDate = new Date(cy, cm-1, 1);
-        const nextDate = new Date(ny, nm-1, 1);
-        const monthDiff = (nextDate.getFullYear() - currDate.getFullYear())*12 + (nextDate.getMonth() - currDate.getMonth());
-        for (let j = 1; j < monthDiff; j++) {
-          const fillDate = new Date(cy, cm-1+j, 1);
-          const fillMkStr = `${fillDate.getFullYear()}-${String(fillDate.getMonth()+1).padStart(2,'0')}`;
-          filled.push({s: 0, p: 0, mk: fillMkStr});
-        }
-      }
+  // === 前年同月比（当年の最新データ月 vs 前年同月）: ヘッダのバッジ用 ===
+  const _curY = Number(REF_MONTH.split('-')[0]);
+  let yoyBaseMonth = null, yoyDelta = null;
+  for (let m=12; m>=1; m--) {
+    const cmk = `${_curY}-${String(m).padStart(2,'0')}`;
+    const cs = monthAgg(cmk, dailyEdits).sell;
+    if (cs>0) {
+      const ps = monthAgg(`${_curY-1}-${String(m).padStart(2,'0')}`, dailyEdits).sell;
+      yoyBaseMonth = cmk;
+      yoyDelta = ps>0 ? (cs-ps)/ps*100 : null;
+      break;
     }
-    return filled;
-  };
-  recentTrend = fillMissingMonths(recentTrend);
-  const maxTrend = Math.max(...recentTrend.map(d=>d.sell), 1);
-  // 3ヶ月移動平均（欠損補完後の連続月配列で計算）
-  const ma3 = recentTrend.map((_,i) => {
-    const slice = recentTrend.slice(Math.max(0,i-2), i+1);
-    return slice.reduce((s,d)=>s+d.sell,0)/slice.length;
-  });
+  }
 
   // === ドライバー収益性 ===
   const inhouseDrivers = drivers.filter(d=>d.type==="自社");
