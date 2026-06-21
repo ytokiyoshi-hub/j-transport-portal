@@ -1223,6 +1223,8 @@ const PLPage = ({ accent, setPage }) => {
   const [dailyEdits] = useLocalStorage("jt_daily_edits", {});
   // 既定月: 今月（REF_MONTH）に日次実績があれば今月を、無ければ最新確定月を表示（ダッシュボードと一致させる）
   const [selectedMonth, setSelectedMonth] = React.useState(() => monthAgg(REF_MONTH, dailyEdits).sell > 0 ? REF_MONTH : LATEST_DATA_MONTH);
+  // 日次入力のある月も含めた“実データのある全月キー”。シード外月への入力もドロップダウン/YTD/前年比に反映させる。
+  const ALL_MONTH_KEYS_LIVE = React.useMemo(() => allMonthKeysLive(dailyEdits), [dailyEdits]);
   const [tblSort, setTblSort] = React.useState({key:"sell", dir:"desc"});
   // 請求金額は請求管理/ダッシュボードと同じく「実効ステータス＋日次実績優先」で算出し、3画面の数値を一致させる
   const [issuedArr] = useLocalStorage("jt_issued", []);
