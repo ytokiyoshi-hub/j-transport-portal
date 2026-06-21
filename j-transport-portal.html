@@ -1453,47 +1453,18 @@ const PLPage = ({ accent, setPage }) => {
         </Card>
       </div>
 
-      {/* ── 月次推移 + 構成 ── */}
+      {/* ── 前年同月比 + 構成 ── */}
       <div style={{ display:"grid", gridTemplateColumns:"1fr 320px", gap:14, marginBottom:14 }}>
         <Card>
           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"10px 16px 4px" }}>
-            <div style={{ fontSize:13, fontWeight:700 }}>月次収支推移 ＋ 3ヶ月移動平均</div>
-            <div style={{ display:"flex", gap:5 }}>
-              {[{v:"half",l:"6ヶ月"},{v:"year",l:"12ヶ月"}].map(opt=>(
-                <button key={opt.v} onClick={()=>setGraphRange(opt.v)}
-                  style={{ padding:"3px 10px", borderRadius:13, border:"none", background:graphRange===opt.v?accent:"var(--jt-base)", color:graphRange===opt.v?"#fff":"var(--jt-text-sub)", fontSize:11, fontWeight:graphRange===opt.v?600:400, cursor:"pointer", boxShadow:graphRange===opt.v?"none":"var(--jt-raised-sm)" }}>
-                  {opt.l}
-                </button>
-              ))}
-            </div>
+            <div style={{ fontSize:13, fontWeight:700 }}>前年同月比（当年 vs 前年・売上）</div>
+            {yoyBaseMonth && yoyDelta!=null && (
+              <div style={{ fontSize:11, fontWeight:700, color: yoyDelta>=0?"#6E9E78":"#B05A60", background:"var(--jt-base)", padding:"4px 11px", borderRadius:13, boxShadow:"var(--jt-raised-sm)", whiteSpace:"nowrap" }}>
+                {mkLabel(yoyBaseMonth)} {yoyDelta>=0?"▲":"▼"} 前年比 {yoyDelta>=0?"+":""}{yoyDelta.toFixed(1)}%
+              </div>
+            )}
           </div>
-          <div style={{ padding:"10px 20px 16px" }}>
-            <div style={{ position:"relative", display:"flex", alignItems:"flex-end", gap:graphRange==="year"?5:12, height:180, marginBottom:10 }}>
-              {recentTrend.map((d,i)=>{
-                const isCur = d.mk===selectedMonth;
-                const h = (d.sell/maxTrend)*100;
-                const mh = (ma3[i]/maxTrend)*100;
-                return (
-                  <div key={i} style={{ flex:1, display:"flex", flexDirection:"column", height:"100%", justifyContent:"flex-end", alignItems:"center", position:"relative" }}>
-                    {isCur && <div style={{ fontSize:10, color:accent, fontWeight:700, marginBottom:2, whiteSpace:"nowrap" }}>{fmt(d.sell/10000)}万</div>}
-                    <div style={{ width:"100%", position:"relative", height:`${h}%`, minHeight:4 }}>
-                      <div style={{ position:"absolute", bottom:0, width:"100%", height:`${d.sell>0?(d.sell-d.pay)/d.sell*100:0}%`, background:"#7BD0A0", borderRadius:"3px 3px 0 0" }}/>
-                      <div style={{ position:"absolute", bottom:`${d.sell>0?(d.sell-d.pay)/d.sell*100:0}%`, width:"100%", height:`${d.sell>0?d.pay/d.sell*100:0}%`, background:isCur?accent:"var(--jt-line-dk)" }}/>
-                    </div>
-                    {/* 移動平均ドット */}
-                    <div style={{ position:"absolute", left:"50%", bottom:`${mh}%`, transform:"translate(-50%,50%)", width:6, height:6, background:"#B05A60", borderRadius:"50%", zIndex:2 }}/>
-                    <div style={{ fontSize:9.5, color:isCur?accent:"#A09AAB", marginTop:5, fontWeight:isCur?700:400 }}>{mkShort(d.mk)}</div>
-                  </div>
-                );
-              })}
-            </div>
-            <div style={{ display:"flex", gap:14, fontSize:10.5, color:"var(--jt-text-sub)", borderTop:`1px solid var(--jt-line-dk)`, paddingTop:10 }}>
-              <span style={{ display:"flex", gap:4, alignItems:"center" }}><span style={{ width:10, height:10, background:"#7BD0A0", borderRadius:2 }}/>粗利</span>
-              <span style={{ display:"flex", gap:4, alignItems:"center" }}><span style={{ width:10, height:10, background:"var(--jt-line-dk)", borderRadius:2 }}/>支払</span>
-              <span style={{ display:"flex", gap:4, alignItems:"center" }}><span style={{ width:10, height:10, background:accent, borderRadius:2 }}/>選択月</span>
-              <span style={{ display:"flex", gap:4, alignItems:"center" }}><span style={{ width:8, height:8, background:"#B05A60", borderRadius:"50%" }}/>3ヶ月移動平均</span>
-            </div>
-          </div>
+          <div style={{ padding:"6px 16px 14px" }}><YoYSalesChart dailyEdits={dailyEdits}/></div>
         </Card>
 
         {/* 荷主構成（売上） */}
