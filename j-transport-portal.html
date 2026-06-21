@@ -4949,23 +4949,29 @@ const SafetyPage = ({ accent }) => {
           {/* 安全教育進捗 */}
           <Card style={{ padding:20 }}>
             <div style={{ fontWeight:700, fontSize:14, marginBottom:14 }}>安全教育 受講進捗（今年度）</div>
-            <div style={{ fontSize:11, color:"var(--jt-text-mute)", marginBottom:12 }}>全6科目 / 対象: 全ドライバー</div>
-            {educationData.map((d,i)=>(
-              <div key={i} style={{ marginBottom:10 }}>
+            <div style={{ fontSize:11, color:"var(--jt-text-mute)", marginBottom:12 }}>全{EDU_TOTAL}科目 / 対象: 実ドライバー（行クリックで受講数を記録）</div>
+            {educationData.length===0 && <div style={{ fontSize:12, color:"var(--jt-text-mute)", padding:"8px 0" }}>対象ドライバーがいません</div>}
+            {educationData.map((d)=>(
+              <div key={d.id} onClick={()=>setEduRecords(p=>({...p,[d.id]:{ total:d.total, done:(d.done>=d.total?0:d.done+1) }}))} style={{ marginBottom:10, cursor:"pointer" }}>
                 <div style={{ display:"flex", justifyContent:"space-between", fontSize:12.5, marginBottom:4 }}>
                   <span style={{ fontWeight:500 }}>{d.name}</span>
-                  <span style={{ fontWeight:700, color:d.done===d.total?"#6E9E78":"#7E6593" }}>{d.done}/{d.total}</span>
+                  <span style={{ fontWeight:700, color:d.total>0&&d.done===d.total?"#6E9E78":"#7E6593" }}>{d.done}/{d.total}</span>
                 </div>
                 <div style={{ height:5, background:"var(--jt-base)", boxShadow:"var(--jt-inset-sm)", borderRadius:3 }}>
-                  <div style={{ width:`${d.total>0?(d.done/d.total*100):0}%`, height:"100%", background:d.done===d.total?"#6E9E78":"#7E6593", borderRadius:3, transition:"width .3s" }}/>
+                  <div style={{ width:`${d.total>0?(d.done/d.total*100):0}%`, height:"100%", background:d.total>0&&d.done===d.total?"#6E9E78":"#7E6593", borderRadius:3, transition:"width .3s" }}/>
                 </div>
               </div>
             ))}
           </Card>
 
-          {/* アルコール検査履歴 */}
+          {/* アルコール検査記録（実データ） */}
           <Card style={{ padding:20 }}>
-            <div style={{ fontWeight:700, fontSize:14, marginBottom:14 }}>アルコール検査 記録</div>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:14 }}>
+              <div style={{ fontWeight:700, fontSize:14 }}>アルコール検査 記録</div>
+              <button onClick={()=>setAlcoholChecks(p=>({...p,[_alcToday]:{ done:_alcTotal, total:_alcTotal, note:"異常なし" }}))}
+                style={{ padding:"5px 11px", border:"none", borderRadius:13, background:"var(--jt-base)", color:"var(--jt-accent)", fontSize:11, fontWeight:600, cursor:"pointer", boxShadow:"var(--jt-raised-sm)" }}>本日 全員実施を記録</button>
+            </div>
+            {alcoholHistory.length===0 && <div style={{ fontSize:12, color:"var(--jt-text-mute)", padding:"8px 0" }}>記録未登録</div>}
             {alcoholHistory.map((h,i)=>(
               <div key={i} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", fontSize:13, padding:"8px 0", borderBottom:"1px solid var(--jt-line)" }}>
                 <span style={{ color:"var(--jt-text-sub)", fontSize:12 }}>{h.date}</span>
@@ -4977,21 +4983,23 @@ const SafetyPage = ({ accent }) => {
             ))}
           </Card>
 
-          {/* 法令遵守 */}
+          {/* 法令遵守（実データ・クリックで状態切替・期限超過は自動判定） */}
           <Card style={{ padding:20 }}>
             <div style={{ fontWeight:700, fontSize:14, marginBottom:14 }}>法令遵守チェック</div>
-            {[["軽貨物運送業 届出",true,"2026-09-30"],["ドライバー健康診断",true,"2026-10-31"],["フリーランス保護新法 対応",false,"2025-05-31"],["アルコール検査記録保存",true,"随時"]].map(([n,ok,dl],i)=>(
-              <div key={i} style={{ display:"flex", gap:10, alignItems:"center", marginBottom:i<3?12:0 }}>
-                <div style={{ width:20, height:20, borderRadius:"50%", background:ok?"#E6EFE4":"#F3E6E3", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-                  <Ic name={ok?"check":"alert"} size={11} color={ok?"#6E9E78":"#B05A60"} strokeWidth={2.5}/>
+            {compliance.map((c,i)=>{
+              const overdue = !c.done && c.deadline!=="随時" && c.deadline < _alcToday;
+              return (
+              <div key={i} onClick={()=>setCompliance(compliance.map((x,j)=>j===i?{...x,done:!x.done}:x))} style={{ display:"flex", gap:10, alignItems:"center", marginBottom:i<compliance.length-1?12:0, cursor:"pointer" }}>
+                <div style={{ width:20, height:20, borderRadius:"50%", background:c.done?"#E6EFE4":"#F3E6E3", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                  <Ic name={c.done?"check":"alert"} size={11} color={c.done?"#6E9E78":"#B05A60"} strokeWidth={2.5}/>
                 </div>
                 <div style={{ flex:1 }}>
-                  <div style={{ fontSize:13, fontWeight:500 }}>{n}</div>
-                  <div style={{ fontSize:11, color:"var(--jt-text-mute)" }}>期限: {dl}</div>
+                  <div style={{ fontSize:13, fontWeight:500 }}>{c.name}</div>
+                  <div style={{ fontSize:11, color: overdue?"#B05A60":"var(--jt-text-mute)" }}>期限: {c.deadline}{overdue&&"（超過）"}</div>
                 </div>
-                {!ok && <span style={{ fontSize:11, background:"#F3E6E3", color:"#B05A60", padding:"2px 7px", borderRadius:3, fontWeight:600 }}>要対応</span>}
+                {!c.done && <span style={{ fontSize:11, background:"#F3E6E3", color:"#B05A60", padding:"2px 7px", borderRadius:3, fontWeight:600 }}>要対応</span>}
               </div>
-            ))}
+            );})}
           </Card>
         </div>
       </div>
