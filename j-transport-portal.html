@@ -1493,7 +1493,24 @@ const PLPage = ({ accent, setPage }) => {
               </div>
             )}
           </div>
-          <div style={{ padding:"6px 16px 14px" }}><YoYSalesChart dailyEdits={dailyEdits}/></div>
+          <div style={{ padding:"6px 16px 6px" }}><YoYSalesChart dailyEdits={dailyEdits}/></div>
+          {yoyInsights.length>0 && (
+            <div style={{ padding:"4px 16px 16px" }}>
+              <div style={{ fontSize:11, fontWeight:700, color:"var(--jt-text-sub)", letterSpacing:".04em", marginBottom:9, paddingTop:10, borderTop:"1px solid var(--jt-line)" }}>分析メモ</div>
+              <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                {yoyInsights.map((ins,i)=>{
+                  const c = ins.tone==="up"?"#6E9E78":ins.tone==="down"?"#B05A60":"var(--jt-accent)";
+                  const mark = ins.tone==="up"?"▲":ins.tone==="down"?"▼":"●";
+                  return (
+                    <div key={i} style={{ display:"flex", gap:9, alignItems:"flex-start", fontSize:12, lineHeight:1.55, color:"var(--jt-text)" }}>
+                      <span style={{ flexShrink:0, color:c, fontSize:9, marginTop:3 }}>{mark}</span>
+                      <span>{ins.text}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </Card>
 
         {/* 荷主構成（売上） */}
