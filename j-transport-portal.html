@@ -6997,11 +6997,11 @@ const AttendancePage = ({ accent }) => {
   const _pad = n => String(n).padStart(2,"0");
   const _now = new Date();
   const _todayDk = `${_now.getFullYear()}-${_pad(_now.getMonth()+1)}-${_pad(_now.getDate())}`;
-  // 当月に配車実績があるか判定してフォールバック（他画面と同じロジック）
+  // 当月に配車またはシフト実績があるか判定してフォールバック（シフトだけ先に入れた月も当月扱い）
   const _hasCurrentDispatch = drivers.some(d => {
     for (let dd = 1; dd <= 31; dd++) {
       const dk = `${REF_MONTH}-${_pad(dd)}`;
-      if (dispatch[dk] && dispatch[dk][d.id]) return true;
+      if ((dispatch[dk] && dispatch[dk][d.id]) || (shifts[dk] && shifts[dk][d.id])) return true;
     }
     return false;
   });
