@@ -7489,7 +7489,10 @@ const ApplyPage = ({ accent }) => {
             </tr>
           </thead>
           <tbody>
-            {[...submitted, ...pendingList].map((p,i)=>{
+            {submitted.length===0 && (
+              <tr><td colSpan={6} style={{ padding:"16px", textAlign:"center", color:"#A09AAB", fontSize:12 }}>申請はまだありません</td></tr>
+            )}
+            {submitted.map((p,i)=>{
               const sc=stC(p.status);
               const dk = p.id+"-"+i;
               const isOpen = openDetail===dk;
