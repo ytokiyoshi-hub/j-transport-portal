@@ -4172,13 +4172,17 @@ const Dashboard = ({ accent, setPage }) => {
         ))}
       </div>
 
-      {/* 月次売上推移（実データ） */}
-      <Card style={{ marginBottom:14 }}>
-        <SH title="月次売上推移（直近12ヶ月）" action="収支詳細→" onAction={()=>setPage("pl")}/>
-        <div style={{ padding:"4px 16px 16px" }}>
-          <SalesTrendChart dailyEdits={dailyEdits}/>
-        </div>
-      </Card>
+      {/* 経営グラフ行（実データ・テーマ連動）: 売上推移 ＋ 荷主別粗利ランキング */}
+      <div style={{ display:"grid", gridTemplateColumns:"1.5fr 1fr", gap:14, marginBottom:14 }}>
+        <Card>
+          <SH title="月次売上推移（直近12ヶ月）" action="収支詳細→" onAction={()=>setPage("pl")}/>
+          <div style={{ padding:"4px 16px 16px" }}><SalesTrendChart dailyEdits={dailyEdits}/></div>
+        </Card>
+        <Card>
+          <SH title={`荷主別 粗利貢献（${totalSell>0?REF_MONTH_LABEL:"最新確定 "+LATEST_MONTH_LABEL}）`} action="収支詳細→" onAction={()=>setPage("pl")}/>
+          <div style={{ padding:"4px 16px 16px" }}><ClientProfitChart dailyEdits={dailyEdits}/></div>
+        </Card>
+      </div>
 
       {/* Row 2 */}
       <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:14, marginBottom:14 }}>
