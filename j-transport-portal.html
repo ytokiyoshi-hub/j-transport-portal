@@ -6419,53 +6419,76 @@ const activeJobDriverIds = (jobs, shifts, dateStr) => {
   (jobs[dateStr]||[]).forEach(j=>{ if(j.status==="active" && j.driverId && !off(j.driverId)) set.add(j.driverId); });
   return set;
 };
-const TodayBoard = ({ accent }) => {
+const STAT_STYLE = {
+  "予定":  { bg:"var(--jt-base)", fg:"var(--jt-text-sub)",  bd:"1px dashed var(--jt-line-dk)", mk:""   },
+  "実施中":{ bg:"#E6EFE4",        fg:"#4F7A58",             bd:"1px solid #6E9E78",            mk:"● "  },
+  "完了":  { bg:"var(--jt-base)", fg:"var(--jt-text-mute)", bd:"1px solid var(--jt-line)",     mk:"✓ "  },
+  "欠勤":  { bg:"#F3E6E3",        fg:"#B05A60",             bd:"1px solid #B05A60",            mk:"欠 " },
+};
+const TodayBoard = ({ accent, setTab }) => {
   const drivers = driversLive();
   const clients = allClientsLive();
-  const [jobs, setJobs] = useLocalStorage("jt_jobs", {});
+  const [jobs, setJobs] = useLocalStorage("jt_jobs", {});               // 突発(手動の単発)のみ
   const [shifts] = useLocalStorage("jt_shifts", {});
-  const [dispatch] = useLocalStorage("jt_dispatch", {});
+  const [dispatch] = useLocalStorage("jt_dispatch", {});               // 週間配車表＝routineの源（自動展開）
+  const [caseHours, setCaseHours] = useLocalStorage("jt_case_hours", {}); // 案件の標準時間 {cid:{start,end}}（一度設定すれば毎日再利用）
+  const [statusOv, setStatusOv] = useLocalStorage("jt_job_status", {});   // 例外override {date:{jobId:状態}}
   const [now, setNow] = React.useState(() => new Date());
   React.useEffect(() => { const t = setInterval(() => setNow(new Date()), 60000); return () => clearInterval(t); }, []);
+  const [showHours, setShowHours] = React.useState(false);
   const _pad = n => String(n).padStart(2,"0");
   const dkOf = d => `${d.getFullYear()}-${_pad(d.getMonth()+1)}-${_pad(d.getDate())}`;
   const [date, setDate] = React.useState(() => dkOf(new Date()));
   const todayDk = dkOf(now);
-  const isToday = date === todayDk;
+  const isToday = date === todayDk, isPast = date < todayDk, isFuture = date > todayDk;
   const nowMin = now.getHours()*60 + now.getMinutes();
   const nowPos = _jbPos(nowMin);
-  const dayJobs = jobs[date] || [];
   const clientName = cid => { const c = clients.find(x=>x.id===cid); return c ? c.name : cid; };
+  const hoursOf = cid => caseHours[cid] || { start:"08:00", end:"17:00" };
   const shiftOf = did => (shifts[date] && shifts[date][did]) || "";
   const isOff = did => { const s = shiftOf(did); return s==="休" || s==="有休"; };
-  const jobsOf = did => dayJobs.filter(j=>j.driverId===did).sort((a,b)=>_jbToMin(a.start)-_jbToMin(b.start));
-  const activeJobOf = did => jobsOf(did).find(j=>j.status==="active");
-  const lastDoneOf = did => { const dn = jobsOf(did).filter(j=>j.status==="done"); return dn.length ? dn[dn.length-1] : null; };
-  const driverState = did => isOff(did) ? shiftOf(did) : (activeJobOf(did) ? "稼働中" : "手すき");
-  const workingDrivers = drivers.filter(d=>!isOff(d.id) && activeJobOf(d.id));
-  const freeDrivers    = drivers.filter(d=>!isOff(d.id) && !activeJobOf(d.id));
+  // 自動生成：週間配車表(dispatch[date]) を 案件標準時間で展開 ＋ 突発(jobs[date]) を統合。手入力ゼロが基本。
+  const allJobs = React.useMemo(() => {
+    const base = Object.entries(dispatch[date]||{}).filter(([,cid])=>cid).map(([did,cid])=>{ const h=hoursOf(cid); return { id:"base|"+did+"|"+cid, driverId:did, clientId:cid, start:h.start, end:h.end, src:"plan" }; });
+    const extra = (jobs[date]||[]).map(j=>({ ...j, src:"spot" }));
+    return [...base, ...extra];
+  }, [dispatch, jobs, caseHours, date]);
+  // 状態：例外override優先 → 休 → 時計で自動（予定/実施中/完了）。通常はタップ不要。
+  const baseStatus = j => {
+    if (isOff(j.driverId)) return "休";
+    if (isPast) return "完了"; if (isFuture) return "予定";
+    const s=_jbToMin(j.start), e=_jbToMin(j.end);
+    if (nowMin < s) return "予定"; if (nowMin >= e) return "完了"; return "実施中";
+  };
+  const statusOf = j => (statusOv[date]||{})[j.id] || baseStatus(j);
+  const jobsOf = did => allJobs.filter(j=>j.driverId===did).sort((a,b)=>_jbToMin(a.start)-_jbToMin(b.start));
+  const activeOf = did => jobsOf(did).find(j=>statusOf(j)==="実施中");
+  const freeSince = did => { const dn = jobsOf(did).filter(j=>statusOf(j)==="完了"); return dn.length ? dn[dn.length-1].end : null; };
+  const nextStart = did => { const nx = jobsOf(did).find(j=>statusOf(j)==="予定"); return nx ? nx.start : null; };
+  const workingDrivers = drivers.filter(d=>!isOff(d.id) && activeOf(d.id));
+  const freeDrivers    = drivers.filter(d=>!isOff(d.id) && !activeOf(d.id));
   const offDrivers     = drivers.filter(d=>isOff(d.id));
-  const planRemain     = dayJobs.filter(j=>j.status==="plan").length;
-  const cycleJob = id => setJobs(p => ({ ...p, [date]:(p[date]||[]).map(j=> j.id!==id ? j : { ...j, status: j.status==="plan"?"active":j.status==="active"?"done":"plan" }) }));
-  const delJob   = id => setJobs(p => ({ ...p, [date]:(p[date]||[]).filter(j=>j.id!==id) }));
+  const planRemain     = allJobs.filter(j=>statusOf(j)==="予定").length;
+  // 例外override（クリックで 自動→実施中→完了→欠勤→自動）。早退・延長・欠勤など実態が予定と違う時だけ使う。
+  const STAT_CYCLE = { "":"実施中", "実施中":"完了", "完了":"欠勤", "欠勤":"" };
+  const cycleStatus = j => setStatusOv(p => { const cur=(p[date]||{})[j.id]||""; const nx=STAT_CYCLE[cur]; const dd={...(p[date]||{})}; if(nx) dd[j.id]=nx; else delete dd[j.id]; return { ...p, [date]:dd }; });
+  const delSpot = id => setJobs(p => ({ ...p, [date]:(p[date]||[]).filter(j=>j.id!==id) }));
   const moveDate = delta => { const d = new Date(date+"T00:00:00"); d.setDate(d.getDate()+delta); setDate(dkOf(d)); };
-  const [form, setForm] = React.useState({ driverId:"", clientId:"", start:"08:00", end:"17:00" });
-  const addJob = () => {
-    if(!form.driverId || !form.clientId){ showToast("ドライバーと荷主を選んでください","error"); return; }
-    setJobs(p => ({ ...p, [date]:[...(p[date]||[]), { id:"J"+Date.now(), driverId:form.driverId, clientId:form.clientId, start:form.start, end:form.end, status:"plan" }] }));
-    setForm(f => ({ ...f, clientId:"" })); showToast("予定を追加しました");
+  const [form, setForm] = React.useState({ driverId:"", clientId:"", start:"", end:"" });
+  const addSpot = () => {
+    if(!form.driverId || !form.clientId){ showToast("ドライバーと案件を選んでください","error"); return; }
+    const h = hoursOf(form.clientId);
+    setJobs(p => ({ ...p, [date]:[...(p[date]||[]), { id:"S"+Date.now(), driverId:form.driverId, clientId:form.clientId, start:form.start||h.start, end:form.end||h.end }] }));
+    setForm(f => ({ ...f, clientId:"" })); showToast("突発の仕事を追加しました");
   };
-  const importFromPlan = () => {
-    const dd = dispatch[date] || {}; const ids = Object.keys(dd).filter(did=>dd[did]);
-    if(!ids.length){ showToast("この日の週間配車表に配車がありません","error"); return; }
-    setJobs(p => { const exist = p[date]||[]; const add = ids.filter(did=>!exist.some(j=>j.driverId===did && j.clientId===dd[did])).map((did,i)=>({ id:"J"+Date.now()+"-"+i, driverId:did, clientId:dd[did], start:"08:00", end:"17:00", status:"plan" })); return { ...p, [date]:[...exist,...add] }; });
-    showToast("週間配車表から取り込みました（予定として追加）");
-  };
+  const usedClientIds = [...new Set(Object.values(dispatch[date]||{}).filter(Boolean).concat((jobs[date]||[]).map(j=>j.clientId)))];
+  const setHours = (cid,key,val) => setCaseHours(p => ({ ...p, [cid]:{ ...hoursOf(cid), [key]:val } }));
   const dlabel = (() => { const d = new Date(date+"T00:00:00"); return `${d.getMonth()+1}/${d.getDate()}（${"日月火水木金土"[d.getDay()]}）`; })();
   const axisHours = []; for(let h=JOB_BOARD_START; h<=JOB_BOARD_END; h+=2) axisHours.push(h);
+  const hasPlan = Object.values(dispatch[date]||{}).some(Boolean) || (jobs[date]||[]).length>0;
   const navB = { padding:"6px 12px", border:"none", borderRadius:13, background:"var(--jt-base)", color:"var(--jt-text-sub)", fontSize:12, fontWeight:600, cursor:"pointer", boxShadow:"var(--jt-raised-sm)" };
   const selS = { padding:"6px 8px", border:"none", borderRadius:8, background:"var(--jt-base)", boxShadow:"var(--jt-inset-sm)", fontSize:12, fontFamily:"inherit", color:"var(--jt-text)", cursor:"pointer", outline:"none" };
-  const timeS = { padding:"6px 6px", border:"none", borderRadius:8, background:"var(--jt-base)", boxShadow:"var(--jt-inset-sm)", fontSize:12, fontFamily:"inherit", color:"var(--jt-text)", outline:"none" };
+  const timeS = { padding:"5px 4px", border:"none", borderRadius:6, background:"var(--jt-base)", boxShadow:"var(--jt-inset-sm)", fontSize:11.5, fontFamily:"inherit", color:"var(--jt-text)", outline:"none" };
   return (
     <div>
       <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:14, flexWrap:"wrap" }}>
@@ -6474,9 +6497,25 @@ const TodayBoard = ({ accent }) => {
         <button onClick={()=>moveDate(1)} style={navB}>翌日 ＞</button>
         {!isToday && <button onClick={()=>setDate(todayDk)} style={{ ...navB, color:"var(--jt-accent)" }}>今日</button>}
         <div style={{ flex:1 }}/>
-        {isToday && <span style={{ fontSize:13, color:"var(--jt-text-sub)" }}>現在 {_pad(now.getHours())}:{_pad(now.getMinutes())} ・ 自動更新</span>}
-        <button onClick={importFromPlan} style={{ ...navB, color:"var(--jt-accent)" }}>週間配車表から取り込む</button>
+        {isToday && <span style={{ fontSize:13, color:"var(--jt-text-sub)" }}>現在 {_pad(now.getHours())}:{_pad(now.getMinutes())} ・ 時計で自動進行</span>}
+        <button onClick={()=>setShowHours(s=>!s)} style={{ ...navB, color: showHours?"var(--jt-accent)":"var(--jt-text-sub)" }}>⚙ 案件の標準時間</button>
       </div>
+      {showHours && (
+        <Card style={{ padding:"10px 14px", marginBottom:14 }}>
+          <div style={{ fontSize:11.5, color:"var(--jt-text-sub)", marginBottom:8 }}>案件ごとの標準の時間帯（一度決めれば毎日この時間で自動展開されます）</div>
+          {usedClientIds.length===0 ? <div style={{ fontSize:12, color:"var(--jt-text-mute)" }}>この日に配車された案件がありません（週間配車表で割り当てると表示されます）</div> :
+            <div style={{ display:"flex", flexWrap:"wrap", gap:10 }}>
+              {usedClientIds.map(cid=>{ const h=hoursOf(cid); return (
+                <div key={cid} style={{ display:"flex", alignItems:"center", gap:5, fontSize:11.5, background:"var(--jt-base)", boxShadow:"var(--jt-raised-sm)", borderRadius:10, padding:"5px 9px" }}>
+                  <span style={{ fontWeight:600, maxWidth:120, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{clientName(cid)}</span>
+                  <input type="time" value={h.start} onChange={e=>setHours(cid,"start",e.target.value)} style={timeS}/>
+                  <span>〜</span>
+                  <input type="time" value={h.end} onChange={e=>setHours(cid,"end",e.target.value)} style={timeS}/>
+                </div>
+              ); })}
+            </div>}
+        </Card>
+      )}
       <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:10, marginBottom:14 }}>
         {[
           { l:"稼働中（実稼働）", v:workingDrivers.length, c:"#6E9E78" },
@@ -6495,15 +6534,15 @@ const TodayBoard = ({ accent }) => {
           <div style={{ display:"flex", alignItems:"center", gap:10, flexWrap:"wrap" }}>
             <span style={{ fontSize:12.5, fontWeight:700, color:"#8C6A2E" }}>突発依頼 → 今すぐ動ける人</span>
             {freeDrivers.length===0 && <span style={{ fontSize:12, color:"var(--jt-text-mute)" }}>手すきのドライバーはいません（全員 稼働中／休）</span>}
-            {freeDrivers.map(d=>{ const ld = lastDoneOf(d.id); return (
-              <span key={d.id} style={{ fontSize:11.5, fontWeight:600, background:"var(--jt-base)", color:"#8C6A2E", borderRadius:13, padding:"3px 10px", boxShadow:"var(--jt-raised-sm)" }}>{d.name}{ld?`（${ld.end}〜空き）`:""}</span>
+            {freeDrivers.map(d=>{ const fs=freeSince(d.id), ns=nextStart(d.id); return (
+              <span key={d.id} style={{ fontSize:11.5, fontWeight:600, background:"var(--jt-base)", color:"#8C6A2E", borderRadius:13, padding:"3px 10px", boxShadow:"var(--jt-raised-sm)" }}>{d.name}{ns?`（〜${ns}まで空き）`:fs?`（${fs}〜空き）`:"（終日空き）"}</span>
             ); })}
           </div>
         </Card>
       )}
       <Card style={{ padding:"10px 14px", marginBottom:14 }}>
         <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap", fontSize:12 }}>
-          <span style={{ fontWeight:700, color:"var(--jt-text-sub)" }}>予定を追加</span>
+          <span style={{ fontWeight:700, color:"var(--jt-text-sub)" }}>突発を追加</span>
           <select value={form.driverId} onChange={e=>setForm(f=>({...f,driverId:e.target.value}))} style={selS}>
             <option value="">ドライバー</option>
             {drivers.map(d=><option key={d.id} value={d.id}>{d.name}</option>)}
@@ -6515,9 +6554,15 @@ const TodayBoard = ({ accent }) => {
           <input type="time" value={form.start} onChange={e=>setForm(f=>({...f,start:e.target.value}))} style={timeS}/>
           <span>〜</span>
           <input type="time" value={form.end} onChange={e=>setForm(f=>({...f,end:e.target.value}))} style={timeS}/>
-          <button onClick={addJob} style={{ padding:"6px 14px", border:"none", borderRadius:13, background:accent, color:"#fff", fontSize:12, fontWeight:700, cursor:"pointer" }}>＋ 追加</button>
+          <span style={{ fontSize:10.5, color:"var(--jt-text-mute)" }}>（時間は空欄なら案件の標準時間）</span>
+          <button onClick={addSpot} style={{ padding:"6px 14px", border:"none", borderRadius:13, background:accent, color:"#fff", fontSize:12, fontWeight:700, cursor:"pointer" }}>＋ 追加</button>
         </div>
       </Card>
+      {!hasPlan && (
+        <div style={{ fontSize:12, color:"var(--jt-text-sub)", background:"var(--jt-base)", boxShadow:"var(--jt-inset-sm)", borderRadius:10, padding:"10px 14px", marginBottom:14 }}>
+          この日の配車は <b>週間配車表</b> で割り当てると、ここに自動で表示されます。{setTab && <button onClick={()=>setTab("dispatch")} style={{ ...navB, marginLeft:8, color:"var(--jt-accent)" }}>週間配車表へ →</button>}
+        </div>
+      )}
       <Card flush>
         <div style={{ display:"flex", alignItems:"center", fontSize:10.5, color:"#A09AAB", padding:"12px 14px 2px" }}>
           <div style={{ width:96, flexShrink:0 }}/>
@@ -6532,9 +6577,9 @@ const TodayBoard = ({ accent }) => {
         <div style={{ padding:"4px 14px 12px" }}>
           {drivers.length===0 && <div style={{ padding:"16px", textAlign:"center", color:"#A09AAB", fontSize:12 }}>ドライバーがいません</div>}
           {drivers.map(d=>{
-            const st = driverState(d.id);
-            const stc = st==="稼働中"?"#6E9E78":st==="手すき"?"#C39A52":"#A09AAB";
             const off = isOff(d.id);
+            const st = off ? (shiftOf(d.id)||"休") : (activeOf(d.id) ? "稼働中" : "手すき");
+            const stc = st==="稼働中"?"#6E9E78":st==="手すき"?"#C39A52":"#A09AAB";
             return (
               <div key={d.id} style={{ display:"flex", alignItems:"center", marginBottom:6 }}>
                 <div style={{ width:96, flexShrink:0, fontSize:12, fontWeight:600, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", paddingRight:6 }}>{d.name}</div>
@@ -6542,13 +6587,14 @@ const TodayBoard = ({ accent }) => {
                   {off && <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, color:"#A09AAB" }}>{shiftOf(d.id)}</div>}
                   {!off && jobsOf(d.id).map(j=>{
                     const s = _jbPos(_jbToMin(j.start)), e = _jbPos(_jbToMin(j.end)), w = Math.max(e-s, 7);
-                    const js = JOB_STYLE[j.status] || JOB_STYLE.plan;
+                    const stt = statusOf(j); const js = STAT_STYLE[stt] || STAT_STYLE["予定"];
+                    const isOv = !!(statusOv[date]||{})[j.id];
                     return (
-                      <div key={j.id} onClick={()=>cycleJob(j.id)} title="クリックで 予定→実施中→完了"
+                      <div key={j.id} onClick={()=>cycleStatus(j)} title="実態が予定と違う時だけクリック（実施中→完了→欠勤→自動）。通常は時計で自動進行。"
                         style={{ position:"absolute", top:3, bottom:3, left:`${s}%`, width:`${w}%`, background:js.bg, color:js.fg, border:js.bd, borderRadius:5, fontSize:10.5, padding:"0 4px", cursor:"pointer", overflow:"hidden", display:"flex", flexDirection:"column", justifyContent:"center", lineHeight:1.15 }}>
-                        <span style={{ whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", fontWeight:600 }}>{js.mk}{clientName(j.clientId)}</span>
+                        <span style={{ whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", fontWeight:600 }}>{js.mk}{clientName(j.clientId)}{j.src==="spot"?"⚡":""}{isOv?"✋":""}</span>
                         <span style={{ whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", opacity:.85 }}>{j.start}–{j.end}</span>
-                        <span onClick={ev=>{ ev.stopPropagation(); delJob(j.id); }} title="削除" style={{ position:"absolute", top:0, right:2, fontSize:11, lineHeight:1, color:js.fg, opacity:.6, cursor:"pointer" }}>×</span>
+                        {j.src==="spot" && <span onClick={ev=>{ ev.stopPropagation(); delSpot(j.id); }} title="突発を削除" style={{ position:"absolute", top:0, right:2, fontSize:11, lineHeight:1, color:js.fg, opacity:.6, cursor:"pointer" }}>×</span>}
                       </div>
                     );
                   })}
@@ -6565,7 +6611,8 @@ const TodayBoard = ({ accent }) => {
           <span><span style={{ display:"inline-block", width:10, height:10, borderRadius:2, border:"1px dashed var(--jt-line-dk)", background:"var(--jt-base)", verticalAlign:"-1px", marginRight:4 }}/>予定</span>
           <span><span style={{ display:"inline-block", width:10, height:10, borderRadius:2, background:"#6E9E78", verticalAlign:"-1px", marginRight:4 }}/>実施中＝稼働</span>
           <span><span style={{ display:"inline-block", width:10, height:10, borderRadius:2, border:"1px solid var(--jt-line)", background:"var(--jt-base)", verticalAlign:"-1px", marginRight:4 }}/>完了</span>
-          <span style={{ color:"#A09AAB" }}>ジョブをクリックで 予定→実施中→完了。×で削除。稼働＝実施中のみ集計。</span>
+          <span>⚡突発 ／ ✋手動修正</span>
+          <span style={{ color:"#A09AAB" }}>週間配車表から自動表示・時計で自動進行。実態が違う時だけジョブをクリック（実施中→完了→欠勤）。</span>
         </div>
       </Card>
     </div>
