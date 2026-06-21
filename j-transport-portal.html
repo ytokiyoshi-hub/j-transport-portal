@@ -6931,7 +6931,7 @@ const DispatchPage = ({ accent, setPage }) => {
         </div>
       </div>
 
-      {tab === "board" && <TodayBoard accent={accent}/>}
+      {tab === "board" && <TodayBoard accent={accent} setTab={setTab}/>}
 
       {(tab === "dispatch" || tab === "shift") && (
       <>
