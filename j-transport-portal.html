@@ -6860,7 +6860,7 @@ const DispatchPage = ({ accent, setPage }) => {
 
       {/* タブ */}
       <div style={{ display:"flex", gap:4, marginBottom:16, borderBottom:"2px solid #475569" }}>
-        {[["dispatch","週間配車表"],["shift","シフト管理"],["bill","請求連動"]].map(([v,l])=>(
+        {[["board","当日ボード"],["dispatch","週間配車表"],["shift","シフト管理"],["bill","請求連動"]].map(([v,l])=>(
           <button key={v} onClick={()=>setTab(v)}
             style={{ padding:"8px 20px", border:"none", background:"transparent", fontWeight:tab===v?700:400,
               color:tab===v?accent:"#645F6E", fontSize:14, cursor:"pointer",
