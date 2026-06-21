@@ -3179,7 +3179,7 @@ const ClientPage = ({ accent, setPage }) => {
         <div style={{ display:"flex", gap:10 }}>
           <div style={{ position:"relative", display:"flex", alignItems:"center" }}>
             <div style={{ position:"absolute", left:10, pointerEvents:"none" }}><Ic name="search" size={13} color="#A09AAB"/></div>
-            <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="荷主・エリア検索"
+            <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="案件・エリア検索"
               style={{ paddingLeft:32, paddingRight:12, height:34, borderRadius:13, background:"var(--jt-base)", border:"none", boxShadow:"var(--jt-inset-sm)", fontSize:13, fontFamily:"inherit", outline:"none", width:200 }}/>
           </div>
           <button onClick={()=>setPage("ratemaster")} style={{ padding:"7px 14px", border:"none", background:"var(--jt-base)", color:"var(--jt-text-sub)", borderRadius:13, fontSize:13, fontWeight:600, cursor:"pointer", boxShadow:"var(--jt-raised-sm)" }}>単価マスタ</button>
