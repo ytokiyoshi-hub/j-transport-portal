@@ -1460,6 +1460,18 @@ const PLPage = ({ accent, setPage }) => {
         </Card>
       )}
 
+      {/* 経営グラフ（実データ・テーマ連動）: 売上・支払・粗利 複合 ＋ 粗利率の推移 */}
+      <div style={{ display:"grid", gridTemplateColumns:"1.5fr 1fr", gap:14, marginBottom:14 }}>
+        <Card>
+          <div style={{ fontSize:13, fontWeight:700, padding:"10px 16px 4px" }}>売上・支払・粗利（直近12ヶ月）</div>
+          <div style={{ padding:"4px 16px 16px" }}><PLCompositeChart dailyEdits={dailyEdits}/></div>
+        </Card>
+        <Card>
+          <div style={{ fontSize:13, fontWeight:700, padding:"10px 16px 4px" }}>粗利率の推移（直近12ヶ月）</div>
+          <div style={{ padding:"4px 16px 16px" }}><ProfitMarginChart dailyEdits={dailyEdits}/></div>
+        </Card>
+      </div>
+
       {/* ── 月次推移 + 構成 ── */}
       <div style={{ display:"grid", gridTemplateColumns:"1fr 320px", gap:14, marginBottom:14 }}>
         <Card>
