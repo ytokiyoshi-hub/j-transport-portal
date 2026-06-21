@@ -6868,7 +6868,9 @@ const DispatchPage = ({ accent, setPage }) => {
         ))}
       </div>
 
-      {tab !== "bill" && (
+      {tab === "board" && <TodayBoard accent={accent}/>}
+
+      {(tab === "dispatch" || tab === "shift") && (
       <>
       {/* 週ナビ + 操作 */}
       <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:14, flexWrap:"wrap" }}>
