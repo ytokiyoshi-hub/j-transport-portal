@@ -1736,7 +1736,8 @@ const RateMasterPage = ({ accent, setPage }) => {
   const [showAdd, setShowAdd] = React.useState(false);
   useEscapeToClose(showAdd, ()=>closeAdd());
   const blankForm = { code:"", name:"", area:"", billing:"個建て", billingCycle:"翌月末締め", person:"", tel:"", address:"", rateLabel:"配完", sell:"", pay:"" };
-  const nextCode = () => "C-" + String(clients.length + extraClients.length + 1).padStart(2,"0");
+  // 既存ID群の数値最大+1で採番（件数ベースだと削除→追加や多端末同期でID衝突するため。DR-/V- と同方式）
+  const nextCode = () => { const nums = [...clients, ...extraClients].map(c => parseInt((String(c.id||c.code||"").match(/\d+/)||["0"])[0],10)||0); return "C-" + String(Math.max(0,...nums) + 1).padStart(2,"0"); };
   const [form, setForm] = React.useState(blankForm);
   const allClients = [...clients, ...extraClients];
   const billingOptions = ["個建て","個建て（2区分）","個建て（3区分）","スポット","固定（日額）","固定＋変動"];
