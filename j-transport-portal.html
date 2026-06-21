@@ -4029,11 +4029,19 @@ const YoYSalesChart = ({ dailyEdits }) => {
     const prev = [], cur = [];
     // 当年は「実データ月（monthlyHistory に存在 or 当月）」のみ採用。締め日越えの按分で生じる端数月（例: 1月の数日分）を誤表示しない。
     for (let m=1;m<=12;m++){ prev.push(monthAgg(_mk(prevY,m),dailyEdits).sell||0); const ck=_mk(curY,m); const c=ALL_MONTH_KEYS.includes(ck)?monthAgg(ck,dailyEdits).sell:0; cur.push(c>0?c:null); }
+    // 当年の実データ点に金額ラベルを直接描画（どの線が当年かを一目で識別できるように）
+    const curLabelPlugin = { id:'yoyCurLabels', afterDatasetsDraw(chart){
+      const meta = chart.getDatasetMeta(1); if(!meta) return; const ct = chart.ctx; ct.save();
+      ct.font = "700 11px 'Plus Jakarta Sans','Noto Sans JP',sans-serif"; ct.fillStyle = acc; ct.textAlign='center'; ct.textBaseline='bottom';
+      meta.data.forEach((pt,i)=>{ if(cur[i]==null) return; ct.fillText('¥'+Math.round(cur[i]/10000)+'万', pt.x, pt.y-9); });
+      ct.restore();
+    }};
     chartRef.current = new window.Chart(ref.current, { type:'line',
+      plugins:[curLabelPlugin],
       data:{ labels, datasets:[
-        { label:prevY+'年（前年）', data:prev, borderColor:_rgbaHex(mute,.9), backgroundColor:'transparent', borderWidth:2, borderDash:[5,4], tension:.35, pointRadius:0, pointHoverRadius:4, order:2 },
-        { label:curY+'年（当年）', data:cur, borderColor:acc, backgroundColor:_rgbaHex(acc,.12), borderWidth:2.75, tension:.3, fill:true, spanGaps:false, pointRadius:4, pointBackgroundColor:acc, pointHoverRadius:6, order:1 } ] },
-      options:{ responsive:true, maintainAspectRatio:false, interaction:{mode:'index',intersect:false},
+        { label:prevY+'年（前年・参考）', data:prev, borderColor:_rgbaHex(mute,.85), backgroundColor:'transparent', borderWidth:2, borderDash:[5,4], tension:.35, pointRadius:0, pointHoverRadius:4, order:2 },
+        { label:curY+'年（当年）', data:cur, borderColor:acc, backgroundColor:_rgbaHex(acc,.14), borderWidth:3, tension:.3, fill:true, spanGaps:false, pointRadius:5, pointBackgroundColor:acc, pointBorderColor:'#fff', pointBorderWidth:1.5, pointHoverRadius:7, order:1 } ] },
+      options:{ responsive:true, maintainAspectRatio:false, interaction:{mode:'index',intersect:false}, layout:{padding:{top:18}},
         plugins:{ legend:{position:'bottom', labels:{usePointStyle:true, boxWidth:10, font:{size:11}, padding:14}},
           tooltip:{ callbacks:{
             label:c=>c.dataset.label+(c.raw==null?' データなし':' ¥'+Number(c.raw).toLocaleString('ja-JP')),
