@@ -3947,6 +3947,33 @@ const DailyInputPage = ({ accent }) => {
 };
 
 // ── ダッシュボード ─────────────────────────────────────────────────────────
+// 月次売上推移チャート（Chart.js）。データは実データ monthAgg（収支管理と同じ集計）を使用。
+const SalesTrendChart = ({ dailyEdits }) => {
+  const ref = React.useRef(null);
+  const chartRef = React.useRef(null);
+  React.useEffect(() => {
+    if (!window.Chart || !ref.current) return;
+    window.Chart.defaults.font.family = "'Plus Jakarta Sans','Noto Sans JP',sans-serif";
+    window.Chart.defaults.color = '#645F6E';
+    // REF_MONTH を末尾とする直近12ヶ月（連続）
+    const [yy, mm] = REF_MONTH.split('-').map(Number);
+    const months = [];
+    for (let i = 11; i >= 0; i--) { const d = new Date(yy, mm - 1 - i, 1); months.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`); }
+    const labels = months.map(mk => Number(mk.split('-')[1]) + '月');
+    const data = months.map(mk => monthAgg(mk, dailyEdits).sell);
+    chartRef.current = new window.Chart(ref.current, {
+      type: 'line',
+      data: { labels, datasets: [{ label: '売上', data, borderColor: '#7E6593', backgroundColor: 'rgba(126,101,147,.15)', borderWidth: 2.5, fill: true, tension: .4, pointRadius: 0, pointHoverRadius: 4 }] },
+      options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => '売上 ¥' + Number(c.raw).toLocaleString('ja-JP') } } },
+        scales: { y: { grid: { color: '#DEDAE5' }, ticks: { font: { size: 10 }, callback: v => (v/10000).toLocaleString('ja-JP') + '万' } },
+          x: { grid: { display: false }, ticks: { font: { size: 10 } } } } }
+    });
+    return () => { if (chartRef.current) { chartRef.current.destroy(); chartRef.current = null; } };
+  }, [dailyEdits]);
+  return <div style={{ height: 220 }}><canvas ref={ref} /></div>;
+};
+
 const Dashboard = ({ accent, setPage }) => {
   const drivers = driversLive();
   // 「自動更新」表示の通り、時計を30秒ごとに更新する
