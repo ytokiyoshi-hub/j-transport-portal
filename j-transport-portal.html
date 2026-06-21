@@ -6509,7 +6509,7 @@ const TodayBoard = ({ accent }) => {
             {drivers.map(d=><option key={d.id} value={d.id}>{d.name}</option>)}
           </select>
           <select value={form.clientId} onChange={e=>setForm(f=>({...f,clientId:e.target.value}))} style={selS}>
-            <option value="">荷主</option>
+            <option value="">案件</option>
             {clients.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
           <input type="time" value={form.start} onChange={e=>setForm(f=>({...f,start:e.target.value}))} style={timeS}/>
