@@ -4192,6 +4192,17 @@ const Dashboard = ({ accent, setPage }) => {
   const pendingInv = pendingList.reduce((s,i)=>s+_invAmount(i),0);
   const delayedList = invoices.filter(i=>i.status==="遅延" && !paidArr.includes(i.id));
   const delayedInv = delayedList.reduce((s,i)=>s+_invAmount(i),0);
+  // 今月のアクション: 請求発行は実ステータス(jt_issued/jt_paid)から判定。手動項目は jt_action_flags でトグル保存（固定done撤去）
+  const [actionFlags, setActionFlags] = useLocalStorage("jt_action_flags", {});
+  const _issuedSet = new Set(issuedArr);
+  const _invDone = (clientName) => { const inv = invoices.find(i=>i.client===clientName); return inv ? (_issuedSet.has(inv.id) || paidArr.includes(inv.id)) : false; };
+  const monthActions = [
+    { key:"inv-ASKUL",    auto:true,  done:_invDone("ASKUL"),    label:`${_refMonthNum}月分請求書 発行（ASKUL）` },
+    { key:"inv-Bloomee",  auto:true,  done:_invDone("Bloomee"),  label:`${_refMonthNum}月分請求書 発行（Bloomee）` },
+    { key:"inv-tire",     auto:true,  done:_invDone("タイヤ配送"), label:`${_refMonthNum}月分請求書 発行（タイヤ配送）` },
+    { key:"driver-stmt",  auto:false, done:!!actionFlags["driver-stmt"],  label:"ドライバー支払明細 作成" },
+    { key:"month-report", auto:false, done:!!actionFlags["month-report"], label:"月次収支レポート 提出" },
+  ];
   // 入金遅延カードのサブ文言は実際の遅延請求（荷主名＋対象月）から動的生成する（ハードコード排除）
   const _delayedHead = delayedList[0];
   const _delayedMo = _delayedHead && /^\d{4}-\d{2}/.test(_delayedHead.period||"") ? Number(_delayedHead.period.slice(5,7)) : null;
