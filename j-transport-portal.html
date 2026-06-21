@@ -4135,9 +4135,12 @@ const Dashboard = ({ accent, setPage }) => {
   const timeStr = now.toTimeString().slice(0,5);
   // 日次入力の編集を反映するために live aggregation を行う
   const [dailyEdits] = useLocalStorage("jt_daily_edits", {});
-  // 当日ボード（実稼働＝実施中ジョブ）。稼働車両の算出に使用。
+  // 当日ボード（実稼働＝今この時刻に実施中のジョブ）。稼働車両の算出に使用。
   const [boardJobs] = useLocalStorage("jt_jobs", {});
   const [boardShifts] = useLocalStorage("jt_shifts", {});
+  const [boardDispatch] = useLocalStorage("jt_dispatch", {});
+  const [boardCaseHours] = useLocalStorage("jt_case_hours", {});
+  const [boardStatusOv] = useLocalStorage("jt_job_status", {});
   const liveAgg = monthAgg(REF_MONTH, dailyEdits);
   const totalSell   = liveAgg.sell;
   const totalPay    = liveAgg.pay;
