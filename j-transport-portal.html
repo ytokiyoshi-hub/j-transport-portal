@@ -1311,19 +1311,47 @@ const PLPage = ({ accent, setPage }) => {
     });
   }
 
-  // === 前年同月比（当年の最新データ月 vs 前年同月）: ヘッダのバッジ用 ===
+  // === 前年同月比の分析（実データから算出。バッジ＆分析メモで使用）===
   const _curY = Number(REF_MONTH.split('-')[0]);
-  let yoyBaseMonth = null, yoyDelta = null;
-  for (let m=12; m>=1; m--) {
+  const yoyMonths = []; // 当年の実データ月だけ {m, cs(当年売上), ps(前年売上), pct(前年比%)}
+  for (let m=1; m<=12; m++) {
     const cmk = `${_curY}-${String(m).padStart(2,'0')}`;
-    if (!ALL_MONTH_KEYS.includes(cmk)) continue; // 実データ月のみ（端数月を除外）
+    if (!ALL_MONTH_KEYS.includes(cmk)) continue; // 実データ月のみ（締め按分の端数月を除外）
     const cs = monthAgg(cmk, dailyEdits).sell;
-    if (cs>0) {
-      const ps = monthAgg(`${_curY-1}-${String(m).padStart(2,'0')}`, dailyEdits).sell;
-      yoyBaseMonth = cmk;
-      yoyDelta = ps>0 ? (cs-ps)/ps*100 : null;
-      break;
+    if (cs<=0) continue;
+    const ps = monthAgg(`${_curY-1}-${String(m).padStart(2,'0')}`, dailyEdits).sell;
+    yoyMonths.push({ m, cs, ps, pct: ps>0 ? (cs-ps)/ps*100 : null });
+  }
+  const yoyLast = yoyMonths.length ? yoyMonths[yoyMonths.length-1] : null;
+  const yoyBaseMonth = yoyLast ? `${_curY}-${String(yoyLast.m).padStart(2,'0')}` : null;
+  const yoyDelta = yoyLast ? yoyLast.pct : null;
+  // 前年の季節性（最需要期・最閑散期）
+  const _prevVals = [];
+  for (let m=1; m<=12; m++) _prevVals.push({ m, s: monthAgg(`${_curY-1}-${String(m).padStart(2,'0')}`, dailyEdits).sell });
+  const _pwd = _prevVals.filter(v=>v.s>0);
+  const yoyPeak   = _pwd.length ? _pwd.reduce((a,b)=>b.s>a.s?b:a) : null;
+  const yoyTrough = _pwd.length ? _pwd.reduce((a,b)=>b.s<a.s?b:a) : null;
+  // 分析メモ（自然文・すべて実データ由来）
+  const yoyInsights = [];
+  if (yoyLast && yoyLast.pct!=null) {
+    yoyInsights.push({ tone: yoyLast.pct>=0?"up":"down",
+      text: `当月 ${yoyLast.m}月 は前年同月比 ${yoyLast.pct>=0?"+":""}${yoyLast.pct.toFixed(1)}%（${fmt(yoyLast.cs)} ／ 前年 ${fmt(yoyLast.ps)}）` });
+  }
+  if (yoyMonths.length>=2) {
+    const a = yoyMonths[yoyMonths.length-2], b = yoyLast;
+    if (a.pct!=null && b.pct!=null) {
+      const diff = b.pct - a.pct;
+      yoyInsights.push({ tone: diff>=0?"up":"down",
+        text: `前年比は ${a.m}月 ${a.pct>=0?"+":""}${a.pct.toFixed(1)}% → ${b.m}月 ${b.pct>=0?"+":""}${b.pct.toFixed(1)}%（${diff>=0?"改善":"悪化"} ${Math.abs(diff).toFixed(1)}pt）` });
     }
+  }
+  if (yoyPeak && yoyTrough && yoyPeak.m!==yoyTrough.m) {
+    yoyInsights.push({ tone:"info",
+      text: `前年実績の季節性：最需要期は ${yoyPeak.m}月（${fmt(yoyPeak.s)}）、最閑散は ${yoyTrough.m}月（${fmt(yoyTrough.s)}）` });
+  }
+  if (yoyMonths.length) {
+    yoyInsights.push({ tone:"info",
+      text: `当年は ${yoyMonths.map(x=>x.m+"月").join("・")} の実績のみ。残りの月は日次実績の入力で自動反映されます` });
   }
 
   // === ドライバー収益性 ===
