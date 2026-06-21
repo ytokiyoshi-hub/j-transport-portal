@@ -4847,10 +4847,10 @@ const SafetyPage = ({ accent }) => {
       {/* KPIカード */}
       <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14, marginBottom:20 }}>
         {[
-          { l:"連続無事故日数", v:`${noAccidentDays}日`, sub:"今年度目標: 365日", c:accent, bar:noAccidentDays/365 },
-          { l:"アルコール検査",  v:"100%", sub:"本日 全員実施済",   c:"#6E9E78", bar:1 },
+          { l:"連続無事故日数", v: noAccidentDays===null?"記録なし":`${noAccidentDays}日`, sub: noAccidentDays===null?"事故記録に基づき自動算出":"今年度目標: 365日", c:accent, bar: noAccidentDays===null?null:noAccidentDays/365 },
+          { l:"アルコール検査",  v: _alcDone>0?`${_alcPct}%`:"未記録", sub: _alcDone>0?`本日 ${_alcDone}/${_alcTotal}名 実施`:`本日 ${_alcTotal}名 ／ 未記録`, c:"#6E9E78", bar: _alcDone>0&&_alcTotal>0?_alcDone/_alcTotal:null },
           { l:"今月ヒヤリハット",v:`${_incCount}件`, sub:`${_incMonth===REF_MONTH?"":`${mkLabel(_incMonth)}実績 ／ `}前月比 ${_incDiff>0?`+${_incDiff}`:_incDiff<0?`-${-_incDiff}`:"±0"}件`, c:"#C39A52", bar:null },
-          { l:"安全教育 修了率", v:`${Math.round(educationData.reduce((s,d)=>s+d.total,0)>0 ? educationData.reduce((s,d)=>s+d.done,0)/educationData.reduce((s,d)=>s+d.total,0)*100 : 0)}%`, sub:`${educationData.filter(d=>d.done===d.total).length}/${educationData.length}名 完了`, c:"#7E6593", bar:educationData.reduce((s,d)=>s+d.total,0)>0 ? educationData.reduce((s,d)=>s+d.done,0)/educationData.reduce((s,d)=>s+d.total,0) : 0 },
+          { l:"安全教育 修了率", v: _eduHasRecord?`${Math.round(educationData.reduce((s,d)=>s+d.total,0)>0 ? educationData.reduce((s,d)=>s+d.done,0)/educationData.reduce((s,d)=>s+d.total,0)*100 : 0)}%`:"未記録", sub: _eduHasRecord?`${educationData.filter(d=>d.total>0&&d.done===d.total).length}/${educationData.length}名 完了`:`対象 ${educationData.length}名 ／ 記録未登録`, c:"#7E6593", bar: _eduHasRecord&&educationData.reduce((s,d)=>s+d.total,0)>0 ? educationData.reduce((s,d)=>s+d.done,0)/educationData.reduce((s,d)=>s+d.total,0) : null },
         ].map(({ l,v,sub,c,bar })=>(
           <Card key={l} style={{ padding:"18px 20px" }}>
             <div style={{ fontSize:26, fontWeight:700, letterSpacing:"-0.01em", color:c }}>{v}</div>
