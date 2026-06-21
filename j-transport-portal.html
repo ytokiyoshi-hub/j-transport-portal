@@ -3973,6 +3973,32 @@ const Dashboard = ({ accent, setPage }) => {
   // バー幅の分母は「表示中の月」の合計（フォールバック表示時は totalSell=0 のため 0除算になる）
   const dispTotalSell = monthlyDisplay.reduce((s,r)=>s+r.sell,0);
 
+  // 本日の運行状況：車両ステータス（車両管理）＋本日の日次実績（dailyActuals + jt_daily_edits）から実算出
+  const vehicleMaster = vehiclesLive();
+  const _pad2 = (n)=>String(n).padStart(2,"0");
+  const TODAY_STR = `${now.getFullYear()}-${_pad2(now.getMonth()+1)}-${_pad2(now.getDate())}`;
+  const activeVeh = vehicleMaster.filter(v=>v.status==="稼働中").length;
+  const maintVeh  = vehicleMaster.filter(v=>v.status==="整備中").length;
+  const todayOps = (()=>{
+    let haikan=0, modori=0; const byDriver={};
+    allClientsLive().forEach(c=>{
+      const base=(typeof dailyActuals!=="undefined" && dailyActuals[c.id] && dailyActuals[c.id][TODAY_STR])||{};
+      const ed=(dailyEdits[c.id] && dailyEdits[c.id][TODAY_STR])||{};
+      const merged={}; [base,ed].forEach(src=>Object.entries(src).forEach(([drv,cats])=>{ merged[drv]={...(merged[drv]||{}),...cats}; }));
+      Object.entries(merged).forEach(([drv,cats])=>Object.entries(cats).forEach(([cat,n])=>{
+        const v=Number(n)||0; if(!v) return;
+        byDriver[drv]=byDriver[drv]||{cnt:0,modori:0,clients:new Set()};
+        if(cat.indexOf("持戻")>=0){ modori+=v; byDriver[drv].modori+=v; }
+        else { haikan+=v; byDriver[drv].cnt+=v; }
+        byDriver[drv].clients.add(c.name);
+      }));
+    });
+    return { haikan, modori, byDriver };
+  })();
+  const todayDriverRows = Object.entries(todayOps.byDriver).map(([drv,x])=>{
+    const d=drivers.find(dr=>dr.id===drv)||{}; return { id:drv, name:d.name||drv, clients:[...x.clients].join("・")||"—", cnt:x.cnt, modori:x.modori };
+  }).filter(r=>r.cnt>0||r.modori>0).sort((a,b)=>b.cnt-a.cnt);
+
   // 請求管理（jt_issued）で発行済にした請求書は「未請求」から、入金消込（jt_paid）済みは「未請求」「入金遅延」から除外（実効ステータスを請求管理と揃える）
   const [issuedArr] = useLocalStorage("jt_issued", []);
   const [paidArr] = useLocalStorage("jt_paid", []);
