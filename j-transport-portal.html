@@ -1307,7 +1307,7 @@ const PLPage = ({ accent, setPage }) => {
     alerts.push({
       level:"mid",
       title:`粗利率 ${curMargin.toFixed(1)}% — 目標 ${TARGET_MARGIN}% に未達`,
-      desc:`差 ${(TARGET_MARGIN-curMargin).toFixed(1)}pt。${(cur.sell*(TARGET_MARGIN-curMargin)/100).toFixed(0)|0} 円の粗利改善余地`
+      desc:`差 ${(TARGET_MARGIN-curMargin).toFixed(1)}pt。${Math.round(cur.sell*(TARGET_MARGIN-curMargin)/100).toLocaleString("ja-JP")} 円の粗利改善余地`
     });
   }
 
