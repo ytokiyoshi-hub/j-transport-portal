@@ -4125,6 +4125,8 @@ const YoYSalesChart = ({ dailyEdits }) => {
 
 const Dashboard = ({ accent, setPage }) => {
   const drivers = driversLive();
+  // 担当荷主は client側の実効担当（jt_client_driver_overrides）から導出（DriversPage/DispatchPageと一致・追加ドライバーや担当変更に追従）
+  const driverClientsLive = (did) => allClientsLive().filter(c => driversOfClient(c).includes(did)).map(c => c.name);
   // 「自動更新」表示の通り、時計を30秒ごとに更新する
   const [now, setNow] = React.useState(() => new Date());
   React.useEffect(() => { const t = setInterval(() => setNow(new Date()), 30000); return () => clearInterval(t); }, []);
