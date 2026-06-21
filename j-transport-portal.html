@@ -4173,6 +4173,10 @@ const Dashboard = ({ accent, setPage }) => {
     });
     return { haikan, modori, byDriver };
   })();
+  // 稼働車両 = 本日「売上のある仕事」をした車両（稼働＝仕事をしている＝売上がある）。
+  // = 担当ドライバーが本日 配完（請求対象の計上 cnt>0）を持つ車両。持戻のみ・未入力・整備中は非稼働。
+  const _workingDriverIds = new Set(Object.entries(todayOps.byDriver).filter(([,x])=>x.cnt>0).map(([drv])=>drv));
+  const activeVeh = vehicleMaster.filter(v=>v.status!=="整備中" && v.driverId && _workingDriverIds.has(v.driverId)).length;
   const todayDriverRows = Object.entries(todayOps.byDriver).map(([drv,x])=>{
     const d=drivers.find(dr=>dr.id===drv)||{}; return { id:drv, name:d.name||drv, clients:[...x.clients].join("・")||"—", cnt:x.cnt, modori:x.modori };
   }).filter(r=>r.cnt>0||r.modori>0).sort((a,b)=>b.cnt-a.cnt);
