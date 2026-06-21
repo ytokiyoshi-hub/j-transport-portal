@@ -7638,9 +7638,33 @@ const App = () => {
       } catch (e) { console.warn("[Supabase] contact sync failed:", e); }
     })();
   }, []);
-  // 注: jt_dispatch / jt_shifts はDispatchPage側で統一管理（差分同期+sbSnap）
-  // App側での起動syncは削除（F62: 複数エンドポイントでのレース競合・state巻き戻りを防止）
-  // App側は既存 localStorage から読み、DispatchPage遷移時に他端末値が反映される設計
+  // 起動時に Supabase の jt_dispatch / jt_shifts を localStorage へ「読込のみ」同期する。
+  // → 配車ページを経由せず勤怠ページ等を開いた端末でも、出勤予定・配車連動が実データで表示される（断線解消）。
+  // 書込みは DispatchPage 側のデバウンスsyncに限定したまま（setItemのみ・SBへupsert/deleteしない）なので F62 のレース競合は再発しない。
+  // DispatchPage を後で開けば 6404 の mount effect が SB を正本として読み直すため上書き・不整合は生じない。
+  React.useEffect(() => {
+    if (!window.sb) return;
+    (async () => {
+      try {
+        const _cut = (()=>{ const d=new Date(); d.setMonth(d.getMonth()-12); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; })();
+        const [d,s] = await Promise.all([
+          window.sb.from("jt_dispatch").select("*").gte("dispatch_date", _cut),
+          window.sb.from("jt_shifts").select("*").gte("shift_date", _cut),
+        ]);
+        if(!d.error && d.data && d.data.length){
+          const o={}; d.data.forEach(r=>{ (o[r.dispatch_date]=o[r.dispatch_date]||{})[r.driver_id]=r.client_id; });
+          localStorage.setItem("jt_dispatch", JSON.stringify(o));
+          window.dispatchEvent(new CustomEvent("jt-ls-change", { detail: { key: "jt_dispatch", val: o } }));
+        }
+        if(!s.error && s.data && s.data.length){
+          const o={}; s.data.forEach(r=>{ (o[r.shift_date]=o[r.shift_date]||{})[r.driver_id]=r.state; });
+          localStorage.setItem("jt_shifts", JSON.stringify(o));
+          window.dispatchEvent(new CustomEvent("jt-ls-change", { detail: { key: "jt_shifts", val: o } }));
+        }
+        console.log("[Supabase] dispatch/shifts startup-loaded:", d.data?.length||0, s.data?.length||0);
+      } catch(e){ console.warn("[Supabase] dispatch startup load failed:", e); }
+    })();
+  }, []);
   const pp = { accent, setPage };
 
   const pageMap = {
