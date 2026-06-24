@@ -4739,13 +4739,59 @@ const DriversPage = ({ accent, setPage }) => {
               <button onClick={()=>setSel(null)} style={{ background:"none", border:"none", fontSize:18, color:"var(--jt-text-mute)", cursor:"pointer", lineHeight:1 }}>×</button>
             </div>
 
-            <div style={{ background:"var(--jt-base)", borderRadius:13, padding:"12px 14px", marginBottom:16, boxShadow:"var(--jt-inset)" }}>
-              {[["社員番号",selDriver.id],["雇用形態",selDriver.type],["担当エリア",selDriver.area||"—"]].map(([l,v])=>(
-                <div key={l} style={{ display:"flex", justifyContent:"space-between", fontSize:13, padding:"5px 0" }}>
-                  <span style={{ color:"#645F6E" }}>{l}</span><span style={{ fontWeight:600 }}>{v}</span>
-                </div>
-              ))}
-            </div>
+            {(()=>{ const w=worstExpiry(selDriver); if(!w||w.days>30) return null; const c=expColor(w.days); return (
+              <div style={{ display:"flex", alignItems:"center", gap:8, fontSize:12, fontWeight:700, color:c, background:"var(--jt-base)", boxShadow:"var(--jt-raised-sm)", borderRadius:10, padding:"8px 12px", marginBottom:14 }}>
+                <span>⚠ {w.label}</span><span>{w.date}{w.days<0?"（期限切れ）":`（残${w.days}日）`}</span>
+              </div>
+            ); })()}
+
+            <Sec t="基本情報">
+              <DRow l="社員番号" v={selDriver.id}/>
+              <DRow l="フリガナ" v={selDriver.kana}/>
+              <DRow l="生年月日" v={selDriver.birth}/>
+              <DRow l="性別" v={selDriver.gender}/>
+              <DRow l="担当エリア" v={selDriver.area}/>
+              <DRow l="携帯" v={selDriver.phone}/>
+              <DRow l="メール" v={selDriver.email}/>
+              <DRow l="住所" v={selDriver.address}/>
+              <DRow l={selDriver.type==="自社"?"入社日":"契約開始"} v={selDriver.joinDate}/>
+              <DRow l="緊急連絡先" v={selDriver.emName?`${selDriver.emName}${selDriver.emRel?`（${selDriver.emRel}）`:""} ${selDriver.emPhone||""}`:""}/>
+            </Sec>
+
+            <Sec t={selDriver.type==="自社"?"雇用情報":"委託契約"}>
+              {selDriver.type==="自社" ? <>
+                <DRow l="雇用形態" v={selDriver.empType}/>
+                <DRow l="社会保険" v={selDriver.socialIns}/>
+                <DRow l="給与体系" v={selDriver.salaryNote}/>
+              </> : <>
+                <DRow l="所属会社" v={selDriver.company}/>
+                <DRow l="契約形態" v={selDriver.contractType}/>
+                <DRow l="インボイス番号" v={selDriver.invoiceNo}/>
+                <DRow l="先方担当者" v={selDriver.partnerContact}/>
+                <DRow l="フリーランス新法 条件明示" v={selDriver.freelanceDone?"済":"未"} c={selDriver.freelanceDone?"#6E9E78":"#B05A60"}/>
+              </>}
+            </Sec>
+
+            <Sec t="免許・資格">
+              <DRow l="免許種類" v={selDriver.licType}/>
+              <DRow l="免許番号" v={selDriver.licNo}/>
+              <ExpRow l="免許 有効期限" date={selDriver.licExpiry}/>
+              <DRow l="区分" v={selDriver.licColor}/>
+              <DRow l="黒ナンバー" v={selDriver.blackPlate}/>
+              {(selDriver.quals||[]).map((q,i)=>(<ExpRow key={i} l={q.name||"資格"} date={q.expiry}/>))}
+            </Sec>
+
+            <Sec t="健康・安全">
+              {selDriver.type==="自社" ? <>
+                <DRow l="健康診断 実施日" v={selDriver.healthDate}/>
+                <ExpRow l="次回 健康診断" date={selDriver.healthNext}/>
+                <DRow l="適性診断" v={selDriver.aptDate?`${selDriver.aptDate}${selDriver.aptType?`（${selDriver.aptType}）`:""}`:""}/>
+              </> : <>
+                <ExpRow l="自賠責保険" date={selDriver.insJibai}/>
+                <ExpRow l="任意保険" date={selDriver.insNini}/>
+                <ExpRow l="貨物保険" date={selDriver.insKamotsu}/>
+              </>}
+            </Sec>
 
             <div style={labelStyle}>担当荷主（{selClients.length}社）</div>
             <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:18 }}>
