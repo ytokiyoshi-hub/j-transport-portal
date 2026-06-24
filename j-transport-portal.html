@@ -4838,23 +4838,56 @@ const DriversPage = ({ accent, setPage }) => {
               <h3 style={{ margin:0, fontSize:17, fontWeight:700, color:"var(--jt-text)" }}>{form.mode==="add"?"ドライバー追加":"ドライバー情報の編集"}</h3>
               <button onClick={()=>setForm(null)} style={{ width:30, height:30, borderRadius:9, border:"none", background:"var(--jt-base)", color:"var(--jt-text-sub)", cursor:"pointer", boxShadow:"var(--jt-raised-sm)", fontSize:16, lineHeight:1 }}>×</button>
             </div>
-            <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
-              <label style={{ display:"flex", flexDirection:"column", gap:6 }}>
-                <span style={{ fontSize:12, fontWeight:600, color:"var(--jt-text-sub)" }}>氏名 <span style={{ color:"var(--jt-alert)" }}>*</span></span>
-                <input value={form.name} onChange={(e)=>setForm({...form, name:e.target.value})} placeholder="例：山田 太郎" style={{ width:"100%", boxSizing:"border-box", padding:"11px 14px", border:"none", borderRadius:11, background:"var(--jt-base)", boxShadow:"var(--jt-inset)", color:"var(--jt-text)", fontSize:14, outline:"none" }} />
-              </label>
-              <label style={{ display:"flex", flexDirection:"column", gap:6 }}>
-                <span style={{ fontSize:12, fontWeight:600, color:"var(--jt-text-sub)" }}>雇用形態</span>
-                <select value={form.type} onChange={(e)=>setForm({...form, type:e.target.value})} style={{ width:"100%", boxSizing:"border-box", padding:"11px 14px", border:"none", borderRadius:11, background:"var(--jt-base)", boxShadow:"var(--jt-inset)", color:"var(--jt-text)", fontSize:14, outline:"none", cursor:"pointer" }}>
-                  <option value="自社">自社</option>
-                  <option value="協力会社">協力会社</option>
-                </select>
-              </label>
-              <label style={{ display:"flex", flexDirection:"column", gap:6 }}>
-                <span style={{ fontSize:12, fontWeight:600, color:"var(--jt-text-sub)" }}>担当エリア</span>
-                <input value={form.area} onChange={(e)=>setForm({...form, area:e.target.value})} placeholder="例：神戸市・阪神間" style={{ width:"100%", boxSizing:"border-box", padding:"11px 14px", border:"none", borderRadius:11, background:"var(--jt-base)", boxShadow:"var(--jt-inset)", color:"var(--jt-text)", fontSize:14, outline:"none" }} />
-              </label>
-              <p style={{ margin:0, fontSize:11.5, color:"var(--jt-text-mute)", lineHeight:1.6 }}>担当荷主・担当車両は、単価マスタ管理／車両管理の各画面で割り当てます。</p>
+            <div style={{ display:"flex", flexDirection:"column", gap:11, maxHeight:"calc(100vh - 230px)", overflowY:"auto", paddingRight:4 }}>
+              <div style={{ display:"flex", gap:10 }}>{fld("氏名","name",null,"例：山田 太郎",true)}{selFld("区分","type",["自社","協力会社"])}</div>
+              <div style={{ display:"flex", gap:10 }}>{fld("フリガナ","kana",null,"ヤマダ タロウ")}{fld("生年月日","birth","date")}</div>
+              <div style={{ display:"flex", gap:10 }}>{selFld("性別","gender",["","男","女","その他"])}{fld("担当エリア","area",null,"例：東京・埼玉")}</div>
+              <div style={{ display:"flex", gap:10 }}>{fld("携帯","phone",null,"090-0000-0000")}{fld("メール","email","email","name@example.com")}</div>
+              {fld("住所","address",null,"例：東京都…")}
+              <div style={{ display:"flex", gap:10 }}>{fld((form&&form.type==="自社")?"入社日":"契約開始","joinDate","date")}{fld("緊急連絡先 氏名","emName")}</div>
+              <div style={{ display:"flex", gap:10 }}>{fld("続柄","emRel",null,"配偶者 等")}{fld("緊急連絡先 電話","emPhone",null,"090-…")}</div>
+
+              {fSec((form&&form.type==="自社")?"雇用情報":"委託契約")}
+              {(form&&form.type==="自社") ? <React.Fragment>
+                <div style={{ display:"flex", gap:10 }}>{selFld("雇用形態","empType",["正社員","契約社員","パート","アルバイト"])}{selFld("社会保険","socialIns",["加入","未加入","手続中"])}</div>
+                {fld("給与体系","salaryNote",null,"例：月給＋歩合 / 日給 等")}
+              </React.Fragment> : <React.Fragment>
+                <div style={{ display:"flex", gap:10 }}>{fld("所属会社","company",null,"例：○○運送")}{fld("契約形態","contractType",null,"業務委託 等")}</div>
+                <div style={{ display:"flex", gap:10 }}>{fld("インボイス番号","invoiceNo",null,"T1234567890123")}{fld("先方担当者","partnerContact")}</div>
+                <label style={{ display:"flex", alignItems:"center", gap:8, fontSize:12.5, color:"var(--jt-text-sub)", cursor:"pointer" }}><input type="checkbox" checked={!!(form&&form.freelanceDone)} onChange={e=>setF("freelanceDone",e.target.checked)}/>フリーランス保護新法の取引条件明示 済</label>
+              </React.Fragment>}
+
+              {fSec("免許・資格")}
+              <div style={{ display:"flex", gap:10 }}>{selFld("免許種類","licType",["普通","準中型","中型","大型","けん引","その他"])}{fld("免許番号","licNo")}</div>
+              <div style={{ display:"flex", gap:10 }}>{fld("免許 有効期限","licExpiry","date")}{selFld("区分","licColor",["","ゴールド","ブルー","グリーン"])}</div>
+              {selFld("黒ナンバー（事業用）","blackPlate",["","登録あり","登録なし","該当なし"])}
+              <div>
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:5 }}>
+                  <span style={{ fontSize:11.5, fontWeight:600, color:"var(--jt-text-sub)" }}>保有資格（フォークリフト/危険物 等）</span>
+                  <button onClick={addQual} style={{ fontSize:11, fontWeight:700, color:"var(--jt-accent)", background:"var(--jt-base)", border:"none", borderRadius:9, padding:"3px 9px", cursor:"pointer", boxShadow:"var(--jt-raised-sm)" }}>＋ 追加</button>
+                </div>
+                {((form&&form.quals)||[]).length===0 && <div style={{ fontSize:11.5, color:"var(--jt-text-mute)" }}>未登録</div>}
+                {((form&&form.quals)||[]).map((q,i)=>(
+                  <div key={i} style={{ display:"flex", gap:8, alignItems:"center", marginBottom:6 }}>
+                    <input value={q.name||""} onChange={e=>setQual(i,"name",e.target.value)} placeholder="資格名" style={{ ..._ein, flex:1 }}/>
+                    <input type="date" value={q.expiry||""} onChange={e=>setQual(i,"expiry",e.target.value)} style={{ ..._ein, width:150, flex:"0 0 auto" }}/>
+                    <button onClick={()=>delQual(i)} style={{ background:"none", border:"none", color:"var(--jt-alert)", cursor:"pointer", fontSize:16, lineHeight:1 }}>×</button>
+                  </div>
+                ))}
+              </div>
+
+              {fSec("健康・安全")}
+              {(form&&form.type==="自社") ? <React.Fragment>
+                <div style={{ display:"flex", gap:10 }}>{fld("健康診断 実施日","healthDate","date")}{fld("次回 健康診断 期限","healthNext","date")}</div>
+                <div style={{ display:"flex", gap:10 }}>{fld("適性診断 実施日","aptDate","date")}{selFld("適性診断 種類","aptType",["初任","適齢","特定","一般"])}</div>
+              </React.Fragment> : <React.Fragment>
+                <div style={{ display:"flex", gap:10 }}>{fld("自賠責保険 期限","insJibai","date")}{fld("任意保険 期限","insNini","date")}</div>
+                {fld("貨物保険 期限","insKamotsu","date")}
+              </React.Fragment>}
+
+              {fSec("備考")}
+              <textarea value={(form&&form.note)||""} onChange={e=>setF("note",e.target.value)} placeholder="特記事項・指導履歴 等" rows={2} style={{ ..._ein, resize:"vertical" }}/>
+              <p style={{ margin:"4px 0 0", fontSize:11, color:"var(--jt-text-mute)", lineHeight:1.6 }}>担当荷主・担当車両は 単価マスタ／車両管理 で割り当てます。日付は期限アラートに連動します。</p>
             </div>
             <div style={{ display:"flex", gap:10, marginTop:22 }}>
               <button onClick={()=>setForm(null)} style={{ flex:"0 0 auto", padding:"11px 18px", background:"transparent", color:"var(--jt-text-sub)", border:"none", borderRadius:12, fontWeight:600, fontSize:14, cursor:"pointer" }}>キャンセル</button>
