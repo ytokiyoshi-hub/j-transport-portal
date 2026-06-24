@@ -1068,6 +1068,18 @@ const driversLive = (extra, ov) => {
   const base = Array.isArray(extra) && extra.length ? [...drivers, ...extra] : drivers;
   return (ov && Object.keys(ov).length) ? base.map(d => ov[d.id] ? { ...d, ...ov[d.id] } : d) : base;
 };
+// ドライバーの期限管理（免許/資格/健診/保険）— DriversPage と Dashboard で共有（単一ソース）
+const _daysToDate = (dateStr) => { if(!dateStr) return null; const [y,m,d]=String(dateStr).split("-").map(Number); if(!y||!m||!d) return null; const t=new Date(); t.setHours(0,0,0,0); return Math.ceil((new Date(y,m-1,d)-t)/86400000); };
+const _expClr = (n) => n==null?"var(--jt-text)":n<0?"#B05A60":n<=30?"#C39A52":"#6E9E78";
+const driverExpiryItems = (d) => {
+  const it=[]; const push=(label,date)=>{ const n=_daysToDate(date); if(n!==null) it.push({label,date,days:n}); };
+  push("免許", d.licExpiry);
+  (d.quals||[]).forEach(q=>push(q.name||"資格", q.expiry));
+  if(d.type==="自社") push("健康診断", d.healthNext);
+  else { push("自賠責", d.insJibai); push("任意保険", d.insNini); push("貨物保険", d.insKamotsu); }
+  return it;
+};
+const worstDriverExpiry = (d) => { const it=driverExpiryItems(d); return it.length ? it.reduce((a,b)=>b.days<a.days?b:a) : null; };
 // 担当ドライバー編集(jt_client_driver_overrides)を適用した実効担当ドライバー
 const driversOfClient = (c) => (_lsGet("jt_client_driver_overrides",{})[c.id]) || c.drivers || [];
 // 単価編集(jt_rate_overrides) / 締日編集(jt_cycle_overrides) を適用した実効クライアント
