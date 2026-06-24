@@ -2260,6 +2260,57 @@ const printDriverSlip = (d, monthLabel) => {
   setTimeout(() => { try { iframe.contentWindow.focus(); iframe.contentWindow.print(); } catch(e) { showToast("印刷に失敗: "+e.message, "error"); } setTimeout(()=>iframe.remove(),1500); }, 250);
 };
 
+// 運転者台帳（法定様式に準拠）A4印刷／PDF保存。ドライバー管理のデータから生成。
+const _escH = s => String(s==null?"":s).replace(/[&<>]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const printDriverLedger = (d, incidents) => {
+  const v = x => (x==null||x==="") ? "—" : _escH(x);
+  const t = new Date(); const tStr = `${t.getFullYear()}年${t.getMonth()+1}月${t.getDate()}日`;
+  const ih = d.type==="自社";
+  const quals = (d.quals||[]).filter(q=>(q.name||"").trim()||q.expiry);
+  const qualRows = quals.length ? quals.map(q=>`<tr><td>${v(q.name)}</td><td>${v(q.expiry)}</td></tr>`).join("") : `<tr><td colspan="2" class="mute">登録なし</td></tr>`;
+  const inc = (incidents||[]).filter(i=>i.driver===d.name);
+  const incRows = inc.length ? inc.map(i=>`<tr><td>${v(i.date)}</td><td>${v(i.type)}</td><td>${v(i.detail)}</td></tr>`).join("") : `<tr><td colspan="3" class="mute">記録なし</td></tr>`;
+  const em = d.emName ? `${v(d.emName)}${d.emRel?`（${v(d.emRel)}）`:""}　${v(d.emPhone)}` : "—";
+  const employBlock = ih
+    ? `<tr><th>雇用形態</th><td>${v(d.empType)}</td><th>社会保険</th><td>${v(d.socialIns)}</td></tr>`
+    : `<tr><th>所属会社</th><td>${v(d.company)}</td><th>契約形態</th><td>${v(d.contractType)}</td></tr><tr><th>インボイス番号</th><td>${v(d.invoiceNo)}</td><th>取引条件明示</th><td>${d.freelanceDone?"済":"未"}</td></tr>`;
+  const healthBlock = ih
+    ? `<div class="sec">指導・監督／健康診断</div><table class="grid"><tr><th>適性診断 実施日</th><td>${v(d.aptDate)}</td><th>種類</th><td>${v(d.aptType)}</td></tr><tr><th>健康診断 実施日</th><td>${v(d.healthDate)}</td><th>次回期限</th><td>${v(d.healthNext)}</td></tr></table>`
+    : `<div class="sec">保険加入状況</div><table class="grid"><tr><th>自賠責保険 期限</th><td>${v(d.insJibai)}</td><th>任意保険 期限</th><td>${v(d.insNini)}</td></tr><tr><th>貨物保険 期限</th><td>${v(d.insKamotsu)}</td><th></th><td></td></tr></table>`;
+  const css = `*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}html,body{background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact;}body{font-family:'Noto Sans JP','Hiragino Sans',sans-serif;color:#222;font-size:12px;line-height:1.55;}.lh{text-align:center;margin-bottom:12px;}.lt{font-size:21px;font-weight:700;letter-spacing:.35em;border-bottom:3px double #333;display:inline-block;padding:0 18px 4px;}.lm{font-size:11px;color:#555;margin-top:8px;}.sec{font-size:12px;font-weight:700;background:#eee;padding:4px 8px;margin:13px 0 0;border-left:4px solid #555;}table.grid,table.list{border-collapse:collapse;width:100%;margin-top:6px;}table.grid th,table.grid td,table.list th,table.list td{border:1px solid #999;padding:6px 9px;font-size:11.5px;text-align:left;vertical-align:top;}table.grid th{background:#f2f2f2;font-weight:600;width:18%;white-space:nowrap;}table.list th{background:#f2f2f2;font-weight:600;}.mute{color:#888;}.note{margin-top:13px;font-size:11px;border:1px solid #999;padding:8px;min-height:48px;}@page{size:A4 portrait;margin:14mm;}`;
+  const html = `<div class="lh"><div class="lt">運 転 者 台 帳</div><div class="lm">事業者名：J transport ／ 作成番号：${v(d.id)} ／ 作成年月日：${tStr}</div></div>
+<table class="grid">
+  <tr><th>氏名</th><td>${v(d.name)}</td><th>フリガナ</th><td>${v(d.kana)}</td></tr>
+  <tr><th>生年月日</th><td>${v(d.birth)}</td><th>性別</th><td>${v(d.gender)}</td></tr>
+  <tr><th>住所</th><td colspan="3">${v(d.address)}</td></tr>
+  <tr><th>携帯</th><td>${v(d.phone)}</td><th>メール</th><td>${v(d.email)}</td></tr>
+  <tr><th>緊急連絡先</th><td colspan="3">${em}</td></tr>
+  <tr><th>区分</th><td>${v(d.type)}</td><th>${ih?"入社年月日":"契約開始"}</th><td>${v(d.joinDate)}</td></tr>
+  ${employBlock}
+</table>
+<div class="sec">運転免許</div>
+<table class="grid">
+  <tr><th>種類</th><td>${v(d.licType)}</td><th>免許番号</th><td>${v(d.licNo)}</td></tr>
+  <tr><th>有効期限</th><td>${v(d.licExpiry)}</td><th>区分／黒ナンバー</th><td>${v(d.licColor)} ／ ${v(d.blackPlate)}</td></tr>
+</table>
+<div class="sec">保有資格</div>
+<table class="list"><thead><tr><th style="width:62%">資格名</th><th>有効期限</th></tr></thead><tbody>${qualRows}</tbody></table>
+${healthBlock}
+<div class="sec">事故・違反歴</div>
+<table class="list"><thead><tr><th style="width:18%">年月日</th><th style="width:20%">種別</th><th>内容</th></tr></thead><tbody>${incRows}</tbody></table>
+<div class="sec">選任・解任</div>
+<table class="grid"><tr><th>運転者 選任年月日</th><td>&nbsp;</td><th>解任年月日・理由</th><td>&nbsp;</td></tr></table>
+<div class="note">備考：${v(d.note)}</div>`;
+  const old = document.getElementById("jt-ledger-iframe"); if (old) old.remove();
+  const iframe = document.createElement("iframe"); iframe.id = "jt-ledger-iframe";
+  iframe.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden;";
+  document.body.appendChild(iframe);
+  const doc = iframe.contentWindow.document; doc.open();
+  doc.write(`<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>運転者台帳 ${_escH(d.name)}</title><style>${css}</style></head><body>${html}</body></html>`);
+  doc.close();
+  setTimeout(() => { try { iframe.contentWindow.focus(); iframe.contentWindow.print(); } catch(e) { showToast("印刷に失敗: "+e.message, "error"); } setTimeout(()=>iframe.remove(),1500); }, 250);
+};
+
 // 支払明細書モーダル（A4印刷対応・ドライバー向け＝粗利は非表示）。driver は buildDriverStatement の戻り値
 const DriverSlipModal = ({ driver, accent, onClose }) => {
   useEscapeToClose(!!driver, onClose);
