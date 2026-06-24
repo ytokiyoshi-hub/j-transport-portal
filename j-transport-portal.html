@@ -4665,6 +4665,10 @@ const DriversPage = ({ accent, setPage }) => {
   const selClients = selDriver ? driverClients(selDriver.id) : [];
 
   const labelStyle = { fontSize:12, color:"var(--jt-text-sub)", marginBottom:4 };
+  // 詳細パネルのセクション/行ヘルパー
+  const Sec = ({ t, children }) => (<div style={{ marginBottom:14 }}><div style={{ fontSize:11, fontWeight:700, color:"var(--jt-accent)", letterSpacing:".04em", marginBottom:6 }}>{t}</div><div style={{ background:"var(--jt-base)", borderRadius:12, padding:"10px 13px", boxShadow:"var(--jt-inset)" }}>{children}</div></div>);
+  const DRow = ({ l, v, c }) => (<div style={{ display:"flex", justifyContent:"space-between", gap:10, fontSize:12.5, padding:"4px 0" }}><span style={{ color:"#645F6E", flexShrink:0 }}>{l}</span><span style={{ fontWeight:600, textAlign:"right", color:c||"var(--jt-text)", wordBreak:"break-all" }}>{(v===""||v==null)?"—":v}</span></div>);
+  const ExpRow = ({ l, date }) => { const n=_du(date); return <DRow l={l} v={date?`${date}${n!=null?(n<0?"（期限切れ）":n<=30?`（残${n}日）`:""):""}`:"—"} c={date?expColor(n):undefined}/>; };
 
   return (
     <div>
