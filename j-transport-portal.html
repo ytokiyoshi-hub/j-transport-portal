@@ -4605,16 +4605,37 @@ const DriversPage = ({ accent, setPage }) => {
   const driverClients = (did) => allClientsLive().filter(c => ((clientDriverOverrides[c.id]) || c.drivers || []).includes(did)).map(c => c.name);
   const driverStatus = (d) => { const v = vehByDriver[d.id]; return v && v.status === "整備中" ? "整備中" : "稼働中"; };
 
-  // ── 追加・編集 ──
+  // ── 期限ヘルパー（免許・資格・健診・保険の有効期限アラート）──
+  const _du = (dateStr) => { if(!dateStr) return null; const [y,m,d]=String(dateStr).split("-").map(Number); if(!y||!m||!d) return null; const t=new Date(); t.setHours(0,0,0,0); return Math.ceil((new Date(y,m-1,d)-t)/86400000); };
+  const expColor = (n) => n==null?"var(--jt-text)":n<0?"#B05A60":n<=30?"#C39A52":"#6E9E78";
+  const expiryItems = (d) => {
+    const it=[]; const push=(label,date)=>{ const n=_du(date); if(n!==null) it.push({label,date,days:n}); };
+    push("免許", d.licExpiry);
+    (d.quals||[]).forEach(q=>push(q.name||"資格", q.expiry));
+    if(d.type==="自社") push("健康診断", d.healthNext);
+    else { push("自賠責", d.insJibai); push("任意保険", d.insNini); push("貨物保険", d.insKamotsu); }
+    return it;
+  };
+  const worstExpiry = (d) => { const it=expiryItems(d); return it.length ? it.reduce((a,b)=>b.days<a.days?b:a) : null; };
+
+  // ── 追加・編集（運送会社の台帳項目をフル管理）──
+  const PROFILE_FIELDS = ["name","type","area","kana","birth","gender","address","phone","email","joinDate","emName","emRel","emPhone","empType","socialIns","salaryNote","company","contractType","invoiceNo","partnerContact","freelanceDone","licType","licNo","licExpiry","licColor","blackPlate","quals","healthDate","healthNext","aptDate","aptType","insJibai","insNini","insKamotsu","note"];
+  const BLANK = { name:"", type:"自社", area:"", kana:"", birth:"", gender:"", address:"", phone:"", email:"", joinDate:"", emName:"", emRel:"", emPhone:"", empType:"正社員", socialIns:"加入", salaryNote:"", company:"", contractType:"業務委託", invoiceNo:"", partnerContact:"", freelanceDone:false, licType:"普通", licNo:"", licExpiry:"", licColor:"", blackPlate:"", quals:[], healthDate:"", healthNext:"", aptDate:"", aptType:"初任", insJibai:"", insNini:"", insKamotsu:"", note:"" };
   const isExtra = (id) => (extraDrivers||[]).some(d => d.id === id);
   const nextDriverId = () => { const nums = drivers.map(d => parseInt((String(d.id).match(/\d+/)||["0"])[0],10)||0); return "DR-" + String(Math.max(0,...nums) + 1).padStart(2,"0"); };
   const _syncDriverToSb = async (d) => { if (!window.sb) return; try { await window.sb.from("jt_drivers").upsert({ id:d.id, name:d.name, type:d.type, area:d.area, status:"稼働中" }, { onConflict:"id" }); } catch(e){} };
-  const openAdd = () => setForm({ mode:"add", name:"", type:"自社", area:"" });
-  const openEdit = (d) => setForm({ mode:"edit", id:d.id, name:d.name, type:d.type, area:d.area||"" });
+  const openAdd = () => setForm({ mode:"add", ...BLANK });
+  const openEdit = (d) => setForm({ mode:"edit", id:d.id, ...BLANK, ...d, area:d.area==="—"?"":d.area, quals:(d.quals||[]).map(q=>({...q})) });
+  const setF = (k,v) => setForm(f=>({ ...f, [k]:v }));
+  const addQual = () => setForm(f=>({ ...f, quals:[...(f.quals||[]), {name:"",expiry:""}] }));
+  const setQual = (i,k,v) => setForm(f=>({ ...f, quals:(f.quals||[]).map((q,j)=>j===i?{...q,[k]:v}:q) }));
+  const delQual = (i) => setForm(f=>({ ...f, quals:(f.quals||[]).filter((_,j)=>j!==i) }));
   const saveDriver = () => {
     const name = (form.name||"").trim();
     if (!name) { showToast("氏名を入力してください", "error"); return; }
-    const rec = { name, type: form.type, area: (form.area||"").trim() || "—" };
+    const rec = {}; PROFILE_FIELDS.forEach(k=>{ if(form[k]!==undefined) rec[k]=form[k]; });
+    rec.name = name; rec.area = (form.area||"").trim() || "—";
+    rec.quals = (form.quals||[]).filter(q=>(q.name||"").trim()||q.expiry);
     if (form.mode === "add") {
       const id = nextDriverId();
       setExtraDrivers([ ...(extraDrivers||[]), { id, clients:[], ...rec } ]);
