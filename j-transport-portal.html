@@ -4617,18 +4617,8 @@ const DriversPage = ({ accent, setPage }) => {
   const driverClients = (did) => allClientsLive().filter(c => ((clientDriverOverrides[c.id]) || c.drivers || []).includes(did)).map(c => c.name);
   const driverStatus = (d) => { const v = vehByDriver[d.id]; return v && v.status === "整備中" ? "整備中" : "稼働中"; };
 
-  // ── 期限ヘルパー（免許・資格・健診・保険の有効期限アラート）──
-  const _du = (dateStr) => { if(!dateStr) return null; const [y,m,d]=String(dateStr).split("-").map(Number); if(!y||!m||!d) return null; const t=new Date(); t.setHours(0,0,0,0); return Math.ceil((new Date(y,m-1,d)-t)/86400000); };
-  const expColor = (n) => n==null?"var(--jt-text)":n<0?"#B05A60":n<=30?"#C39A52":"#6E9E78";
-  const expiryItems = (d) => {
-    const it=[]; const push=(label,date)=>{ const n=_du(date); if(n!==null) it.push({label,date,days:n}); };
-    push("免許", d.licExpiry);
-    (d.quals||[]).forEach(q=>push(q.name||"資格", q.expiry));
-    if(d.type==="自社") push("健康診断", d.healthNext);
-    else { push("自賠責", d.insJibai); push("任意保険", d.insNini); push("貨物保険", d.insKamotsu); }
-    return it;
-  };
-  const worstExpiry = (d) => { const it=expiryItems(d); return it.length ? it.reduce((a,b)=>b.days<a.days?b:a) : null; };
+  // ── 期限ヘルパー（モジュール共有の単一ソースを使用）──
+  const _du = _daysToDate, expColor = _expClr, expiryItems = driverExpiryItems, worstExpiry = worstDriverExpiry;
 
   // ── 追加・編集（運送会社の台帳項目をフル管理）──
   const PROFILE_FIELDS = ["name","type","area","kana","birth","gender","address","phone","email","joinDate","emName","emRel","emPhone","empType","socialIns","salaryNote","company","contractType","invoiceNo","partnerContact","freelanceDone","licType","licNo","licExpiry","licColor","blackPlate","quals","healthDate","healthNext","aptDate","aptType","insJibai","insNini","insKamotsu","note"];
