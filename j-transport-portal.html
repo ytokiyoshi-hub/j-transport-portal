@@ -4676,6 +4676,7 @@ const DriversPage = ({ accent, setPage }) => {
   const [clientDriverOverrides] = useLocalStorage("jt_client_driver_overrides", {});
   const [extraDrivers, setExtraDrivers] = useLocalStorage("jt_extra_drivers", []);
   const [driverOverrides, setDriverOverrides] = useLocalStorage("jt_driver_overrides", {});
+  const [incidents] = useLocalStorage("jt_incidents", []); // 運転者台帳の事故・違反歴に使用
   const [form, setForm] = React.useState(null); // null=閉 / {mode,id?,name,type,area}
   useEscapeToClose(!!form, ()=>setForm(null));
 
