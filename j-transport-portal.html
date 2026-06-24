@@ -4719,7 +4719,7 @@ const DriversPage = ({ accent, setPage }) => {
             </tbody>
             <tfoot>
               <tr style={{ background:"var(--jt-accent-lt)", borderTop:"1px solid var(--jt-line-dk)" }}>
-                <td colSpan={6} style={{ padding:"10px 16px", fontWeight:700, color:"var(--jt-text-sub)", fontSize:12 }}>計 {list.length}名（自社 {list.filter(d=>d.type==="自社").length}・協力会社 {list.filter(d=>d.type==="協力会社").length}）</td>
+                <td colSpan={7} style={{ padding:"10px 16px", fontWeight:700, color:"var(--jt-text-sub)", fontSize:12 }}>計 {list.length}名（自社 {list.filter(d=>d.type==="自社").length}・協力会社 {list.filter(d=>d.type==="協力会社").length}）{(()=>{ const ex=list.filter(d=>{const w=worstExpiry(d);return w&&w.days<=30;}).length; return ex>0?<span style={{ color:"#B05A60", marginLeft:10 }}>／ 期限30日以内・切れ: {ex}名</span>:null; })()}</td>
               </tr>
             </tfoot>
           </table>
